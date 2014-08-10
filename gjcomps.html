@@ -3,11 +3,14 @@
 </head>
 
 <body>
-  {{> hello}}
+  {{> competitions}}
 </body>
 
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+<template name="competitions">
+  <h1>Look at all the people who love our software</h1>
+  <ul>
+  {{#each allComps}}
+    <li>id: {{competitionId}}</li>
+  {{/each}}
+  </ul>
 </template>

@@ -1,19 +1,25 @@
-if (Meteor.isClient) {
-  Template.hello.greeting = function () {
-    return "Welcome to gjcomps.";
-  };
+Competitions = new Meteor.Collection("competitions");
 
-  Template.hello.events({
-    'click input': function () {
-      // template data, if any, is available in 'this'
-      if (typeof console !== 'undefined')
-        console.log("You pressed the button");
-    }
-  });
+if(Meteor.isClient) {
+  Template.competitions.allComps = function() {
+     return Competitions.find();
+  };
 }
 
-if (Meteor.isServer) {
+if(Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+    var testComp = {
+      "competitionId": "ExampleCompetition2013",
+      "persons": [],
+      "events": [],
+      "staff": []
+    };
+
+    Competitions.update(
+      testComp,
+      testComp,
+      { upsert: true }
+    );
   });
 }
