@@ -2,7 +2,7 @@ Competitions = new Meteor.Collection("competitions");
 
 if(Meteor.isClient) {
   Template.competitions.allComps = function() {
-     return Competitions.find();
+    return Competitions.find();
   };
 }
 
