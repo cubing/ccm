@@ -1,0 +1,20 @@
+<template name="compTemplate">
+<h1>this is the competition</h1>
+{{competitionId}}
+  {{#each events}}
+    <li>
+      {{eventId}}
+      <ul>
+        {{#each rounds}}
+        <li>
+          <a href="{{pathFor 'roundTemplate' competitionId=../../competitionId eventId=../eventId roundId=roundId}}">
+            {{roundName roundId}}
+          </a>
+        </li>
+        {{/each}}
+      </ul>
+    </li>
+  {{/each}}
+</template>
+
+

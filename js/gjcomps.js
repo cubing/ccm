@@ -1,25 +1,36 @@
 Competitions = new Meteor.Collection("competitions");
 
 if(Meteor.isClient) {
-  Template.competitions.allComps = function() {
-    return Competitions.find();
+  Template.compsTemplate.allComps = function() {
+    return Competitions.find({}, {
+      fields: {
+        competitionId: 1
+      }
+    });
   };
 
-  Template.competition.allEvents = function(){
-    console.log('being called');
+  Template.compTemplate.events = function() {
+    // This will run every time *anything* changes in the competition's entire
+    // events subdocument, eg: when a new time is entered.
 
-    var comp = Router.current().data();
-    var arr = [];
-    if(comp){
-      for(var key in comp.events){
-        if(comp.events.hasOwnProperty(key)){
-          arr.push(comp.events[key]);
+    var competitionId = Router.current().params.competitionId;
+    var comp = Competitions.findOne(
+      { competitionId: competitionId },
+      {
+        fields: { events: 1 },
+      }
+    );
+    var events = [];
+    if(comp) {
+      for(var key in comp.events) {
+        if(comp.events.hasOwnProperty(key)) {
+          events.push(comp.events[key]);
         }
       }
     }
     
-    return arr; 
-  }
+    return events; 
+  };
 }
 
 if(Meteor.isServer) {
@@ -48,26 +59,48 @@ if(Meteor.isServer) {
       "events": {
         "333":{
           eventId: "333",
-          rounds: [{
-            roundId: "f",
-            formatId: "a",
-            results: {
-              "1":{
-                personId:"1",
-                position:"1",
-               results:[600, 700, 648, 727, 1063],
-                best: 600,
-                average: 692
-              },
-              "2":{
-                "personId":"2",
-                "position":"2",
-                "results":[1602,1509,1421,-1,2022],
-                "best":1421,
-                "average":1711
+          rounds: [
+            {
+              roundId: "1",
+              formatId: "d",
+              results: {
+                "1":{
+                  personId:"1",
+                  position:"1",
+                  results:[600, 700, 648, 727, 1063],
+                  best: 600,
+                  average: 692
+                },
+                "2":{
+                  "personId":"2",
+                  "position":"2",
+                  "results":[1602,1509,1421,-1,2022],
+                  "best":1421,
+                  "average":1711
+                }
               }
-            }
-          }],
+            },
+            {
+              roundId: "f",
+              formatId: "a",
+              results: {
+                "1":{
+                  personId:"1",
+                  position:"1",
+                  results:[600, 700, 648, 727, 1063],
+                  best: 600,
+                  average: 692
+                },
+                "2":{
+                  "personId":"2",
+                  "position":"2",
+                  "results":[1602,1509,1421,-1,2022],
+                  "best":1421,
+                  "average":1711
+                }
+              }
+            },
+          ],
           "groups":{
             "A":{
               "group":"A",

@@ -2,31 +2,7 @@
   <title>gjcomps</title>
 </head>
 
-
-<template name="competitions">
-  <h1>Look at all the people who love our software</h1>
-  <a href="{{pathFor 'home'}}">Go home!</a>
-  <ul>
-  {{#each allComps}}
-    <li><a href="{{pathFor 'competition' competitionId=competitionId}}">id: {{competitionId}}</a></li>
-  {{/each}}
-  </ul>
-</template>
-
 <template name="home">
-  <h1>what here i me</h1>
-  <a href="{{pathFor 'competitions'}}">Go comps!</a>
-</template>
-
-<template name="competition">
-	<h1>this is the competition</h1>
-  {{#each allEvents}}
-  	<li>{{eventId}}</li>
- 	{{/each}}
-</template>
-
-
-<template name="notFound">
-  <h1>404ed bud :^)</h1>
-  <a href="{{pathFor 'home'}}">Go home!</a>
+  <h1>home is where i want to be</h1>
+  {{> compsTemplate}}
 </template>

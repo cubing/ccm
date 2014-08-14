@@ -1,25 +1,19 @@
 Router.map(function () {
-  this.route('home',{path:'/'});
-  this.route('competitions',{path:'/comps'});
-  this.route('competition',{
-  	path: "/:competitionId",
-  	data: function() {
-  		var comp = Competitions.findOne({
- 				competitionId: this.params.competitionId
-  		});
-
-  		if(comp){
-  			console.log(comp);
-  			return comp;
-  		}else{
-  			return comp;
-  			this.render("notFound");
-  		}
-  		 
-  	}
+  this.route('home', {path:'/'});
+  this.route('compTemplate', {
+    path: "/:competitionId",
+    data: function() {
+      console.log(this.params.competitionId);//<<<
+      return {
+        competitionId: this.params.competitionId
+      };
+    }
+  });
+  this.route('roundTemplate', {
+    path: "/:competitionId/:eventId/:roundId",
   });
 });
 
 Router.configure({
-  notFoundTemplate: 'notFound' // this will render
+  notFoundTemplate: 'notFound'
 });
