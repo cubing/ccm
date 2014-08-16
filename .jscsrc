@@ -1,0 +1,72 @@
+{
+  "excludeFiles": [
+    "tests/node_modules/**",
+    "packages/**",
+     ".*" // Ignore everything in dotted directories such as .git and .meteor
+  ],
+  "fileExtensions": [ ".js" ],
+
+  "validateIndentation": 2,
+
+  // Largely copied from jquery's presets
+  "requireCurlyBraces": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "try",
+    "catch"
+  ],
+  "requireOperatorBeforeLineBreak": true,
+  "requireParenthesesAroundIIFE": true,
+  "requireCommaBeforeLineBreak": true,
+
+  "requireSpacesInFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+
+  "requireSpaceAfterKeywords": [
+    "return"
+  ],
+  "disallowSpaceAfterKeywords": [
+    "if",
+    "else",
+    "for",
+    "while",
+    "do",
+    "switch",
+    "try",
+    "catch"
+  ],
+  "requireSpacesInConditionalExpression": true,
+  "requireLineFeedAtFileEnd": true,
+
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "requireSpacesInNamedFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "validateLineBreaks": "LF",
+
+  "disallowKeywords": [ "with" ],
+  "disallowKeywordsOnNewLine": [ "else" ],
+  "disallowSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpaceAfterObjectKeys": true,
+  "disallowSpaceAfterPrefixUnaryOperators": true,
+  "disallowSpaceBeforePostfixUnaryOperators": true,
+  "disallowSpaceBeforeBinaryOperators": [ ",", ":" ],
+  "disallowMultipleLineBreaks": true,
+
+  "disallowSpaceBeforeBinaryOperators": [ ",", ":" ],
+  "disallowMultipleLineBreaks": null
+}

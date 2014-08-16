@@ -4,14 +4,14 @@ wca = {
 };
 
 function createRoundType(displayName, id, roundType, combined) {
-  var roundType = {
+  var roundTypeObj = {
     displayName: displayName,
     id: id,
     roundType: roundType,
     combined: combined
   };
-  wca.roundCodes[id] = roundType;
-  return roundType;
+  wca.roundCodes[id] = roundTypeObj;
+  return roundTypeObj;
 }
 
 COMBINED_QUALIFICATION = createRoundType("Combined qualification", "h", 0, true);
@@ -111,9 +111,9 @@ wca.events = [
 ];
 
 
-wca.eventById={};
+wca.eventById = {};
 
-_.forEach(wca.events,function(e,i){
+_.forEach(wca.events,function(e,i) {
   e.index = i;
-  wca.eventById[e.id]=e;
+  wca.eventById[e.id] = e;
 });

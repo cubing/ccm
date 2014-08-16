@@ -1,0 +1,9 @@
+{
+  "asi": false,
+  "expr": true,
+  "loopfunc": true,
+  "curly": true,
+  "evil": false,
+  "node": true,
+  "undef": false
+}

@@ -40,7 +40,7 @@ if(Meteor.isClient) {
 }
 
 if(Meteor.isServer) {
-  Meteor.startup(function () {
+  Meteor.startup(function() {
     var res;
 
     // code to run on server at startup

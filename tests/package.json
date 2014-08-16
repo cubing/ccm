@@ -1,0 +1,24 @@
+{
+  "name": "gjcomps",
+  "version": "0.0.0",
+  "description": "gjcomps",
+  "author": "",
+  "license": "MIT",
+  "main": "",
+  "private": true,
+  "devDependencies": {
+    "precommit-hook": "1.0.7",
+    "jscs": "1.5.9"
+  },
+  "scripts": {
+    "run": "meteor",
+    "lint": "(cd ..; jshint . && jscs .)"
+  },
+  "config": {
+    "precommit": {
+      "lint": true,
+      "validate": false
+    }
+  },
+  "precommit": [ "lint" ]
+}
