@@ -40,6 +40,8 @@
     "catch"
   ],
   "requireSpacesInConditionalExpression": true,
+  "requireSpaceAfterBinaryOperators": true,
+  "requireSpaceBeforeBinaryOperators": true,
   "requireLineFeedAtFileEnd": true,
 
   "requireSpacesInAnonymousFunctionExpression": {

@@ -137,7 +137,7 @@ if(Meteor.isServer) {
                 "2":{
                   "personId":"2",
                   "position":"2",
-                  "results":[1602,1509,1421,-1,2022],
+                  "results":[1602, 1509, 1421, -1, 2022],
                   "best":1421,
                   "average":1711
                 }
@@ -157,7 +157,7 @@ if(Meteor.isServer) {
                 "2":{
                   "personId":"2",
                   "position":"2",
-                  "results":[1602,1509,1421,-1,2022],
+                  "results":[1602, 1509, 1421, -1, 2022],
                   "best":1421,
                   "average":1711
                 }
@@ -197,7 +197,7 @@ if(Meteor.isServer) {
               2:{
                 "personId":2,
                 "position":2,
-                "results":[1602,1509,1421,-1,2022],
+                "results":[1602, 1509, 1421, -1, 2022],
                 "best":1421,
                 "average":1711
               }

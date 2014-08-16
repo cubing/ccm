@@ -113,7 +113,7 @@ wca.events = [
 
 wca.eventById = {};
 
-_.forEach(wca.events,function(e,i) {
+_.forEach(wca.events, function(e, i) {
   e.index = i;
   wca.eventById[e.id] = e;
 });
