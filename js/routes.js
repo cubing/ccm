@@ -1,16 +1,17 @@
 Router.map(function () {
   this.route('home', {path:'/'});
   this.route('compTemplate', {
-    path: "/:competitionId",
+    path: "/:wcaCompetitionId",
     data: function() {
-      console.log(this.params.competitionId);//<<<
-      return {
-        competitionId: this.params.competitionId
-      };
+      var wcaCompetitionId = this.params.wcaCompetitionId;
+      return Competitions.findOne(
+        { wcaCompetitionId: wcaCompetitionId },
+        { fields: { wcaCompetitionId: 1 } }
+      );
     }
   });
   this.route('roundTemplate', {
-    path: "/:competitionId/:eventId/:roundId",
+    path: "/:wcaCompetitionId/:eventCode/:roundCode",
   });
 });
 

@@ -1,47 +1,96 @@
 Competitions = new Meteor.Collection("competitions");
+People = new Meteor.Collection("people");
+Rounds = new Meteor.Collection("rounds");
+Results = new Meteor.Collection("results");
+Groups = new Meteor.Collection("groups");
 
 if(Meteor.isClient) {
   Template.compsTemplate.allComps = function() {
     return Competitions.find({}, {
       fields: {
-        competitionId: 1
+        wcaCompetitionId: 1
       }
     });
   };
 
   Template.compTemplate.events = function() {
-    // This will run every time *anything* changes in the competition's entire
-    // events subdocument, eg: when a new time is entered.
+    var events = Rounds.find(
+      { competitionId: this.competitionId },
+      { fields: { eventCode: 1 } }
+    ).fetch();
 
-    var competitionId = Router.current().params.competitionId;
-    var comp = Competitions.findOne(
-      { 
-        competitionId: competitionId
-        //"events.eventId": {$in: _.pluck(wca.events,"id")}
-      },
-      {
-        fields: { 
-          "events": {$elemMatch:{eventId:{$in:_.pluck(wca.events,"id")}}} 
-        },
-      }
-    );
-    var events = [];
-    console.log(comp.events);
-    if(comp) {
-      for(var key in comp.events) {
-        if(comp.events.hasOwnProperty(key)) {
-          events.push(comp.events[key]);
-        }
-      }
-    }
-    
+    events = _.uniq(events, function(e) { return e.eventCode; });
     return events; 
+  };
+
+  Template.compTemplate.rounds = function() {
+    var rounds = Rounds.find(
+      { competitionId: this.competitionId, eventCode: this.eventCode }
+    );
+    return rounds;
   };
 }
 
 if(Meteor.isServer) {
   Meteor.startup(function () {
+    var res;
+
     // code to run on server at startup
+    var competition = {
+      wcaCompetitionId: "ExampleCompetition2013",
+      people: [],
+      staff: [],
+      organizers: []
+    };
+    res = Competitions.upsert(
+      { wcaCompetitionId: competition.wcaCompetitionId },
+      competition
+    );
+    var competitionId = res.insertedId;
+
+    var person = {
+      name: "Devin Corr-Robinett",
+      wcaId: "2006CORR01",
+      countryId: "US",
+      gender: "o",
+      dob: "1900-01-01"
+    };
+    res = People.upsert(
+      { wcaId: person.wcaId },
+      person
+    );
+    var personId = person.insertedId;
+
+    var round = {
+      competitionId: competitionId,
+      eventCode: "333",
+      roundCode: "d",
+      formatCode: "a"
+    };
+    res = Rounds.upsert(
+      round,
+      round
+    );
+    var roundId = res.insertedId;
+
+    var result = {
+      roundId: roundId,
+      competitionId: competitionId,
+      personId: personId,
+      position: "1",
+      results: [ 600, 700, 648, 727, 1063 ],
+      best: 600,
+      average: 692
+    };
+    Results.upsert(
+      {
+        roundId: result.roundId,
+        competitionId: result.competitionId,
+        personId: result.personId,
+      },
+      result
+    );
+
     var testComp = {
       "competitionId": "ExampleCompetition2013",
       "persons": {
@@ -167,18 +216,5 @@ if(Meteor.isServer) {
       "staff": []
     };
 
-    
-
-    Competitions.update(
-      testComp,
-      testComp,
-      { upsert: true }
-    );
-    testComp.competitionId="WhoWhatWhere2015";
-    Competitions.update(
-      testComp,
-      testComp,
-      { upsert: true }
-    );
   });
 }

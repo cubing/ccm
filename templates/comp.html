@@ -2,12 +2,12 @@
   <h1>this is the competition</h1>
   {{#each events}}
     <li>
-      {{eventId}}
+      {{eventCode}}
       <ul>
         {{#each rounds}}
         <li>
-          <a href="{{pathFor 'roundTemplate' competitionId=../../competitionId eventId=../eventId roundId=roundId}}">
-            {{roundName roundId}}
+          <a href="{{pathFor 'roundTemplate' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}">
+            {{roundName roundCode}}
           </a>
         </li>
         {{/each}}
