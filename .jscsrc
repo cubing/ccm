@@ -7,6 +7,7 @@
   "fileExtensions": [ ".js" ],
 
   "validateIndentation": 2,
+  "disallowTrailingWhitespace": true,
 
   // Largely copied from jquery's presets
   "requireCurlyBraces": [

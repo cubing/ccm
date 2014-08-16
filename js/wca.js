@@ -1,6 +1,6 @@
 wca = {
   roundCodes: {
-  } 
+  }
 };
 
 function createRoundType(displayName, id, roundType, combined) {
@@ -102,7 +102,7 @@ wca.events = [
   },
   {
     id:"555bf",
-    name:"4x4 Cube: Blindfolded" 
+    name:"4x4 Cube: Blindfolded"
   },
   {
     id:"333mbf",

@@ -20,7 +20,7 @@ if(Meteor.isClient) {
     ).fetch();
 
     events = _.uniq(events, function(e) { return e.eventCode; });
-    return events; 
+    return events;
   };
 
   Template.compTemplate.rounds = function() {
@@ -174,7 +174,7 @@ if(Meteor.isServer) {
                 "U' R' F U' R2 U2 F' R' U' R' U",
                 "U R U2 F' R' U' R U2 R' U' F"
               ],
-              "extraScrambles": [ 
+              "extraScrambles": [
                 "U2 R U' F' R2 F R F R2 U2 R'",
                 "R2 U' R2 F' U' R2 U' R2 F U2 R"
               ]
@@ -213,7 +213,7 @@ if(Meteor.isServer) {
                 "U' R' F U' R2 U2 F' R' U' R' U",
                 "U R U2 F' R' U' R U2 R' U' F"
               ],
-              "extraScrambles": [ 
+              "extraScrambles": [
                 "U2 R U' F' R2 F R F R2 U2 R'",
                 "R2 U' R2 F' U' R2 U' R2 F U2 R"
               ]
