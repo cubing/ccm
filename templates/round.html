@@ -1,3 +1,13 @@
 <template name="roundTemplate">
-hello, i am a round, who are you?
+{{eventName round.eventCode}} {{roundName round.roundCode}} of {{competition.wcaCompetitionId}}
+<p>formatCode {{round.formatCode}}</p>
+
+<h1>RESULTSSSSSS</h1>
+<ul>
+  {{#each results}}
+    <li>
+      {{solves}} best: {{best}}
+    </li> 
+  {{/each}}
+</ul>
 </template>

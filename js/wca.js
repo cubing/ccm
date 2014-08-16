@@ -1,5 +1,5 @@
 wca = {
-  roundTypes: {
+  roundCodes: {
   } 
 };
 
@@ -10,7 +10,7 @@ function createRoundType(displayName, id, roundType, combined) {
     roundType: roundType,
     combined: combined
   };
-  wca.roundTypes[id] = roundType;
+  wca.roundCodes[id] = roundType;
   return roundType;
 }
 
@@ -27,7 +27,11 @@ COMBINED_FINAL = createRoundType("Combined Final", "c", 6, true);
 FINAL = createRoundType("Final", "f", 6, false);
 
 UI.registerHelper("roundName", function(id) {
-  return wca.roundTypes[id].displayName;
+  return wca.roundCodes[id].displayName;
+});
+
+UI.registerHelper("eventName", function(eventCode) {
+  return wca.eventById[eventCode].name;
 });
 
 

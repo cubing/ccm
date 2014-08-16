@@ -29,6 +29,14 @@ if(Meteor.isClient) {
     );
     return rounds;
   };
+
+  Template.roundTemplate.results = function() {
+    var results = Results.find(
+      { roundId: this.round._id },
+      {}
+    );
+    return results;
+  };
 }
 
 if(Meteor.isServer) {
@@ -59,7 +67,7 @@ if(Meteor.isServer) {
       { wcaId: person.wcaId },
       person
     );
-    var personId = person.insertedId;
+    var personId = res.insertedId;
 
     var round = {
       competitionId: competitionId,
@@ -78,7 +86,7 @@ if(Meteor.isServer) {
       competitionId: competitionId,
       personId: personId,
       position: "1",
-      results: [ 600, 700, 648, 727, 1063 ],
+      solves: [ 600, 700, 648, 727, 1063 ],
       best: 600,
       average: 692
     };
