@@ -15,12 +15,18 @@ if(Meteor.isClient) {
 
     var competitionId = Router.current().params.competitionId;
     var comp = Competitions.findOne(
-      { competitionId: competitionId },
+      { 
+        competitionId: competitionId
+        //"events.eventId": {$in: _.pluck(wca.events,"id")}
+      },
       {
-        fields: { events: 1 },
+        fields: { 
+          "events": {$elemMatch:{eventId:{$in:_.pluck(wca.events,"id")}}} 
+        },
       }
     );
     var events = [];
+    console.log(comp.events);
     if(comp) {
       for(var key in comp.events) {
         if(comp.events.hasOwnProperty(key)) {
@@ -56,8 +62,8 @@ if(Meteor.isServer) {
           dob: "1993-05-01"
         }
       },
-      "events": {
-        "333":{
+      "events": [
+        {
           eventId: "333",
           rounds: [
             {
@@ -118,7 +124,7 @@ if(Meteor.isServer) {
             }
           }
         },
-        "444":{
+        {
           eventId: "444",
           rounds: [{
             roundId: "f",
@@ -157,7 +163,7 @@ if(Meteor.isServer) {
             }
           }
         }
-      },
+      ],
       "staff": []
     };
 
