@@ -1,7 +1,6 @@
-gjcomps
+gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](https://travis-ci.org/jfly/gjcomps.png?branch=master)
 =======
 
-[![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](https://travis-ci.org/jfly/gjcomps.png?branch=master)
 
 
 ## Setup
