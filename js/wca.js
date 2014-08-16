@@ -1,119 +1,202 @@
-wca = {
-  roundCodes: {
+wca = {};
+
+
+UI.registerHelper("roundName", function(roundCode) {
+  return wca.roundByCode[roundCode].name;
+});
+UI.registerHelper("eventName", function(eventCode) {
+  return wca.eventByCode[eventCode].name;
+});
+UI.registerHelper("formatName", function(eventCode) {
+  return wca.formatByCode[eventCode].name;
+});
+
+wca.roundByCode = {
+  "0":{
+    "name":"Qualification round",
+    "code":"0",
+    "roundType":0,
+    "combined":false
+  },
+  "1":{
+    "name":"First round",
+    "code":"1",
+    "roundType":1,
+    "combined":false
+  },
+  "2":{
+    "name":"Second round",
+    "code":"2",
+    "roundType":3,
+    "combined":false
+  },
+  "3":{
+    "name":"Semi Final",
+    "code":"3",
+    "roundType":5,
+    "combined":false
+  },
+  "h":{
+    "name":"Combined qualification",
+    "code":"h",
+    "roundType":0,
+    "combined":true
+  },
+  "d":{
+    "name":"Combined First round",
+    "code":"d",
+    "roundType":1,
+    "combined":true
+  },
+  "b":{
+    "name":"B Final",
+    "code":"b",
+    "roundType":2,
+    "combined":false
+  },
+  "e":{
+    "name":"Combined Second round",
+    "code":"e",
+    "roundType":3,
+    "combined":true
+  },
+  "g":{
+    "name":"Combined Third Round",
+    "code":"g",
+    "roundType":4,
+    "combined":true
+  },
+  "c":{
+    "name":"Combined Final",
+    "code":"c",
+    "roundType":6,
+    "combined":true
+  },
+  "f":{
+    "name":"Final",
+    "code":"f",
+    "roundType":6,
+    "combined":false
   }
 };
 
-function createRoundType(displayName, id, roundType, combined) {
-  var roundTypeObj = {
-    displayName: displayName,
-    id: id,
-    roundType: roundType,
-    combined: combined
-  };
-  wca.roundCodes[id] = roundTypeObj;
-  return roundTypeObj;
-}
-
-COMBINED_QUALIFICATION = createRoundType("Combined qualification", "h", 0, true);
-QUALIFICATION_ROUND = createRoundType("Qualification round", "0", 0, false);
-COMBINED_FIRST_ROUND = createRoundType("Combined First round", "d", 1, true);
-FIRST_ROUND = createRoundType("First round", "1", 1, false);
-B_FINAL = createRoundType("B Final", "b", 2, false);
-SECOND_ROUND = createRoundType("Second round", "2", 3, false);
-COMBINED_SECOND_ROUND = createRoundType("Combined Second round", "e", 3, true);
-COMBINED_THIRD_ROUND = createRoundType("Combined Third Round", "g", 4, true);
-SEMI_FINAL = createRoundType("Semi Final", "3", 5, false);
-COMBINED_FINAL = createRoundType("Combined Final", "c", 6, true);
-FINAL = createRoundType("Final", "f", 6, false);
-
-UI.registerHelper("roundName", function(id) {
-  return wca.roundCodes[id].displayName;
-});
-
-UI.registerHelper("eventName", function(eventCode) {
-  return wca.eventById[eventCode].name;
-});
-
-
-wca.events = [
-  {
-    id:"333",
-    name:"Rubik's Cube"
+wca.eventByCode = {
+  "222":{
+    "code":"222",
+    "name":"2x2 Cube",
+    "index":3
   },
-  {
-    id:"444",
-    name:"4x4 Cube"
+  "333":{
+    "code":"333",
+    "name":"Rubik's Cube",
+    "index":0
   },
-  {
-    id:"555",
-    name:"5x5 Cube"
+  "444":{
+    "code":"444",
+    "name":"4x4 Cube",
+    "index":1
   },
-  {
-    id:"222",
-    name:"2x2 Cube"
+  "555":{
+    "code":"555",
+    "name":"5x5 Cube",
+    "index":2
   },
-  {
-    id:"333bf",
-    name:"Rubik's Cube: Blindfolded"
+  "666":{
+    "code":"666",
+    "name":"6x6 Cube",
+    "index":13
   },
-  {
-    id:"333oh",
-    name:"Rubik's Cube: One-handed"
+  "777":{
+    "code":"777",
+    "name":"7x7 Cube",
+    "index":14
   },
-  {
-    id:"333fm",
-    name:"Rubik's Cube: Fewest moves"
+  "333bf":{
+    "code":"333bf",
+    "name":"Rubik's Cube: Blindfolded",
+    "index":4
   },
-  {
-    id:"333ft",
-    name:"Rubik's Cube: With feet"
+  "333oh":{
+    "code":"333oh",
+    "name":"Rubik's Cube: One-handed",
+    "index":5
   },
-  {
-    id:"minx",
-    name:"Megaminx"
+  "333fm":{
+    "code":"333fm",
+    "name":"Rubik's Cube: Fewest moves",
+    "index":6
   },
-  {
-    id:"pyram",
-    name:"Pyraminx"
+  "333ft":{
+    "code":"333ft",
+    "name":"Rubik's Cube: With feet",
+    "index":7
   },
-  {
-    id:"sq1",
-    name:"Square-1"
+  "minx":{
+    "code":"minx",
+    "name":"Megaminx",
+    "index":8
   },
-  {
-    id:"clock",
-    name:"Rubik's Clock"
+  "pyram":{
+    "code":"pyram",
+    "name":"Pyraminx",
+    "index":9
   },
-  {
-    id:"skewb",
-    name:"Skewb"
+  "sq1":{
+    "code":"sq1",
+    "name":"Square-1",
+    "index":10
   },
-  {
-    id:"666",
-    name:"6x6 Cube"
+  "clock":{
+    "code":"clock",
+    "name":"Rubik's Clock",
+    "index":11
   },
-  {
-    id:"777",
-    name:"7x7 Cube"
+  "skewb":{
+    "code":"skewb",
+    "name":"Skewb",
+    "index":12
   },
-  {
-    id:"444bf",
-    name:"4x4 Cube: Blindfolded"
+  "444bf":{
+    "code":"444bf",
+    "name":"4x4 Cube: Blindfolded",
+    "index":15
   },
-  {
-    id:"555bf",
-    name:"4x4 Cube: Blindfolded"
+  "555bf":{
+    "code":"555bf",
+    "name":"4x4 Cube: Blindfolded",
+    "index":16
   },
-  {
-    id:"333mbf",
-    name:"Rubik's Cube: Multiple Blindfolded"
+  "333mbf":{
+    "code":"333mbf",
+    "name":"Rubik's Cube: Multiple Blindfolded",
+    "index":17
   }
-];
+};
 
-
-wca.eventById = {};
-
-_.forEach(wca.events, function(e, i) {
-  e.index = i;
-  wca.eventById[e.id] = e;
-});
+wca.formatByCode = {
+  "1":{
+    "name":"Best of 1",
+    "count":1,
+    "code":"1"
+  },
+  "2":{
+    "name":"Best of 2",
+    "count":2,
+    "code":"2"
+  },
+  "3":{
+    "name":"Best of 3",
+    "count":3,
+    "code":"3"
+  },
+  "a":{
+    "name":"Average of 5",
+    "count":5,
+    "code":"a"
+  },
+  "m":{
+    "name":"Mean of 3",
+    "count":3,
+    "code":"m"
+  },
+}
