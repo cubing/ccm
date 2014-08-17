@@ -1,13 +1,23 @@
 <template name="roundTemplate">
-{{eventName round.eventCode}}: {{roundName round.roundCode}} of {{competition.wcaCompetitionId}}
-<p>{{formatName round.formatCode}}</p>
+{{#unless competition}}
+  {{> notFound item="competition"}}
+{{else}}
+  {{#unless round}}
+    {{> notFound item="round"}}
+  {{else}}
+ 
+    {{eventName round.eventCode}}: {{roundName round.roundCode}} of {{competition.wcaCompetitionId}}
+    <p>{{formatName round.formatCode}}</p>
 
-<h1>RESULTSSSSSS</h1>
-<ul>
-  {{#each results}}
-    <li>
-      {{solves}} best: {{best}}
-    </li> 
-  {{/each}}
-</ul>
+    <h1>RESULTSSSSSS</h1>
+    <ul>
+      {{#each results}}
+        <li>
+          {{solves}} best: {{best}}
+        </li> 
+      {{/each}}
+    </ul>
+  
+  {{/unless}}
+{{/unless}}
 </template>

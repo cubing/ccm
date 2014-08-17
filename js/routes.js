@@ -37,9 +37,6 @@ Router.map(function() {
           roundCode: roundCode
         }
       );
-      if(!round) {
-        return null;
-      }
       return {
         competition: competition,
         round: round
