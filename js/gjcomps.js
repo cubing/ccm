@@ -37,3 +37,18 @@ if(Meteor.isClient) {
     return results;
   };
 }
+
+if(Meteor.isServer) {
+  Meteor.publish('competitions', function() {
+    return Competitions.find({}, { fields: { wcaCompetitionId: 1 } });
+  });
+
+  Meteor.publish('competition', function(wcaCompetitionId) {
+    var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+    return [
+      Competitions.find({ _id: competition._id }),
+      Rounds.find({ competitionId: competition._id }),
+      Results.find({ competitionId: competition._id })
+    ];
+  });
+}

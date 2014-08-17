@@ -3,9 +3,17 @@ if(Meteor.isClient) {
 }
 
 Router.map(function() {
-  this.route('home', {path:'/'});
+  this.route('home', {
+    path: '/',
+    waitOn: function() {
+      return Meteor.subscribe('competitions');
+    }
+  });
   this.route('compTemplate', {
     path: "/:wcaCompetitionId",
+    waitOn: function() {
+      return Meteor.subscribe('competition', this.params.wcaCompetitionId);
+    },
     data: function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
       return Competitions.findOne(
@@ -17,6 +25,9 @@ Router.map(function() {
   this.route('roundTemplate', {
     path: "/:wcaCompetitionId/:eventCode/:roundCode",
     template: 'roundTemplate',
+    waitOn: function() {
+      return Meteor.subscribe('competition', this.params.wcaCompetitionId);
+    },
     data: function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
       var roundCode = this.params.roundCode;
