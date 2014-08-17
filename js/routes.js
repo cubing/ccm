@@ -1,3 +1,7 @@
+if(Meteor.isClient) {
+  Router.onBeforeAction('dataNotFound');
+}
+
 Router.map(function() {
   this.route('home', {path:'/'});
   this.route('compTemplate', {
@@ -12,6 +16,7 @@ Router.map(function() {
   });
   this.route('roundTemplate', {
     path: "/:wcaCompetitionId/:eventCode/:roundCode",
+    template: 'roundTemplate',
     data: function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
       var roundCode = this.params.roundCode;
@@ -32,14 +37,19 @@ Router.map(function() {
           roundCode: roundCode
         }
       );
+      if(!round) {
+        return null;
+      }
       return {
         competition: competition,
         round: round
       };
     }
   });
+
 });
 
 Router.configure({
-  notFoundTemplate: 'notFound'
+  notFoundTemplate: "notFound",
+  layoutTemplate: "layout"
 });

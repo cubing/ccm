@@ -28,11 +28,11 @@
   },
 
   "requireSpaceAfterKeywords": [
-    "return"
+    "return",
+    "else"
   ],
   "disallowSpaceAfterKeywords": [
     "if",
-    "else",
     "for",
     "while",
     "do",

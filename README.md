@@ -12,6 +12,6 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ## TODO
 - remove autopublish and autosubscribe hooks
+- view individual competitor's results
 - export to wca JSON https://github.com/cubing/wca-workbook-assistant/issues/48
-- import wca JSON (not useful for production, but awesome for testing)
-  - write a test that asserts that x = f(f`(x)) and x = f(f`(x))
+  - write a test that asserts that importing and then exporting is a no-op, and vice versa
