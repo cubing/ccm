@@ -1,9 +1,7 @@
 gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](https://travis-ci.org/jfly/gjcomps)
 =======
 
-
-
-## Setup
+## Setup pre-commit hook
 - `(cd tests; npm install)`
 
 ## To run
