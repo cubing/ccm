@@ -43,7 +43,7 @@ if(Meteor.isServer) {
         // document.
         personId = People.insert(person);
       }
-      personIdByJsonId[personId] = wcaPerson.id;
+      personIdByJsonId[wcaPerson.id] = personId;
     });
 
     // Add all the rounds and results for this competition.
@@ -64,14 +64,13 @@ if(Meteor.isServer) {
         wcaRound.results.forEach(function(wcaResult) {
           // wcaResult.personId refers to the personId in the wca json
           var personId = personIdByJsonId[wcaResult.personId];
-          var solves = wcaResult.results;
 
           var result = {
             competitionId: competitionId,
             roundId: roundId,
             personId: personId,
             position: wcaResult.position,
-            solves: wcaResult.solves,
+            solves: wcaResult.results,
             best: wcaResult.best,
             average: wcaResult.average
           };
