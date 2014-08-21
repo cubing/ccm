@@ -42,11 +42,10 @@ if(Meteor.isClient) {
       { _id: personId },
       { fields: {name: 1} }
     );
-    if (!person) {
+    if(!person) {
       return null;
-    } else {
-      return person.name;
     }
+    return person.name;
   };
 }
 
