@@ -38,11 +38,15 @@ if(Meteor.isClient) {
   };
 
   Template.roundTemplate.personName = function(personId) {
-      var person = People.findOne(
-        { _id: personId },
-        { fields: {name: 1} }
-      );
+    var person = People.findOne(
+      { _id: personId },
+      { fields: {name: 1} }
+    );
+    if (!person) {
+      return null;
+    } else {
       return person.name;
+    }
   };
 }
 
