@@ -14,11 +14,11 @@ if(Meteor.isClient) {
   };
 
   Template.compTemplate.events = function() {
-    var events = Rounds.find(
+    var rounds = Rounds.find(
       { competitionId: this._id }
     ).fetch();
 
-    events = _.uniq(events, function(e) { return e.eventCode; });
+    var events = _.uniq(rounds, function(e) { return e.eventCode; });
     return events;
   };
 
@@ -36,6 +36,14 @@ if(Meteor.isClient) {
     );
     return results;
   };
+
+  Template.roundTemplate.personName = function(personId) {
+      var person = People.findOne(
+        { _id: personId },
+        { fields: {name: 1} }
+      );
+      return person.name;
+  };
 }
 
 if(Meteor.isServer) {
@@ -48,7 +56,8 @@ if(Meteor.isServer) {
     return [
       Competitions.find({ _id: competition._id }),
       Rounds.find({ competitionId: competition._id }),
-      Results.find({ competitionId: competition._id })
+      Results.find({ competitionId: competition._id }),
+      People.find()
     ];
   });
 }
