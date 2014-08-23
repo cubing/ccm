@@ -72,13 +72,13 @@ Router.map(function() {
       if(!competition) {
         return null;
       }
-      
+
       var person = People.findOne(
         { name: personName }
       );
 
-      if(!person){
-        return null
+      if(!person) {
+        return null;
       }
 
       return {

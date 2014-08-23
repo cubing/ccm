@@ -31,15 +31,14 @@ if(Meteor.isClient) {
 
   Template.roundTemplate.results = function() {
     var results = Results.find(
-      { competitionId: this.competition._id, roundId: this.round._id },
-      {}
+      { competitionId: this.competition._id, roundId: this.round._id }
     );
     return results;
   };
 
-  Template.roundTemplate.personName = function(personId) {
+  Template.roundTemplate.personName = function() {
     var person = People.findOne(
-      { _id: personId },
+      { _id: this.personId },
       { fields: {name: 1} }
     );
     if(!person) {
@@ -52,7 +51,6 @@ if(Meteor.isClient) {
     var results = Results.find(
       { competitionId: this.competition._id, personId: this.person._id }
     );
-    console.log(results);
     return results;
   };
 }
@@ -68,7 +66,7 @@ if(Meteor.isServer) {
       Competitions.find({ _id: competition._id }),
       Rounds.find({ competitionId: competition._id }),
       Results.find({ competitionId: competition._id }),
-      People.find({_id: {$in: _.pluck(competition.people,"_id")}},{fields:{_id:1,name:1,wcaId:1,countryId:1,gender:1}})
+      People.find({_id: {$in: _.pluck(competition.people, "_id")}}, {fields:{_id:1, name:1, wcaId:1, countryId:1, gender:1}})
     ];
   });
 }

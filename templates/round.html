@@ -13,7 +13,7 @@
     <ul>
       {{#each results}}
         <li>
-          {{personName personId}}: {{solves}} best: {{best}}
+          <a href="{{pathFor 'personTemplate' wcaCompetitionId=../competition.wcaCompetitionId person=personName }}">{{personName}}</a>: {{solves}} best: {{best}}
         </li> 
       {{/each}}
     </ul>
