@@ -58,7 +58,7 @@ Router.map(function() {
     path: "/:wcaCompetitionId/:person",
     template: 'personTemplate',
     waitOn: function() {
-      return [Meteor.subscribe('person',this.params.person), Meteor.subscribe('competition', this.params.wcaCompetitionId)];
+      return [Meteor.subscribe('competition', this.params.wcaCompetitionId)];
     },
     data: function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
