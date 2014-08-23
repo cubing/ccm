@@ -71,17 +71,4 @@ if(Meteor.isServer) {
       People.find({_id: {$in: _.pluck(competition.people,"_id")}},{fields:{_id:1,name:1,wcaId:1,countryId:1,gender:1}})
     ];
   });
-
-  Meteor.publish("people",function(){
-    return People.find({},{fields:{_id:1,name:1,wcaId:1,countryId:1,gender:1}});
-  });
-
-  Meteor.publish("person",function(personName){
-   // var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
-    return People.find({name:personName},{fields:{_id:1,name:1,wcaId:1,countryId:1,gender:1}});
-    //         Competitions.find({ _id: competition._id }),
-    //         Rounds.find({ competitionId: competition._id }),
-    //         Results.find({ competitionId: competition._id }),
-    // ];  
-  });
 }
