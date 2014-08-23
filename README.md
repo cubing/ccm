@@ -11,6 +11,6 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 - `(cd tests; npm run-script lint)`
 
 ## TODO
-- view individual competitor's results
+- Add message when viewing non existant competitor page
 - export to wca JSON https://github.com/cubing/wca-workbook-assistant/issues/48
   - write a test that asserts that importing and then exporting is a no-op, and vice versa
