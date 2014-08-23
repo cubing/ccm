@@ -46,6 +46,24 @@ if(Meteor.isServer) {
       personIdByJsonId[wcaPerson.id] = personId;
     });
 
+    // Each competition contains a people attribute.
+    // This is an array of objects, where each object represents a person.
+    // This person object contains an _id field whose value is the _id of
+    // a document in the People collection.
+    var people = [];
+    for(var jsonId in personIdByJsonId) {
+      if(personIdByJsonId.hasOwnProperty(jsonId)) {
+        var personId = personIdByJsonId[jsonId];
+        people.push({
+          _id: personId
+        });
+      }
+    }
+    Competitions.update(
+      { _id: competitionId },
+      { $set: { people: people } }
+    );
+
     // Add all the rounds and results for this competition.
     // First remove any old rounds, results, and groups for this competition.
     Rounds.remove({ competitionId: competitionId });
