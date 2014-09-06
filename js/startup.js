@@ -6,7 +6,7 @@ if(Meteor.isServer) {
 
     var competition = {
       wcaCompetitionId: wcaCompetition.competitionId,
-      people: [],
+      competitors: [],
       staff: [],
       organizers: []
     };
@@ -18,9 +18,9 @@ if(Meteor.isServer) {
       { wcaCompetitionId: competition.wcaCompetitionId }
     )._id;
 
-    var personIdByJsonId = {};
-    wcaCompetition.persons.forEach(function(wcaPerson) {
-      var person = {
+    var userIdByJsonId = {};
+    wcaCompetition.persons.forEach(function(wcaPerson,i) {
+      var userProfile = {
         name: wcaPerson.name,
         wcaId: wcaPerson.wcaId,
         countryId: wcaPerson.countryId,
@@ -28,40 +28,41 @@ if(Meteor.isServer) {
         dob: wcaPerson.dob
       };
 
-      var personId;
+      var user;
       if(wcaPerson.wcaId) {
-        // Clobber any existing document with this wcaId.
-        People.upsert(
-          { wcaId: wcaPerson.wcaId },
-          person
-        );
-        personId = People.findOne(
-          { wcaId: wcaPerson.wcaId }
-        )._id;
+        //check for user with WCAID and if user doesn't exist we create one
+        user = Meteor.users.findOne({username:userProfile.wcaId});
+        if(!user){
+          Accounts.createUser({username:userProfile.wcaId, password: userProfile.dob, profile: userProfile});
+          user = Meteor.users.findOne({username:userProfile.wcaId});
+        }
       } else {
-        // If this person doesn't have a wca id, then we want to create a new
-        // document.
-        personId = People.insert(person);
+        //create user if user doesn't exist and wcaId doesn't exist or look for one first
+        user = Meteor.users.findOne({username:userProfile.name+i});
+        if(!user){
+          Accounts.createUser({username:userProfile.name+i, password: userProfile.dob, profile: userProfile});
+          user = Meteor.users.findOne({username:userProfile.name+i});
+        }
       }
-      personIdByJsonId[wcaPerson.id] = personId;
+      userIdByJsonId[wcaPerson.id] = user._id;
     });
 
-    // Each competition contains a people attribute.
-    // This is an array of objects, where each object represents a person.
-    // This person object contains an _id field whose value is the _id of
-    // a document in the People collection.
-    var people = [];
-    for(var jsonId in personIdByJsonId) {
-      if(personIdByJsonId.hasOwnProperty(jsonId)) {
-        var personId = personIdByJsonId[jsonId];
-        people.push({
-          _id: personId
+    // Each competition contains a competitors attribute.
+    // This is an array of objects, where each object represents a competitor.
+    // This competitor object contains an _id field whose value is the _id of
+    // a document in the User collection.
+    var competitors = [];
+    for(var jsonId in userIdByJsonId) {
+      if(userIdByJsonId.hasOwnProperty(jsonId)) {
+        var userId = userIdByJsonId[jsonId];
+        competitors.push({
+          _id: userId
         });
       }
     }
     Competitions.update(
       { _id: competitionId },
-      { $set: { people: people } }
+      { $set: { competitors: competitors } }
     );
 
     // Add all the rounds and results for this competition.
@@ -81,12 +82,12 @@ if(Meteor.isServer) {
 
         wcaRound.results.forEach(function(wcaResult) {
           // wcaResult.personId refers to the personId in the wca json
-          var personId = personIdByJsonId[wcaResult.personId];
+          var userId = userIdByJsonId[wcaResult.personId];
 
           var result = {
             competitionId: competitionId,
             roundId: roundId,
-            personId: personId,
+            userId: userId,
             position: wcaResult.position,
             solves: wcaResult.results,
             best: wcaResult.best,

@@ -9,6 +9,10 @@ Router.map(function() {
       return Meteor.subscribe('competitions');
     }
   });
+  this.route('organizerTemplate', {
+    path: "/organizer",
+    template: 'organizerTemplate'
+  });
   this.route('compTemplate', {
     path: "/:wcaCompetitionId",
     waitOn: function() {
@@ -54,15 +58,15 @@ Router.map(function() {
       };
     }
   });
-  this.route('personTemplate', {
-    path: "/:wcaCompetitionId/:person",
-    template: 'personTemplate',
+  this.route('competitorTemplate', {
+    path: "/:wcaCompetitionId/:competitorName",
+    template: 'competitorTemplate',
     waitOn: function() {
       return [Meteor.subscribe('competition', this.params.wcaCompetitionId)];
     },
     data: function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
-      var personName = this.params.person;
+      var userName = this.params.competitorName;
 
 
       var competition = Competitions.findOne(
@@ -73,17 +77,17 @@ Router.map(function() {
         return null;
       }
 
-      var person = People.findOne(
-        { name: personName }
+      var user = Meteor.users.findOne(
+        { "profile.name": userName }
       );
 
-      if(!person) {
+      if(!user) {
         return null;
       }
 
       return {
         competition: competition,
-        person: person
+        user: user
       };
     }
   });

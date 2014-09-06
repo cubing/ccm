@@ -1,8 +1,8 @@
 Competitions = new Meteor.Collection("competitions");
-People = new Meteor.Collection("people");
 Rounds = new Meteor.Collection("rounds");
 Results = new Meteor.Collection("results");
 Groups = new Meteor.Collection("groups");
+
 
 if(Meteor.isClient) {
   Template.compsTemplate.allComps = function() {
@@ -36,20 +36,20 @@ if(Meteor.isClient) {
     return results;
   };
 
-  Template.roundTemplate.personName = function() {
-    var person = People.findOne(
-      { _id: this.personId },
-      { fields: {name: 1} }
+  Template.roundTemplate.competitorName = function() {
+    var user = Meteor.users.findOne(
+      { _id: this.userId },
+      { fields: {"profile.name": 1} }
     );
-    if(!person) {
+    if(!user) {
       return null;
     }
-    return person.name;
+    return user.profile.name;
   };
 
-  Template.personTemplate.results = function() {
+  Template.competitorTemplate.results = function() {
     var results = Results.find(
-      { competitionId: this.competition._id, personId: this.person._id }
+      { competitionId: this.competition._id, userId: this.user._id }
     );
     return results;
   };
@@ -66,7 +66,10 @@ if(Meteor.isServer) {
       Competitions.find({ _id: competition._id }),
       Rounds.find({ competitionId: competition._id }),
       Results.find({ competitionId: competition._id }),
-      People.find({_id: {$in: _.pluck(competition.people, "_id")}}, {fields:{_id:1, name:1, wcaId:1, countryId:1, gender:1}})
+      Meteor.users.find(
+        {_id: {$in: _.pluck(competition.competitors, "_id")}}, 
+        {fields:{_id:1, "profile.name":1, "profile.wcaId":1, "profile.countryId":1, "profile.gender":1}}
+      )
     ];
   });
 }
