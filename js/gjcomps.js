@@ -53,15 +53,31 @@ if(Meteor.isClient) {
     );
     return results;
   };
+
+  Template.organizerTemplate.myCompetitions = function() {
+    var myCompetitions =  Competitions.find(
+      { organizers: { $elemMatch: { $in: [ Meteor.userId() ] } } }
+    );
+    return myCompetitions;
+  };
+
+  Accounts.ui.config({
+    passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
+  });
 }
 
 if(Meteor.isServer) {
   Meteor.publish('competitions', function() {
-    return Competitions.find({}, { fields: { wcaCompetitionId: 1 } });
+    return Competitions.find({}, { fields: { wcaCompetitionId: 1, organizers: 1 } });
   });
 
   Meteor.publish('competition', function(wcaCompetitionId) {
     var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+    if(!competition) {
+      // TODO - what if the competition is created later? How will that data
+      // get pushed out to users?
+      return;
+    }
     return [
       Competitions.find({ _id: competition._id }),
       Rounds.find({ competitionId: competition._id }),

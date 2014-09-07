@@ -11,7 +11,10 @@ Router.map(function() {
   });
   this.route('organizerTemplate', {
     path: "/organizer",
-    template: 'organizerTemplate'
+    template: 'organizerTemplate',
+    waitOn: function() {
+      return Meteor.subscribe('competitions');
+    }
   });
   this.route('compTemplate', {
     path: "/:wcaCompetitionId",

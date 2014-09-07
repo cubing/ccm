@@ -1,3 +1,14 @@
 <template name="organizerTemplate">
-	{{> loginButtons}}
+  {{> loginButtons}}
+
+  <h1>Manage your competitions</h1>
+  <ul>
+    {{#each myCompetitions}}
+    <li>
+      {{wcaCompetitionId}}
+    </li>
+    {{/each}}
+  </ul>
+
+  <button>Create new competition or something</button>
 </template>
