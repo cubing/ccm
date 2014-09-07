@@ -7,3 +7,4 @@ standard-app-packages
 iron-router
 accounts-ui
 accounts-password
+audit-argument-checks

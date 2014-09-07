@@ -19,7 +19,7 @@ if(Meteor.isServer) {
     )._id;
 
     var userIdByJsonId = {};
-    wcaCompetition.persons.forEach(function(wcaPerson,i) {
+    wcaCompetition.persons.forEach(function(wcaPerson, i) {
       var userProfile = {
         name: wcaPerson.name,
         wcaId: wcaPerson.wcaId,
@@ -38,10 +38,11 @@ if(Meteor.isServer) {
         }
       } else {
         //create user if user doesn't exist and wcaId doesn't exist or look for one first
-        user = Meteor.users.findOne({username:userProfile.name+i});
+        var username = userProfile.name + i;
+        user = Meteor.users.findOne({ username: username });
         if(!user){
-          Accounts.createUser({username:userProfile.name+i, password: userProfile.dob, profile: userProfile});
-          user = Meteor.users.findOne({username:userProfile.name+i});
+          Accounts.createUser({ username: username, password: userProfile.dob, profile: userProfile });
+          user = Meteor.users.findOne({ username: username });
         }
       }
       userIdByJsonId[wcaPerson.id] = user._id;

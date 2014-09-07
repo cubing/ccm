@@ -1,14 +1,21 @@
 <template name="organizerTemplate">
   {{> loginButtons}}
 
-  <h1>Manage your competitions</h1>
-  <ul>
-    {{#each myCompetitions}}
-    <li>
-      {{wcaCompetitionId}}
-    </li>
-    {{/each}}
-  </ul>
+  {{#if currentUser}}
+    <h1>Manage your competitions</h1>
+    <ul>
+      {{#each myCompetitions}}
+      <li>
+        {{wcaCompetitionId}}
+      </li>
+      {{/each}}
+    </ul>
 
-  <button>Create new competition or something</button>
+    <div>
+      <form action="#" id="newCompetitionForm">
+        <input type="text" name="competitionName" placeholder="Competition Name" />
+        <input type="submit" value="Create new competition" />
+      </form>
+    </div>
+  {{/if}}
 </template>
