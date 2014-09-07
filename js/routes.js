@@ -11,9 +11,20 @@ Router.map(function() {
   });
   this.route('organizerTemplate', {
     path: "/organizer",
-    template: 'organizerTemplate',
     waitOn: function() {
       return Meteor.subscribe('competitions');
+    }
+  });
+  this.route('editCompetitionTemplate', {
+    path: "/organizer/:competitionId",
+    waitOn: function() {
+      return Meteor.subscribe('competition', this.params.competitionId);
+    },
+    data: function() {
+      var competitionId = this.params.competitionId;
+      return Competitions.findOne(
+        { _id: competitionId }
+      );
     }
   });
   this.route('compTemplate', {
@@ -25,7 +36,7 @@ Router.map(function() {
       var wcaCompetitionId = this.params.wcaCompetitionId;
       return Competitions.findOne(
         { wcaCompetitionId: wcaCompetitionId },
-        { fields: { wcaCompetitionId: 1 } }
+        { fields: { wcaCompetitionId: 1, competitionName: 1 } }
       );
     }
   });

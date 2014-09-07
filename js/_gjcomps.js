@@ -20,10 +20,15 @@ if(Meteor.isServer) {
     );
   });
 
-  Meteor.publish('competition', function(wcaCompetitionId) {
-    check(wcaCompetitionId, String);
+  Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId) {
+    check(wcaCompetitionIdOrCompetitionId, String);
 
-    var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+    var competition = Competitions.findOne({
+      $or: [
+        { wcaCompetitionId: wcaCompetitionIdOrCompetitionId },
+        { _id: wcaCompetitionIdOrCompetitionId }
+      ]
+    });
     if(!competition) {
       // TODO - what if the competition is created later? How will that data
       // get pushed out to users?

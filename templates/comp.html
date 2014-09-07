@@ -2,7 +2,7 @@
   {{#unless this}}
     {{> notFound item="competition"}}
   {{else}}
-    <h1>this is the competition</h1>
+    <h1>{{competitionName}}</h1>
     {{#each events}}
       <li>
         {{eventCode}}
