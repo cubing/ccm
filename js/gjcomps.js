@@ -14,7 +14,10 @@ if(Meteor.isClient) {
 
 if(Meteor.isServer) {
   Meteor.publish('competitions', function() {
-    return Competitions.find({}, { fields: { wcaCompetitionId: 1, organizers: 1 } });
+    return Competitions.find(
+      {},
+      { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1 } }
+    );
   });
 
   Meteor.publish('competition', function(wcaCompetitionId) {

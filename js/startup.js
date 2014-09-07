@@ -111,9 +111,13 @@ if(Meteor.isServer) {
     });
 
     var organizer = Meteor.users.findOne({username: "2011SELZ01"});
+    var competitionName = competition.wcaCompetitionId.replace(/([a-z])([A-Z0-9])/g, '$1 $2');
     Competitions.update(
       { wcaCompetitionId: competition.wcaCompetitionId },
-      { $addToSet: { organizers: organizer._id } }
+      {
+        $addToSet: { organizers: organizer._id },
+        $set: { competitionName: competitionName }
+      }
     );
 
   });
