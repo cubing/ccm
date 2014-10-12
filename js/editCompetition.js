@@ -8,7 +8,7 @@ if(Meteor.isClient) {
       toSet[attribute] = value;
       Competitions.update({ _id: this._id }, { $set: toSet });
     },
-    'change input': function(e) {
+    'change input[type=checkbox]': function(e) {
       var attribute = e.currentTarget.name;
       var value = e.currentTarget.checked;
       var toSet = {};
