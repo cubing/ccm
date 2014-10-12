@@ -8,7 +8,7 @@ if(Meteor.isClient) {
       toSet[attribute] = value;
       Competitions.update({ _id: this._id }, { $set: toSet });
     },
-    'change input[type=checkbox]': function(e) {
+    'change input': function(e) {
       var attribute = e.currentTarget.name;
       var value = e.currentTarget.checked;
       var toSet = {};
@@ -16,7 +16,9 @@ if(Meteor.isClient) {
       Competitions.update({ _id: this._id }, { $set: toSet });
     },
     'click .event':function(e){
-      $(".roundList",e.currentTarget).toggle();
+      if(e.currentTarget===e.target){
+        $(".roundList",e.currentTarget).toggle();
+      }
       e.preventDefault();
     }
   });
