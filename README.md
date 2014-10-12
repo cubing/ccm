@@ -6,6 +6,7 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ## To run
 - `meteor`
+- http://localhost:3000/organizer, log in as 2011SELZ01/1990-01-02
 
 ## To lint
 - `(cd tests; npm run-script lint)`
