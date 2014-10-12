@@ -4,17 +4,22 @@
 <div>
 
   <div>
-    Competition Name:
-    <input type="text" name="competitionName" value="{{competitionName}}" />
+    <label>
+      Competition Name:
+      <input type="text" name="competitionName" value="{{competitionName}}" />
+    </label>
   </div>
 
   <div>
-    WCA Competition ID:
-    <input type="text" name="wcaCompetitionId" value="{{wcaCompetitionId}}" />
+    <label>
+      WCA Competition ID:
+      <input type="text" name="wcaCompetitionId" value="{{wcaCompetitionId}}" />
+    </label>
   </div>
 
   {{! TODO - choose staff and organizers }}
 
+  <!-- TODO - see https://github.com/jfly/gjcomps/issues/10
   <p>
     {{#if listed}}
       Competition is currently listed.
@@ -22,6 +27,13 @@
       Competition is currently NOT listed.
     {{/if}}
   </p>
+  -->
+  <div>
+    <label>
+      Listed:
+      <input type="checkbox" name="listed" checked="{{listed}}" />
+    </label>
+  </div>
 
 </div>
 
