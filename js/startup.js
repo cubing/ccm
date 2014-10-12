@@ -121,5 +121,24 @@ if(Meteor.isServer) {
       }
     );
 
+    // Announce ourselves via Zeroconf
+    var mdns = Meteor.npmRequire('mdns-js');
+
+    // Wow, this is so gross. I couldn't find any way to get to
+    // our "runner" though.
+    // See https://github.com/meteor/meteor/blob/devel/tools/run-all.js#L344
+    var ROOT_URL = process.env.ROOT_URL;
+    var port = parseInt(ROOT_URL.split("/")[2].split(":")[1]);
+    var service = new mdns.createAdvertisement(
+        mdns.tcp('_http'),
+        port,
+        {
+          name: 'hello',
+          txt: {
+            txtvers:'1'
+          }
+        }
+    );
+    service.start();
   });
 }
