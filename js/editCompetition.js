@@ -15,11 +15,9 @@ if(Meteor.isClient) {
       toSet[attribute] = value;
       Competitions.update({ _id: this._id }, { $set: toSet });
     },
-    'click .event':function(e){
-      if(e.currentTarget===e.target){
-        $(".roundList",e.currentTarget).toggle();
-      }
-      e.preventDefault();
+    'click .event .btn': function(e, t) {
+      var button = $(e.currentTarget);
+      button.toggleClass("collapsed");
     }
   });
 

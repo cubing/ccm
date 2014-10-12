@@ -1,0 +1,11 @@
+.event .btn span:before {
+  content: "\e159"; /* glyphicon-collapse-down */
+}
+
+.event .btn.collapsed span::before {
+  content: "\e158"; /* glyphicon-expand */
+}
+
+.event .btn.collapsed + .roundList {
+  display: none;
+}

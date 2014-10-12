@@ -37,8 +37,11 @@
 
   <div id="editEventsList"><ul>
     {{#each eventList}}
-        <li class="event">{{eventCode}}
-          <table class="roundList" style="width:500px; display: none;" >
+        <li class="event">
+          <button type="button" class="btn btn-default btn">
+            <span class="glyphicon"></span> {{eventCode}}
+          </button>
+          <table class="roundList">
             <tr>
               <th align="left">Round Name</th>
               <th align="left"># Competitors</th>
