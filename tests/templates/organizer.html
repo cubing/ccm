@@ -1,0 +1,21 @@
+<template name="organizerTemplate">
+  {{> loginButtons}}
+
+  {{#if currentUser}}
+    <h1>Manage your competitions</h1>
+    <ul>
+      {{#each myCompetitions}}
+      <li>
+        {{competitionName}} <a href="{{pathFor 'editCompetitionTemplate' competitionId=_id}}">[Edit]</a> <button class="deleteCompetition">X</button>
+      </li>
+      {{/each}}
+    </ul>
+
+    <div>
+      <form action="#" id="newCompetitionForm">
+        <input type="text" name="competitionName" placeholder="Competition Name" />
+        <input type="submit" value="Create new competition" />
+      </form>
+    </div>
+  {{/if}}
+</template>
