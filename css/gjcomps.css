@@ -1,0 +1,18 @@
+/* CSS declarations go here */
+
+.competition.listed {
+  color: black;
+}
+
+.competition.unlisted {
+  opacity: 0.5;
+}
+
+/*
+ TODO - this doesn't work when the navbar collapses, we should create our own
+        login ui that works with bootstrap
+ Position login box so it won't fall of the right side of the screen */
+#login-dropdown-list {
+  right: 0px;
+  left: initial;
+}

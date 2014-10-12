@@ -22,12 +22,12 @@ if(Meteor.isClient) {
   });
 
   Template.editCompetition.eventList = function() {
-    var competitionId=this._id;
-    return _.map(_.toArray(wca.eventByCode),function(e){
+    var competitionId = this._id;
+    return _.map(_.toArray(wca.eventByCode), function(e) {
       return {
         competitionId: competitionId,
-        eventCode:e.code,
-        eventName:e.name
+        eventCode: e.code,
+        eventName: e.name
       };
     });
   };

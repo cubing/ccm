@@ -1,5 +1,9 @@
 if(Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
+
+  UI.registerHelper("isActiveRoute", function(routeName) {
+    return Router.current().route.name == routeName ? "active" : "";
+  });
 }
 
 Router.map(function() {
