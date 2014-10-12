@@ -22,12 +22,14 @@ if(Meteor.isClient) {
   });
 
   Template.editCompetition.eventList = function() {
-    var rounds = Rounds.find(
-      { competitionId: this._id }
-    ).fetch();
-
-    var events = _.uniq(rounds, function(e) { return e.eventCode; });
-    return events;
+    var competitionId=this._id;
+    return _.map(_.toArray(wca.eventByCode),function(e){
+      return {
+        competitionId: competitionId,
+        eventCode:e.code,
+        eventName:e.name
+      };
+    });
   };
 
   Template.editCompetition.rounds = function() {
