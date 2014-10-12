@@ -4,7 +4,8 @@ if(Meteor.isClient) {
     return Competitions.find({}, {
       fields: {
         wcaCompetitionId: 1,
-        competitionName: 1
+        competitionName: 1,
+        listed: 1
       }
     });
   };
