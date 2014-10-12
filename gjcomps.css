@@ -1,1 +1,9 @@
 /* CSS declarations go here */
+
+.competition.listed {
+  color: black;
+}
+
+.competition.unlisted {
+  opacity: 0.5;
+}

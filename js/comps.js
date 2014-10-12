@@ -10,4 +10,8 @@ if(Meteor.isClient) {
     });
   };
 
+  Template.compsTemplate.listedClass = function() {
+    return this.listed ? "listed" : "unlisted";
+  };
+
 }

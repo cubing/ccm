@@ -16,7 +16,7 @@ if(Meteor.isServer) {
   Meteor.publish('competitions', function() {
     return Competitions.find(
       {},
-      { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1 } }
+      { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1, listed: 1 } }
     );
   });
 
