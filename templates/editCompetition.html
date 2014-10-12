@@ -35,6 +35,35 @@
     </label>
   </div>
 
+  <div id="editEventsList"><ul>
+    {{#each eventList}}
+        <li class="event">{{eventCode}}
+          <table class="roundList" style="width:500px; display: none;" >
+            <tr>
+              <th align="left">Round Name</th>
+              <th align="left"># Competitors</th>
+              <th align="left">Status</th>
+              
+            </tr>
+            {{#each rounds}}
+              <tr>
+                <td align="left">{{roundName roundCode}}</td>
+                <td align="left">{{numberOfPeople}}</td>
+                <th align="left">In Progress</th>
+              
+              </tr>
+             <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
+              <!-- </a> -->
+            {{/each}}
+              <tr>
+                <td align="left">Add Round</td>
+              </tr>
+          </table>
+        </li>
+    {{/each}}
+    <li>Add Event</li>
+  </ul></div>
+
 </div>
 
 </template>

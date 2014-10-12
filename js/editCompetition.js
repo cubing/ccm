@@ -14,9 +14,28 @@ if(Meteor.isClient) {
       var toSet = {};
       toSet[attribute] = value;
       Competitions.update({ _id: this._id }, { $set: toSet });
+    },
+    'click .event':function(e){
+      $(".roundList",e.currentTarget).toggle();
+      e.preventDefault();
     }
   });
 
+  Template.editCompetition.eventList = function() {
+    var rounds = Rounds.find(
+      { competitionId: this._id }
+    ).fetch();
+
+    var events = _.uniq(rounds, function(e) { return e.eventCode; });
+    return events;
+  };
+
+  Template.editCompetition.rounds = function() {
+    var rounds = Rounds.find(
+      { competitionId: this.competitionId, eventCode: this.eventCode }
+    );
+    return rounds;
+  };
 }
 
 Competitions.allow({

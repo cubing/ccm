@@ -78,7 +78,7 @@ if(Meteor.isServer) {
           competitionId: competitionId,
           eventCode: wcaEvent.eventId,
           roundCode: wcaRound.roundId,
-          formatCode: wcaRound.formatId
+          formatCode: wcaRound.formatId,
         };
         var roundId = Rounds.insert(round);
 
