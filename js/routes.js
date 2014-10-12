@@ -9,13 +9,13 @@ Router.map(function() {
       return Meteor.subscribe('competitions');
     }
   });
-  this.route('organizerTemplate', {
+  this.route('organizer', {
     path: "/organizer",
     waitOn: function() {
       return Meteor.subscribe('competitions');
     }
   });
-  this.route('editCompetitionTemplate', {
+  this.route('editCompetition', {
     path: "/organizer/:competitionId",
     waitOn: function() {
       return Meteor.subscribe('competition', this.params.competitionId);
@@ -27,7 +27,7 @@ Router.map(function() {
       );
     }
   });
-  this.route('compTemplate', {
+  this.route('competition', {
     path: "/:wcaCompetitionId",
     waitOn: function() {
       return Meteor.subscribe('competition', this.params.wcaCompetitionId);
@@ -40,9 +40,9 @@ Router.map(function() {
       );
     }
   });
-  this.route('roundTemplate', {
+  this.route('round', {
     path: "/:wcaCompetitionId/:eventCode/:roundCode",
-    template: 'roundTemplate',
+    template: 'round',
     waitOn: function() {
       return Meteor.subscribe('competition', this.params.wcaCompetitionId);
     },
@@ -72,9 +72,9 @@ Router.map(function() {
       };
     }
   });
-  this.route('competitorTemplate', {
+  this.route('competitor', {
     path: "/:wcaCompetitionId/:competitorName",
-    template: 'competitorTemplate',
+    template: 'competitor',
     waitOn: function() {
       return [Meteor.subscribe('competition', this.params.wcaCompetitionId)];
     },

@@ -1,14 +1,14 @@
 
 if(Meteor.isClient) {
 
-  Template.organizerTemplate.myCompetitions = function() {
+  Template.organizer.myCompetitions = function() {
     var myCompetitions =  Competitions.find(
       { organizers: { $elemMatch: { $in: [ Meteor.userId() ] } } }
     );
     return myCompetitions;
   };
 
-  Template.organizerTemplate.events({
+  Template.organizer.events({
     'submit #newCompetitionForm': function(event) {
       event.preventDefault();
       var form = event.currentTarget;

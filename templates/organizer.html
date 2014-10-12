@@ -1,4 +1,4 @@
-<template name="organizerTemplate">
+<template name="organizer">
   {{> loginButtons}}
 
   {{#if currentUser}}
@@ -6,7 +6,7 @@
     <ul>
       {{#each myCompetitions}}
       <li>
-        {{competitionName}} <a href="{{pathFor 'editCompetitionTemplate' competitionId=_id}}">[Edit]</a> <button class="deleteCompetition">X</button>
+        {{competitionName}} <a href="{{pathFor 'editCompetition' competitionId=_id}}">[Edit]</a> <button class="deleteCompetition">X</button>
       </li>
       {{/each}}
     </ul>

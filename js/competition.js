@@ -1,6 +1,6 @@
 if(Meteor.isClient) {
 
-  Template.compTemplate.events = function() {
+  Template.competition.events = function() {
     var rounds = Rounds.find(
       { competitionId: this._id }
     ).fetch();
@@ -9,7 +9,7 @@ if(Meteor.isClient) {
     return events;
   };
 
-  Template.compTemplate.rounds = function() {
+  Template.competition.rounds = function() {
     var rounds = Rounds.find(
       { competitionId: this.competitionId, eventCode: this.eventCode }
     );

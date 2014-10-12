@@ -1,6 +1,6 @@
 if(Meteor.isClient) {
 
-  Template.editCompetitionTemplate.events({
+  Template.editCompetition.events({
     'input input': function(e) {
       var attribute = e.currentTarget.name;
       var value = e.currentTarget.value;

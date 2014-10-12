@@ -1,13 +1,13 @@
 if(Meteor.isClient) {
 
-  Template.roundTemplate.results = function() {
+  Template.round.results = function() {
     var results = Results.find(
       { competitionId: this.competition._id, roundId: this.round._id }
     );
     return results;
   };
 
-  Template.roundTemplate.competitorName = function() {
+  Template.round.competitorName = function() {
     var user = Meteor.users.findOne(
       { _id: this.userId },
       { fields: {"profile.name": 1} }

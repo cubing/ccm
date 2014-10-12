@@ -1,4 +1,4 @@
-<template name="compTemplate">
+<template name="competition">
   {{#unless this}}
     {{> notFound item="competition"}}
   {{else}}
@@ -9,7 +9,7 @@
         <ul>
           {{#each rounds}}
           <li>
-            <a href="{{pathFor 'roundTemplate' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}">
+            <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}">
               {{roundName roundCode}}
             </a>
           </li>
