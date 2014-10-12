@@ -132,7 +132,7 @@ if(Meteor.isServer) {
     var port = url.parse(process.env.ROOT_URL).port;
     var service = new mdns.createAdvertisement(
         mdns.tcp('_http'),
-        port,
+        "" + port,
         {
           name: 'omega',
           txt: {
