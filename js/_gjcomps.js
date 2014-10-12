@@ -13,11 +13,18 @@ if(Meteor.isClient) {
 }
 
 if(Meteor.isServer) {
-  Meteor.publish('competitions', function() {
+  var getCompetitions = function() {
     return Competitions.find(
       {},
       { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1, listed: 1 } }
     );
+  };
+  Meteor.publish('competitions', function() {
+    return getCompetitions();
+  });
+
+  HTTP.publish({collection: Competitions}, function(data) {
+    return getCompetitions();
   });
 
   Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId) {

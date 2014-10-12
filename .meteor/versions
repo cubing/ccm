@@ -10,6 +10,8 @@ blaze-tools@1.0.0
 blaze@2.0.1
 boilerplate-generator@1.0.0
 callback-hook@1.0.0
+cfs:http-methods@0.0.24
+cfs:http-publish@0.0.0
 check@1.0.1
 ctl-helper@1.0.3
 ctl@1.0.1
