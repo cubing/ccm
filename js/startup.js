@@ -1,4 +1,6 @@
 if(Meteor.isServer) {
+  var url = Npm.require('url');
+
   Meteor.startup(function() {
     // TODO - get a list of competitions somehow?
     // https://github.com/meteor/meteor/issues/1795
@@ -127,15 +129,14 @@ if(Meteor.isServer) {
     // Wow, this is so gross. I couldn't find any way to get to
     // our "runner" though.
     // See https://github.com/meteor/meteor/blob/devel/tools/run-all.js#L344
-    var ROOT_URL = process.env.ROOT_URL;
-    var port = parseInt(ROOT_URL.split("/")[2].split(":")[1]);
+    var port = url.parse(process.env.ROOT_URL).port;
     var service = new mdns.createAdvertisement(
         mdns.tcp('_http'),
-        "" + port,
+        port,
         {
           name: 'omega',
           txt: {
-            txtvers:'1'
+            txtvers: '1'
           }
         }
     );
