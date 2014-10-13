@@ -6,10 +6,12 @@
 meteor-platform
 iron:router
 accounts-password
-accounts-ui
 meteorhacks:npm
 
 
 npm-container
-mizzao:bootstrap-3
 cfs:http-publish
+ian:accounts-ui-bootstrap-3
+nemo64:bootstrap
+less
+mizzao:autocomplete

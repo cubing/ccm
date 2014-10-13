@@ -16,3 +16,11 @@
   right: 0px;
   left: initial;
 }
+
+/*
+ * bootstrap-3 declares labels to be white, but mizzao:autocomplete tries to
+ * place .label on top of a white background.
+ */
+.-autocomplete-item .label {
+  color: black;
+}

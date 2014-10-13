@@ -17,8 +17,6 @@
     </label>
   </div>
 
-  {{! TODO - choose staff and organizers }}
-
   <!-- TODO - see https://github.com/jfly/gjcomps/issues/10
   <p>
     {{#if listed}}
@@ -35,8 +33,20 @@
     </label>
   </div>
 
-  <div id="editEventsList"><ul>
-    {{#each eventList}}
+  <div id="organizersList">
+    <h2>Organizers</h2>
+    {{> editCompetition_users userIds=organizers}}
+  </div>
+
+  <div id="staffList">
+    <h2>Staff</h2>
+    {{> editCompetition_users userIds=staff}}
+  </div>
+
+  <div id="editEventsList">
+    <h2>Events</h2>
+    <ul>
+      {{#each eventList}}
         <li class="event">
           <button type="button" class="btn collapsed btn-default btn">
             <span class="glyphicon"></span> {{eventCode}}
@@ -46,7 +56,6 @@
               <th align="left">Round Name</th>
               <th align="left"># Competitors</th>
               <th align="left">Status</th>
-              
             </tr>
             {{#each rounds}}
               <tr>
@@ -63,9 +72,30 @@
               </tr>
           </table>
         </li>
-    {{/each}}
-  </ul></div>
+      {{/each}}
+    </ul>
+  </div>
 
 </div>
 
+</template>
+
+<template name="editCompetition_users">
+  <ul>
+    {{#each users}}
+      <li>
+        {{username}} {{profile.name}}
+      </li>
+    {{/each}}
+  </ul>
+
+  {{! TODO - choose staff and organizers }}
+  {{! workaround for https://github.com/mizzao/meteor-autocomplete/issues/65 }}
+  <div style="position: relative">
+    {{> inputAutocomplete settings=usersAutocompleteSettings placeholder="Enter name..."}}
+  </div>
+</template>
+
+<template name="userPill">
+  <span class="label">{{profile.name}}</span>
 </template>
