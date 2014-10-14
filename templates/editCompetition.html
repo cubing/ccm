@@ -89,11 +89,14 @@
     {{/each}}
   </ul>
 
-  {{! TODO - choose staff and organizers }}
-  {{! workaround for https://github.com/mizzao/meteor-autocomplete/issues/65 }}
-  <div style="position: relative">
-    {{> inputAutocomplete settings=usersAutocompleteSettings placeholder="Enter name..."}}
-  </div>
+  <form class="form-inline" role="form">
+    {{! workaround for https://github.com/mizzao/meteor-autocomplete/issues/65 }}
+    <div class="form-group" style="position: relative">
+      {{> inputAutocomplete settings=usersAutocompleteSettings placeholder="Enter name" class="form-control"}}
+    </div>
+    <button type="submit" class="btn btn-default">Add</button>
+  </form>
+
 </template>
 
 <template name="userPill">

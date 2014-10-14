@@ -1,6 +1,5 @@
-if(Meteor.isClient) {
-
-  Template.competitions.allComps = function() {
+Template.competitions.helpers({
+  allComps: function() {
     return Competitions.find({}, {
       fields: {
         wcaCompetitionId: 1,
@@ -8,10 +7,9 @@ if(Meteor.isClient) {
         listed: 1
       }
     });
-  };
+  },
 
-  Template.competitions.listedClass = function() {
+  listedClass: function() {
     return this.listed ? "listed" : "unlisted";
-  };
-
-}
+  }
+});

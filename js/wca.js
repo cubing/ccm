@@ -1,15 +1,16 @@
 wca = {};
 
-
-UI.registerHelper("roundName", function(roundCode) {
-  return wca.roundByCode[roundCode].name;
-});
-UI.registerHelper("eventName", function(eventCode) {
-  return wca.eventByCode[eventCode].name;
-});
-UI.registerHelper("formatName", function(eventCode) {
-  return wca.formatByCode[eventCode].name;
-});
+if(Meteor.isClient) {
+  Template.registerHelper("roundName", function(roundCode) {
+    return wca.roundByCode[roundCode].name;
+  });
+  Template.registerHelper("eventName", function(eventCode) {
+    return wca.eventByCode[eventCode].name;
+  });
+  Template.registerHelper("formatName", function(eventCode) {
+    return wca.formatByCode[eventCode].name;
+  });
+}
 
 wca.roundByCode = {
   "0":{
