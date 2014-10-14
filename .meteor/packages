@@ -12,6 +12,7 @@ meteorhacks:npm
 npm-container
 cfs:http-publish
 ian:accounts-ui-bootstrap-3
-nemo64:bootstrap
 less
 mizzao:autocomplete
+mizzao:bootstrap-3
+
