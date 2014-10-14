@@ -12,10 +12,8 @@ callback-hook@1.0.1
 cfs:http-methods@0.0.24
 cfs:http-publish@0.0.0
 check@1.0.2
-coffeescript@1.0.4
 ctl-helper@1.0.4
 ctl@1.0.2
-dandv:caret-position@2.1.0-3
 ddp@1.0.10
 deps@1.0.5
 ejson@1.0.4
@@ -45,7 +43,6 @@ meteorhacks:async@1.0.0
 meteorhacks:npm@1.2.0
 minifiers@1.1.1
 minimongo@1.0.4
-mizzao:autocomplete@0.4.8
 mizzao:bootstrap-3@3.2.0_1
 mobile-status-bar@1.0.1
 mongo@1.0.7

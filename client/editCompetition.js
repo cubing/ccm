@@ -39,66 +39,81 @@ Template.editCompetition.helpers({
   }
 });
 
+function maybeEnableUserSelectForm(t) {
+  var nameInput = t.find('input[name="name"]');
+  var user = Meteor.users.findOne({
+    'profile.name': nameInput.value
+  });
+  var $submit = t.$('button');
+  $submit.prop("disabled", !user);
+}
+
 Template.editCompetition_users.events({
+  'input input[name="name"]': function(e, t) {
+    maybeEnableUserSelectForm(t);
+  },
+  'typeahead:selected input[name="name"]': function(e, t) {
+    maybeEnableUserSelectForm(t);
+  },
+  'typeahead:autocompleted input[name="name"]': function(e, t) {
+    maybeEnableUserSelectForm(t);
+  },
   'submit form': function(e) {
     console.log(e);//<<<
     e.preventDefault();
   }
 });
 
-Template.editCompetition_users.helpers({
-  usersAutocompleteSettings: function() {
-    // TODO - Client side workaround for
-    // https://github.com/mizzao/meteor-autocomplete/issues/43#issuecomment-58858328
-    var fakeCollection = {
-      find: function(selector, options) {
-        var allResultsCursor = Meteor.users.find(selector, options);
-        if(!selector['profile.name']) {
-          return allResultsCursor;
-        }
-        var allResults = allResultsCursor.fetch();
-        selector['profile.name'].$regex = "\\b" + selector['profile.name'].$regex;
-        var preferredResults = Meteor.users.find(selector, options).fetch();
+Template.editCompetition_users.rendered = function() {
+  var substringMatcher = function(collection, attribute) {
+    return function findMatches(q, cb) {
+      var findParams = {};
+      findParams[attribute] = {
+        $regex: q,
+        $options: 'i'
+      };
+      var allResults = collection.find(findParams).fetch();
 
-        var seenIds = {};
-        var arr = [];
-        var addResult = function(result) {
-          if(seenIds[result._id]) {
-            return;
-          }
-          seenIds[result._id] = true;
-          arr.push(result);
-        };
-        var i;
-        for(i = 0; i < preferredResults.length; i++) {
-          addResult(preferredResults[i]);
+      findParams[attribute].$regex = "\\b" + q;
+      var preferredResults = collection.find(findParams).fetch();
+
+      var seenIds = {};
+      var arr = [];
+      var addResult = function(result) {
+        if(seenIds[result._id]) {
+          return;
         }
-        for(i = 0; i < allResults.length; i++) {
-          addResult(allResults[i]);
-        }
-        arr.count = function() { return arr.length; };
-        return arr;
+        seenIds[result._id] = true;
+        arr.push(result);
+      };
+      var i;
+      for(i = 0; i < preferredResults.length; i++) {
+        addResult(preferredResults[i]);
       }
+      for(i = 0; i < allResults.length; i++) {
+        addResult(allResults[i]);
+      }
+      cb(arr);
     };
-    return {
-      position: "top",
-      limit: 5,
-      rules: [
-        {
-          token: '@',//<<<
-          collection: fakeCollection,
-          field: "profile.name",
-          template: Template.userPill,
-          matchAll: true,
-          callback: function(doc, element) {//<<<
-            console.log(doc);
-            console.log(element);
-          }
-        }
-      ]
-    };
-  },
+  };
 
+  this.$('.typeahead').typeahead({
+    hint: true,
+    highlight: true,
+    minLength: 1
+  },
+  {
+    name: 'users',
+    displayKey: function(user) {
+      return user.profile.name;
+    },
+    source: substringMatcher(Meteor.users, 'profile.name')
+  });
+
+  maybeEnableUserSelectForm(this);
+};
+
+Template.editCompetition_users.helpers({
   users: function() {
     // TODO - sort by name?
     if(!this.userIds) {

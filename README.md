@@ -27,3 +27,7 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ### Organizer/Staff side
 - Oh god so many things
+
+## Third party stuff
+- (cd client/components/; wget http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js)
+- (cd css/; wget https://raw.githubusercontent.com/bassjobsen/typeahead.js-bootstrap-css/master/typeaheadjs.css)
