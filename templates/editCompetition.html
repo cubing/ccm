@@ -80,11 +80,17 @@
 
 </template>
 
+<template name="editCompetition_userSuggestion">
+<p>
+  {{profile.name}} {{username}}
+</p>
+</template>
+
 <template name="editCompetition_users">
   <ul>
     {{#each users}}
       <li>
-        {{username}} {{profile.name}}
+        {{> editCompetition_userSuggestion }}
       </li>
     {{/each}}
   </ul>

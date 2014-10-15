@@ -65,18 +65,8 @@ Template.editCompetition_users.events({
 });
 
 Template.editCompetition_users.rendered = function() {
-  var substringMatcher = function(collection, attribute) {
+  var substringMatcher = function(collection, attributes) {
     return function findMatches(q, cb) {
-      var findParams = {};
-      findParams[attribute] = {
-        $regex: q,
-        $options: 'i'
-      };
-      var allResults = collection.find(findParams).fetch();
-
-      findParams[attribute].$regex = "\\b" + q;
-      var preferredResults = collection.find(findParams).fetch();
-
       var seenIds = {};
       var arr = [];
       var addResult = function(result) {
@@ -86,13 +76,27 @@ Template.editCompetition_users.rendered = function() {
         seenIds[result._id] = true;
         arr.push(result);
       };
-      var i;
-      for(i = 0; i < preferredResults.length; i++) {
-        addResult(preferredResults[i]);
-      }
-      for(i = 0; i < allResults.length; i++) {
-        addResult(allResults[i]);
-      }
+
+      _.each([true, false], function(startOfWordMatch) {
+        _.each(attributes, function(attribute) {
+          var findParams = {};
+          var $regex;
+          if(startOfWordMatch) {
+            $regex = "\\b" + q;
+          } else {
+            $regex = q;
+          }
+          findParams[attribute] = {
+            $regex: $regex,
+            $options: 'i'
+          };
+          var results = collection.find(findParams).fetch();
+          for(var i = 0; i < results.length; i++) {
+            addResult(results[i]);
+          }
+        });
+      });
+
       cb(arr);
     };
   };
@@ -107,7 +111,12 @@ Template.editCompetition_users.rendered = function() {
     displayKey: function(user) {
       return user.profile.name;
     },
-    source: substringMatcher(Meteor.users, 'profile.name')
+    source: substringMatcher(Meteor.users, [ 'profile.name', 'username' ]),
+    templates: {
+      suggestion: function(user) {
+        return Blaze.toHTMLWithData(Template.editCompetition_userSuggestion, user);
+      }
+    }
   });
 
   maybeEnableUserSelectForm(this);
