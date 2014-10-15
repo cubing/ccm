@@ -46,7 +46,7 @@
   <div id="editEventsList">
     <h2>Events</h2>
     <ul>
-      {{#each eventList}}
+      {{#each event}}
         <li class="event">
           <button type="button" class="btn collapsed btn-default btn">
             <span class="glyphicon"></span> {{eventCode}}
@@ -56,13 +56,14 @@
               <th align="left">Round Name</th>
               <th align="left"># Competitors</th>
               <th align="left">Status</th>
+              <th align="left">Progress</th>
             </tr>
             {{#each rounds}}
               <tr>
                 <td align="left">{{roundName roundCode}}</td>
                 <td align="left">{{numberOfPeople}}</td>
                 <th align="left">In Progress</th>
-              
+                <th align="left">48%</th>
               </tr>
              <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
               <!-- </a> -->
