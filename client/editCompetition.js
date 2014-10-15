@@ -1,12 +1,12 @@
 Template.editCompetition.events({
-  'input input': function(e) {
+  'input input[type="text"]': function(e) {
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.value;
     var toSet = {};
     toSet[attribute] = value;
     Competitions.update({ _id: this._id }, { $set: toSet });
   },
-  'change input': function(e) {
+  'change input[type="checkbox"]': function(e) {
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
     var toSet = {};
