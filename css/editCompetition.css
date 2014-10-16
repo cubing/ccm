@@ -6,6 +6,10 @@
   content: "\e158"; /* glyphicon-expand */
 }
 
+.roundList{	
+	width:100%;
+}
+
 .event .btn.collapsed + .roundList {
   display: none;
 }

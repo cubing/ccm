@@ -20,7 +20,7 @@ Template.editCompetition.events({
 });
 
 Template.editCompetition.helpers({
-  eventList: function() {
+  event: function() {
     var competitionId = this._id;
     return _.map(_.toArray(wca.eventByCode), function(e) {
       return {
