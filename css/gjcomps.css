@@ -1,4 +1,7 @@
 /* CSS declarations go here */
+html {
+    overflow-y:scroll;
+}
 
 .competition.listed {
   color: black;
