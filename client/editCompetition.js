@@ -39,12 +39,18 @@ Template.editCompetition.helpers({
   }
 });
 
-function maybeEnableUserSelectForm(t) {
+function getSelectedUser(t) {
   var nameInput = t.find('input[name="name"]');
+  var username = getNameAndUsernameFromUserString(nameInput.value)[1];
   var user = Meteor.users.findOne({
-    'profile.name': nameInput.value
+    'username': username
   });
-  var $submit = t.$('button');
+  return user;
+}
+
+function maybeEnableUserSelectForm(t) {
+  var user = getSelectedUser(t);
+  var $submit = t.$('button[name="buttonAddUser"]');
   $submit.prop("disabled", !user);
 }
 
@@ -58,15 +64,51 @@ Template.editCompetition_users.events({
   'typeahead:autocompleted input[name="name"]': function(e, t) {
     maybeEnableUserSelectForm(t);
   },
-  'submit form': function(e) {
-    console.log(e);//<<<
+  'click button[name="buttonRemoveUser"]': function(e, t) {
+    var user = this;
+    var $pull = {};
+    $pull[t.data.userIdsAtribute] = user._id;
+    Competitions.update({
+      _id: t.data.competitionId
+    }, {
+      $pull: $pull
+    });
+  },
+  'submit form': function(e, t) {
     e.preventDefault();
+
+    var user = getSelectedUser(t);
+    if(!user) {
+      // This should never happen, because we only enable
+      // submission when the input is valid (ie: the input maps to a user).
+      return;
+    }
+    var $addToSet = {};
+    $addToSet[this.userIdsAtribute] = user._id;
+    Competitions.update({
+      _id: this.competitionId
+    }, {
+      $addToSet: $addToSet
+    });
+
+    // Clear name input and close typeahead dialog
+    var $nameInput = t.$('input[name="name"]');
+    $nameInput.typeahead('val', '');
+    maybeEnableUserSelectForm(t);
   }
 });
+
+function getNameAndUsernameFromUserString(userStr) {
+  var match = userStr.match(/([^(]*)(?:\((.*)\))?/);
+  var name = match[1].trim();
+  var id = match[2];
+  return [ name, id ];
+}
 
 Template.editCompetition_users.rendered = function() {
   var substringMatcher = function(collection, attributes) {
     return function findMatches(q, cb) {
+      var name = getNameAndUsernameFromUserString(q)[0];
       var seenIds = {};
       var arr = [];
       var addResult = function(result) {
@@ -82,9 +124,9 @@ Template.editCompetition_users.rendered = function() {
           var findParams = {};
           var $regex;
           if(startOfWordMatch) {
-            $regex = "\\b" + q;
+            $regex = "\\b" + RegExp.escape(name);
           } else {
-            $regex = q;
+            $regex = RegExp.escape(name);
           }
           findParams[attribute] = {
             $regex: $regex,
@@ -105,18 +147,12 @@ Template.editCompetition_users.rendered = function() {
     hint: true,
     highlight: true,
     minLength: 1
-  },
-  {
+  }, {
     name: 'users',
     displayKey: function(user) {
-      return user.profile.name;
+      return user.profile.name + " (" + user.username + ")";
     },
     source: substringMatcher(Meteor.users, [ 'profile.name', 'username' ]),
-    templates: {
-      suggestion: function(user) {
-        return Blaze.toHTMLWithData(Template.editCompetition_userSuggestion, user);
-      }
-    }
   });
 
   maybeEnableUserSelectForm(this);
@@ -125,9 +161,17 @@ Template.editCompetition_users.rendered = function() {
 Template.editCompetition_users.helpers({
   users: function() {
     // TODO - sort by name?
-    if(!this.userIds) {
+    var comp = Competitions.findOne({ _id: this.competitionId });
+    if(!comp || !comp[this.userIdsAtribute]) {
       return [];
     }
-    return Meteor.users.find({_id: { $in: this.userIds } });
+    return Meteor.users.find({
+      _id: {
+        $in: comp[this.userIdsAtribute]
+      }
+    });
+  },
+  isCurrentUser: function() {
+    return Meteor.userId() == this._id;
   }
 });

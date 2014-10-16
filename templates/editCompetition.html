@@ -3,44 +3,53 @@
 
 <div>
 
-  <div>
-    <label>
-      Competition Name:
-      <input type="text" name="competitionName" value="{{competitionName}}" />
-    </label>
-  </div>
+  <form class="form-horizontal" role="form">
+    <div class="form-group">
+      <label for="inputCompetitionName" class="col-sm-2 control-label">Competition Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="inputCompetitionName" name="competitionName" value="{{competitionName}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputWcaCompetitionId" class="col-sm-2 control-label">WCA Competition ID</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value="{{wcaCompetitionId}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+          <label>
+            <!-- TODO - see https://github.com/jfly/gjcomps/issues/10
+            <p>
+              {{#if listed}}
+                Competition is currently listed.
+              {{else}}
+                Competition is currently NOT listed.
+              {{/if}}
+            </p>
+            -->
+            <input type="checkbox" name="listed" checked="{{listed}}" />
+            Listed
+          </label>
+        </div>
+      </div>
+    </div>
+  </form>
 
-  <div>
-    <label>
-      WCA Competition ID:
-      <input type="text" name="wcaCompetitionId" value="{{wcaCompetitionId}}" />
-    </label>
-  </div>
+  <div class="row">
+    <div id="organizersList" class="col-sm-6">
+      {{#editCompetition_users competitionId=_id userIdsAtribute="organizers"}}
+        TODO - EDIT DEM ORGANIZERS
+      {{/editCompetition_users}}
+    </div>
 
-  <!-- TODO - see https://github.com/jfly/gjcomps/issues/10
-  <p>
-    {{#if listed}}
-      Competition is currently listed.
-    {{else}}
-      Competition is currently NOT listed.
-    {{/if}}
-  </p>
-  -->
-  <div>
-    <label>
-      Listed:
-      <input type="checkbox" name="listed" checked="{{listed}}" />
-    </label>
-  </div>
+    <div id="staffList" class="col-sm-6">
+      {{#editCompetition_users competitionId=_id userIdsAtribute="staff"}}
+        TODO - EDIT DEM STAFF
+      {{/editCompetition_users}}
+    </div>
 
-  <div id="organizersList">
-    <h2>Organizers</h2>
-    {{> editCompetition_users userIds=organizers}}
-  </div>
-
-  <div id="staffList">
-    <h2>Staff</h2>
-    {{> editCompetition_users userIds=staff}}
   </div>
 
   <div id="editEventsList">
@@ -80,26 +89,47 @@
 
 </template>
 
-<template name="editCompetition_userSuggestion">
-<p>
-  {{profile.name}} {{username}}
-</p>
+<template name="editCompetition_userRow">
+  {{profile.name}} ({{username}})
 </template>
 
 <template name="editCompetition_users">
-  <ul>
-    {{#each users}}
-      <li>
-        {{> editCompetition_userSuggestion }}
-      </li>
-    {{/each}}
-  </ul>
 
-  <form class="form-inline" role="form">
-    <div class="form-group">
-      <input name="name" class="typeahead form-control" type="text" placeholder="Enter name">
+  <div class="panel panel-default">
+
+    <div class="panel-heading">
+      <h3 class="panel-title">
+        {{Titlecase userIdsAtribute}}
+      </h3>
+      {{> UI.contentBlock}}
     </div>
-    <button type="submit" class="btn btn-default">Add</button>
-  </form>
+
+    <ul class="list-group">
+      {{#each users}}
+        <li class="list-group-item">
+          {{> editCompetition_userRow }}
+          {{#unless isCurrentUser}}
+            <button type="button" name="buttonRemoveUser" class="btn btn-default btn-xs pull-right">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          {{/unless}}
+        </li>
+      {{/each}}
+
+      <div class="panel-footer">
+        <form class="form-horizontal" role="form">
+          <div class="input-group">
+            <input name="name" class="typeahead form-control" type="text" placeholder="Enter name">
+            <span class="input-group-btn">
+              <button type="submit" name="buttonAddUser" class="btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </span>
+          </div>
+        </form>
+      </div>
+
+    </ul>
+  </div>
 
 </template>
