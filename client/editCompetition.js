@@ -13,22 +13,43 @@ Template.editCompetition.events({
     toSet[attribute] = value;
     Competitions.update({ _id: this._id }, { $set: toSet });
   },
-  'click .event .btn': function(e, t) {
-    var button = $(e.currentTarget);
-    button.toggleClass("collapsed");
-  }
 });
 
+var eventCountPerRowByDeviceSize = {
+  xs: 1,
+  sm: 2,
+  md: 3,
+  lg: 3,
+};
 Template.editCompetition.helpers({
   events: function() {
     var competitionId = this._id;
-    return _.map(_.toArray(wca.eventByCode), function(e) {
+    var events = _.map(_.toArray(wca.eventByCode), function(e, i) {
       return {
+        index: i,
         competitionId: competitionId,
         eventCode: e.code,
         eventName: e.name
       };
     });
+    return events;
+  },
+  eventColumnsClasses: function() {
+    var classes = _.map(eventCountPerRowByDeviceSize, function(eventCount, deviceSize) {
+      var cols = Math.floor(12 / eventCount);
+      return "col-" + deviceSize + "-" + cols;
+    });
+    return classes.join(" ");
+  },
+  clearfixVisibleClass: function() {
+    var that = this;
+    var classes = _.map(eventCountPerRowByDeviceSize, function(eventCount, deviceSize) {
+      if((that.index + 1) % eventCount === 0) {
+        return 'visible-' + deviceSize + '-block';
+      }
+      return '';
+    });
+    return classes.join(" ");
   },
 
   rounds: function() {

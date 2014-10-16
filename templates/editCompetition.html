@@ -54,36 +54,58 @@
 
   <div id="editEventsList">
     <h2>Events</h2>
-    <ul>
+
+    <div class="row">
       {{#each events}}
-        <li class="event">
-          <button type="button" class="btn collapsed btn-default btn">
-            <span class="glyphicon"></span> {{eventCode}}
-          </button>
-          <table class="roundList">
-            <tr>
-              <th align="left">Round Name</th>
-              <th align="left"># Competitors</th>
-              <th align="left">Status</th>
-              <th align="left">Progress</th>
-            </tr>
-            {{#each rounds}}
-              <tr>
-                <td align="left">{{roundName roundCode}}</td>
-                <td align="left">{{numberOfPeople}}</td>
-                <th align="left">In Progress</th>
-                <th align="left">48%</th>
-              </tr>
-             <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
-              <!-- </a> -->
-            {{/each}}
-              <tr>
-                <td align="left">Add Round</td>
-              </tr>
-          </table>
-        </li>
+
+        <div class="{{eventColumnsClasses}}">
+
+          <div class="event panel panel-default">
+
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{eventCode}}">
+                  {{eventName eventCode}}
+                </a>
+              </h3>
+            </div>
+
+            <div id="collapse{{eventCode}}" class="panel-collapse collapse in">
+              <div class="panel-body">
+                <table class="table roundList">
+                  <tr>
+                    <th align="left">Round Name</th>
+                    <th align="left"># Competitors</th>
+                    <th align="left">Status</th>
+                    <th align="left">Progress</th>
+                  </tr>
+                  {{#each rounds}}
+                    <tr>
+                      <td align="left">{{roundName roundCode}}</td>
+                      <td align="left">{{numberOfPeople}}</td>
+                      <th align="left">In Progress</th>
+                      <th align="left">48%</th>
+                    </tr>
+                   <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
+                    <!-- </a> -->
+                  {{/each}}
+                    <tr>
+                      <td align="left">Add Round</td>
+                    </tr>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        {{#if clearfixVisibleClass}}
+          <div class="clearfix {{clearfixVisibleClass}}"></div>
+        {{/if}}
+
       {{/each}}
-    </ul>
+    </div>
   </div>
 
 </div>
