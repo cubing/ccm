@@ -73,31 +73,37 @@
             <div id="collapse{{eventCode}}" class="panel-collapse collapse">
               <div class="panel-body">
                 <table class="table roundList">
-                  <tr>
-                    <th align="left">Round Name</th>
-                    <th align="left"># Competitors</th>
-                    <th align="left">Status</th>
-                    <th align="left">Progress</th>
-                  </tr>
-                  {{#each rounds}}
+                  <thead>
                     <tr>
-                      <td align="left">{{roundName roundCode}}</td>
-                      <td align="left">{{numberOfPeople}}</td>
-                      <th align="left">In Progress</th>
-                      <th align="left">
-                        <div class="progress">
-                          <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
-                            {{roundProgressPercentage}}%
-                          </div>
-                        </div>
-                      </th>
+                      <th align="left">Round Name</th>
+                      <th align="left"># Competitors</th>
+                      <th align="left">Status</th>
+                      <th align="left">Progress</th>
                     </tr>
-                   <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
-                    <!-- </a> -->
-                  {{/each}}
+                  </thead>
+                  <tbody>
+                    {{#each rounds}}
+                      <tr>
+                        <td align="left">{{roundName roundCode}}</td>
+                        <td align="left">{{numberOfPeople}}</td>
+                        <td align="left">In Progress</td>
+                        <td align="left">
+                          <div class="progress">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
+                              {{roundProgressPercentage}}%
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                     <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
+                      <!-- </a> -->
+                    {{/each}}
+                  </tbody>
+                  <tfoot>
                     <tr>
                       <td align="left">Add Round</td>
                     </tr>
+                  </tfoot>
                 </table>
               </div>
             </div>
