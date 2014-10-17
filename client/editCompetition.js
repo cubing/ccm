@@ -57,6 +57,9 @@ Template.editCompetition.helpers({
       { competitionId: this.competitionId, eventCode: this.eventCode }
     );
     return rounds;
+  },
+  roundProgressPercentage: function() {
+    return 65;
   }
 });
 
