@@ -19,3 +19,14 @@
   margin: -10px -15px;
 }
 
+/*
+ * Progress bars have a large bottom margin for some reason.
+ * This looks gross inside of tables.
+ * https://github.com/twbs/bootstrap/issues/3905
+ */
+.table .progress {
+  margin-bottom: 0px;
+}
+.table-condensed .progress {
+  margin-bottom: 0px;
+}
