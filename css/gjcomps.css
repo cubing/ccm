@@ -27,3 +27,12 @@ html {
 .-autocomplete-item .label {
   color: black;
 }
+
+/*
+ * Disable collapse animation.
+ * See http://stackoverflow.com/a/22428493/1739415
+ */
+.collapsing {
+  -webkit-transition: none;
+  transition: none;
+}
