@@ -59,7 +59,19 @@ Template.editCompetition.helpers({
     return rounds;
   },
   roundProgressPercentage: function() {
-    return 65;
+    var results = Results.find({
+      competitionId:this.competitionId,
+      roundId:this._id
+    });
+    var solves = _.chain(results.fetch())
+      .pluck("solves")
+      .flatten()
+      .map(function(time){
+        return time?1:0;
+      })
+      .value();
+    var percent = Math.round(100*_.reduce(solves,function(a,b){return a+b;})/solves.length);  
+    return percent;
   }
 });
 
