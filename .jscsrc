@@ -24,10 +24,6 @@
   "requireParenthesesAroundIIFE": true,
   "requireCommaBeforeLineBreak": true,
 
-  "requireSpacesInFunctionExpression": {
-    "beforeOpeningCurlyBrace": true
-  },
-
   "requireSpaceAfterKeywords": [
     "return",
     "else"
@@ -46,10 +42,10 @@
   "requireSpaceBeforeBinaryOperators": true,
   "requireLineFeedAtFileEnd": true,
 
-  "requireSpacesInAnonymousFunctionExpression": {
+  "disallowSpacesInAnonymousFunctionExpression": {
     "beforeOpeningCurlyBrace": true
   },
-  "requireSpacesInNamedFunctionExpression": {
+  "disallowSpacesInNamedFunctionExpression": {
     "beforeOpeningCurlyBrace": true
   },
   "validateLineBreaks": "LF",
