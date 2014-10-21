@@ -75,24 +75,30 @@
                 <table class="table table-condensed">
                   <thead>
                     <tr>
-                      <th align="left">Round Name</th>
-                      <th align="left"># Competitors</th>
-                      <th align="left">Status</th>
-                      <th align="left">Progress</th>
+                      <th>Round Name</th>
+                      <th># Competitors</th>
+                      <th>Status</th>
+                      <th>Progress</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
                     {{#each rounds}}
                       <tr>
-                        <td align="left">{{roundName roundCode}}</td>
-                        <td align="left">{{numberOfPeople}}</td>
-                        <td align="left">In Progress</td>
-                        <td align="left">
+                        <td>{{roundName roundCode}}</td>
+                        <td>{{numberOfPeople}}</td>
+                        <td>In Progress</td>
+                        <td>
                           <div class="progress">
                             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
                               {{roundProgressPercentage}}%
                             </div>
                           </div>
+                        </td>
+                        <td>
+                          <button type="button" name="buttonRemoveRound" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-minus"></span>
+                          </button>
                         </td>
                       </tr>
                      <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
@@ -101,10 +107,15 @@
                   </tbody>
                   <tfoot>
                     <tr>
-                      <td align="left">Add Round</td>
-                      <td align="left"></td>
-                      <td align="left"></td>
-                      <td align="left"></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        <button type="button" name="buttonAddRound" class="btn btn-default btn-xs">
+                          <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                      </td>
                     </tr>
                   </tfoot>
                 </table>

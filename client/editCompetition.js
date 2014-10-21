@@ -4,14 +4,23 @@ Template.editCompetition.events({
     var value = e.currentTarget.value;
     var toSet = {};
     toSet[attribute] = value;
-    Competitions.update({ _id: this._id }, { $set: toSet });
+    var competitionId = this._id;
+    Competitions.update({ _id: competitionId }, { $set: toSet });
   },
   'change input[type="checkbox"]': function(e){
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
     var toSet = {};
     toSet[attribute] = value;
-    Competitions.update({ _id: this._id }, { $set: toSet });
+    var competitionId = this._id;
+    Competitions.update({ _id: competitionId }, { $set: toSet });
+  },
+  'click button[name="buttonAddRound"]': function(e, t){
+    Meteor.call('addRound', this.competitionId, this.eventCode);
+  },
+  'click button[name="buttonRemoveRound"]': function(e, t){
+    var roundId = this._id;
+    Meteor.call('removeRound', roundId);
   },
 });
 
