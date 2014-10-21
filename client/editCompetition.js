@@ -67,10 +67,10 @@ Template.editCompetition.helpers({
       .pluck("solves")
       .flatten()
       .map(function(time){
-        return time?1:0;
+        return time ? 1 : 0;
       })
       .value();
-    var percent = Math.round(100*_.reduce(solves,function(a,b){return a+b;})/solves.length);  
+    var percent = Math.round(100*_.reduce(solves,function(a, b){return a + b;})/solves.length);
     return percent;
   }
 });
