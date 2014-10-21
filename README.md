@@ -3,6 +3,8 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ## Setup
 - `curl https://install.meteor.com/ | sh` - Install [Meteor](https://www.meteor.com/)
+- Install nodejs.
+- `(cd tests; npm install)` - Install linting tools and setup pre-commit hook.
 
 ## To run
 - `meteor`
@@ -10,9 +12,6 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ## To lint
 - `(cd tests; npm run-script lint)`
-
-## Setup pre-commit hook
-- `(cd tests; npm install)`
 
 ## TODO
 
