@@ -70,6 +70,9 @@ Template.editCompetition.helpers({
         return time ? 1 : 0;
       })
       .value();
+    if(solves.length === 0) {
+      return 0;
+    }
     var percent = Math.round(100*_.reduce(solves,function(a, b){return a + b;})/solves.length);
     return percent;
   }
