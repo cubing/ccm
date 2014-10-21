@@ -1,30 +1,30 @@
-if(Meteor.isClient) {
+if(Meteor.isClient){
   Router.onBeforeAction('dataNotFound');
 
-  Template.registerHelper("isActiveRoute", function(routeName) {
+  Template.registerHelper("isActiveRoute", function(routeName){
     return Router.current().route.name == routeName ? "active" : "";
   });
 }
 
-Router.map(function() {
+Router.map(function(){
   this.route('home', {
     path: '/',
-    waitOn: function() {
+    waitOn: function(){
       return Meteor.subscribe('competitions');
     }
   });
   this.route('organizer', {
     path: "/organizer",
-    waitOn: function() {
+    waitOn: function(){
       return Meteor.subscribe('competitions');
     }
   });
   this.route('editCompetition', {
     path: "/organizer/:competitionId",
-    waitOn: function() {
+    waitOn: function(){
       return Meteor.subscribe('competition', this.params.competitionId);
     },
-    data: function() {
+    data: function(){
       var competitionId = this.params.competitionId;
       return Competitions.findOne(
         { _id: competitionId }
@@ -33,10 +33,10 @@ Router.map(function() {
   });
   this.route('competition', {
     path: "/:wcaCompetitionId",
-    waitOn: function() {
+    waitOn: function(){
       return Meteor.subscribe('competition', this.params.wcaCompetitionId);
     },
-    data: function() {
+    data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
       return Competitions.findOne(
         { wcaCompetitionId: wcaCompetitionId },
@@ -47,10 +47,10 @@ Router.map(function() {
   this.route('round', {
     path: "/:wcaCompetitionId/:eventCode/:roundCode",
     template: 'round',
-    waitOn: function() {
+    waitOn: function(){
       return Meteor.subscribe('competition', this.params.wcaCompetitionId);
     },
-    data: function() {
+    data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
       var roundCode = this.params.roundCode;
       var eventCode = this.params.eventCode;
@@ -59,7 +59,7 @@ Router.map(function() {
         { wcaCompetitionId: wcaCompetitionId },
         { fields: { wcaCompetitionId: 1 } }
       );
-      if(!competition) {
+      if(!competition){
         return null;
       }
 
@@ -79,10 +79,10 @@ Router.map(function() {
   this.route('competitor', {
     path: "/:wcaCompetitionId/:competitorName",
     template: 'competitor',
-    waitOn: function() {
+    waitOn: function(){
       return [Meteor.subscribe('competition', this.params.wcaCompetitionId)];
     },
-    data: function() {
+    data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
       var userName = this.params.competitorName;
 
@@ -91,7 +91,7 @@ Router.map(function() {
         { wcaCompetitionId: wcaCompetitionId },
         { fields: { wcaCompetitionId: 1 } }
       );
-      if(!competition) {
+      if(!competition){
         return null;
       }
 
@@ -99,7 +99,7 @@ Router.map(function() {
         { "profile.name": userName }
       );
 
-      if(!user) {
+      if(!user){
         return null;
       }
 

@@ -1,6 +1,6 @@
 var url = Npm.require('url');
 
-Meteor.startup(function() {
+Meteor.startup(function(){
   // TODO - get a list of competitions somehow?
   // https://github.com/meteor/meteor/issues/1795
   var wcaCompetition = JSON.parse(Assets.getText("competitions/StarlightOpen2014.json"));
@@ -21,7 +21,7 @@ Meteor.startup(function() {
   )._id;
 
   var userIdByJsonId = {};
-  wcaCompetition.persons.forEach(function(wcaPerson, i) {
+  wcaCompetition.persons.forEach(function(wcaPerson, i){
     var userProfile = {
       name: wcaPerson.name,
       wcaId: wcaPerson.wcaId,
@@ -31,7 +31,7 @@ Meteor.startup(function() {
     };
 
     var user;
-    if(wcaPerson.wcaId) {
+    if(wcaPerson.wcaId){
       //check for user with WCAID and if user doesn't exist we create one
       user = Meteor.users.findOne({username:userProfile.wcaId});
       if(!user){
@@ -55,8 +55,8 @@ Meteor.startup(function() {
   // This competitor object contains an _id field whose value is the _id of
   // a document in the User collection.
   var competitors = [];
-  for(var jsonId in userIdByJsonId) {
-    if(userIdByJsonId.hasOwnProperty(jsonId)) {
+  for(var jsonId in userIdByJsonId){
+    if(userIdByJsonId.hasOwnProperty(jsonId)){
       var userId = userIdByJsonId[jsonId];
       competitors.push({
         _id: userId
@@ -73,8 +73,8 @@ Meteor.startup(function() {
   Rounds.remove({ competitionId: competitionId });
   Results.remove({ competitionId: competitionId });
   Groups.remove({ competitionId: competitionId });
-  wcaCompetition.events.forEach(function(wcaEvent) {
-    wcaEvent.rounds.forEach(function(wcaRound) {
+  wcaCompetition.events.forEach(function(wcaEvent){
+    wcaEvent.rounds.forEach(function(wcaRound){
       var round = {
         competitionId: competitionId,
         eventCode: wcaEvent.eventId,
@@ -83,7 +83,7 @@ Meteor.startup(function() {
       };
       var roundId = Rounds.insert(round);
 
-      wcaRound.results.forEach(function(wcaResult) {
+      wcaRound.results.forEach(function(wcaResult){
         // wcaResult.personId refers to the personId in the wca json
         var userId = userIdByJsonId[wcaResult.personId];
 
@@ -99,7 +99,7 @@ Meteor.startup(function() {
         Results.insert(result);
       });
 
-      wcaRound.groups.forEach(function(wcaGroup) {
+      wcaRound.groups.forEach(function(wcaGroup){
         var group = {
           competitionId: competitionId,
           roundId: roundId,

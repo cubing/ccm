@@ -1,11 +1,11 @@
 Meteor.methods({
-  createCompetition: function(competitionName) {
+  createCompetition: function(competitionName){
     check(competitionName, String);
-    if(competitionName.trim().length === 0) {
+    if(competitionName.trim().length === 0){
       throw new Meteor.Error(400, "Competition name must be nonempty");
     }
 
-    if(!this.userId) {
+    if(!this.userId){
       throw new Meteor.Error(401, "Must log in");
     }
 
@@ -14,18 +14,18 @@ Meteor.methods({
       organizers: [ this.userId ]
     });
   },
-  deleteCompetition: function(competitionId) {
+  deleteCompetition: function(competitionId){
     check(competitionId, String);
 
-    if(!this.userId) {
+    if(!this.userId){
       throw new Meteor.Error(401, "Must log in");
     }
 
     var competition = Competitions.findOne({ _id: competitionId });
-    if(!competition) {
+    if(!competition){
       throw new Meteor.Error(404, "Competition does not exist");
     }
-    if(competition.organizers.indexOf(this.userId) == -1) {
+    if(competition.organizers.indexOf(this.userId) == -1){
       throw new Meteor.Error(403, "Not an organizer for this competition");
     }
 

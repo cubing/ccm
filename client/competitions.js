@@ -1,5 +1,5 @@
 Template.competitions.helpers({
-  allComps: function() {
+  allComps: function(){
     return Competitions.find({}, {
       fields: {
         wcaCompetitionId: 1,
@@ -9,7 +9,7 @@ Template.competitions.helpers({
     });
   },
 
-  listedClass: function() {
+  listedClass: function(){
     return this.listed ? "listed" : "unlisted";
   }
 });

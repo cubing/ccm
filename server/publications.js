@@ -1,18 +1,18 @@
-var getCompetitions = function() {
+var getCompetitions = function(){
   return Competitions.find(
     {},
     { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1, listed: 1 } }
   );
 };
-Meteor.publish('competitions', function() {
+Meteor.publish('competitions', function(){
   return getCompetitions();
 });
 
-HTTP.publish({collection: Competitions}, function(data) {
+HTTP.publish({collection: Competitions}, function(data){
   return getCompetitions();
 });
 
-Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId) {
+Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
   check(wcaCompetitionIdOrCompetitionId, String);
 
   var competition = Competitions.findOne({
@@ -21,7 +21,7 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId) {
       { _id: wcaCompetitionIdOrCompetitionId }
     ]
   });
-  if(!competition) {
+  if(!competition){
     // TODO - what if the competition is created later? How will that data
     // get pushed out to users?
     return;

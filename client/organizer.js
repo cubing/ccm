@@ -1,5 +1,5 @@
 Template.organizer.helpers({
-  myCompetitions: function() {
+  myCompetitions: function(){
     var myCompetitions =  Competitions.find(
       { organizers: { $elemMatch: { $in: [ Meteor.userId() ] } } }
     );
@@ -8,7 +8,7 @@ Template.organizer.helpers({
 });
 
 Template.organizer.events({
-  'submit #newCompetitionForm': function(event) {
+  'submit #newCompetitionForm': function(event){
     event.preventDefault();
     var form = event.currentTarget;
     var competitionName = form.competitionName.value;
@@ -16,7 +16,7 @@ Template.organizer.events({
     form.competitionName.blur();
     Meteor.call('createCompetition', competitionName);
   },
-  'click .deleteCompetition': function(event) {
+  'click .deleteCompetition': function(event){
     var competitionId = this._id;
     Meteor.call('deleteCompetition', competitionId);
   }

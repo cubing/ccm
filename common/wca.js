@@ -1,13 +1,13 @@
 wca = {};
 
-if(Meteor.isClient) {
-  Template.registerHelper("roundName", function(roundCode) {
+if(Meteor.isClient){
+  Template.registerHelper("roundName", function(roundCode){
     return wca.roundByCode[roundCode].name;
   });
-  Template.registerHelper("eventName", function(eventCode) {
+  Template.registerHelper("eventName", function(eventCode){
     return wca.eventByCode[eventCode].name;
   });
-  Template.registerHelper("formatName", function(eventCode) {
+  Template.registerHelper("formatName", function(eventCode){
     return wca.formatByCode[eventCode].name;
   });
 }
