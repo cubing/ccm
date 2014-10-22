@@ -1,6 +1,6 @@
 Competitions.allow({
-  update: function(userId, doc, fields, modifier){
-    if(doc.organizers.indexOf(userId) == -1){
+  update: function(userId, competition, fields, modifier){
+    if(competition.organizers.indexOf(userId) == -1){
       return false;
     }
     var allowedFields = [
@@ -19,4 +19,26 @@ Competitions.allow({
     return true;
   },
   fetch: [ 'organizers' ]
+});
+
+Rounds.allow({
+  update: function(userId, round, fields, modifier){
+    var competition = Competitions.findOne({
+      _id: round.competitionId
+    });
+    if(competition.organizers.indexOf(userId) == -1) {
+      return false;
+    }
+
+    var allowedFields = [
+      'formatCode'
+    ];
+
+    console.log(_.difference(fields, allowedFields));//<<<
+    if(_.difference(fields, allowedFields).length > 0) {
+      return false;
+    }
+    return true;
+  },
+  fetch: []
 });

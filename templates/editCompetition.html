@@ -86,7 +86,21 @@
                     {{#each rounds}}
                       <tr>
                         <td>{{roundName roundCode}}</td>
-                        <td>{{formatName formatCode}}</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                              {{formatName formatCode}}
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                              {{#each formats}}
+                                <li role="presentation">
+                                  <a role="menuitem" tabindex="-1" href="#" data-format_code="{{this}}" data-round_id="{{../_id}}">{{formatName this}}</a>
+                                </li>
+                              {{/each}}
+                            </ul>
+                          </div>
+                        </td>
                         <td>In Progress</td>
                         <td>
                           <div class="progress">

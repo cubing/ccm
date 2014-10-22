@@ -22,6 +22,18 @@ Template.editCompetition.events({
     var roundId = this._id;
     Meteor.call('removeRound', roundId);
   },
+  'click .dropdown-menu li a': function(e) {
+    var target = e.currentTarget;
+    var formatCode = target.dataset.format_code;
+    var roundId = target.dataset.round_id;
+    Rounds.update({
+      _id: roundId
+    }, {
+      $set: {
+        formatCode: formatCode
+      }
+    });
+  }
 });
 
 var eventCountPerRowByDeviceSize = {
@@ -95,6 +107,9 @@ Template.editCompetition.helpers({
   },
   canAddRound: function() {
     return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
+  },
+  formats: function() {
+    return wca.formatsByEventCode[this.eventCode];
   }
 });
 
@@ -154,7 +169,7 @@ Template.editCompetition_users.events({
     var $nameInput = t.$('input[name="name"]');
     $nameInput.typeahead('val', '');
     maybeEnableUserSelectForm(t);
-  }
+  },
 });
 
 function getNameAndUsernameFromUserString(userStr){
