@@ -199,7 +199,7 @@ Template.editCompetition_users.rendered = function(){
           var $regex;
           if(startOfWordMatch){
             $regex = "\\b" + RegExp.escape(name);
-          } else {
+          }else{
             $regex = RegExp.escape(name);
           }
           findParams[attribute] = {

@@ -131,7 +131,7 @@ Meteor.methods({
       var supportedRoundsIndex;
       if(nthRound == rounds.length - 1){
         supportedRoundsIndex = wca.maxRoundsPerEvent - 1;
-      } else {
+      }else{
         supportedRoundsIndex = nthRound;
       }
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
