@@ -34,6 +34,9 @@ canRemoveRound = function(userId, roundId){
 };
 
 canAddRound = function(userId, competitionId, eventCode){
+  if(!competitionId) {
+    return false;
+  }
   check(competitionId, String);
   checkIsOrganizer(userId, competitionId);
   if(!wca.eventByCode[eventCode]){
