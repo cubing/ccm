@@ -1,8 +1,3 @@
-/* CSS declarations go here */
-html {
-  overflow-y:scroll;
-}
-
 .competition.listed {
   color: black;
 }
@@ -35,4 +30,24 @@ html {
 .collapsing {
   -webkit-transition: none;
   transition: none;
+}
+
+/*
+ * Give anchor tags with rel="external" an icon to indicate that they'll take
+ * you outside of this website. See http://stackoverflow.com/a/12709367 for a
+ * solution we use to not underline the icon in the :after part
+ */
+a[rel="external"] {
+  padding-right: 18px;
+}
+
+a[rel="external"]:after {
+  position: absolute;
+  font-family: 'Glyphicons Halflings';
+  content: "\e164"; /* glyphicon-new-window */
+  padding-left: 2px;
+}
+
+a[rel="external"]:hover:after {
+  text-decoration: none;
 }
