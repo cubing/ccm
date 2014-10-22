@@ -1,12 +1,12 @@
 /* Copied from http://jsfiddle.net/KyleMit/Wc4xt/ */
 .panel-heading a:after {
   font-family: 'Glyphicons Halflings';
-  content: "\e114";
+  content: "\e114"; /* glyphicon-chevron-down */
   float: right;
   color: grey;
 }
 .panel-heading a.collapsed:after {
-  content: "\e080";
+  content: "\e080"; /* glyphicon-chevron-right */
 }
 
 /*

@@ -53,7 +53,13 @@
   </div>
 
   <div id="editEventsList">
-    <h2>Events</h2>
+    <h2>
+      Events
+      <button type="button" data-toggle="modal" data-target="#generateScramblesModal" class="btn btn-default btn-lg">
+        <img src="/img/tnoodle_logo.svg" style="height: 24px;" /> Generate scrambles
+      </button>
+    </h2>
+    {{> generateScramblesModal}}
 
     <div class="row">
       {{#each events}}
@@ -203,4 +209,44 @@
     </ul>
   </div>
 
+</template>
+
+<template name="generateScramblesModal">
+  <!-- Modal -->
+  <div class="modal fade" id="generateScramblesModal" tabindex="-1" role="dialog" aria-labelledby="generateScramblesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title" id="generateScramblesModalLabel">Generate Scrambles</h4>
+        </div>
+        <div class="modal-body">
+          {{#if tnoodleStatus}}
+            {{#if tnoodleRunningVersionAllowed}}
+              Detected up to date
+              <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
+            {{else}}
+              Detected out of date
+              <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
+              Please download the latest version of
+              <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">TNoodle</a>
+              and start it.
+            {{/if}}
+          {{else}}
+            Could not find TNoodle running at
+            <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleVersionUrl}}</a>.
+            Make sure you've downloaded the latest version of
+            <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">TNoodle</a>
+            and started it.
+          {{/if}}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>

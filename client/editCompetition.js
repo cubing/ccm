@@ -22,7 +22,7 @@ Template.editCompetition.events({
     var roundId = this._id;
     Meteor.call('removeRound', roundId);
   },
-  'click .dropdown-menu li a': function(e) {
+  'click .dropdown-menu li a': function(e){
     var target = e.currentTarget;
     var formatCode = target.dataset.format_code;
     var roundId = target.dataset.round_id;
@@ -96,7 +96,7 @@ Template.editCompetition.helpers({
         return time ? 1 : 0;
       })
       .value();
-    if(solves.length === 0) {
+    if(solves.length === 0){
       return 0;
     }
     var percent = Math.round(100*_.reduce(solves,function(a, b){return a + b;})/solves.length);
@@ -105,10 +105,10 @@ Template.editCompetition.helpers({
   canRemoveRound: function(){
     return canRemoveRound(Meteor.userId(), this._id);
   },
-  canAddRound: function() {
+  canAddRound: function(){
     return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
   },
-  formats: function() {
+  formats: function(){
     return wca.formatsByEventCode[this.eventCode];
   }
 });
@@ -247,5 +247,46 @@ Template.editCompetition_users.helpers({
   },
   isCurrentUser: function(){
     return Meteor.userId() == this._id;
+  }
+});
+
+var TNOODLE_VERSION_URL = "http://localhost:2014/version.json";
+var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
+
+var tnoodleStatusPoller = null;
+Template.generateScramblesModal.created = function() {
+  if(tnoodleStatusPoller === null) {
+    tnoodleStatusPoller = setTimeout(pollTNoodleStatus, 0);
+  }
+};
+
+Template.generateScramblesModal.destroyed = function() {
+  if(tnoodleStatusPoller !== null) {
+    clearTimeout(tnoodleStatusPoller);
+    tnoodleStatusPoller = null;
+  }
+};
+function pollTNoodleStatus(){
+  $.ajax({
+    url: TNOODLE_VERSION_URL
+  }).done(function(data){
+    Session.set("tnoodleStatus", data);
+  }).fail(function(){
+    Session.set("tnoodleStatus", null);
+  });
+  tnoodleStatusPoller = setTimeout(pollTNoodleStatus, TNOODLE_VERSION_POLL_FREQUENCY_MILLIS);
+}
+
+Template.generateScramblesModal.helpers({
+  tnoodleVersionUrl: TNOODLE_VERSION_URL,
+  tnoodleStatus: function(){
+    return Session.get("tnoodleStatus");
+  },
+  tnoodleRunningVersionAllowed: function(){
+    var tnoodleStatus = Session.get("tnoodleStatus");
+    if(!tnoodleStatus){
+      return false;
+    }
+    return _.contains(tnoodleStatus.allowed, tnoodleStatus.running_version);
   }
 });
