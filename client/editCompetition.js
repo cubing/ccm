@@ -86,8 +86,8 @@ Template.editCompetition.helpers({
   },
   roundProgressPercentage: function(){
     var results = Results.find({
-      competitionId:this.competitionId,
-      roundId:this._id
+      competitionId: this.competitionId,
+      roundId: this._id
     });
     var solves = _.chain(results.fetch())
       .pluck("solves")

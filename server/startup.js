@@ -33,10 +33,10 @@ Meteor.startup(function(){
     var user;
     if(wcaPerson.wcaId){
       //check for user with WCAID and if user doesn't exist we create one
-      user = Meteor.users.findOne({username:userProfile.wcaId});
+      user = Meteor.users.findOne({username: userProfile.wcaId});
       if(!user){
-        Accounts.createUser({username:userProfile.wcaId, password: userProfile.dob, profile: userProfile});
-        user = Meteor.users.findOne({username:userProfile.wcaId});
+        Accounts.createUser({username: userProfile.wcaId, password: userProfile.dob, profile: userProfile});
+        user = Meteor.users.findOne({username: userProfile.wcaId});
       }
     } else {
       //create user if user doesn't exist and wcaId doesn't exist or look for one first
