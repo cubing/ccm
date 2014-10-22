@@ -96,9 +96,11 @@
                           </div>
                         </td>
                         <td>
-                          <button type="button" name="buttonRemoveRound" class="btn btn-default btn-xs">
-                            <span class="glyphicon glyphicon-minus"></span>
-                          </button>
+                          {{#if canRemoveRound}}
+                            <button type="button" name="buttonRemoveRound" class="btn btn-default btn-xs">
+                              <span class="glyphicon glyphicon-minus"></span>
+                            </button>
+                          {{/if}}
                         </td>
                       </tr>
                      <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
@@ -112,9 +114,11 @@
                       <td></td>
                       <td></td>
                       <td>
-                        <button type="button" name="buttonAddRound" class="btn btn-default btn-xs">
-                          <span class="glyphicon glyphicon-plus"></span>
-                        </button>
+                        {{#if canAddRound}}
+                          <button type="button" name="buttonAddRound" class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-plus"></span>
+                          </button>
+                        {{/if}}
                       </td>
                     </tr>
                   </tfoot>

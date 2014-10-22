@@ -74,8 +74,16 @@ Meteor.startup(function(){
   Results.remove({ competitionId: competitionId });
   Groups.remove({ competitionId: competitionId });
   wcaCompetition.events.forEach(function(wcaEvent){
-    wcaEvent.rounds.forEach(function(wcaRound){
+    // Sort rounds according to the order in which they must have occurred.
+    wcaEvent.rounds.sort(function(r1, r2) {
+      return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
+               wca.roundByCode[r2.roundId].supportedRoundIndex );
+    });
+    wcaEvent.rounds.forEach(function(wcaRound, nthRound){
+      var roundInfo = wca.roundByCode[wcaRound.roundId];
       var round = {
+        combined: roundInfo.combined,
+        nthRound: nthRound,
         competitionId: competitionId,
         eventCode: wcaEvent.eventId,
         roundCode: wcaRound.roundId,

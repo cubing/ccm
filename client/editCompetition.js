@@ -62,9 +62,14 @@ Template.editCompetition.helpers({
   },
 
   rounds: function(){
-    var rounds = Rounds.find(
-      { competitionId: this.competitionId, eventCode: this.eventCode }
-    );
+    var rounds = Rounds.find({
+      competitionId: this.competitionId,
+      eventCode: this.eventCode
+    }, {
+      sort: {
+        "nthRound": 1
+      }
+    });
     return rounds;
   },
   roundProgressPercentage: function(){
@@ -84,6 +89,12 @@ Template.editCompetition.helpers({
     }
     var percent = Math.round(100*_.reduce(solves,function(a, b){return a + b;})/solves.length);
     return percent;
+  },
+  canRemoveRound: function(){
+    return canRemoveRound(Meteor.userId(), this._id);
+  },
+  canAddRound: function() {
+    return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
   }
 });
 
