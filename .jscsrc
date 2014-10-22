@@ -40,24 +40,34 @@
   "requireSpacesInConditionalExpression": true,
   "requireLineFeedAtFileEnd": true,
 
-  "disallowSpacesInAnonymousFunctionExpression": {
-    "beforeOpeningCurlyBrace": true
-  },
-  "disallowSpacesInNamedFunctionExpression": {
-    "beforeOpeningCurlyBrace": true
-  },
   "validateLineBreaks": "LF",
 
   "disallowKeywords": [ "with" ],
   "disallowKeywordsOnNewLine": [ "else" ],
-  "disallowSpacesInFunctionExpression": {
-    "beforeOpeningRoundBrace": true
+
+  // This option is mutually exclusive with "requireSpaceAfterKeywords" for
+  // "else".
+  //"disallowSpaceBeforeBlockStatements": true,
+
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
   },
   "disallowSpacesInNamedFunctionExpression": {
-    "beforeOpeningRoundBrace": true
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
+  },
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
   },
   "disallowSpacesInAnonymousFunctionExpression": {
-    "beforeOpeningRoundBrace": true
+    "beforeOpeningRoundBrace": true,
+    "beforeOpeningCurlyBrace": true
   },
   "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": true,

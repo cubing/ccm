@@ -2,19 +2,19 @@ wca = {};
 
 if(Meteor.isClient){
   Template.registerHelper("roundName", function(roundCode){
-    if(!wca.roundByCode[roundCode]) {
+    if(!wca.roundByCode[roundCode]){
       return null;
     }
     return wca.roundByCode[roundCode].name;
   });
   Template.registerHelper("eventName", function(eventCode){
-    if(!wca.eventByCode[eventCode]) {
+    if(!wca.eventByCode[eventCode]){
       return null;
     }
     return wca.eventByCode[eventCode].name;
   });
   Template.registerHelper("formatName", function(formatCode){
-    if(!wca.formatByCode[formatCode]) {
+    if(!wca.formatByCode[formatCode]){
       return null;
     }
     return wca.formatByCode[formatCode].name;

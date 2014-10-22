@@ -26,7 +26,7 @@ Rounds.allow({
     var competition = Competitions.findOne({
       _id: round.competitionId
     });
-    if(competition.organizers.indexOf(userId) == -1) {
+    if(competition.organizers.indexOf(userId) == -1){
       return false;
     }
 
@@ -35,7 +35,7 @@ Rounds.allow({
     ];
 
     console.log(_.difference(fields, allowedFields));//<<<
-    if(_.difference(fields, allowedFields).length > 0) {
+    if(_.difference(fields, allowedFields).length > 0){
       return false;
     }
     return true;

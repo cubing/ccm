@@ -254,14 +254,14 @@ var TNOODLE_VERSION_URL = "http://localhost:2014/version.json";
 var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 
 var tnoodleStatusPoller = null;
-Template.generateScramblesModal.created = function() {
-  if(tnoodleStatusPoller === null) {
+Template.generateScramblesModal.created = function(){
+  if(tnoodleStatusPoller === null){
     tnoodleStatusPoller = setTimeout(pollTNoodleStatus, 0);
   }
 };
 
-Template.generateScramblesModal.destroyed = function() {
-  if(tnoodleStatusPoller !== null) {
+Template.generateScramblesModal.destroyed = function(){
+  if(tnoodleStatusPoller !== null){
     clearTimeout(tnoodleStatusPoller);
     tnoodleStatusPoller = null;
   }

@@ -34,7 +34,7 @@ canRemoveRound = function(userId, roundId){
 };
 
 canAddRound = function(userId, competitionId, eventCode){
-  if(!competitionId) {
+  if(!competitionId){
     return false;
   }
   check(competitionId, String);
@@ -77,7 +77,7 @@ Meteor.methods({
     Groups.remove({ competitionId: competitionId });
   },
   addRound: function(competitionId, eventCode){
-    if(!canAddRound(this.userId, competitionId, eventCode)) {
+    if(!canAddRound(this.userId, competitionId, eventCode)){
       throw new Meteor.Error(400, "Cannot add another round");
     }
 
@@ -102,7 +102,7 @@ Meteor.methods({
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
   },
   removeRound: function(roundId){
-    if(!canRemoveRound(this.userId, roundId)) {
+    if(!canRemoveRound(this.userId, roundId)){
       throw new Meteor.Error(400, "Cannot remove round. Make sure it is the last round for this event, and has no times entered.");
     }
 
@@ -120,16 +120,16 @@ Meteor.methods({
         "nthRound": 1
       }
     }).fetch();
-    if(rounds.length > wca.maxRoundsPerEvent) {
+    if(rounds.length > wca.maxRoundsPerEvent){
       throw new Meteor.Error(400, "Too many rounds");
     }
-    rounds.forEach(function(round, nthRound) {
+    rounds.forEach(function(round, nthRound){
       // Note that we ignore the actual value of nthRound, and instead use the
       // index into rounds as the nthRound. This defragments any missing
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
-      if(nthRound == rounds.length - 1) {
+      if(nthRound == rounds.length - 1){
         supportedRoundsIndex = wca.maxRoundsPerEvent - 1;
       } else {
         supportedRoundsIndex = nthRound;
