@@ -212,8 +212,13 @@
 </template>
 
 <template name="generateScramblesModal">
-  <!-- Modal -->
-  <div class="modal fade" id="generateScramblesModal" tabindex="-1" role="dialog" aria-labelledby="generateScramblesModalLabel" aria-hidden="true">
+  <!--
+    Note the data-keyboard="false". Clicking around on this modal generates
+    native javascript modals that can be dismissed with the escape key.
+    However, escaping those native modals with escape also dismisses this
+    modal. The easiest fix is to not let escape close this modal.
+  -->
+  <div class="modal fade" id="generateScramblesModal" tabindex="-1" role="dialog" aria-labelledby="generateScramblesModalLabel" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -244,13 +249,34 @@
             {{/if}}
           </p>
 
-          <p>
-            {{#each roundsWithoutScrambles}}
-              <span class="label label-default">{{eventName eventCode}} {{roundName roundCode}}</span>
-            {{else}}
+          {{#if roundsWithoutScrambles.length}}
+            <p>
+              Click
+              <a rel="external" target="_blank" href="{{generateMissingScramblesUrl}}">here</a>
+              to generate scrambles for the following rounds that are missing scrambles:
+            </p>
+            <p>
+              {{#each roundsWithoutScrambles}}
+                <span class="label label-default">{{eventName eventCode}} {{roundName roundCode}}</span>
+              {{/each}}
+            </p>
+          {{else}}
+            <p>
               No rounds are missing scrambles!
-            {{/each}}
-          </p>
+            </p>
+          {{/if}}
+
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn btn-default btn-file">
+                Upload TNoodle scrambles...
+                <input type="file" multiple>
+              </button>
+            </span>
+
+            <input type="text" class="form-control" readonly value="{{selectedScrambleFilesStr}}">
+          </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

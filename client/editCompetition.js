@@ -250,7 +250,8 @@ Template.editCompetition_users.helpers({
   }
 });
 
-var TNOODLE_VERSION_URL = "http://localhost:2014/version.json";
+var TNOODLE_ROOT_URL = "http://localhost:2014";
+var TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
 var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 
 var tnoodleStatusPoller = null;
@@ -277,6 +278,51 @@ function pollTNoodleStatus(){
   tnoodleStatusPoller = setTimeout(pollTNoodleStatus, TNOODLE_VERSION_POLL_FREQUENCY_MILLIS);
 }
 
+function getRoundsWithoutScrambles(competition){
+  var groups = Groups.find({
+    competitionId: competition._id
+  }, {
+    fields: {
+      roundId: 1
+    }
+  }).fetch();
+  var rounds = Rounds.find({
+    competitionId: competition._id,
+    _id: {
+      $nin: _.pluck(groups, "roundId")
+    }
+  }).fetch();
+  return rounds;
+}
+
+Template.generateScramblesModal.events({
+  'change input[type="file"]': function(e, t){
+    var fileInput = e.currentTarget;
+    // Convert FileList to javascript array
+    var files = _.map(fileInput.files, _.identity);
+    Session.set("generateScramblesModal-selectedScrambles", files);
+
+    files.forEach(function(file){
+      // TODO - there are no pure javascript libraries for reading
+      // password protected zip files. This
+      // https://github.com/Stuk/jszip/pull/129
+      // is the closest, but doesn't seem to be ready to use, so we
+      // just do this server side
+      // by invoking "unzip". Later on, this could be changed to
+      // invoke a bundled java program so this can work when
+      // the server is running on windows.
+      //
+      //  unzip -p -P asdf Starlight\ Open\ 2014.zip "*.json"
+      var reader = new FileReader();
+      reader.onload = function(){
+        console.log(file.name);
+        console.log(reader.result);
+      };
+      reader.readAsText(file);
+    });
+  }
+});
+
 Template.generateScramblesModal.helpers({
   tnoodleVersionUrl: TNOODLE_VERSION_URL,
   tnoodleStatus: function(){
@@ -292,19 +338,35 @@ Template.generateScramblesModal.helpers({
 
   roundsWithoutScrambles: function(){
     var competition = this;
-    var groups = Groups.find({
-      competitionId: competition._id
-    }, {
-      fields: {
-        roundId: 1
-      }
-    }).fetch();
-    var rounds = Rounds.find({
-      competitionId: competition._id,
-      _id: {
-        $nin: _.pluck(groups, "roundId")
-      }
+    return getRoundsWithoutScrambles(competition);
+  },
+  generateMissingScramblesUrl: function(){
+    var competition = this;
+    var roundsWithoutScrambles = getRoundsWithoutScrambles(competition);
+
+    var params = {};
+    params.version = "1.0";
+    params.competitionName = competition.competitionName;
+
+    var events = [];
+    roundsWithoutScrambles.forEach(function(round){
+      var event = {
+        eventID: round.eventCode,
+        round: 1 + round.nthRound,
+        //groupCount: '1',
+        //scrambleCount: '5',
+        //extraScrambleCount: '2'
+      };
+      events.push(event);
     });
-    return rounds;
+    params.rounds = toURLPretty(events);
+
+    // See http://bugs.jquery.com/ticket/3400
+    var url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");
+    return url;
+  },
+  selectedScrambleFilesStr: function(){
+    var files = Session.get("generateScramblesModal-selectedScrambles");
+    return _.pluck(files, "name").join(" ");
   }
 });
