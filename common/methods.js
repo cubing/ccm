@@ -1,56 +1,3 @@
-function checkIsOrganizer(userId, competitionId){
-  if(!userId){
-    throw new Meteor.Error(401, "Must log in");
-  }
-
-  var competition = Competitions.findOne({ _id: competitionId });
-  if(!competition){
-    throw new Meteor.Error(404, "Competition does not exist");
-  }
-  if(competition.organizers.indexOf(userId) == -1){
-    throw new Meteor.Error(403, "Not an organizer for this competition");
-  }
-}
-
-canRemoveRound = function(userId, roundId){
-  check(roundId, String);
-  var round = Rounds.findOne({ _id: roundId });
-  if(!round){
-    throw new Meteor.Error(404, "Unrecognized round id");
-  }
-  checkIsOrganizer(userId, round.competitionId);
-
-  var lastRound = Rounds.findOne({
-    competitionId: round.competitionId,
-    eventCode: round.eventCode
-  }, {
-    sort: {
-      "nthRound": -1
-    }
-  });
-  var isLastRound = lastRound._id == roundId;
-  var noResults = true; // TODO - actually compute this<<<
-  return isLastRound && noResults;
-};
-
-canAddRound = function(userId, competitionId, eventCode){
-  if(!competitionId){
-    return false;
-  }
-  check(competitionId, String);
-  checkIsOrganizer(userId, competitionId);
-  if(!wca.eventByCode[eventCode]){
-    throw new Meteor.Error(404, "Unrecognized event code");
-  }
-
-  var rounds = Rounds.find({
-    competitionId: competitionId,
-    eventCode: eventCode
-  });
-  var nthRound = rounds.count();
-  return nthRound < wca.maxRoundsPerEvent;
-};
-
 Meteor.methods({
   createCompetition: function(competitionName){
     check(competitionName, String);
@@ -69,7 +16,7 @@ Meteor.methods({
   },
   deleteCompetition: function(competitionId){
     check(competitionId, String);
-    checkIsOrganizer(this.userId, competitionId);
+    throwUnlessOrganizer(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
     Rounds.remove({ competitionId: competitionId });
@@ -108,6 +55,7 @@ Meteor.methods({
 
     var round = Rounds.findOne({ _id: roundId });
     Rounds.remove({ _id: roundId });
+    Groups.remove({ roundId: roundId });
 
     Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
   },

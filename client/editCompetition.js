@@ -39,7 +39,7 @@ Template.editCompetition.events({
 var eventCountPerRowByDeviceSize = {
   xs: 1,
   sm: 2,
-  md: 3,
+  md: 2,
   lg: 3,
 };
 Template.editCompetition.helpers({
@@ -288,5 +288,23 @@ Template.generateScramblesModal.helpers({
       return false;
     }
     return _.contains(tnoodleStatus.allowed, tnoodleStatus.running_version);
+  },
+
+  roundsWithoutScrambles: function(){
+    var competition = this;
+    var groups = Groups.find({
+      competitionId: competition._id
+    }, {
+      fields: {
+        roundId: 1
+      }
+    }).fetch();
+    var rounds = Rounds.find({
+      competitionId: competition._id,
+      _id: {
+        $nin: _.pluck(groups, "roundId")
+      }
+    });
+    return rounds;
   }
 });

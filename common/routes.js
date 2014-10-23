@@ -22,7 +22,10 @@ Router.map(function(){
   this.route('editCompetition', {
     path: "/organizer/:competitionId",
     waitOn: function(){
-      return Meteor.subscribe('competition', this.params.competitionId);
+      return [
+        Meteor.subscribe('competition', this.params.competitionId),
+        Meteor.subscribe('competitionScrambles', this.params.competitionId),
+      ];
     },
     data: function(){
       var competitionId = this.params.competitionId;

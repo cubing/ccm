@@ -214,7 +214,7 @@
 <template name="generateScramblesModal">
   <!-- Modal -->
   <div class="modal fade" id="generateScramblesModal" tabindex="-1" role="dialog" aria-labelledby="generateScramblesModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">
@@ -223,24 +223,34 @@
           <h4 class="modal-title" id="generateScramblesModalLabel">Generate Scrambles</h4>
         </div>
         <div class="modal-body">
-          {{#if tnoodleStatus}}
-            {{#if tnoodleRunningVersionAllowed}}
-              Detected up to date
-              <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
+          <p>
+            {{#if tnoodleStatus}}
+              {{#if tnoodleRunningVersionAllowed}}
+                Detected up to date
+                <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
+              {{else}}
+                Detected unofficial
+                <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
+                Please download the latest official version of TNoodle
+                <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">here</a>
+                and start it.
+              {{/if}}
             {{else}}
-              Detected unofficial
-              <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
-              Please download the latest official version of TNoodle
-              <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">here</a>
-              and start it.
+              Could not find TNoodle running at
+              <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleVersionUrl}}</a>.
+              Make sure you've downloaded the latest version of
+              <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">TNoodle</a>
+              and started it.
             {{/if}}
-          {{else}}
-            Could not find TNoodle running at
-            <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleVersionUrl}}</a>.
-            Make sure you've downloaded the latest version of
-            <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">TNoodle</a>
-            and started it.
-          {{/if}}
+          </p>
+
+          <p>
+            {{#each roundsWithoutScrambles}}
+              <span class="label label-default">{{eventName eventCode}} {{roundName roundCode}}</span>
+            {{else}}
+              No rounds are missing scrambles!
+            {{/each}}
+          </p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -22,8 +22,6 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
     ]
   });
   if(!competition){
-    // TODO - what if the competition is created later? How will that data
-    // get pushed out to users?
     return;
   }
   return [
@@ -47,5 +45,14 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
         }
       }
     )
+  ];
+});
+
+Meteor.publish('competitionScrambles', function(competitionId){
+  check(competitionId, String);
+  throwUnlessOrganizer(this.userId, competitionId);
+
+  return [
+    Groups.find({ competitionId: competitionId })
   ];
 });
