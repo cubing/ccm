@@ -31,16 +31,15 @@
   margin-bottom: 0px;
 }
 
-@iconSize: 45px;
+@iconSize: 50px;
 
 .panel-title img {
   position: absolute;
   top: 20px - @iconSize / 2;
   height: @iconSize;
   width: @iconSize;
-  transform: rotate(45deg);
 }
 
 .panel-title img + span {
-  padding-left: @iconSize * sqrt(2);
+  padding-left: @iconSize + 5px;
 }
