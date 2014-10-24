@@ -316,9 +316,12 @@ Template.generateScramblesModal.events({
       var reader = new FileReader();
       reader.onload = function(){
         console.log(file.name);
-        console.log(reader.result);
+        //<<<console.log(reader.result);
+        Meteor.call('uploadTNoodleZip', reader.result, function(){
+          console.log(arguments);//<<<
+        });//<<<
       };
-      reader.readAsText(file);
+      reader.readAsBinaryString(file);
     });
   }
 });

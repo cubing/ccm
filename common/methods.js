@@ -96,10 +96,65 @@ Meteor.methods({
   },
 });
 
-if(Meteor.isServer) {
+if(Meteor.isServer){
+  var child_process = Npm.require('child_process');
+  var path = Npm.require("path");
+  var fs = Npm.require('fs');
+  var os = Npm.require('os');
+  var mkdirp = Meteor.npmRequire('mkdirp');
+
+  var zipIdToFilename = function(zipId, userId){
+    var tmpdir = os.tmpdir();
+    var filename = path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
+    return filename;
+  };
+
   Meteor.methods({
-    'unzipTNoodleJson': function(zip, pw){
-      return "*" + pw;
+    'uploadTNoodleZip': function(zipData){
+      // TODO - this is pretty janky. What if the folder we try to create
+      // exists, but isn't a folder? Permissions could also screw us up.
+      // Ideally we would just decompress the zip file client side, but
+      // there aren't any libraries for that yet.
+      var id = Date.now();
+      var zipFilename = zipIdToFilename(id, this.userId);
+      mkdirp.sync(path.join(zipFilename, ".."));
+      fs.writeFileSync(zipFilename, zipData, 'binary');
+      return id;
+    },
+    'unzipTNoodleZip': function(zipId, pw){
+      var args = [];
+      args.push('-p'); // extract to stdout
+      if(pw){
+        args.push('-P');
+        args.push(pw);
+      }
+      var zipFilename = zipIdToFilename(zipId, this.userId);
+      args.push(zipFilename);
+      args.push('*.json'); // there should be exactly one json file in the zip
+      function unzipAsync(cb){
+        child_process.execFile('unzip', args, function(error, stdout, stderr){
+          if(error){
+            // Error code 82 indicates bad password
+            // See http://www.info-zip.org/FAQ.html
+            if(error.code == 82){
+              console.log("INVALID PASSWORD");//<<<
+              cb("INVALID PASSWORD");
+            }else{
+              cb("Unzip exited with error code " + error.code);
+            }
+          }else{
+            cb(null, stdout);
+          }
+        });
+      }
+      var unzipSync = Meteor.wrapAsync(unzipAsync);
+      try{
+        var jsonStr = unzipSync();
+        return jsonStr;
+      }catch(e){
+        console.log(e.stack);//<<<
+        throw new Meteor.Error('unzip', e.toString());
+      }
     }
   });
 }
