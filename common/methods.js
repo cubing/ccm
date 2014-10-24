@@ -95,3 +95,11 @@ Meteor.methods({
     });
   },
 });
+
+if(Meteor.isServer) {
+  Meteor.methods({
+    'unzipTNoodleJson': function(zip, pw){
+      return "*" + pw;
+    }
+  });
+}
