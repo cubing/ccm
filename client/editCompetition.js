@@ -295,14 +295,65 @@ function getRoundsWithoutScrambles(competition){
   return rounds;
 }
 
+function extractJsonFromZip(filename, zipId, pw, cb){
+  pw = pw || null;
+  Meteor.call("unzipTNoodleZip", zipId, pw, function(error, data){
+    if(error){
+      if(error.reason == "invalid-password"){
+        var promptStr = "Enter password for\n" + filename;
+        if(pw){
+          promptStr = "Wrong password! " + promptStr;
+        }
+        var newPw = prompt(promptStr);
+        if(newPw){
+          extractJsonFromZip(filename, zipId, newPw, cb);
+        }else{
+          cb("cancelled-password");
+        }
+        return;
+      }else{
+        throw error;
+      }
+    }
+    cb(null, data);
+  });
+}
+
+Meteor.startup(function(){
+  delete Session.keys['generateScramblesModal-uploadedScrambles'];
+});
+
 Template.generateScramblesModal.events({
   'change input[type="file"]': function(e, t){
     var fileInput = e.currentTarget;
     // Convert FileList to javascript array
     var files = _.map(fileInput.files, _.identity);
-    Session.set("generateScramblesModal-selectedScrambles", files);
+    var uploadedScrambles = [];
+    files.forEach(function(file, index){
+      uploadedScrambles.push({
+        index: index,
+        file: file
+      });
+    });
+    Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
 
     files.forEach(function(file){
+      var addScramblesJsonStr = function(jsonStr){
+        var scrambleData;
+        try{
+          scrambleData = JSON.parse(jsonStr);
+        }catch(e){
+          alert("Failed to parse JSON in:\n" + file.name + "\n\n" + e);
+          throw e;
+        }
+        var uploadedScrambles = Session.get("generateScramblesModal-uploadedScrambles");
+        var uploadedScramble = _.find(uploadedScrambles, function(uploadedScramble){
+          return uploadedScramble.file.name == file.name;
+        });
+        uploadedScramble.tnoodleScrambles = scrambleData;
+        Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
+      };
+
       // TODO - there are no pure javascript libraries for reading
       // password protected zip files. This
       // https://github.com/Stuk/jszip/pull/129
@@ -311,18 +362,48 @@ Template.generateScramblesModal.events({
       // by invoking "unzip". Later on, this could be changed to
       // invoke a bundled java program so this can work when
       // the server is running on windows.
-      //
-      //  unzip -p -P asdf Starlight\ Open\ 2014.zip "*.json"
+      var extension = file.name.toLowerCase().split('.').pop();
+      var isJson = extension == "json";
+      var isZip = extension == "zip";
       var reader = new FileReader();
       reader.onload = function(){
-        console.log(file.name);
-        //<<<console.log(reader.result);
-        Meteor.call('uploadTNoodleZip', reader.result, function(){
-          console.log(arguments);//<<<
-        });//<<<
+        if(isJson){
+          addScramblesJsonStr(reader.result);
+        }else if(isZip){
+          Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId){
+            if(error){
+              throw error;
+            }
+            extractJsonFromZip(file.name, zipId, null, function(error, jsonStr){
+              if(error){
+                throw error;
+              }
+              addScramblesJsonStr(jsonStr);
+            });
+          });
+        }else{
+          // Should never get here
+          throw "";
+        }
       };
-      reader.readAsBinaryString(file);
+      if(isJson){
+        reader.readAsText(file);
+      }else if(isZip){
+        reader.readAsBinaryString(file);
+      }else{
+        alert("Unrecognized file extension:\n" + file.name);
+      }
     });
+  },
+  'click .btn-primary': function(e, t){
+    var uploadedScrambles = Session.get("generateScramblesModal-uploadedScrambles");
+    console.log("UPLOADING SCRAMBLES");//<<<
+    console.log(uploadedScrambles);//<<<
+
+    var $fileInput = $('input[type="file"]');
+    // Clear selected files and fire change event to update ui
+    $fileInput.val('');
+    $fileInput.change();
   }
 });
 
@@ -368,8 +449,8 @@ Template.generateScramblesModal.helpers({
     var url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");
     return url;
   },
-  selectedScrambleFilesStr: function(){
-    var files = Session.get("generateScramblesModal-selectedScrambles");
-    return _.pluck(files, "name").join(" ");
+  uploadedScrambles: function(){
+    var uploadedScrambles = Session.get("generateScramblesModal-uploadedScrambles");
+    return uploadedScrambles;
   }
 });

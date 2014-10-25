@@ -34,8 +34,9 @@
     "do",
     "switch",
     "try",
-    "catch",
-    "else" // loldevin
+    "catch"
+    // The following breaks "else if"
+    //"else" // loldevin
   ],
   // https://github.com/jscs-dev/node-jscs/commit/76be22933f4e0f589d0df33299a5139d9da26f9f
   // add support for disallowSpaceBeforeKeywords, but is not yet released.

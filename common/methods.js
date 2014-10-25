@@ -124,10 +124,14 @@ if(Meteor.isServer){
     'unzipTNoodleZip': function(zipId, pw){
       var args = [];
       args.push('-p'); // extract to stdout
-      if(pw){
-        args.push('-P');
-        args.push(pw);
-      }
+
+      // If you don't pass -P to unzip and try to unzip a password protected
+      // zip file, it will prompt you for a password, causing the unzip process
+      // to hang. By always passing something to -P, we will never get prompted
+      // for a password, instead unzip may just fail to extract.
+      args.push('-P');
+      args.push(pw || "");
+
       var zipFilename = zipIdToFilename(zipId, this.userId);
       args.push(zipFilename);
       args.push('*.json'); // there should be exactly one json file in the zip
@@ -137,8 +141,7 @@ if(Meteor.isServer){
             // Error code 82 indicates bad password
             // See http://www.info-zip.org/FAQ.html
             if(error.code == 82){
-              console.log("INVALID PASSWORD");//<<<
-              cb("INVALID PASSWORD");
+              cb("invalid-password");
             }else{
               cb("Unzip exited with error code " + error.code);
             }
@@ -152,8 +155,7 @@ if(Meteor.isServer){
         var jsonStr = unzipSync();
         return jsonStr;
       }catch(e){
-        console.log(e.stack);//<<<
-        throw new Meteor.Error('unzip', e.toString());
+        throw new Meteor.Error('unzip', e.message);
       }
     }
   });
