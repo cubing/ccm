@@ -55,11 +55,11 @@
   <div id="editEventsList">
     <h2>
       Events
-      <button type="button" data-toggle="modal" data-target="#generateScramblesModal" class="btn btn-default btn-lg">
-        <img src="/img/tnoodle_logo.svg" style="height: 24px;" /> Generate scrambles
+      <button type="button" data-toggle="modal" data-url-component="upload_scrambles" data-target="#uploadScramblesModal" class="btn btn-default btn-lg">
+        <img src="/img/tnoodle_logo.svg" style="height: 24px;" /> Upload scrambles
       </button>
     </h2>
-    {{> generateScramblesModal}}
+    {{> uploadScramblesModal}}
 
     <div class="row">
       {{#each events}}
@@ -210,21 +210,21 @@
 
 </template>
 
-<template name="generateScramblesModal">
+<template name="uploadScramblesModal">
   <!--
     Note the data-keyboard="false". Clicking around on this modal generates
     native javascript modals that can be dismissed with the escape key.
     However, escaping those native modals with escape also dismisses this
     modal. The easiest fix is to not let escape close this modal.
   -->
-  <div class="modal fade" id="generateScramblesModal" tabindex="-1" role="dialog" aria-labelledby="generateScramblesModalLabel" aria-hidden="true" data-keyboard="false">
+  <div class="modal fade" id="uploadScramblesModal" tabindex="-1" role="dialog" aria-labelledby="uploadScramblesModalLabel" aria-hidden="true" data-keyboard="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">
             <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
           </button>
-          <h4 class="modal-title" id="generateScramblesModalLabel">Generate Scrambles</h4>
+          <h4 class="modal-title" id="uploadScramblesModalLabel">Upload Scrambles</h4>
         </div>
         <div class="modal-body">
           <p>
