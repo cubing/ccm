@@ -70,12 +70,11 @@
 
             <div class="panel-heading">
               <h3 class="panel-title">
-                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{eventCode}}" class="collapsed">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{eventCode}}">
                   <img class="img-thumbnail" src="/img/{{eventCode}}.svg" alt="{{eventCode}}"><span>{{eventName eventCode}}</span>
                 </a>
               </h3>
             </div>
-            <!-- <input type="text" value="Cutoff"> -->
             <div id="collapse{{eventCode}}" class="panel-collapse collapse">
               <div class="panel-body">
                 <table class="table table-condensed">
@@ -275,29 +274,36 @@
             </button>
           </p>
           {{#each uploadedScrambles}}
+
             <div class="panel {{#if tnoodleScrambles}}panel-success{{else}}panel-danger{{/if}}">
 
               <div class="panel-heading">
                 <h3 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{index}}" class="collapsed">
+                  <a data-toggle="collapse" href="#collapse{{index}}">
                     {{file.name}}
                   </a>
                 </h3>
               </div>
 
-              <div id="collapse{{index}}" class="panel-collapse collapse">
-                {{! TODO - could show error message here instead of nothing }}
-                {{#if tnoodleScrambles}}
-                  <div class="panel-body">
-                    {{#each tnoodleScrambles.sheets}}
-                      event: {{event}}
-                      group: {{group}}
-                      round: {{round}}
-                      #scrambles: {{scrambles.length}}
-                      #extraScrambles: {{extraScrambles.length}}
-                    {{/each}}
-                  </div>
-                {{/if}}
+              <div id="collapse{{index}}" class="panel-collapse collapse in">
+                <div class="panel-body">
+                  {{#if tnoodleScrambles}}
+                    <ul>
+                      {{#each tnoodleScrambles.sheets}}
+                        <li>
+                          event: {{event}}
+                          group: {{group}}
+                          round: {{round}}
+                          #scrambles: {{scrambles.length}}
+                          #extraScrambles: {{extraScrambles.length}}
+                        </li>
+                      {{/each}}
+                    </ul>
+                  {{/if}}
+                  {{#if error}}
+                    <p>{{error}}</p>
+                  {{/if}}
+                </div>
               </div>
 
             </div>

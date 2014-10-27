@@ -296,19 +296,18 @@ function getRoundsWithoutScrambles(competition){
 }
 
 function extractJsonFromZip(filename, zipId, pw, cb){
-  pw = pw || null;
   Meteor.call("unzipTNoodleZip", zipId, pw, function(error, data){
     if(error){
       if(error.reason == "invalid-password"){
         var promptStr = "Enter password for\n" + filename;
-        if(pw){
+        if(pw !== null){
           promptStr = "Wrong password! " + promptStr;
         }
         var newPw = prompt(promptStr);
-        if(newPw){
+        if(newPw !== null){
           extractJsonFromZip(filename, zipId, newPw, cb);
         }else{
-          cb("cancelled-password");
+          cb("Wrong password");
         }
         return;
       }else{
@@ -329,29 +328,25 @@ Template.generateScramblesModal.events({
     // Convert FileList to javascript array
     var files = _.map(fileInput.files, _.identity);
     var uploadedScrambles = [];
+
     files.forEach(function(file, index){
-      uploadedScrambles.push({
+      var uploadedScramble = {
         index: index,
         file: file
-      });
-    });
-    Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
+      };
+      uploadedScrambles.push(uploadedScramble);
 
-    files.forEach(function(file){
       var addScramblesJsonStr = function(jsonStr){
         var scrambleData;
         try{
           scrambleData = JSON.parse(jsonStr);
+          uploadedScramble.tnoodleScrambles = scrambleData;
+          Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
         }catch(e){
-          alert("Failed to parse JSON in:\n" + file.name + "\n\n" + e);
+          uploadedScramble.error = "Failed to parse JSON in:\n" + file.name + "\n\n" + e;
+          Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
           throw e;
         }
-        var uploadedScrambles = Session.get("generateScramblesModal-uploadedScrambles");
-        var uploadedScramble = _.find(uploadedScrambles, function(uploadedScramble){
-          return uploadedScramble.file.name == file.name;
-        });
-        uploadedScramble.tnoodleScrambles = scrambleData;
-        Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
       };
 
       // TODO - there are no pure javascript libraries for reading
@@ -372,10 +367,14 @@ Template.generateScramblesModal.events({
         }else if(isZip){
           Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId){
             if(error){
+              uploadedScramble.error = error;
+              Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
               throw error;
             }
             extractJsonFromZip(file.name, zipId, null, function(error, jsonStr){
               if(error){
+                uploadedScramble.error = error;
+                Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
                 throw error;
               }
               addScramblesJsonStr(jsonStr);
@@ -391,9 +390,15 @@ Template.generateScramblesModal.events({
       }else if(isZip){
         reader.readAsBinaryString(file);
       }else{
-        alert("Unrecognized file extension:\n" + file.name);
+        uploadedScramble.error = "Unrecognized file extension:\n" + file.name;
+        Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
       }
     });
+    Session.set("generateScramblesModal-uploadedScrambles", uploadedScrambles);
+    // Clear selected files so a subsequent select of the same files
+    // will fire an event. Note that we *don't* fire a change event
+    // here.
+    $(fileInput).val('');
   },
   'click .btn-primary': function(e, t){
     var uploadedScrambles = Session.get("generateScramblesModal-uploadedScrambles");
