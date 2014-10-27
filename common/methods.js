@@ -94,6 +94,28 @@ Meteor.methods({
       });
     });
   },
+  addOrUpdateGroup: function(newGroup){
+    throwUnlessOrganizer(this.userId, newGroup.competitionId);
+    var round = Rounds.findOne({ _id: newGroup.roundId });
+    if(!round) {
+      throw new Meteor.Error("Invalid roundId");
+    }
+    throwUnlessOrganizer(this.userId, round.competitionId);
+
+    var existingGroup = Groups.findOne({
+      roundId: newGroup.roundId,
+      group: newGroup.group
+    });
+    if(existingGroup){
+      console.warn("Clobberring existing group");
+      console.warn(existingGroup);
+      Groups.update({
+        _id: existingGroup._id
+      }, newGroup);
+    }else{
+      Groups.insert(newGroup);
+    }
+  }
 });
 
 if(Meteor.isServer){

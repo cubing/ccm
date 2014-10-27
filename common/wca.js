@@ -13,6 +13,9 @@ if(Meteor.isClient){
     }
     return wca.eventByCode[eventCode].name;
   });
+  Template.registerHelper("eventIcon", function(eventCode){
+    return "/img/" + eventCode + ".svg";
+  });
   Template.registerHelper("formatName", function(formatCode){
     if(!wca.formatByCode[formatCode]){
       return null;

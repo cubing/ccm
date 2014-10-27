@@ -89,7 +89,6 @@ if(Meteor.isServer) {
         'formatCode'
       ];
 
-      console.log(_.difference(fields, allowedFields));//<<<
       if(_.difference(fields, allowedFields).length > 0){
         return false;
       }

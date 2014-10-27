@@ -71,7 +71,7 @@
             <div class="panel-heading">
               <h3 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{eventCode}}">
-                  <img class="img-thumbnail" src="/img/{{eventCode}}.svg" alt="{{eventCode}}"><span>{{eventName eventCode}}</span>
+                  <img class="img-thumbnail" src="{{eventIcon eventCode}}" alt="{{eventCode}}"><span>{{eventName eventCode}}</span>
                 </a>
               </h3>
             </div>
@@ -269,13 +269,24 @@
 
           <p>
             <button class="btn btn-default btn-file" style="width: 100%">
-              Upload TNoodle scrambles...
+              Select TNoodle scrambles...
+              <!--
+                We don't let the user upload multiple files. This way, we
+                don't have to worry about the user uploading multiple
+                collections of scrambles that conflict with one another. When
+                they are forced to upload serially, they will get messages
+                about data already existing in the database. Someday we could
+                support uploading multiple files, but we'd need to invent
+                some way to inform the user of conflicts amongst their various
+                scramble sets.
               <input type="file" multiple>
+              -->
+              <input type="file">
             </button>
           </p>
-          {{#each uploadedScrambles}}
+          {{#each uploadedScrambleSets}}
 
-            <div class="panel {{#if tnoodleScrambles}}panel-success{{else}}panel-danger{{/if}}">
+            <div class="panel panel-default">
 
               <div class="panel-heading">
                 <h3 class="panel-title">
@@ -287,21 +298,26 @@
 
               <div id="collapse{{index}}" class="panel-collapse collapse in">
                 <div class="panel-body">
+                  {{#each warnings}}
+                    <div class="alert alert-warning" role="alert">
+                      <strong>Warning!</strong> {{this}}
+                    </div>
+                  {{/each}}
+                  {{#if error}}
+                    <div class="alert alert-danger" role="alert">{{error}}</div>
+                  {{/if}}
                   {{#if tnoodleScrambles}}
-                    <ul>
+                    <ul class="list-group">
                       {{#each tnoodleScrambles.sheets}}
-                        <li>
-                          event: {{event}}
-                          group: {{group}}
-                          round: {{round}}
-                          #scrambles: {{scrambles.length}}
-                          #extraScrambles: {{extraScrambles.length}}
+                      <li class="list-group-item {{#if warningForUploadedSheet}}list-group-item-warning{{else}}list-group-item-success{{/if}}">
+                          {{#if warningForUploadedSheet}}
+                            <strong>{{warningForUploadedSheet}}:</strong>
+                          {{/if}}
+                          {{eventName event}} Round {{round}} Group {{group}}
+                          ({{scrambles.length}}+{{extraScrambles.length}} scrambles)
                         </li>
                       {{/each}}
                     </ul>
-                  {{/if}}
-                  {{#if error}}
-                    <p>{{error}}</p>
                   {{/if}}
                 </div>
               </div>
@@ -313,9 +329,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          {{#if uploadedScrambles}}
-            <button type="button" class="btn btn-primary">Upload scrambles</button>
-          {{/if}}
+          <button type="button" id="buttonUploadScrambles" class="btn {{classForUploadButton}}" data-toggle="tooltip" data-placement="top" title="{{uploadWarning}}" data-original-title="{{uploadWarning}}">Upload scrambles</button>
         </div>
       </div>
     </div>
