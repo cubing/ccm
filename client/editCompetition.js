@@ -299,18 +299,17 @@ var TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
 var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 
 var tnoodleStatusPoller = null;
-Template.generateScramblesModal.created = function(){
+function startPollingTNoodleStatus(){
   if(tnoodleStatusPoller === null){
     tnoodleStatusPoller = setTimeout(pollTNoodleStatus, 0);
   }
-};
-
-Template.generateScramblesModal.destroyed = function(){
+}
+function stopPollingTNoodleStatus(){
   if(tnoodleStatusPoller !== null){
     clearTimeout(tnoodleStatusPoller);
     tnoodleStatusPoller = null;
   }
-};
+}
 function pollTNoodleStatus(){
   $.ajax({
     url: TNOODLE_VERSION_URL
@@ -376,6 +375,12 @@ Meteor.startup(function(){
 });
 
 Template.generateScramblesModal.events({
+  'shown.bs.modal .modal': function(e){
+    startPollingTNoodleStatus();
+  },
+  'hidden.bs.modal .modal': function(e){
+    stopPollingTNoodleStatus();
+  },
   'change input[type="file"]': function(e, t){
     var fileInput = e.currentTarget;
     // Convert FileList to javascript array
@@ -552,11 +557,11 @@ Template.generateScramblesModal.helpers({
   uploadWarning: function(){
     var competition = this;
     var uploadButtonState = getUploadButtonState(competition._id);
-    if(uploadButtonState == "error") {
+    if(uploadButtonState == "error"){
       return "Errors detected, see above for details";
-    } else if(uploadButtonState == "warning") {
+    } else if(uploadButtonState == "warning"){
       return "Warnings detected, see above for details";
-    } else if(uploadButtonState == "disabled") {
+    } else if(uploadButtonState == "disabled"){
       return "";
     } else {
       return "";
@@ -565,11 +570,11 @@ Template.generateScramblesModal.helpers({
   classForUploadButton: function(){
     var competition = this;
     var uploadButtonState = getUploadButtonState(competition._id);
-    if(uploadButtonState == "error") {
+    if(uploadButtonState == "error"){
       return "btn-danger";
-    } else if(uploadButtonState == "warning") {
+    } else if(uploadButtonState == "warning"){
       return "btn-warning";
-    } else if(uploadButtonState == "disabled") {
+    } else if(uploadButtonState == "disabled"){
       return "disabled";
     } else {
       return "btn-success";
