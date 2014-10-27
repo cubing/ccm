@@ -141,7 +141,7 @@ Meteor.startup(function(){
       mdns.tcp('_http'),
       "" + port,
       {
-        name: 'omega',
+        name: 'gjcomps',
         txt: {
           txtvers: '1'
         }
