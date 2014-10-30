@@ -12,11 +12,11 @@ updateUrlHashForModals = function(){
     var $modal = $($modalButton.data("target"));
     var url_component = $modalButton.data("url-component");
 
-    $modal.on('show.bs.modal', function(e){
+    $modal.on('shown.bs.modal', function(e){
       history.replaceState("", document.title,
         window.location.pathname + window.location.search + "#" + url_component);
     });
-    $modal.on('hide.bs.modal', function(e){
+    $modal.on('hidden.bs.modal', function(e){
       history.replaceState("", document.title,
         window.location.pathname + window.location.search);
     });
