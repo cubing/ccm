@@ -58,8 +58,12 @@
       <button type="button" data-toggle="modal" data-url-component="upload_scrambles" data-target="#uploadScramblesModal" class="btn btn-default btn-lg">
         <img src="/img/tnoodle_logo.svg" style="height: 24px;" /> Upload scrambles
       </button>
+      <button type="button" data-toggle="modal" data-url-component="export_results" data-target="#exportResultsModal" class="btn btn-default btn-lg">
+        <img src="/img/WCAlogo_notext.svg" style="height: 24px;" /> Export results
+      </button>
     </h2>
     {{> uploadScramblesModal}}
+    {{> exportResultsModal}}
 
     <div class="row">
       {{#each events}}
@@ -331,6 +335,33 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" id="buttonUploadScrambles" class="btn {{classForUploadButton}}" data-toggle="tooltip" data-placement="top" title="{{uploadWarning}}" data-original-title="{{uploadWarning}}">Upload scrambles</button>
         </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="exportResultsModal">
+  <!--
+    Note the data-keyboard="false". Clicking around on this modal generates
+    native javascript modals that can be dismissed with the escape key.
+    However, escaping those native modals with escape also dismisses this
+    modal. The easiest fix is to not let escape close this modal.
+  -->
+  <div class="modal fade" id="exportResultsModal" tabindex="-1" role="dialog" aria-labelledby="exportResultsModalLabel" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title" id="exportResultsModalLabel">Export Results</h4>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
       </div>
     </div>
   </div>
