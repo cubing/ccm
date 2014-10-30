@@ -1,5 +1,5 @@
 Meteor.startup(function(){
-  delete Session.keys['exportResults-warnings'];
+  Session.set('exportResults-warnings', null);
 });
 
 Template.exportResultsModal.helpers({

@@ -1,5 +1,5 @@
 Meteor.startup(function(){
-  delete Session.keys['uploadScramblesModal-uploadedScrambleSets'];
+  Session.set('uploadScramblesModal-uploadedScrambleSets', null);
 });
 
 function getWarningForSheet(competitionId, sheet){
@@ -123,10 +123,10 @@ function extractJsonFromZip(filename, zipId, pw, cb){
 }
 
 Template.uploadScramblesModal.events({
-  'shown.bs.modal .modal': function(e){
+  'show.bs.modal .modal': function(e){
     startPollingTNoodleStatus();
   },
-  'hidden.bs.modal .modal': function(e){
+  'hide.bs.modal .modal': function(e){
     stopPollingTNoodleStatus();
   },
   'change input[type="file"]': function(e, t){
@@ -248,7 +248,6 @@ Template.uploadScramblesModal.rendered = function(){
   // Bootstrap's tooltips are opt in, so just enable it on all elements with a
   // title.
   this.$('[title]').tooltip();
-  updateUrlHashForModals();
 };
 
 Template.uploadScramblesModal.helpers({
