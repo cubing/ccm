@@ -42,6 +42,7 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
           "profile.wcaId": 1,
           "profile.countryId": 1,
           "profile.gender": 1,
+          "profile.dob": 1,
         }
       }
     )

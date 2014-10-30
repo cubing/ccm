@@ -1,0 +1,41 @@
+<template name="exportResultsModal">
+  <!--
+    Note the data-keyboard="false". Clicking around on this modal generates
+    native javascript modals that can be dismissed with the escape key.
+    However, escaping those native modals with escape also dismisses this
+    modal. The easiest fix is to not let escape close this modal.
+  -->
+  <div class="modal fade" id="exportResultsModal" tabindex="-1" role="dialog" aria-labelledby="exportResultsModalLabel" aria-hidden="true" data-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+          </button>
+          <h4 class="modal-title" id="exportResultsModalLabel">Export Results</h4>
+        </div>
+
+        <div class="modal-body">
+          <ul class="list-group">
+            {{#each warnings}}
+              <li class="list-group-item list-group-item-warning">
+                {{this}}
+              </li>
+            {{else}}
+              <li class="list-group-item list-group-item-success">
+                No problems detected with the results.
+              </li>
+            {{/each}}
+          </ul>
+          <pre class="resultsJson">{{wcaResultsJson}}</pre>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template>

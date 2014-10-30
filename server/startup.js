@@ -113,7 +113,8 @@ Meteor.startup(function(){
           roundId: roundId,
           group: wcaGroup.group,
           scrambles: wcaGroup.scrambles,
-          extraScrambles: wcaGroup.extraScrambles
+          extraScrambles: wcaGroup.extraScrambles,
+          scrambleProgram: wcaCompetition.scrambleProgram
         };
         Groups.insert(group);
       });
