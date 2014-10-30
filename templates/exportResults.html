@@ -22,10 +22,13 @@
           </div>
 
           <div class="modal-body">
-            <ul class="list-group">
-              {{#each warnings}}
-                <li class="list-group-item list-group-item-warning">
-                  {{this}}
+            <ul class="list-group problemsList">
+              {{#each problems}}
+                <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
+                  {{message}}
+                  <a href="{{fixUrl}}" class="pull-right">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                  </a>
                 </li>
               {{else}}
                 <li class="list-group-item list-group-item-success">

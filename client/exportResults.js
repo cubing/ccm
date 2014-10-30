@@ -1,5 +1,5 @@
 Meteor.startup(function(){
-  Session.set('exportResults-warnings', null);
+  Session.set('exportResults-problems', null);
 });
 
 Template.exportResultsModal.helpers({
@@ -9,13 +9,25 @@ Template.exportResultsModal.helpers({
     var wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
     return wcaResultsJson;
   },
-  warnings: function(){
-    return Session.get("exportResults-warnings");
+  problems: function(){
+    return Session.get("exportResults-problems");
+  }
+});
+
+Template.exportResultsModal.events({
+  'click ul.problemsList a': function(e){
+    // iron-router doesn't handle hash links for us.
+    var $anchorTag = $(e.currentTarget);
+    var href = $anchorTag.attr("href");
+    if(href.match(/^#.*/)){
+      e.preventDefault();
+      window.location.hash = href;
+    }
   }
 });
 
 function exportWcaResultsObj(competitionId){
-  var warnings = [];
+  var problems = [];
 
   var competition = Competitions.findOne({ _id: competitionId });
   if(!competition){
@@ -25,7 +37,11 @@ function exportWcaResultsObj(competitionId){
   var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
   if(scramblePrograms.length > 1){
     // TODO - more details
-    warnings.push("Multiple scramble programs detected");
+    problems.push({
+      warning: true,
+      message: "Multiple scramble programs detected",
+      fixUrl: "#upload_scrambles"
+    });
   }
   var scrambleProgram = scramblePrograms[0];
 
@@ -79,6 +95,14 @@ function exportWcaResultsObj(competitionId){
         };
         wcaGroups.push(wcaGroup);
       });
+      if(wcaGroups.length === 0){
+        problems.push({
+          error: true,
+          message: "No scramble groups found for " + e.code +
+                   " " + wca.roundByCode[ round.roundCode ].name,
+          fixUrl: "#upload_scrambles"
+        });
+      }
 
       var wcaRound = {
         roundId: round.roundCode,
@@ -101,11 +125,11 @@ function exportWcaResultsObj(competitionId){
   var wcaResults = {
     "formatVersion": "WCA Competition 0.2",
     "competitionId": competition.wcaCompetitionId,
+    "scrambleProgram": scrambleProgram,
     "persons": wcaPersons,
-    "events": wcaEvents,
-    "scrambleProgram": scrambleProgram
+    "events": wcaEvents
   };
 
-  Session.set("exportResults-warnings", warnings);
+  Session.set("exportResults-problems", problems);
   return wcaResults;
 }
