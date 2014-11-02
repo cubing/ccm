@@ -15,9 +15,6 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 
 ## TODO
 
-- export to [WCA JSON](https://github.com/cubing/wca-workbook-assistant/issues/48)
-  - write a test that asserts that importing and then exporting is a no-op, and vice versa
-
 ### Competitor side
 - Sort ongoing competitions by distance (mongodb geospatial indexing)
 - Add message when viewing non existant competitor page

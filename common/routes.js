@@ -1,43 +1,58 @@
 if(Meteor.isClient){
-  Router.onBeforeAction('dataNotFound');
+  //<<<Router.onBeforeAction('dataNotFound');
+  Router.plugin('dataNotFound', {notFoundTemplate: 'notFound'});
+
 
   Template.registerHelper("isActiveRoute", function(routeName){
     return Router.current().route.name == routeName ? "active" : "";
   });
 }
 
+// It appears that iron-router does nothing useful when a subscription throws
+// an error. We explicitly catch that error, log it, and then render 'notFound'
+var subscriptionError = function(that){
+  return {
+    onError: function(err){
+      console.error(err);
+      that.render('notFound');
+    }
+  };
+};
+
 Router.map(function(){
   this.route('home', {
     path: '/',
     waitOn: function(){
-      return Meteor.subscribe('competitions');
+      return Meteor.subscribe('competitions', subscriptionError(this));
     }
   });
   this.route('organizer', {
     path: "/organizer",
     waitOn: function(){
-      return Meteor.subscribe('competitions');
+      return Meteor.subscribe('competitions', subscriptionError(this));
     }
   });
   this.route('editCompetition', {
     path: "/organizer/:competitionId",
+    notFoundTemplate: "competitionNotFound",
     waitOn: function(){
       return [
-        Meteor.subscribe('competition', this.params.competitionId),
-        Meteor.subscribe('competitionScrambles', this.params.competitionId),
+        Meteor.subscribe('competition', this.params.competitionId, subscriptionError(this)),
+        Meteor.subscribe('competitionScrambles', this.params.competitionId, subscriptionError(this))
       ];
     },
     data: function(){
       var competitionId = this.params.competitionId;
-      return Competitions.findOne(
-        { _id: competitionId }
-      );
+      var competition = Competitions.findOne({
+        _id: competitionId
+      });
+      return competition;
     }
   });
   this.route('competition', {
     path: "/:wcaCompetitionId",
     waitOn: function(){
-      return Meteor.subscribe('competition', this.params.wcaCompetitionId);
+      return Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this));
     },
     data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
@@ -51,7 +66,7 @@ Router.map(function(){
     path: "/:wcaCompetitionId/:eventCode/:roundCode",
     template: 'round',
     waitOn: function(){
-      return Meteor.subscribe('competition', this.params.wcaCompetitionId);
+      return Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this));
     },
     data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
@@ -83,24 +98,29 @@ Router.map(function(){
     path: "/:wcaCompetitionId/:competitorName",
     template: 'competitor',
     waitOn: function(){
-      return [Meteor.subscribe('competition', this.params.wcaCompetitionId)];
+      return [
+        Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this))
+      ];
     },
     data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
       var userName = this.params.competitorName;
 
 
-      var competition = Competitions.findOne(
-        { wcaCompetitionId: wcaCompetitionId },
-        { fields: { wcaCompetitionId: 1 } }
-      );
+      var competition = Competitions.findOne({
+        wcaCompetitionId: wcaCompetitionId
+      }, {
+        fields: {
+          wcaCompetitionId: 1
+        }
+      });
       if(!competition){
         return null;
       }
 
-      var user = Meteor.users.findOne(
-        { "profile.name": userName }
-      );
+      var user = Meteor.users.findOne({
+        "profile.name": userName
+      });
 
       if(!user){
         return null;
@@ -115,6 +135,7 @@ Router.map(function(){
 });
 
 Router.configure({
+  layoutTemplate: "layout",
+  loadingTemplate: "loading",
   notFoundTemplate: "notFound",
-  layoutTemplate: "layout"
 });

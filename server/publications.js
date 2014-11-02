@@ -22,7 +22,7 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
     ]
   });
   if(!competition){
-    return;
+    return [];
   }
   return [
     Competitions.find({ _id: competition._id }),
