@@ -1,7 +1,8 @@
 if(Meteor.isClient){
-  //<<<Router.onBeforeAction('dataNotFound');
-  Router.plugin('dataNotFound', {notFoundTemplate: 'notFound'});
-
+  Router.onBeforeAction('dataNotFound');
+  Template.registerHelper("title", function(){
+    return Router.current().route.getName();
+  });
 
   Template.registerHelper("isActiveRoute", function(routeName){
     return Router.current().route.name == routeName ? "active" : "";
@@ -32,8 +33,8 @@ Router.map(function(){
       return Meteor.subscribe('competitions', subscriptionError(this));
     }
   });
-  this.route('editCompetition', {
-    path: "/organizer/:competitionId",
+
+  var editCompetitionRouteInfo = {
     notFoundTemplate: "competitionNotFound",
     waitOn: function(){
       return [
@@ -48,7 +49,17 @@ Router.map(function(){
       });
       return competition;
     }
-  });
+  };
+  this.route('editCompetition', _.extend({
+    path: "/organizer/:competitionId"
+  }, editCompetitionRouteInfo));
+  this.route('uploadScrambles', _.extend({
+    path: "/organizer/:competitionId/uploadScrambles"
+  }, editCompetitionRouteInfo));
+  this.route('exportResults', _.extend({
+    path: "/organizer/:competitionId/exportResults"
+  }, editCompetitionRouteInfo));
+
   this.route('competition', {
     path: "/:wcaCompetitionId",
     waitOn: function(){
@@ -56,10 +67,18 @@ Router.map(function(){
     },
     data: function(){
       var wcaCompetitionId = this.params.wcaCompetitionId;
-      return Competitions.findOne(
-        { wcaCompetitionId: wcaCompetitionId },
-        { fields: { wcaCompetitionId: 1, competitionName: 1 } }
-      );
+      var competition = Competitions.findOne({
+        $or: [
+          { _id: wcaCompetitionId },
+          { wcaCompetitionId: wcaCompetitionId }
+        ]
+      }, {
+        fields: {
+          wcaCompetitionId: 1,
+          competitionName: 1
+        }
+      });
+      return competition;
     }
   });
   this.route('round', {

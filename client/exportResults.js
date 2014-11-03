@@ -2,7 +2,7 @@ Meteor.startup(function(){
   Session.set('exportResults-problems', null);
 });
 
-Template.exportResultsModal.helpers({
+Template.exportResults.helpers({
   wcaResultsJson: function(){
     var competition = this;
     var wcaResults = exportWcaResultsObj(competition._id);
@@ -14,18 +14,6 @@ Template.exportResultsModal.helpers({
   }
 });
 
-Template.exportResultsModal.events({
-  'click ul.problemsList a': function(e){
-    // iron-router doesn't handle hash links for us.
-    var $anchorTag = $(e.currentTarget);
-    var href = $anchorTag.attr("href");
-    if(href.match(/^#.*/)){
-      e.preventDefault();
-      window.location.hash = href;
-    }
-  }
-});
-
 function exportWcaResultsObj(competitionId){
   var problems = [];
 
@@ -33,6 +21,10 @@ function exportWcaResultsObj(competitionId){
   if(!competition){
     return {};
   }
+
+  var uploadScramblesRoute = Router.routes.uploadScrambles;
+  var uploadScramblesPath = uploadScramblesRoute.path({ competitionId: competition._id });
+
   var groups = Groups.find({ competitionId: competitionId }).fetch();
   var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
   if(scramblePrograms.length > 1){
@@ -40,7 +32,7 @@ function exportWcaResultsObj(competitionId){
     problems.push({
       warning: true,
       message: "Multiple scramble programs detected",
-      fixUrl: "#upload_scrambles"
+      fixUrl: uploadScramblesPath
     });
   }
   var scrambleProgram = scramblePrograms[0];
@@ -100,7 +92,7 @@ function exportWcaResultsObj(competitionId){
           error: true,
           message: "No scramble groups found for " + e.code +
                    " " + wca.roundByCode[ round.roundCode ].name,
-          fixUrl: "#upload_scrambles"
+          fixUrl: uploadScramblesPath
         });
       }
 

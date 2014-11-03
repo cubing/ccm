@@ -1,5 +1,5 @@
 Meteor.startup(function(){
-  Session.set('uploadScramblesModal-uploadedScrambleSets', null);
+  Session.set('uploadScrambles-uploadedScrambleSets', null);
 });
 
 function getWarningForSheet(competitionId, sheet){
@@ -18,7 +18,7 @@ function getWarningForSheet(competitionId, sheet){
 }
 
 function getUploadButtonState(competitionId){
-  var uploadedScrambleSets = Session.get("uploadScramblesModal-uploadedScrambleSets");
+  var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
   if(!uploadedScrambleSets || uploadedScrambleSets.length === 0){
     return "disabled";
   }
@@ -122,7 +122,7 @@ function extractJsonFromZip(filename, zipId, pw, cb){
   });
 }
 
-Template.uploadScramblesModal.events({
+Template.uploadScrambles.events({
   'show.bs.modal .modal': function(e){
     startPollingTNoodleStatus();
   },
@@ -148,10 +148,10 @@ Template.uploadScramblesModal.events({
         try{
           scrambleData = JSON.parse(jsonStr);
           uploadedScrambleSet.tnoodleScrambles = scrambleData;
-          Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+          Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
         }catch(e){
           uploadedScrambleSet.error = "Failed to parse JSON in:\n" + file.name + "\n\n" + e;
-          Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+          Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
           throw e;
         }
       };
@@ -175,13 +175,13 @@ Template.uploadScramblesModal.events({
           Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId){
             if(error){
               uploadedScrambleSet.error = error;
-              Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+              Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
               throw error;
             }
             extractJsonFromZip(file.name, zipId, null, function(error, jsonStr){
               if(error){
                 uploadedScrambleSet.error = error;
-                Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+                Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
                 throw error;
               }
               addScramblesJsonStr(jsonStr);
@@ -198,10 +198,10 @@ Template.uploadScramblesModal.events({
         reader.readAsBinaryString(file);
       }else{
         uploadedScrambleSet.error = "Unrecognized file extension:\n" + file.name;
-        Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+        Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
       }
     });
-    Session.set("uploadScramblesModal-uploadedScrambleSets", uploadedScrambleSets);
+    Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
     // Clear selected files so a subsequent select of the same files
     // will fire an event. Note that we *don't* fire a change event
     // here.
@@ -210,7 +210,7 @@ Template.uploadScramblesModal.events({
   'click #buttonUploadScrambles': function(e, t){
     var competition = this;
 
-    var uploadedScrambleSets = Session.get("uploadScramblesModal-uploadedScrambleSets");
+    var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
 
     uploadedScrambleSets.forEach(function(uploadedScrambleSet){
       if(!uploadedScrambleSet.tnoodleScrambles){
@@ -244,13 +244,13 @@ Template.uploadScramblesModal.events({
   }
 });
 
-Template.uploadScramblesModal.rendered = function(){
+Template.uploadScrambles.rendered = function(){
   // Bootstrap's tooltips are opt in, so just enable it on all elements with a
   // title.
   this.$('[title]').tooltip();
 };
 
-Template.uploadScramblesModal.helpers({
+Template.uploadScrambles.helpers({
   tnoodleVersionUrl: TNOODLE_VERSION_URL,
   tnoodleStatus: function(){
     return Session.get("tnoodleStatus");
@@ -294,7 +294,7 @@ Template.uploadScramblesModal.helpers({
     return url;
   },
   uploadedScrambleSets: function(){
-    var uploadedScrambleSets = Session.get("uploadScramblesModal-uploadedScrambleSets");
+    var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
     return uploadedScrambleSets;
   },
   warningForUploadedSheet: function(){

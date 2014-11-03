@@ -1,7 +1,3 @@
-Template.editCompetition.rendered = function(){
-  updateUrlHashForModals(this.$('[data-toggle="modal"]'));
-};
-
 Template.editCompetition.events({
   'input input[type="text"]': function(e){
     var attribute = e.currentTarget.name;

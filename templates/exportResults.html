@@ -1,49 +1,30 @@
-<template name="exportResultsModal">
-  <!--
-    Note the data-keyboard="false". Clicking around on this modal generates
-    native javascript modals that can be dismissed with the escape key.
-    However, escaping those native modals with escape also dismisses this
-    modal. The easiest fix is to not let escape close this modal.
-  -->
-  <div class="modal fade" id="exportResultsModal" tabindex="-1" role="dialog" aria-labelledby="exportResultsModalLabel" aria-hidden="true" data-keyboard="false">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        {{!
-          Don't display the contents of the modal until it's actually
-          visible, otherwise we'll be rerendering this entire block
-          unecessarily every time a result is entered.
-        }}
-        {{#if modalVisible "exportResultsModal"}}
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">
-              <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-            </button>
-            <h4 class="modal-title" id="exportResultsModalLabel">Export Results</h4>
-          </div>
+<template name="exportResults">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">
+      <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+    <h4 class="modal-title" id="exportResultsModalLabel">Export Results</h4>
+  </div>
 
-          <div class="modal-body">
-            <ul class="list-group problemsList">
-              {{#each problems}}
-                <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
-                  {{message}}
-                  <a href="{{fixUrl}}" class="pull-right">
-                    <span class="glyphicon glyphicon-wrench"></span>
-                  </a>
-                </li>
-              {{else}}
-                <li class="list-group-item list-group-item-success">
-                  No problems detected with the results.
-                </li>
-              {{/each}}
-            </ul>
-            <pre class="resultsJson">{{wcaResultsJson}}</pre>
-          </div>
+  <div class="modal-body">
+    <ul class="list-group problemsList">
+      {{#each problems}}
+        <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
+          {{message}}
+          <a href="{{fixUrl}}" class="pull-right">
+            <span class="glyphicon glyphicon-wrench"></span>
+          </a>
+        </li>
+      {{else}}
+        <li class="list-group-item list-group-item-success">
+          No problems detected with the results.
+        </li>
+      {{/each}}
+    </ul>
+    <pre class="resultsJson">{{wcaResultsJson}}</pre>
+  </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        {{/if}}
-      </div>
-    </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
   </div>
 </template>
