@@ -1,21 +1,16 @@
 <template name="competition">
-  {{#unless this}}
-    {{> notFound item="competition"}}
-  {{else}}
-    <h1>{{competitionName}}</h1>
-    {{#each events}}
-      <li>
-        {{eventCode}}
-        <ul>
-          {{#each rounds}}
-          <li>
-            <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}">
-              {{roundName roundCode}}
-            </a>
-          </li>
-          {{/each}}
-        </ul>
-      </li>
-    {{/each}}
-  {{/unless}}
+  {{#each events}}
+    <li>
+      {{eventCode}}
+      <ul>
+        {{#each rounds}}
+        <li>
+          <a href="{{pathFor 'round' competitionUrlId=../../competitionUrlId eventCode=eventCode roundCode=roundCode}}">
+            {{roundName roundCode}}
+          </a>
+        </li>
+        {{/each}}
+      </ul>
+    </li>
+  {{/each}}
 </template>

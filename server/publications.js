@@ -12,13 +12,13 @@ HTTP.publish({collection: Competitions}, function(data){
   return getCompetitions();
 });
 
-Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
-  check(wcaCompetitionIdOrCompetitionId, String);
+Meteor.publish('competition', function(competitionUrlId){
+  check(competitionUrlId, String);
 
   var competition = Competitions.findOne({
     $or: [
-      { wcaCompetitionId: wcaCompetitionIdOrCompetitionId },
-      { _id: wcaCompetitionIdOrCompetitionId }
+      { wcaCompetitionId: competitionUrlId },
+      { _id: competitionUrlId }
     ]
   });
   if(!competition){
@@ -49,11 +49,17 @@ Meteor.publish('competition', function(wcaCompetitionIdOrCompetitionId){
   ];
 });
 
-Meteor.publish('competitionScrambles', function(competitionId){
-  check(competitionId, String);
-  throwUnlessOrganizer(this.userId, competitionId);
+Meteor.publish('competitionScrambles', function(competitionUrlId){
+  check(competitionUrlId, String);
+  throwUnlessOrganizer(this.userId, competitionUrlId);
+  var competition = Competitions.findOne({
+    $or: [
+      { _id: competitionUrlId },
+      { wcaCompetitionId: competitionUrlId }
+    ]
+  });
 
   return [
-    Groups.find({ competitionId: competitionId })
+    Groups.find({ competitionId: competition._id })
   ];
 });

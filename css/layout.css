@@ -1,0 +1,7 @@
+.navbar a.brand {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.navbar a.brand > img {
+  height: 30px;
+}

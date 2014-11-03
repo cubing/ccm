@@ -1,9 +1,14 @@
-throwUnlessOrganizer = function(userId, competitionId){
+throwUnlessOrganizer = function(userId, competitionUrlId){
   if(!userId){
     throw new Meteor.Error(401, "Must log in");
   }
 
-  var competition = Competitions.findOne({ _id: competitionId });
+  var competition = Competitions.findOne({
+    $or: [
+      { _id: competitionUrlId },
+      { wcaCompetitionId: competitionUrlId }
+    ]
+  });
   if(!competition){
     throw new Meteor.Error(404, "Competition does not exist");
   }

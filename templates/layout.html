@@ -15,6 +15,9 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="/">live.cubing.net</a>
+        {{#if competitionUrlId}}
+          <a class="navbar-brand" href="{{pathFor 'competition' competitionUrlId=competitionUrlId}}">{{competition.competitionName}}</a>
+        {{/if}}
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,8 +27,26 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {{#if currentUser}}
-            <li class="{{isActiveRoute 'organizer'}}">
-              <a href="{{pathFor 'organizer'}}">Organizer</a>
+            {{#if competition}}
+              <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
+                <a class="brand" href="{{pathFor 'uploadScrambles' competitionUrlId=competitionUrlId}}">
+                  <img src="/img/tnoodle_logo.svg" /> Upload scrambles
+                </a>
+              </li>
+              <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}}">
+                <a class="brand" href="{{pathFor 'exportResults' competitionUrlId=competitionUrlId}}">
+                  <img src="/img/WCAlogo_notext.svg" /> Export results
+                </a>
+              </li>
+              {{! TODO - only display if I am staff or an organizer for this comp }}
+              <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
+                <a href="{{pathFor 'manageCompetition'}}">Manage</a>
+              </li>
+            {{/if}}
+            <li>
+              <button type="button" class="btn btn-default navbar-btn">
+                <span class="glyphicon glyphicon-plus"></span> New competition
+              </button>
             </li>
           {{/if}}
         </ul>

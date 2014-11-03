@@ -3,7 +3,11 @@
   <ul class="competitions">
     {{#each allComps}}
       <li class="competition {{listedClass}}">
-        <a href="{{pathFor 'competition' wcaCompetitionId=wcaCompetitionId}}">name: {{competitionName}} id: {{wcaCompetitionId}}</a>
+        {{#if wcaCompetitionId}}
+          <a href="{{pathFor 'competition' competitionUrlId=wcaCompetitionId}}">name: {{competitionName}} wcaCompetitionId: {{wcaCompetitionId}}</a>
+        {{else}}
+          <a href="{{pathFor 'competition' competitionUrlId=_id}}">name: {{competitionName}} _id: {{_id}}</a>
+        {{/if}}
       </li>
     {{/each}}
   </ul>

@@ -5,7 +5,7 @@ if(Meteor.isClient){
   });
 
   Template.registerHelper("isActiveRoute", function(routeName){
-    return Router.current().route.name == routeName ? "active" : "";
+    return Router.current().route.getName() == routeName;
   });
 }
 
@@ -27,50 +27,55 @@ Router.map(function(){
       return Meteor.subscribe('competitions', subscriptionError(this));
     }
   });
-  this.route('organizer', {
-    path: "/organizer",
-    waitOn: function(){
-      return Meteor.subscribe('competitions', subscriptionError(this));
-    }
-  });
 
+  // TODO - use iron-router's route controllers
   var editCompetitionRouteInfo = {
     notFoundTemplate: "competitionNotFound",
     waitOn: function(){
       return [
-        Meteor.subscribe('competition', this.params.competitionId, subscriptionError(this)),
-        Meteor.subscribe('competitionScrambles', this.params.competitionId, subscriptionError(this))
+        Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+        Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this))
       ];
     },
     data: function(){
-      var competitionId = this.params.competitionId;
+      var competitionUrlId = this.params.competitionUrlId;
       var competition = Competitions.findOne({
-        _id: competitionId
+        $or: [
+          { _id: competitionUrlId },
+          { wcaCompetitionId: competitionUrlId }
+        ]
       });
-      return competition;
+      if(!competition) {
+        return null;
+      }
+      return {
+        competitionUrlId: competitionUrlId,
+        competition: competition
+      };
     }
   };
-  this.route('editCompetition', _.extend({
-    path: "/organizer/:competitionId"
+  this.route('manageCompetition', _.extend({
+    template: 'editCompetition',
+    path: "/:competitionUrlId/manage"
   }, editCompetitionRouteInfo));
   this.route('uploadScrambles', _.extend({
-    path: "/organizer/:competitionId/uploadScrambles"
+    path: "/:competitionUrlId/manage/uploadScrambles"
   }, editCompetitionRouteInfo));
   this.route('exportResults', _.extend({
-    path: "/organizer/:competitionId/exportResults"
+    path: "/:competitionUrlId/manage/exportResults"
   }, editCompetitionRouteInfo));
 
   this.route('competition', {
-    path: "/:wcaCompetitionId",
+    path: "/:competitionUrlId",
     waitOn: function(){
-      return Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this));
+      return Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this));
     },
     data: function(){
-      var wcaCompetitionId = this.params.wcaCompetitionId;
+      var competitionUrlId = this.params.competitionUrlId;
       var competition = Competitions.findOne({
         $or: [
-          { _id: wcaCompetitionId },
-          { wcaCompetitionId: wcaCompetitionId }
+          { _id: competitionUrlId },
+          { wcaCompetitionId: competitionUrlId }
         ]
       }, {
         fields: {
@@ -78,59 +83,75 @@ Router.map(function(){
           competitionName: 1
         }
       });
-      return competition;
+      if(!competition) {
+        return null;
+      }
+      return {
+        competition: competition,
+        competitionUrlId: competitionUrlId
+      };
     }
   });
   this.route('round', {
-    path: "/:wcaCompetitionId/:eventCode/:roundCode",
+    path: "/:competitionUrlId/:eventCode/:roundCode",
     template: 'round',
     waitOn: function(){
-      return Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this));
+      return Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this));
     },
     data: function(){
-      var wcaCompetitionId = this.params.wcaCompetitionId;
+      var competitionUrlId = this.params.competitionUrlId;
       var roundCode = this.params.roundCode;
       var eventCode = this.params.eventCode;
 
-      var competition = Competitions.findOne(
-        { wcaCompetitionId: wcaCompetitionId },
-        { fields: { wcaCompetitionId: 1 } }
-      );
+      var competition = Competitions.findOne({
+        $or: [
+          { _id: competitionUrlId },
+          { wcaCompetitionId: competitionUrlId }
+        ]
+      }, {
+        fields: {
+          wcaCompetitionId: 1,
+          competitionName: 1
+        }
+      });
       if(!competition){
         return null;
       }
 
-      var round = Rounds.findOne(
-        {
-          competitionId: competition._id,
-          eventCode: eventCode,
-          roundCode: roundCode
-        }
-      );
+      var round = Rounds.findOne({
+        competitionId: competition._id,
+        eventCode: eventCode,
+        roundCode: roundCode
+      });
       return {
+        competitionUrlId: competitionUrlId,
         competition: competition,
         round: round
       };
     }
   });
   this.route('competitor', {
-    path: "/:wcaCompetitionId/:competitorName",
+    path: "/:competitionUrlId/:competitorName",
     template: 'competitor',
     waitOn: function(){
       return [
-        Meteor.subscribe('competition', this.params.wcaCompetitionId, subscriptionError(this))
+        Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this))
       ];
     },
     data: function(){
-      var wcaCompetitionId = this.params.wcaCompetitionId;
+      var competitionUrlId = this.params.competitionUrlId;
       var userName = this.params.competitorName;
 
 
       var competition = Competitions.findOne({
-        wcaCompetitionId: wcaCompetitionId
+        $or: [
+          { _id: competitionUrlId },
+          { wcaCompetitionId: competitionUrlId }
+        ]
       }, {
         fields: {
-          wcaCompetitionId: 1
+          wcaCompetitionId: 1,
+          competitionName: 1
         }
       });
       if(!competition){
@@ -146,6 +167,7 @@ Router.map(function(){
       }
 
       return {
+        competitionUrlId: competitionUrlId,
         competition: competition,
         user: user
       };

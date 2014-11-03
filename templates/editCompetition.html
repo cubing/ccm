@@ -1,6 +1,6 @@
 <template name="editCompetition">
-<h1>{{competitionName}}</h1>
 
+{{#with competition}}
 <div>
 
   <form class="form-horizontal" role="form">
@@ -55,12 +55,6 @@
   <div id="editEventsList">
     <h2>
       Events
-      <a href="{{pathFor 'uploadScrambles' competitionId=_id}}">
-        <img src="/img/tnoodle_logo.svg" style="height: 24px;" /> Upload scrambles
-      </a>
-      <a href="{{pathFor 'exportResults' competitionId=_id}}">
-        <img src="/img/WCAlogo_notext.svg" style="height: 24px;" /> Export results
-      </a>
     </h2>
 
     <div class="row">
@@ -124,8 +118,6 @@
                           {{/if}}
                         </td>
                       </tr>
-                     <!--  <a href="{{pathFor 'round' wcaCompetitionId=../../wcaCompetitionId eventCode=eventCode roundCode=roundCode}}"> -->
-                      <!-- </a> -->
                     {{/each}}
                   </tbody>
                   <tfoot>
@@ -160,6 +152,7 @@
   </div>
 
 </div>
+{{/with}}
 
 </template>
 
