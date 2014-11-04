@@ -9,10 +9,11 @@ Meteor.methods({
       throw new Meteor.Error(401, "Must log in");
     }
 
-    Competitions.insert({
+    var competitionId = Competitions.insert({
       competitionName: competitionName,
       organizers: [ this.userId ]
     });
+    return competitionId;
   },
   deleteCompetition: function(competitionId){
     check(competitionId, String);

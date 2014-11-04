@@ -43,9 +43,10 @@
               </li>
             {{/if}}
             <li>
-              <button type="button" class="btn btn-default navbar-btn" data-toggle="tooltip" data-placement="bottom" title="New competition">
+              <a href="{{pathFor 'newCompetition'}}"
+                 data-toggle="tooltip" data-placement="bottom" title="New competition">
                 <span class="glyphicon glyphicon-plus"></span>
-              </button>
+              </a>
             </li>
           {{/if}}
           {{> loginButtons }}

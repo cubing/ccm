@@ -28,6 +28,10 @@ Router.map(function(){
     }
   });
 
+  this.route('newCompetition', {
+    path: '/new'
+  });
+
   // TODO - use iron-router's route controllers
   var editCompetitionRouteInfo = {
     notFoundTemplate: "competitionNotFound",

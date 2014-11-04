@@ -15,6 +15,15 @@ Template.editCompetition.events({
     var competitionId = this._id;
     Competitions.update({ _id: competitionId }, { $set: toSet });
   },
+  'click button[name="buttonDeleteCompetition"]': function(e){
+    var competition = this;
+    Meteor.call("deleteCompetition", competition._id, function(err, data){
+      if(err) {
+        throw err;
+      }
+      Router.go('home');
+    });
+  },
   'click button[name="buttonAddRound"]': function(e, t){
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
@@ -33,7 +42,7 @@ Template.editCompetition.events({
         formatCode: formatCode
       }
     });
-  }
+  },
 });
 
 var eventCountPerRowByDeviceSize = {
