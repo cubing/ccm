@@ -208,7 +208,7 @@ Template.uploadScrambles.events({
     $(fileInput).val('');
   },
   'click #buttonUploadScrambles': function(e, t){
-    var competition = this;
+    var competition = this.competition;
 
     var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
 
@@ -264,12 +264,12 @@ Template.uploadScrambles.helpers({
   },
 
   roundsWithoutScrambles: function(){
-    var competition = this;
+    var competition = this.competition;
     var roundsWithoutScrambles = getRoundsWithoutScrambles(competition._id);
     return roundsWithoutScrambles;
   },
   generateMissingScramblesUrl: function(){
-    var competition = this;
+    var competition = this.competition;
     var roundsWithoutScrambles = getRoundsWithoutScrambles(competition._id);
 
     var params = {};
@@ -298,13 +298,13 @@ Template.uploadScrambles.helpers({
     return uploadedScrambleSets;
   },
   warningForUploadedSheet: function(){
-    var competition = Template.parentData(2);
+    var competition = Template.parentData(2).competition;
     var sheet = this;
     var warning = getWarningForSheet(competition._id, sheet);
     return warning;
   },
   uploadWarning: function(){
-    var competition = this;
+    var competition = this.competition;
     var uploadButtonState = getUploadButtonState(competition._id);
     if(uploadButtonState == "error"){
       return "Errors detected, see above for details";
@@ -317,7 +317,7 @@ Template.uploadScrambles.helpers({
     }
   },
   classForUploadButton: function(){
-    var competition = this;
+    var competition = this.competition;
     var uploadButtonState = getUploadButtonState(competition._id);
     if(uploadButtonState == "error"){
       return "btn-danger";

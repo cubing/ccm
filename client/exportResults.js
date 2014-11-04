@@ -4,8 +4,8 @@ Meteor.startup(function(){
 
 Template.exportResults.helpers({
   wcaResultsJson: function(){
-    var competition = this;
-    var wcaResults = exportWcaResultsObj(competition._id);
+    var competition = this.competition;
+    var wcaResults = exportWcaResultsObj(competition);
     var wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
     return wcaResultsJson;
   },
@@ -14,18 +14,13 @@ Template.exportResults.helpers({
   }
 });
 
-function exportWcaResultsObj(competitionId){
+function exportWcaResultsObj(competition){
   var problems = [];
 
-  var competition = Competitions.findOne({ _id: competitionId });
-  if(!competition){
-    return {};
-  }
-
   var uploadScramblesRoute = Router.routes.uploadScrambles;
-  var uploadScramblesPath = uploadScramblesRoute.path({ competitionId: competition._id });
+  var uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competition._id });
 
-  var groups = Groups.find({ competitionId: competitionId }).fetch();
+  var groups = Groups.find({ competitionId: competition._id }).fetch();
   var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
   if(scramblePrograms.length > 1){
     // TODO - more details
@@ -59,7 +54,7 @@ function exportWcaResultsObj(competitionId){
   _.toArray(wca.eventByCode).forEach(function(e, i){
     var wcaRounds = [];
     Rounds.find({
-      competitionId: competitionId,
+      competitionId: competition._id,
       eventCode: e.code
     }).forEach(function(round){
       var wcaResults = [];
