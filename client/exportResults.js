@@ -1,6 +1,4 @@
-Meteor.startup(function(){
-  Session.set('exportResults-problems', null);
-});
+var exportProblems = new ReactiveVar(null);
 
 Template.exportResults.helpers({
   wcaResultsJson: function(){
@@ -10,7 +8,7 @@ Template.exportResults.helpers({
     return wcaResultsJson;
   },
   problems: function(){
-    return Session.get("exportResults-problems");
+    return exportProblems.get();
   }
 });
 
@@ -117,6 +115,6 @@ function exportWcaResultsObj(competition){
     "events": wcaEvents
   };
 
-  Session.set("exportResults-problems", problems);
+  exportProblems.set(problems);
   return wcaResults;
 }

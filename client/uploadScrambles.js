@@ -1,6 +1,5 @@
-Meteor.startup(function(){
-  Session.set('uploadScrambles-uploadedScrambleSets', null);
-});
+var scrambleSetsReact = new ReactiveVar(null);
+var tnoodleStatusReact = new ReactiveVar(null);
 
 function getWarningForSheet(competitionId, sheet){
   var round = findRoundForSheet(competitionId, sheet);
@@ -18,24 +17,24 @@ function getWarningForSheet(competitionId, sheet){
 }
 
 function getUploadButtonState(competitionId){
-  var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
-  if(!uploadedScrambleSets || uploadedScrambleSets.length === 0){
+  var scrambleSets = scrambleSetsReact.get();
+  if(!scrambleSets || scrambleSets.length === 0){
     return "disabled";
   }
 
-  var error = _.some(uploadedScrambleSets, function(uploadedScrambleSet){
-    return uploadedScrambleSet.error;
+  var error = _.some(scrambleSets, function(scrambleSet){
+    return scrambleSet.error;
   });
   if(error){
     return "error";
   }
 
-  var warnings = _.some(uploadedScrambleSets, function(uploadedScrambleSet){
+  var warnings = _.some(scrambleSets, function(scrambleSet){
 
-    if(!uploadedScrambleSet.tnoodleScrambles){
+    if(!scrambleSet.tnoodleScrambles){
       return false;
     }
-    return _.some(uploadedScrambleSet.tnoodleScrambles.sheets, function(sheet){
+    return _.some(scrambleSet.tnoodleScrambles.sheets, function(sheet){
       return getWarningForSheet(competitionId, sheet);
     });
   });
@@ -66,9 +65,9 @@ function pollTNoodleStatus(){
   $.ajax({
     url: TNOODLE_VERSION_URL
   }).done(function(data){
-    Session.set("tnoodleStatus", data);
+    tnoodleStatusReact.set(data);
   }).fail(function(){
-    Session.set("tnoodleStatus", null);
+    tnoodleStatusReact.set(null);
   });
   tnoodleStatusPoller = setTimeout(pollTNoodleStatus, TNOODLE_VERSION_POLL_FREQUENCY_MILLIS);
 }
@@ -122,36 +121,38 @@ function extractJsonFromZip(filename, zipId, pw, cb){
   });
 }
 
+Template.uploadScrambles.created = function(){
+  startPollingTNoodleStatus();
+};
+
+Template.uploadScrambles.destroyed = function(){
+  stopPollingTNoodleStatus();
+};
+
 Template.uploadScrambles.events({
-  'show.bs.modal .modal': function(e){
-    startPollingTNoodleStatus();
-  },
-  'hide.bs.modal .modal': function(e){
-    stopPollingTNoodleStatus();
-  },
   'change input[type="file"]': function(e, t){
     var fileInput = e.currentTarget;
     // Convert FileList to javascript array
     var files = _.map(fileInput.files, _.identity);
-    var uploadedScrambleSets = [];
+    var scrambleSets = [];
 
     files.forEach(function(file, index){
-      var uploadedScrambleSet = {
+      var scrambleSet = {
         index: index,
         file: file,
         error: null
       };
-      uploadedScrambleSets.push(uploadedScrambleSet);
+      scrambleSets.push(scrambleSet);
 
       var addScramblesJsonStr = function(jsonStr){
         var scrambleData;
         try{
           scrambleData = JSON.parse(jsonStr);
-          uploadedScrambleSet.tnoodleScrambles = scrambleData;
-          Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+          scrambleSet.tnoodleScrambles = scrambleData;
+          scrambleSetsReact.set(scrambleSets);
         }catch(e){
-          uploadedScrambleSet.error = "Failed to parse JSON in:\n" + file.name + "\n\n" + e;
-          Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+          scrambleSet.error = "Failed to parse JSON in:\n" + file.name + "\n\n" + e;
+          scrambleSetsReact.set(scrambleSets);
           throw e;
         }
       };
@@ -174,14 +175,14 @@ Template.uploadScrambles.events({
         }else if(isZip){
           Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId){
             if(error){
-              uploadedScrambleSet.error = error;
-              Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+              scrambleSet.error = error;
+              scrambleSetsReact.set(scrambleSets);
               throw error;
             }
             extractJsonFromZip(file.name, zipId, null, function(error, jsonStr){
               if(error){
-                uploadedScrambleSet.error = error;
-                Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+                scrambleSet.error = error;
+                scrambleSetsReact.set(scrambleSets);
                 throw error;
               }
               addScramblesJsonStr(jsonStr);
@@ -197,11 +198,11 @@ Template.uploadScrambles.events({
       }else if(isZip){
         reader.readAsBinaryString(file);
       }else{
-        uploadedScrambleSet.error = "Unrecognized file extension:\n" + file.name;
-        Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+        scrambleSet.error = "Unrecognized file extension:\n" + file.name;
+        scrambleSetsReact.set(scrambleSets);
       }
     });
-    Session.set("uploadScrambles-uploadedScrambleSets", uploadedScrambleSets);
+    scrambleSetsReact.set(scrambleSets);
     // Clear selected files so a subsequent select of the same files
     // will fire an event. Note that we *don't* fire a change event
     // here.
@@ -210,13 +211,13 @@ Template.uploadScrambles.events({
   'click #buttonUploadScrambles': function(e, t){
     var competition = this.competition;
 
-    var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
+    var scrambleSets = scrambleSetsReact.get();
 
-    uploadedScrambleSets.forEach(function(uploadedScrambleSet){
-      if(!uploadedScrambleSet.tnoodleScrambles){
+    scrambleSets.forEach(function(scrambleSet){
+      if(!scrambleSet.tnoodleScrambles){
         return;
       }
-      var tnoodleScrambles = uploadedScrambleSet.tnoodleScrambles;
+      var tnoodleScrambles = scrambleSet.tnoodleScrambles;
       tnoodleScrambles.sheets.forEach(function(sheet){
         var round = findRoundForSheet(competition._id, sheet);
         if(!round){
@@ -253,10 +254,10 @@ Template.uploadScrambles.rendered = function(){
 Template.uploadScrambles.helpers({
   tnoodleVersionUrl: TNOODLE_VERSION_URL,
   tnoodleStatus: function(){
-    return Session.get("tnoodleStatus");
+    return tnoodleStatusReact.get();
   },
   tnoodleRunningVersionAllowed: function(){
-    var tnoodleStatus = Session.get("tnoodleStatus");
+    var tnoodleStatus = tnoodleStatusReact.get();
     if(!tnoodleStatus){
       return false;
     }
@@ -294,8 +295,7 @@ Template.uploadScrambles.helpers({
     return url;
   },
   uploadedScrambleSets: function(){
-    var uploadedScrambleSets = Session.get("uploadScrambles-uploadedScrambleSets");
-    return uploadedScrambleSets;
+    return scrambleSetsReact.get();
   },
   warningForUploadedSheet: function(){
     var competition = Template.parentData(2).competition;
