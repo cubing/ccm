@@ -28,24 +28,21 @@ Meteor.publish('competition', function(competitionUrlId){
     Competitions.find({ _id: competition._id }),
     Rounds.find({ competitionId: competition._id }),
     Results.find({ competitionId: competition._id }),
-    Meteor.users.find(
-      {
-        _id: {
-          $in: _.pluck(competition.competitors, "_id")
-        }
-      },
-      {
-        fields: {
-          _id: 1,
-          username: 1,
-          "profile.name": 1,
-          "profile.wcaId": 1,
-          "profile.countryId": 1,
-          "profile.gender": 1,
-          "profile.dob": 1,
-        }
+    Meteor.users.find({
+      _id: {
+        $in: _.pluck(competition.competitors, "_id")
       }
-    )
+    }, {
+      fields: {
+        _id: 1,
+        username: 1,
+        "profile.name": 1,
+        "profile.wcaId": 1,
+        "profile.countryId": 1,
+        "profile.gender": 1,
+        "profile.dob": 1,
+      }
+    })
   ];
 });
 

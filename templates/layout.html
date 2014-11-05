@@ -26,21 +26,23 @@
           {{#if currentUser}}
             {{#if competition}}
               {{! TODO - only display if I am staff or an organizer for this comp }}
-              <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
-                <a href="{{pathFor 'manageCompetition'}}">Manage</a>
-              </li>
-              <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
-                <a class="brand" href="{{pathFor 'uploadScrambles' competitionUrlId=competitionUrlId}}"
-                   data-toggle="tooltip" data-placement="bottom" title="Upload scrambles">
-                  <img src="/img/tnoodle_logo.svg" />
-                </a>
-              </li>
-              <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}}">
-                <a class="brand" href="{{pathFor 'exportResults' competitionUrlId=competitionUrlId}}"
-                   data-toggle="tooltip" data-placement="bottom" title="Export results">
-                  <img src="/img/WCAlogo_notext.svg" />
-                </a>
-              </li>
+              {{#if isOrganizer currentUser competition}}
+                <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
+                  <a href="{{pathFor 'manageCompetition'}}">Manage</a>
+                </li>
+                <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
+                  <a class="brand" href="{{pathFor 'uploadScrambles' competitionUrlId=competitionUrlId}}"
+                     data-toggle="tooltip" data-placement="bottom" title="Upload scrambles">
+                    <img src="/img/tnoodle_logo.svg" />
+                  </a>
+                </li>
+                <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}}">
+                  <a class="brand" href="{{pathFor 'exportResults' competitionUrlId=competitionUrlId}}"
+                     data-toggle="tooltip" data-placement="bottom" title="Export results">
+                    <img src="/img/WCAlogo_notext.svg" />
+                  </a>
+                </li>
+              {{/if}}
             {{/if}}
             <li>
               <a href="{{pathFor 'newCompetition'}}"

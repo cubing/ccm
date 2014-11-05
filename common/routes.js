@@ -84,7 +84,9 @@ Router.map(function(){
       }, {
         fields: {
           wcaCompetitionId: 1,
-          competitionName: 1
+          competitionName: 1,
+          organizers: 1,
+          staff: 1
         }
       });
       if(!competition) {
@@ -115,7 +117,9 @@ Router.map(function(){
       }, {
         fields: {
           wcaCompetitionId: 1,
-          competitionName: 1
+          competitionName: 1,
+          organizers: 1,
+          staff: 1
         }
       });
       if(!competition){
@@ -155,7 +159,9 @@ Router.map(function(){
       }, {
         fields: {
           wcaCompetitionId: 1,
-          competitionName: 1
+          competitionName: 1,
+          organizers: 1,
+          staff: 1
         }
       });
       if(!competition){
