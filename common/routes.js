@@ -53,11 +53,17 @@ ManageCompetitionController = RouteController.extend({
 });
 
 ViewCompetitionController = RouteController.extend({
-  notFoundTemplate: "competitionNotFound",
   waitOn: function(){
     return Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this));
   },
   data: function(){
+    if(!this.ready()){
+      // We explicitly render *NotFound templates based on what's missing, and
+      // that steps on the toes of iron-router's loading hook. If we're not
+      // ready, just do nothing and let the loading hook render our
+      // loadingTemplate.
+      return;
+    }
     var competitionUrlId = this.params.competitionUrlId;
     var competition = Competitions.findOne({
       $or: [
@@ -73,7 +79,8 @@ ViewCompetitionController = RouteController.extend({
       }
     });
     if(!competition) {
-      return null;
+      this.render('competitionNotFound');
+      return;
     }
     return {
       competition: competition,
@@ -131,7 +138,8 @@ Router.route('/:competitionUrlId/:eventCode/:roundCode', {
       roundCode: roundCode
     });
     if(!round) {
-      return null;
+      this.render('roundNotFound');
+      return;
     }
     data.round = round;
     return data;
@@ -153,7 +161,8 @@ Router.route('/:competitionUrlId/:competitorName', {
       "profile.name": userName
     });
     if(!user) {
-      return null;
+      this.render('competitorNotFound');
+      return;
     }
     data.user = user;
     return data;
