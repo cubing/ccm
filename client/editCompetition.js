@@ -19,6 +19,12 @@ Template.editCompetition.events({
     var competitionId = this._id;
     setCompetitionAttribute(competitionId, attribute, value);
   },
+  'changeDate #datepicker input': function(e){
+    var attribute = e.currentTarget.name;
+    var value = e.date;
+    var competitionId = this._id;
+    setCompetitionAttribute(competitionId, attribute, value);
+  },
   'change input[type="checkbox"]': function(e){
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
@@ -53,34 +59,28 @@ Template.editCompetition.events({
       }
     });
   },
-  'changeDate #datepicker input': function(e){
-    var attribute = e.currentTarget.name;
-    var value = e.date;
-    var competitionId = this._id;
-    setCompetitionAttribute(competitionId, attribute, value);
-  },
 });
 
 Template.editCompetition.rendered = function(){
-  var that = this;
+  var template = this;
 
   // Explicitly initialize the datepicker before we try to initialize the
   // start and end dates below (if we don't do this first, the start and end
   // dates will initialize as independent, unconnected pickers).
-  that.$('#datepicker').datepicker();
+  template.$('#datepicker').datepicker();
 
-  Tracker.autorun(function(){
+  template.autorun(function(){
     var competition = Competitions.findOne({
-      _id: that.data.competition._id
+      _id: template.data.competition._id
     }, {
       fields: {
         startDate: 1,
         endDate: 1
       }
     });
-    var inputStartDate = that.$('#datepicker input[name="startDate"]');
+    var inputStartDate = template.$('#datepicker input[name="startDate"]');
     inputStartDate.datepicker('update', competition.startDate);
-    var inputEndDate = that.$('#datepicker input[name="endDate"]');
+    var inputEndDate = template.$('#datepicker input[name="endDate"]');
     inputEndDate.datepicker('update', competition.endDate);
   });
 };
