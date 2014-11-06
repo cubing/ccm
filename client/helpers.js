@@ -31,6 +31,9 @@ getRoundAttribute = function(roundId, attribute){
 Template.registerHelper("competition", function(attribute){
   return getCompetitionAttribute(this.competitionId, attribute);
 });
+Template.registerHelper("competitionListed", function() {
+  return getCompetitionAttribute(this.competitionId, 'listed');
+});
 
 Template.registerHelper("roundEventCode", function(){
   return getRoundAttribute(this.roundId, 'eventCode');

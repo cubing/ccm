@@ -28,6 +28,10 @@ Template.editCompetition.events({
     var value = e.currentTarget.checked;
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
+  'click #toggleCompetitionListed': function(e) {
+    var listed = getCompetitionAttribute(this.competitionId, 'listed');
+    setCompetitionAttribute(this.competitionId, 'listed', !listed);
+  },
   'click button[name="buttonDeleteCompetition"]': function(e){
     Meteor.call("deleteCompetition", this.competitionId, function(err, data){
       if(err) {
