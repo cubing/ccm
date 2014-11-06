@@ -96,6 +96,10 @@ Router.route('/', {
   }
 });
 
+Router.route('/settings/profile', {
+  name: 'editProfile'
+});
+
 Router.route('/new', {
   name: 'newCompetition'
 });
