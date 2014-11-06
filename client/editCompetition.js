@@ -1,19 +1,29 @@
+function setCompetitionAttribute(competitionId, attribute, value){
+  // Coerce value to be null, because
+  //  { $unset: { field: undefined } }
+  // doesn't seem to work.
+  value = value || null;
+  var toSet = {};
+  toSet[attribute] = value;
+  var update = value ? { $set: toSet } : { $unset: toSet };
+  Competitions.update({ _id: competitionId }, update);
+}
+
 Template.editCompetition.events({
   'input input[type="text"]': function(e){
+    if($(e.currentTarget).parent().hasClass('input-daterange')){
+      return;
+    }
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.value;
-    var toSet = {};
-    toSet[attribute] = value;
     var competitionId = this._id;
-    Competitions.update({ _id: competitionId }, { $set: toSet });
+    setCompetitionAttribute(competitionId, attribute, value);
   },
   'change input[type="checkbox"]': function(e){
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
-    var toSet = {};
-    toSet[attribute] = value;
     var competitionId = this._id;
-    Competitions.update({ _id: competitionId }, { $set: toSet });
+    setCompetitionAttribute(competitionId, attribute, value);
   },
   'click button[name="buttonDeleteCompetition"]': function(e){
     var competition = this;
@@ -43,7 +53,37 @@ Template.editCompetition.events({
       }
     });
   },
+  'changeDate #datepicker input': function(e){
+    var attribute = e.currentTarget.name;
+    var value = e.date;
+    var competitionId = this._id;
+    setCompetitionAttribute(competitionId, attribute, value);
+  },
 });
+
+Template.editCompetition.rendered = function(){
+  var that = this;
+
+  // Explicitly initialize the datepicker before we try to initialize the
+  // start and end dates below (if we don't do this first, the start and end
+  // dates will initialize as independent, unconnected pickers).
+  that.$('#datepicker').datepicker();
+
+  Tracker.autorun(function(){
+    var competition = Competitions.findOne({
+      _id: that.data.competition._id
+    }, {
+      fields: {
+        startDate: 1,
+        endDate: 1
+      }
+    });
+    var inputStartDate = that.$('#datepicker input[name="startDate"]');
+    inputStartDate.datepicker('update', competition.startDate);
+    var inputEndDate = that.$('#datepicker input[name="endDate"]');
+    inputEndDate.datepicker('update', competition.endDate);
+  });
+};
 
 var eventCountPerRowByDeviceSize = {
   xs: 1,

@@ -76,7 +76,9 @@ if(Meteor.isServer) {
         'competitionName',
         'wcaCompetitionId',
         'organizers',
-        'staff'
+        'staff',
+        'startDate',
+        'endDate',
       ];
 
       // TODO - see https://github.com/jfly/gjcomps/issues/10
