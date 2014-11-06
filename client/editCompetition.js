@@ -16,24 +16,20 @@ Template.editCompetition.events({
     }
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.value;
-    var competitionId = this._id;
-    setCompetitionAttribute(competitionId, attribute, value);
+    setCompetitionAttribute(this.competitionId, attribute, value);
   },
   'changeDate #datepicker input': function(e){
     var attribute = e.currentTarget.name;
     var value = e.date;
-    var competitionId = this._id;
-    setCompetitionAttribute(competitionId, attribute, value);
+    setCompetitionAttribute(this.competitionId, attribute, value);
   },
   'change input[type="checkbox"]': function(e){
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
-    var competitionId = this._id;
-    setCompetitionAttribute(competitionId, attribute, value);
+    setCompetitionAttribute(this.competitionId, attribute, value);
   },
   'click button[name="buttonDeleteCompetition"]': function(e){
-    var competition = this;
-    Meteor.call("deleteCompetition", competition._id, function(err, data){
+    Meteor.call("deleteCompetition", this.competitionId, function(err, data){
       if(err) {
         throw err;
       }
@@ -71,7 +67,7 @@ Template.editCompetition.rendered = function(){
 
   template.autorun(function(){
     var competition = Competitions.findOne({
-      _id: template.data.competition._id
+      _id: template.data.competitionId
     }, {
       fields: {
         startDate: 1,
@@ -98,11 +94,11 @@ var eventCountPerRowByDeviceSize = {
 };
 Template.editCompetition.helpers({
   events: function(){
-    var competitionId = this._id;
+    var that = this;
     var events = _.map(_.toArray(wca.eventByCode), function(e, i){
       return {
         index: i,
-        competitionId: competitionId,
+        competitionId: that.competitionId,
         eventCode: e.code,
         eventName: e.name
       };

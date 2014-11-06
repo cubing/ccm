@@ -265,17 +265,15 @@ Template.uploadScrambles.helpers({
   },
 
   roundsWithoutScrambles: function(){
-    var competition = this.competition;
-    var roundsWithoutScrambles = getRoundsWithoutScrambles(competition._id);
+    var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
     return roundsWithoutScrambles;
   },
   generateMissingScramblesUrl: function(){
-    var competition = this.competition;
-    var roundsWithoutScrambles = getRoundsWithoutScrambles(competition._id);
+    var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
 
     var params = {};
     params.version = "1.0";
-    params.competitionName = competition.competitionName;
+    params.competitionName = getCompetitionAttribute(this.competitionId, 'competitionName');
 
     var events = [];
     roundsWithoutScrambles.forEach(function(round){
@@ -298,14 +296,13 @@ Template.uploadScrambles.helpers({
     return scrambleSetsReact.get();
   },
   warningForUploadedSheet: function(){
-    var competition = Template.parentData(2).competition;
+    var competitionId = Template.parentData(2).competitionId;
     var sheet = this;
-    var warning = getWarningForSheet(competition._id, sheet);
+    var warning = getWarningForSheet(competitionId, sheet);
     return warning;
   },
   uploadWarning: function(){
-    var competition = this.competition;
-    var uploadButtonState = getUploadButtonState(competition._id);
+    var uploadButtonState = getUploadButtonState(this.competitionId);
     if(uploadButtonState == "error"){
       return "Errors detected, see above for details";
     } else if(uploadButtonState == "warning"){
@@ -317,8 +314,7 @@ Template.uploadScrambles.helpers({
     }
   },
   classForUploadButton: function(){
-    var competition = this.competition;
-    var uploadButtonState = getUploadButtonState(competition._id);
+    var uploadButtonState = getUploadButtonState(this.competitionId);
     if(uploadButtonState == "error"){
       return "btn-danger";
     } else if(uploadButtonState == "warning"){

@@ -41,13 +41,17 @@ ManageCompetitionController = RouteController.extend({
         { _id: competitionUrlId },
         { wcaCompetitionId: competitionUrlId }
       ]
+    }, {
+      fields: {
+        _id: 1
+      }
     });
     if(!competition) {
       return null;
     }
     return {
       competitionUrlId: competitionUrlId,
-      competition: competition
+      competitionId: competition._id
     };
   }
 });
@@ -72,10 +76,7 @@ ViewCompetitionController = RouteController.extend({
       ]
     }, {
       fields: {
-        wcaCompetitionId: 1,
-        competitionName: 1,
-        organizers: 1,
-        staff: 1
+        _id: 1
       }
     });
     if(!competition) {
@@ -83,8 +84,8 @@ ViewCompetitionController = RouteController.extend({
       return;
     }
     return {
-      competition: competition,
-      competitionUrlId: competitionUrlId
+      competitionUrlId: competitionUrlId,
+      competitionId: competition._id,
     };
   }
 });
@@ -137,15 +138,19 @@ Router.route('/:competitionUrlId/:eventCode/:roundCode', {
     }
 
     var round = Rounds.findOne({
-      competitionId: data.competition._id,
+      competitionId: data.competitionId,
       eventCode: eventCode,
       roundCode: roundCode
+    }, {
+      fields: {
+        _id: 1
+      }
     });
     if(!round) {
       this.render('roundNotFound');
       return;
     }
-    data.round = round;
+    data.roundId = round._id;
     return data;
   }
 });

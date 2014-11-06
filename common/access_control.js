@@ -1,12 +1,3 @@
-if(Meteor.isClient){
-  Template.registerHelper("isOrganizer", function(user, competition){
-    return _.contains(competition.organizers, user._id);
-  });
-  Template.registerHelper("isStaff", function(roundCode){
-    return _.contains(competition.staff, user._id);
-  });
-}
-
 throwUnlessOrganizer = function(userId, competitionUrlId){
   if(!userId){
     throw new Meteor.Error(401, "Must log in");
@@ -60,6 +51,10 @@ canAddRound = function(userId, competitionId, eventCode){
   var rounds = Rounds.find({
     competitionId: competitionId,
     eventCode: eventCode
+  }, {
+    fields: {
+      _id: 1
+    }
   });
   var nthRound = rounds.count();
   return nthRound < wca.maxRoundsPerEvent;

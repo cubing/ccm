@@ -1,8 +1,12 @@
 Template.competition.helpers({
   events: function(){
-    var competition = this.competition;
     var rounds = Rounds.find({
-      competitionId: competition._id
+      competitionId: this.competitionId
+    }, {
+      fields: {
+        eventCode: 1,
+        competitionId: 1,
+      }
     }).fetch();
 
     var events = _.uniq(rounds, function(e){ return e.eventCode; });
@@ -13,6 +17,11 @@ Template.competition.helpers({
     var rounds = Rounds.find({
       competitionId: this.competitionId,
       eventCode: this.eventCode
+    }, {
+      fields: {
+        roundCode: 1,
+        eventCode: 1,
+      }
     });
     return rounds;
   }

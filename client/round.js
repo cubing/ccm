@@ -1,19 +1,20 @@
 Template.round.helpers({
   results: function(){
-    var results = Results.find(
-      { competitionId: this.competition._id, roundId: this.round._id }
-    );
+    var results = Results.find({
+      competitionId: this.competitionId,
+      roundId: this.roundId,
+    });
     return results;
   },
 
   competitorName: function(){
-    var user = Meteor.users.findOne(
-      { _id: this.userId },
-      { fields: {"profile.name": 1} }
-    );
-    if(!user){
-      return null;
-    }
+    var user = Meteor.users.findOne({
+      _id: this.userId
+    }, {
+      fields: {
+        "profile.name": 1
+      }
+    });
     return user.profile.name;
   }
 });

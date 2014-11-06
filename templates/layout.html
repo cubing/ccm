@@ -16,7 +16,7 @@
         </button>
         <a class="navbar-brand" href="/">live.cubing.net</a>
         {{#if competitionUrlId}}
-          <a class="navbar-brand" href="{{pathFor 'competition' competitionUrlId=competitionUrlId}}">{{competition.competitionName}}</a>
+          <a class="navbar-brand" href="{{pathFor 'competition' competitionUrlId=competitionUrlId}}">{{competition 'competitionName'}}</a>
         {{/if}}
       </div>
 
@@ -24,9 +24,9 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
           {{#if currentUser}}
-            {{#if competition}}
+            {{#if competitionId}}
               {{! TODO - only display if I am staff or an organizer for this comp }}
-              {{#if isOrganizer currentUser competition}}
+              {{#if isOrganizer currentUser}}
                 <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}">Manage</a>
                 </li>

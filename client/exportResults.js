@@ -3,7 +3,7 @@ var exportProblems = new ReactiveVar(null);
 Template.exportResults.helpers({
   wcaResultsJson: function(){
     var competition = this.competition;
-    var wcaResults = exportWcaResultsObj(competition);
+    var wcaResults = exportWcaResultsObj(this.competitionId, this.competitionUrlId);
     var wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
     return wcaResultsJson;
   },
@@ -12,13 +12,13 @@ Template.exportResults.helpers({
   }
 });
 
-function exportWcaResultsObj(competition){
+function exportWcaResultsObj(competitionId, competitionUrlId){
   var problems = [];
 
   var uploadScramblesRoute = Router.routes.uploadScrambles;
-  var uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competition._id });
+  var uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competitionUrlId });
 
-  var groups = Groups.find({ competitionId: competition._id }).fetch();
+  var groups = Groups.find({ competitionId: competitionId }).fetch();
   var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
   if(scramblePrograms.length > 1){
     // TODO - more details
@@ -30,9 +30,10 @@ function exportWcaResultsObj(competition){
   }
   var scrambleProgram = scramblePrograms[0];
 
+  var competitors = getCompetitionAttribute(competitionId, 'competitors');
   var users = Meteor.users.find({
     _id: {
-      $in: _.pluck(competition.competitors, "_id")
+      $in: _.pluck(competitors, "_id")
     }
   }).fetch();
   // TODO - compare this list of people to the people who *actually* competed
@@ -52,7 +53,7 @@ function exportWcaResultsObj(competition){
   _.toArray(wca.eventByCode).forEach(function(e, i){
     var wcaRounds = [];
     Rounds.find({
-      competitionId: competition._id,
+      competitionId: competitionId,
       eventCode: e.code
     }).forEach(function(round){
       var wcaResults = [];
@@ -107,9 +108,10 @@ function exportWcaResultsObj(competition){
     wcaEvents.push(wcaEvent);
   });
 
+  var wcaCompetitionId = getCompetitionAttribute(competitionId, 'wcaCompetitionId');
   var wcaResults = {
     "formatVersion": "WCA Competition 0.2",
-    "competitionId": competition.wcaCompetitionId,
+    "competitionId": wcaCompetitionId,
     "scrambleProgram": scrambleProgram,
     "persons": wcaPersons,
     "events": wcaEvents

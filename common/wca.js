@@ -1,20 +1,5 @@
 wca = {};
 
-if(Meteor.isClient){
-  Template.registerHelper("roundName", function(roundCode){
-    return wca.roundByCode[roundCode].name;
-  });
-  Template.registerHelper("eventName", function(eventCode){
-    return wca.eventByCode[eventCode].name;
-  });
-  Template.registerHelper("eventIcon", function(eventCode){
-    return "/img/" + eventCode + ".svg";
-  });
-  Template.registerHelper("formatName", function(formatCode){
-    return wca.formatByCode[formatCode].name;
-  });
-}
-
 // We don't support qualification rounds (combined or uncombined), and we do
 // not support B Finals.
 wca.supportedRounds = [
