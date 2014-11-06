@@ -78,10 +78,15 @@ Template.editCompetition.rendered = function(){
         endDate: 1
       }
     });
-    var inputStartDate = template.$('#datepicker input[name="startDate"]');
-    inputStartDate.datepicker('update', competition.startDate);
-    var inputEndDate = template.$('#datepicker input[name="endDate"]');
-    inputEndDate.datepicker('update', competition.endDate);
+
+    var $datepicker = template.$('#datepicker');
+    var $inputStartDate = $datepicker.find('input[name="startDate"]');
+    $inputStartDate.datepicker('update', competition.startDate);
+    var $inputEndDate = $datepicker.find('input[name="endDate"]');
+    $inputEndDate.datepicker('update', competition.endDate);
+
+    // Force redraw so we can see the start and end of the date range
+    $datepicker.datepicker('updateDates');
   });
 };
 

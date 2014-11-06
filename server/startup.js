@@ -10,7 +10,8 @@ Meteor.startup(function(){
     competitors: [],
     staff: [],
     organizers: [],
-    listed: false
+    listed: false,
+    startDate: new Date(),
   };
   Competitions.upsert(
     { wcaCompetitionId: competition.wcaCompetitionId },
