@@ -134,10 +134,25 @@ Template.editCompetition.helpers({
     });
     return rounds;
   },
+  competitorCount: function(){
+    var results = Results.find({
+      competitionId: this.competitionId,
+      roundId: this._id
+    }, {
+      fields: {
+        _id: 1
+      }
+    });
+    return results.count();
+  },
   roundProgressPercentage: function(){
     var results = Results.find({
       competitionId: this.competitionId,
       roundId: this._id
+    }, {
+      fields: {
+        solves: 1
+      }
     });
     var solves = _.chain(results.fetch())
       .pluck("solves")
