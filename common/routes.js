@@ -31,6 +31,7 @@ ManageCompetitionController = RouteController.extend({
   waitOn: function(){
     return [
       Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+      // TODO - we only need scrambles on the uploadScrambles route
       Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this))
     ];
   },
@@ -116,6 +117,10 @@ Router.route('/:competitionUrlId/manage/uploadScrambles', {
 });
 Router.route('/:competitionUrlId/manage/exportResults', {
   name: 'exportResults',
+  controller: 'ManageCompetitionController',
+});
+Router.route('/:competitionUrlId/manage/schedule', {
+  name: 'editSchedule',
   controller: 'ManageCompetitionController',
 });
 

@@ -30,6 +30,12 @@
                 <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}">Manage</a>
                 </li>
+                <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}}">
+                  <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}"
+                    data-toggle="tooltip" data-placement="bottom" title="Manage schedule">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                  </a>
+                </li>
                 <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
                   <a class="brand" href="{{pathFor 'uploadScrambles' competitionUrlId=competitionUrlId}}"
                      data-toggle="tooltip" data-placement="bottom" title="Upload scrambles">
@@ -44,7 +50,7 @@
                 </li>
               {{/if}}
             {{/if}}
-            <li>
+            <li class="{{#if isActiveRoute 'newCompetition'}}active{{/if}}">
               <a href="{{pathFor 'newCompetition'}}"
                  data-toggle="tooltip" data-placement="bottom" title="New competition">
                 <span class="glyphicon glyphicon-plus"></span>
