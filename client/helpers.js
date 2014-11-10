@@ -61,14 +61,14 @@ Template.registerHelper("competitionStartTime", function() {
 Template.registerHelper("competitionEndTime", function() {
   return getCompetitionEndTime(this.competitionId);
 });
-function prettyTimeFromMinutes(timeMinutes) {
+prettyTimeFromMinutes = function(timeMinutes) {
   var duration = moment.duration(timeMinutes, 'minutes');
   var timeMoment = moment({
     hour: duration.hours(),
     minutes: duration.minutes(),
   });
   return timeMoment.format("h:mma");
-}
+};
 Template.registerHelper("competitionStartTimePretty", function() {
   var timeMinutes = getCompetitionStartTime(this.competitionId);
   return prettyTimeFromMinutes(timeMinutes);

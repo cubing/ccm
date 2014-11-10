@@ -35,24 +35,22 @@ Template.editSchedule.rendered = function(){
   // Enable the start and stop time pickers
   template.$('#startEndTime input').timepicker({
     selectOnBlur: true,
-    showDuration: true,
     maxTime: '11:30pm',
   });
-
-  // Link the start and stop time pickers so the end is always after the start
-  var timeOnlyDatepair = new Datepair($('#startEndTime')[0]);
+  template.autorun(function() {
+    var startTime = getCompetitionAttribute(template.data.competitionId, 'startTime');
+    var startTimePretty = prettyTimeFromMinutes(startTime);
+    var $endTime = template.$('#startEndTime input.end');
+    $endTime.timepicker('option', {
+      minTime: startTimePretty,
+    });
+  });
 
   template.autorun(function(){
-    var competition = Competitions.findOne({
-      _id: template.data.competitionId
-    }, {
-      fields: {
-        startDate: 1
-      }
-    });
+    var startDate = getCompetitionAttribute(template.data.competitionId, 'startDate');
 
     var $startDatePicker = template.$('#startDatePicker');
-    $startDatePicker.datepicker('update', competition.startDate);
+    $startDatePicker.datepicker('update', startDate);
   });
 
   template.autorun(function(){
