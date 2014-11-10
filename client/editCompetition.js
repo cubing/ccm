@@ -1,4 +1,4 @@
-function setCompetitionAttribute(competitionId, attribute, value){
+setCompetitionAttribute = function(competitionId, attribute, value){
   // Coerce value to be null, because
   //  { $unset: { field: undefined } }
   // doesn't seem to work.
@@ -7,7 +7,7 @@ function setCompetitionAttribute(competitionId, attribute, value){
   toSet[attribute] = value;
   var update = value ? { $set: toSet } : { $unset: toSet };
   Competitions.update({ _id: competitionId }, update);
-}
+};
 
 Template.editCompetition.events({
   'input input[type="text"]': function(e){
@@ -16,11 +16,6 @@ Template.editCompetition.events({
     }
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.value;
-    setCompetitionAttribute(this.competitionId, attribute, value);
-  },
-  'changeDate #datepicker input': function(e){
-    var attribute = e.currentTarget.name;
-    var value = e.date;
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
   'change input[type="checkbox"]': function(e){
@@ -60,35 +55,6 @@ Template.editCompetition.events({
     });
   },
 });
-
-Template.editCompetition.rendered = function(){
-  var template = this;
-
-  // Explicitly initialize the datepicker before we try to initialize the
-  // start and end dates below (if we don't do this first, the start and end
-  // dates will initialize as independent, unconnected pickers).
-  template.$('#datepicker').datepicker();
-
-  template.autorun(function(){
-    var competition = Competitions.findOne({
-      _id: template.data.competitionId
-    }, {
-      fields: {
-        startDate: 1,
-        endDate: 1
-      }
-    });
-
-    var $datepicker = template.$('#datepicker');
-    var $inputStartDate = $datepicker.find('input[name="startDate"]');
-    $inputStartDate.datepicker('update', competition.startDate);
-    var $inputEndDate = $datepicker.find('input[name="endDate"]');
-    $inputEndDate.datepicker('update', competition.endDate);
-
-    // Force redraw so we can see the start and end of the date range
-    $datepicker.datepicker('updateDates');
-  });
-};
 
 var eventCountPerRowByDeviceSize = {
   xs: 1,
@@ -179,7 +145,19 @@ Template.editCompetition.helpers({
   },
   formats: function(){
     return wca.formatsByEventCode[this.eventCode];
-  }
+  },
+  scheduleDescription: function() {
+    var startDate = getCompetitionAttribute(this.competitionId, 'startDate');
+    if(!startDate) {
+      return "Unscheduled";
+    }
+    startDate = moment(startDate);
+    var numberOfDays = getCompetitionAttribute(this.competitionId, 'numberOfDays');
+    var endDate = startDate.clone().add(numberOfDays, 'days').subtract(1);
+    var formatStr = "MMMM D, YYYY";
+    var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
+    return startDate.fromNow() + " (" + rangeStr + ")";
+  },
 });
 
 function getSelectedUser(t){

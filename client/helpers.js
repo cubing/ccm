@@ -28,11 +28,54 @@ getRoundAttribute = function(roundId, attribute){
   return getDocumentAttribute(Rounds, roundId, attribute);
 };
 
+getCompetitionNumberOfDays = function(competitionId) {
+  var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
+  numberOfDays = parseInt(numberOfDays);
+  return numberOfDays || 1;
+};
+
+getCompetitionStartTime = function(competitionId) {
+  var startTime = getCompetitionAttribute(competitionId, 'startTime');
+  startTime = startTime || 0;
+  return startTime;
+};
+
+getCompetitionEndTime = function(competitionId) {
+  var endTime = getCompetitionAttribute(competitionId, 'endTime');
+  endTime = endTime || 0;
+  return endTime;
+};
+
 Template.registerHelper("competition", function(attribute){
   return getCompetitionAttribute(this.competitionId, attribute);
 });
 Template.registerHelper("competitionListed", function() {
   return getCompetitionAttribute(this.competitionId, 'listed');
+});
+Template.registerHelper("competitionNumberOfDays", function() {
+  return getCompetitionNumberOfDays(this.competitionId);
+});
+Template.registerHelper("competitionStartTime", function() {
+  return getCompetitionStartTime(this.competitionId);
+});
+Template.registerHelper("competitionEndTime", function() {
+  return getCompetitionEndTime(this.competitionId);
+});
+function prettyTimeFromMinutes(timeMinutes) {
+  var duration = moment.duration(timeMinutes, 'minutes');
+  var timeMoment = moment({
+    hour: duration.hours(),
+    minutes: duration.minutes(),
+  });
+  return timeMoment.format("H:mma");
+}
+Template.registerHelper("competitionStartTimePretty", function() {
+  var timeMinutes = getCompetitionStartTime(this.competitionId);
+  return prettyTimeFromMinutes(timeMinutes);
+});
+Template.registerHelper("competitionEndTimePretty", function() {
+  var timeMinutes = getCompetitionEndTime(this.competitionId);
+  return prettyTimeFromMinutes(timeMinutes);
 });
 
 Template.registerHelper("roundEventCode", function(){
