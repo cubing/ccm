@@ -67,7 +67,7 @@ function prettyTimeFromMinutes(timeMinutes) {
     hour: duration.hours(),
     minutes: duration.minutes(),
   });
-  return timeMoment.format("H:mma");
+  return timeMoment.format("h:mma");
 }
 Template.registerHelper("competitionStartTimePretty", function() {
   var timeMinutes = getCompetitionStartTime(this.competitionId);
