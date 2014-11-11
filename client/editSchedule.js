@@ -1,10 +1,15 @@
+var editingEventReact = new ReactiveVar(null);
+
 Template.editSchedule.helpers({
   unscheduledRounds: function(){
     var rounds = Rounds.find({
       competitionId: this.competitionId
     });
     return rounds;
-  }
+  },
+  editingEvent: function() {
+    return editingEventReact.get();
+  },
 });
 
 Template.editSchedule.events({
@@ -26,6 +31,10 @@ Template.editSchedule.events({
     var time = moment(value, 'HH:mm a');
     var minutes = time.hour()*60 + time.minute();
     setCompetitionAttribute(this.competitionId, attribute, minutes);
+  },
+  'click #addCalendarEvent button': function(e, t) {
+    editingEventReact.set(null);
+    t.$('#addEditSomethingModal').modal('show');
   },
 });
 
@@ -132,7 +141,8 @@ Template.editSchedule.rendered = function(){
     // TODO - >>> do this in a separate autorun to avoid rerendering the
     // *whole* calendar every time an event changes <<<
     var rounds = getRoundsWithSchedule(template.data.competitionId);
-    var calEvents = _.map(rounds, function(round) {
+    var calEvents = [];
+    _.each(rounds, function(round) {
       // startDateMoment is guaranteed to be in UTC, so there's no
       // weirdness here with adding time to a midnight that is about to
       // experience DST.
@@ -146,7 +156,23 @@ Template.editSchedule.rendered = function(){
         start: start,
         end: end,
       };
-      return calEvent;
+      calEvents.push(calEvent);
+    });
+
+    var extraScheduleThings = getCompetitionAttribute(template.data.competitionId, 'extraScheduleThings');
+    _.each(extraScheduleThings, function(extraScheduleThing) {
+      var day = startDateMoment.clone().add(extraScheduleThing.nthDay, 'days');
+      var start = day.clone().add(extraScheduleThing.startMinutes, 'minutes');
+      var end = start.clone().add(extraScheduleThing.durationMinutes, 'minutes');
+      var title = extraScheduleThing.title;
+      var calEvent = {
+        //<<<id: round._id,
+        title: title,
+        start: start,
+        end: end,
+        color: 'red',//<<<
+      };
+      calEvents.push(calEvent);
     });
 
     var eventChanged = function(calEvent) {
@@ -182,6 +208,8 @@ Template.editSchedule.rendered = function(){
       contentHeight: 'auto',
       events: calEvents,
       eventClick: function(calEvent, jsEvent, view){
+        editingEventReact.set(true);//<<<
+        template.$('#addEditSomethingModal').modal('show');
       },
       eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
         eventChanged(calEvent);

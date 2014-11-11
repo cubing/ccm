@@ -45,7 +45,70 @@
       </form>
     </div>
 
-    <div class="col-md-8" id="calendar"></div>
+    <div class="col-md-8">
+      <div id="addCalendarEvent"
+        data-toggle="tooltip" data-placement="bottom" title="Add something to the schedule">
+        <button type="button" class="btn btn-default btn-md">
+          <span class="glyphicon glyphicon-plus"></span>
+        </button>
+      </div>
+      <div id="calendar"></div>
+    </div>
+
+    <div class="modal fade" id="addEditSomethingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+            {{#if editingEvent}}
+              <h4 class="modal-title" id="myModalLabel">Edit event</h4>
+            {{else}}
+              <h4 class="modal-title" id="myModalLabel">Add something to the schedule</h4>
+            {{/if}}
+          </div>
+          <div class="modal-body">
+            <form role="form">
+              <div class="form-group">
+                <label for="inputEventTitle">Title</label>
+                {{#if editingEvent}}
+                  {{#if editingEvent.title}}
+                    <input type="text" id="inputEventTitle" class="form-control" value="{{editingEvent.title}}" />
+                  {{else}}
+                    <p class="form-control-static">
+                      {{eventName editingEvent.eventCode}}: {{roundName editingEvent.roundCode}}
+                    </p>
+                  {{/if}}
+                {{else}}
+                  <input type="text" id="inputEventTitle" class="form-control" />
+                {{/if}}
+              </div>
+              <div class="form-group">
+                <label for="inputDescription">Description</label>
+                <textarea id="inputDescription" class="form-control" rows="3">{{editingEvent.description}}</textarea>
+              </div>
+              <div class="form-group">
+                <label for="modalInputStartTime" class="col-sm-4 control-label">Start time</label>
+                <input name="calendarStartMinutes" id="modalInputStartTime" type="text" class="time start form-control" value="{{minutesToPrettyTime editingEvent.startMinutes}}" />
+              </div>
+              <div class="form-group">
+                <label for="modalInputEndTime" class="col-sm-4 control-label">End time</label>
+                <input name="calendarEndMinutes" id="modalInputEndTime" type="text" class="time end form-control" value="{{minutesToPrettyTime competitionCalendarEndMinutes}}" />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">
+              {{#if editingEvent}}
+                Save
+              {{else}}
+                Add
+              {{/if}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 
