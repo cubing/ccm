@@ -29,20 +29,71 @@ Template.editSchedule.events({
   },
 });
 
+function getRoundsWithSchedule(competitionId) {
+  var rounds = Rounds.find({
+    competitionId: competitionId,
+  }, {
+    fields: {
+      eventCode: 1,
+      roundCode: 1,
+
+      startMinutes: 1,
+      durationMinutes: 1,
+      nthDay: 1,
+    }
+  }).fetch();
+  _.each(rounds, function(round) {
+    // 10:30am default
+    round.startMinutes = round.startMinutes || 10.5*60;
+    // 1 hour duration default
+    round.durationMinutes = round.durationMinutes || 60;
+    // 0th day default
+    round.nthDay = round.nthDay || 0;
+  });
+  return rounds;
+}
+
 Template.editSchedule.rendered = function(){
   var template = this;
+
+  // Restrict number of days to be at least enough to show all the scheduled
+  // events.
+  template.autorun(function() {
+    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var maxNthDay = _.max(_.pluck(rounds, 'nthDay'));
+
+    var numberOfDays = template.$("input[name='numberOfDays']");
+    numberOfDays.attr('min', maxNthDay + 1);
+  });
 
   // Enable the start and stop time pickers
   template.$('#startEndTime input').timepicker({
     selectOnBlur: true,
-    maxTime: '11:30pm',
   });
   template.autorun(function() {
-    var startTime = getCompetitionAttribute(template.data.competitionId, 'startTime');
-    var startTimePretty = prettyTimeFromMinutes(startTime);
+    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var earliestStartMinutes = _.min(_.pluck(rounds, "startMinutes"));
+    var latestEndMinutes = _.max(_.map(rounds, function(round) {
+      return round.startMinutes + round.durationMinutes;
+    }));
+
+    var calendarEndMinutes = getCompetitionAttribute(template.data.competitionId, 'calendarEndMinutes');
+    var latestPossibleStartTimePretty = minutesToPrettyTime(
+        Math.min(calendarEndMinutes, earliestStartMinutes));
+
+    var $startTime = template.$('#startEndTime input.start');
+    $startTime.timepicker('option', {
+      minTime: '12am',
+      maxTime: latestPossibleStartTimePretty,
+    });
+
+    var calendarStartMinutes = getCompetitionAttribute(template.data.competitionId, 'calendarStartMinutes');
+    var earliestPossibleEndTimePretty = minutesToPrettyTime(
+        Math.max(calendarStartMinutes, latestEndMinutes));
     var $endTime = template.$('#startEndTime input.end');
     $endTime.timepicker('option', {
-      minTime: startTimePretty,
+      minTime: earliestPossibleEndTimePretty,
+      maxTime: '11:30pm',
     });
   });
 
@@ -62,16 +113,56 @@ Template.editSchedule.rendered = function(){
       var duration = moment.duration(timeMinutes, 'minutes');
       return duration.hours() + ":" + duration.minutes() + ":00";
     }
-    var startTime = getCompetitionStartTime(competitionId);
-    var endTime = getCompetitionEndTime(competitionId);
+    var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
+    var calendarEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
     var numberOfDays = getCompetitionNumberOfDays(competitionId);
 
     var startDate = getCompetitionAttribute(competitionId, 'startDate');
 
-    var startDateMoment = startDate ? moment(startDate) : moment();
-    startDateMoment = startDateMoment.startOf('day');
-    var minTime = timeMinutesToFullCalendarTime(startTime);
-    var maxTime = timeMinutesToFullCalendarTime(endTime);
+    var startDateMoment = null;
+    if(startDate) {
+      // strip all time zone info from date and use utc time
+      startDateMoment = moment.utc(moment(startDate).format("YYYY-MM-DD"));
+    } else {
+      startDateMoment = moment.utc().startOf('day');
+    }
+    var minTime = timeMinutesToFullCalendarTime(calendarStartMinutes);
+    var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
+
+    // TODO - >>> do this in a separate autorun to avoid rerendering the
+    // *whole* calendar every time an event changes <<<
+    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var calEvents = _.map(rounds, function(round) {
+      // startDateMoment is guaranteed to be in UTC, so there's no
+      // weirdness here with adding time to a midnight that is about to
+      // experience DST.
+      var day = startDateMoment.clone().add(round.nthDay, 'days');
+      var start = day.clone().add(round.startMinutes, 'minutes');
+      var end = start.clone().add(round.durationMinutes, 'minutes');
+      var title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+      var calEvent = {
+        id: round._id,
+        title: title,
+        start: start,
+        end: end,
+      };
+      return calEvent;
+    });
+
+    var eventChanged = function(calEvent) {
+      var nthDay = calEvent.start.diff(startDateMoment, 'days');
+      var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
+      var durationMinutes = calEvent.end.diff(calEvent.start, 'minutes');
+      Rounds.update({
+        _id: calEvent.id
+      }, {
+        $set: {
+          nthDay: nthDay,
+          startMinutes: startMinutes,
+          durationMinutes: durationMinutes,
+        }
+      });
+    };
 
     $('#calendar').fullCalendar({
       header: {
@@ -89,22 +180,14 @@ Template.editSchedule.rendered = function(){
       defaultView: 'agendaDays',
       editable: true,
       contentHeight: 'auto',
-      events: [//<<<
-        {
-          id: 4242,
-          title: 'Meeting',
-          start: startDateMoment.clone().add(10.5, 'hours'),
-          end: startDateMoment.clone().add(12.5, 'hours')
-        },
-      ],
+      events: calEvents,
       eventClick: function(calEvent, jsEvent, view){
-        console.log(calEvent);//<<<
-        if(confirm()) {
-          $('#calendar').fullCalendar('removeEvents', calEvent.id);//<<<
-        }
       },
-      eventDragStop: function(calEvent, jsEvent, ui, view) {
-        console.log(calEvent);//<<<
+      eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
+        eventChanged(calEvent);
+      },
+      eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
+        eventChanged(calEvent);
       },
     });
   });

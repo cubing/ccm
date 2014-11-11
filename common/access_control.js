@@ -75,8 +75,8 @@ if(Meteor.isServer) {
 
         'startDate',
         'numberOfDays',
-        'startTime',
-        'endTime',
+        'calendarStartMinutes',
+        'calendarEndMinutes',
       ];
 
       // TODO - see https://github.com/jfly/gjcomps/issues/10
@@ -100,7 +100,11 @@ if(Meteor.isServer) {
       }
 
       var allowedFields = [
-        'formatCode'
+        'formatCode',
+
+        'nthDay',
+        'startMinutes',
+        'durationMinutes',
       ];
 
       if(_.difference(fields, allowedFields).length > 0){

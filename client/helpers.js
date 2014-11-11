@@ -34,16 +34,16 @@ getCompetitionNumberOfDays = function(competitionId) {
   return numberOfDays || 1;
 };
 
-getCompetitionStartTime = function(competitionId) {
-  var startTime = getCompetitionAttribute(competitionId, 'startTime');
-  startTime = startTime || 0;
-  return startTime;
+getCompetitionCalendarStartMinutes = function(competitionId) {
+  var calendarStartMinutes = getCompetitionAttribute(competitionId, 'calendarStartMinutes');
+  calendarStartMinutes = calendarStartMinutes || 0;
+  return calendarStartMinutes;
 };
 
-getCompetitionEndTime = function(competitionId) {
-  var endTime = getCompetitionAttribute(competitionId, 'endTime');
-  endTime = endTime || 0;
-  return endTime;
+getCompetitionCalendarEndMinutes = function(competitionId) {
+  var calendarEndMinutes = getCompetitionAttribute(competitionId, 'calendarEndMinutes');
+  calendarEndMinutes = calendarEndMinutes || 0;
+  return calendarEndMinutes;
 };
 
 Template.registerHelper("competition", function(attribute){
@@ -55,13 +55,13 @@ Template.registerHelper("competitionListed", function() {
 Template.registerHelper("competitionNumberOfDays", function() {
   return getCompetitionNumberOfDays(this.competitionId);
 });
-Template.registerHelper("competitionStartTime", function() {
-  return getCompetitionStartTime(this.competitionId);
+Template.registerHelper("competitionCalendarStartMinutes", function() {
+  return getCompetitionCalendarStartMinutes(this.competitionId);
 });
-Template.registerHelper("competitionEndTime", function() {
-  return getCompetitionEndTime(this.competitionId);
+Template.registerHelper("competitionCalendarEndMinutes", function() {
+  return getCompetitionCalendarEndMinutes(this.competitionId);
 });
-prettyTimeFromMinutes = function(timeMinutes) {
+minutesToPrettyTime = function(timeMinutes) {
   var duration = moment.duration(timeMinutes, 'minutes');
   var timeMoment = moment({
     hour: duration.hours(),
@@ -69,13 +69,9 @@ prettyTimeFromMinutes = function(timeMinutes) {
   });
   return timeMoment.format("h:mma");
 };
-Template.registerHelper("competitionStartTimePretty", function() {
-  var timeMinutes = getCompetitionStartTime(this.competitionId);
-  return prettyTimeFromMinutes(timeMinutes);
-});
-Template.registerHelper("competitionEndTimePretty", function() {
-  var timeMinutes = getCompetitionEndTime(this.competitionId);
-  return prettyTimeFromMinutes(timeMinutes);
+
+Template.registerHelper("minutesToPrettyTime", function(timeMinutes) {
+  return minutesToPrettyTime(timeMinutes);
 });
 
 Template.registerHelper("roundEventCode", function(){
