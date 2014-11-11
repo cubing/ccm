@@ -77,7 +77,7 @@ Template.editSchedule.rendered = function(){
       return round.startMinutes + round.durationMinutes;
     }));
 
-    var calendarEndMinutes = getCompetitionAttribute(template.data.competitionId, 'calendarEndMinutes');
+    var calendarEndMinutes = getCompetitionCalendarEndMinutes(template.data.competitionId);
     var latestPossibleStartTimePretty = minutesToPrettyTime(
         Math.min(calendarEndMinutes, earliestStartMinutes));
 
@@ -87,7 +87,7 @@ Template.editSchedule.rendered = function(){
       maxTime: latestPossibleStartTimePretty,
     });
 
-    var calendarStartMinutes = getCompetitionAttribute(template.data.competitionId, 'calendarStartMinutes');
+    var calendarStartMinutes = getCompetitionCalendarStartMinutes(template.data.competitionId);
     var earliestPossibleEndTimePretty = minutesToPrettyTime(
         Math.max(calendarStartMinutes, latestEndMinutes));
     var $endTime = template.$('#startEndTime input.end');

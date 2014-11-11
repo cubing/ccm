@@ -42,7 +42,7 @@ getCompetitionCalendarStartMinutes = function(competitionId) {
 
 getCompetitionCalendarEndMinutes = function(competitionId) {
   var calendarEndMinutes = getCompetitionAttribute(competitionId, 'calendarEndMinutes');
-  calendarEndMinutes = calendarEndMinutes || 0;
+  calendarEndMinutes = calendarEndMinutes || 23.5*60;
   return calendarEndMinutes;
 };
 
