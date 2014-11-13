@@ -149,35 +149,6 @@ Template.editSchedule.rendered = function() {
     var minTime = timeMinutesToFullCalendarTime(calendarStartMinutes);
     var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
 
-    // TODO - >>> do this in a separate autorun to avoid rerendering the
-    // *whole* calendar every time an event changes <<<
-    var rounds = getRoundsWithSchedule(data.competitionId);
-    var calEvents = [];
-    _.each(rounds, function(round) {
-      // startDateMoment is guaranteed to be in UTC, so there's no
-      // weirdness here with adding time to a midnight that is about to
-      // experience DST.
-      var day = startDateMoment.clone().add(round.nthDay, 'days');
-      var start = day.clone().add(round.startMinutes, 'minutes');
-      var end = start.clone().add(round.durationMinutes, 'minutes');
-      var title;
-      // Rounds don't necessarily have events, such as Lunch or Registration.
-      if(round.eventCode) {
-        title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
-      } else {
-        title = round.title;
-      }
-      var color = round.eventCode ? "" : "#aa0000";
-      var calEvent = {
-        id: round._id,
-        title: title,
-        start: start,
-        end: end,
-        color: color,
-      };
-      calEvents.push(calEvent);
-    });
-
     var eventChanged = function(calEvent) {
       var nthDay = calEvent.start.diff(startDateMoment, 'days');
       var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
@@ -209,7 +180,43 @@ Template.editSchedule.rendered = function() {
       defaultView: 'agendaDays',
       editable: true,
       contentHeight: 'auto',
-      events: calEvents,
+      events: function(start, end, timezone, callback) {
+        var calEvents = [];
+        // We run the event fetching in a nonreactive block because we don't
+        // want to re-run the entire autorun block we're currently inside of
+        // every time an event changes, as that causes the entire
+        // calendar to flap. Instead, we'll explicitly call
+        //  $('#calendar').fullCalendar('refetchEvents')
+        // which will cause a more granular update of the calendar.
+        Tracker.nonreactive(function() {
+          var rounds = getRoundsWithSchedule(data.competitionId);
+          _.each(rounds, function(round) {
+            // startDateMoment is guaranteed to be in UTC, so there's no
+            // weirdness here with adding time to a midnight that is about to
+            // experience DST.
+            var day = startDateMoment.clone().add(round.nthDay, 'days');
+            var start = day.clone().add(round.startMinutes, 'minutes');
+            var end = start.clone().add(round.durationMinutes, 'minutes');
+            var title;
+            // Rounds don't necessarily have events, such as Lunch or Registration.
+            if(round.eventCode) {
+              title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+            } else {
+              title = round.title;
+            }
+            var color = round.eventCode ? "" : "#aa0000";
+            var calEvent = {
+              id: round._id,
+              title: title,
+              start: start,
+              end: end,
+              color: color,
+            };
+            calEvents.push(calEvent);
+          });
+        });
+        callback(calEvents);
+      },
       eventClick: function(calEvent, jsEvent, view) {
         var round = Rounds.findOne({ _id: calEvent.id });
         extendRound(round);
@@ -223,6 +230,11 @@ Template.editSchedule.rendered = function() {
         eventChanged(calEvent);
       },
     });
+  });
+  template.autorun(function() {
+    var data = Template.currentData();
+    var rounds = getRoundsWithSchedule(data.competitionId);
+    $('#calendar').fullCalendar('refetchEvents');
   });
 };
 
