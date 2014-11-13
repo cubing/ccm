@@ -24,6 +24,11 @@ canRemoveRound = function(userId, roundId){
     throw new Meteor.Error(404, "Unrecognized round id");
   }
   throwUnlessOrganizer(userId, round.competitionId);
+  if(!round.eventCode) {
+    // Round that don't correspond to a wca event are always available to be
+    // deleted.
+    return true;
+  }
 
   var lastRound = Rounds.findOne({
     competitionId: round.competitionId,

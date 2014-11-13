@@ -1,4 +1,6 @@
-var MIN_ROUND_MINUTES = 15;
+var MIN_ROUND_DURATION_MINUTES = 30;
+var DEFAULT_ROUND_DURATION_MINUTES = 60;
+var DEFAULT_ROUND_NTHDAY = 0;
 
 var editingRoundReact = new ReactiveVar(null);
 
@@ -33,7 +35,9 @@ Template.editSchedule.events({
     setCompetitionAttribute(this.competitionId, attribute, minutes);
   },
   'click #addCalendarEvent button': function(e, t) {
-    editingRoundReact.set({});
+    var newRound = {};
+    extendRound(newRound, this.competitionId);
+    editingRoundReact.set(newRound);
     t.$('#addEditSomethingModal').modal('show');
   },
   'hidden.bs.modal #addEditSomethingModal': function(e, t) {
@@ -56,17 +60,15 @@ function getRoundsWithSchedule(competitionId) {
     }
   }).fetch();
   _.each(rounds, function(round) {
-    extendRound(round);
+    extendRound(round, competitionId);
   });
   return rounds;
 }
-function extendRound(round) {
-  // 10:30am default
-  round.startMinutes = round.startMinutes || 10.5*60;
-  // 1 hour duration default
-  round.durationMinutes = round.durationMinutes || 60;
-  // 0th day default
-  round.nthDay = round.nthDay || 0;
+function extendRound(round, competitionId) {
+  var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
+  round.startMinutes = round.startMinutes || calendarStartMinutes;
+  round.durationMinutes = round.durationMinutes || DEFAULT_ROUND_DURATION_MINUTES;
+  round.nthDay = round.nthDay || DEFAULT_ROUND_NTHDAY;
 }
 
 Template.editSchedule.rendered = function() {
@@ -173,7 +175,7 @@ Template.editSchedule.rendered = function() {
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: '00:30:00',
-      snapDuration: '00:' + MIN_ROUND_MINUTES + ':00',
+      snapDuration: '00:' + MIN_ROUND_DURATION_MINUTES + ':00',
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
@@ -189,7 +191,7 @@ Template.editSchedule.rendered = function() {
         //  $('#calendar').fullCalendar('refetchEvents')
         // which will cause a more granular update of the calendar.
         Tracker.nonreactive(function() {
-          var rounds = getRoundsWithSchedule(data.competitionId);
+          var rounds = getRoundsWithSchedule(competitionId);
           _.each(rounds, function(round) {
             // startDateMoment is guaranteed to be in UTC, so there's no
             // weirdness here with adding time to a midnight that is about to
@@ -219,7 +221,7 @@ Template.editSchedule.rendered = function() {
       },
       eventClick: function(calEvent, jsEvent, view) {
         var round = Rounds.findOne({ _id: calEvent.id });
-        extendRound(round);
+        extendRound(round, competitionId);
         editingRoundReact.set(round);
         template.$('#addEditSomethingModal').modal('show');
       },
@@ -299,17 +301,23 @@ function getProposedRound() {
     return {};
   }
 
-  var proposedRound = _.clone(editingRound);
+  var proposedRound = {};
+  proposedRound._id = editingRound._id;
 
   var title = $("#inputRoundTitle").val();
   proposedRound.title = title;
 
-  var startMinutes = $("#modalInputStartTime").timepicker('getSecondsFromMidnight') / 60;
-  proposedRound.startMinutes = startMinutes;
+  var validStartMinutes = $("#modalInputStartTime").timepicker('getTime');
+  if(validStartMinutes) {
+    var startMinutes = $("#modalInputStartTime").timepicker('getSecondsFromMidnight') / 60;
+    proposedRound.startMinutes = startMinutes;
 
-  var endMinutes = $("#modalInputEndTime").timepicker('getSecondsFromMidnight') / 60;
-
-  proposedRound.durationMinutes = endMinutes - proposedRound.startMinutes;
+    var validEndMinutes = $("#modalInputEndTime").timepicker('getTime');
+    if(validEndMinutes) {
+      var endMinutes = $("#modalInputEndTime").timepicker('getSecondsFromMidnight') / 60;
+      proposedRound.durationMinutes = endMinutes - proposedRound.startMinutes;
+    }
+  }
 
   return proposedRound;
 }
@@ -318,7 +326,7 @@ function refreshErrors(errorsReact, competitionId) {
   var proposedRound = getProposedRound();
 
   var startMinutesError = '';
-  if(!proposedRound.startMinutes) {
+  if(typeof proposedRound.startMinutes === "undefined" || proposedRound.startMinutes === null) {
     startMinutesError = "required";
   }
   var endMinutesError = '';
@@ -344,7 +352,7 @@ function refreshErrors(errorsReact, competitionId) {
   });
 
   var $endTime = $('#modalInputEndTime');
-  var earliestPossibleEndMinutes = MIN_ROUND_MINUTES + (proposedRound.startMinutes || 0);
+  var earliestPossibleEndMinutes = MIN_ROUND_DURATION_MINUTES + (proposedRound.startMinutes || 0);
   $endTime.timepicker('option', {
     minTime: minutesToPrettyTime(Math.max(calendarStartMinutes, earliestPossibleEndMinutes)),
     maxTime: minutesToPrettyTime(calendarEndMinutes),
