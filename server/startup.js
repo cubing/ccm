@@ -39,7 +39,7 @@ Meteor.startup(function(){
         Accounts.createUser({username: userProfile.wcaId, password: userProfile.dob, profile: userProfile});
         user = Meteor.users.findOne({username: userProfile.wcaId});
       }
-    }else{
+    } else {
       //create user if user doesn't exist and wcaId doesn't exist or look for one first
       var username = userProfile.name + i;
       user = Meteor.users.findOne({ username: username });

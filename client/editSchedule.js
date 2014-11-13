@@ -1,14 +1,16 @@
-var editingEventReact = new ReactiveVar(null);
+var MIN_ROUND_MINUTES = 15;
+
+var editingRoundReact = new ReactiveVar(null);
 
 Template.editSchedule.helpers({
-  unscheduledRounds: function(){
+  unscheduledRounds: function() {
     var rounds = Rounds.find({
       competitionId: this.competitionId
     });
     return rounds;
   },
-  editingEvent: function() {
-    return editingEventReact.get();
+  editingRound: function() {
+    return editingRoundReact.get();
   },
 });
 
@@ -25,16 +27,17 @@ Template.editSchedule.events({
       setCompetitionAttribute(this.competitionId, attribute, value);
     }
   },
-  'changeTime .time': function(e) {
+  'changeTime #startEndTime input.time': function(e) {
     var attribute = e.currentTarget.name;
-    var value = e.currentTarget.value;
-    var time = moment(value, 'HH:mm a');
-    var minutes = time.hour()*60 + time.minute();
+    var minutes = $(e.currentTarget).timepicker('getSecondsFromMidnight') / 60;
     setCompetitionAttribute(this.competitionId, attribute, minutes);
   },
   'click #addCalendarEvent button': function(e, t) {
-    editingEventReact.set(null);
+    editingRoundReact.set({});
     t.$('#addEditSomethingModal').modal('show');
+  },
+  'hidden.bs.modal #addEditSomethingModal': function(e, t) {
+    editingRoundReact.set(null);
   },
 });
 
@@ -49,26 +52,31 @@ function getRoundsWithSchedule(competitionId) {
       startMinutes: 1,
       durationMinutes: 1,
       nthDay: 1,
+      title: 1,
     }
   }).fetch();
   _.each(rounds, function(round) {
-    // 10:30am default
-    round.startMinutes = round.startMinutes || 10.5*60;
-    // 1 hour duration default
-    round.durationMinutes = round.durationMinutes || 60;
-    // 0th day default
-    round.nthDay = round.nthDay || 0;
+    extendRound(round);
   });
   return rounds;
 }
+function extendRound(round) {
+  // 10:30am default
+  round.startMinutes = round.startMinutes || 10.5*60;
+  // 1 hour duration default
+  round.durationMinutes = round.durationMinutes || 60;
+  // 0th day default
+  round.nthDay = round.nthDay || 0;
+}
 
-Template.editSchedule.rendered = function(){
+Template.editSchedule.rendered = function() {
   var template = this;
 
   // Restrict number of days to be at least enough to show all the scheduled
   // events.
   template.autorun(function() {
-    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var data = Template.currentData();
+    var rounds = getRoundsWithSchedule(data.competitionId);
     var maxNthDay = _.max(_.pluck(rounds, 'nthDay'));
 
     var numberOfDays = template.$("input[name='numberOfDays']");
@@ -76,17 +84,18 @@ Template.editSchedule.rendered = function(){
   });
 
   // Enable the start and stop time pickers
-  template.$('#startEndTime input').timepicker({
+  template.$('#startEndTime input.time').timepicker({
     selectOnBlur: true,
   });
   template.autorun(function() {
-    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var data = Template.currentData();
+    var rounds = getRoundsWithSchedule(data.competitionId);
     var earliestStartMinutes = _.min(_.pluck(rounds, "startMinutes"));
     var latestEndMinutes = _.max(_.map(rounds, function(round) {
       return round.startMinutes + round.durationMinutes;
     }));
 
-    var calendarEndMinutes = getCompetitionCalendarEndMinutes(template.data.competitionId);
+    var calendarEndMinutes = getCompetitionCalendarEndMinutes(data.competitionId);
     var latestPossibleStartTimePretty = minutesToPrettyTime(
         Math.min(calendarEndMinutes, earliestStartMinutes));
 
@@ -96,7 +105,7 @@ Template.editSchedule.rendered = function(){
       maxTime: latestPossibleStartTimePretty,
     });
 
-    var calendarStartMinutes = getCompetitionCalendarStartMinutes(template.data.competitionId);
+    var calendarStartMinutes = getCompetitionCalendarStartMinutes(data.competitionId);
     var earliestPossibleEndTimePretty = minutesToPrettyTime(
         Math.max(calendarStartMinutes, latestEndMinutes));
     var $endTime = template.$('#startEndTime input.end');
@@ -106,15 +115,17 @@ Template.editSchedule.rendered = function(){
     });
   });
 
-  template.autorun(function(){
-    var startDate = getCompetitionAttribute(template.data.competitionId, 'startDate');
+  template.autorun(function() {
+    var data = Template.currentData();
+    var startDate = getCompetitionAttribute(data.competitionId, 'startDate');
 
     var $startDatePicker = template.$('#startDatePicker');
     $startDatePicker.datepicker('update', startDate);
   });
 
-  template.autorun(function(){
-    var competitionId = template.data.competitionId;
+  template.autorun(function() {
+    var data = Template.currentData();
+    var competitionId = data.competitionId;
 
     $('#calendar').fullCalendar('destroy');
 
@@ -140,7 +151,7 @@ Template.editSchedule.rendered = function(){
 
     // TODO - >>> do this in a separate autorun to avoid rerendering the
     // *whole* calendar every time an event changes <<<
-    var rounds = getRoundsWithSchedule(template.data.competitionId);
+    var rounds = getRoundsWithSchedule(data.competitionId);
     var calEvents = [];
     _.each(rounds, function(round) {
       // startDateMoment is guaranteed to be in UTC, so there's no
@@ -149,28 +160,20 @@ Template.editSchedule.rendered = function(){
       var day = startDateMoment.clone().add(round.nthDay, 'days');
       var start = day.clone().add(round.startMinutes, 'minutes');
       var end = start.clone().add(round.durationMinutes, 'minutes');
-      var title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+      var title;
+      // Rounds don't necessarily have events, such as Lunch or Registration.
+      if(round.eventCode) {
+        title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+      } else {
+        title = round.title;
+      }
+      var color = round.eventCode ? "" : "#aa0000";
       var calEvent = {
         id: round._id,
         title: title,
         start: start,
         end: end,
-      };
-      calEvents.push(calEvent);
-    });
-
-    var extraScheduleThings = getCompetitionAttribute(template.data.competitionId, 'extraScheduleThings');
-    _.each(extraScheduleThings, function(extraScheduleThing) {
-      var day = startDateMoment.clone().add(extraScheduleThing.nthDay, 'days');
-      var start = day.clone().add(extraScheduleThing.startMinutes, 'minutes');
-      var end = start.clone().add(extraScheduleThing.durationMinutes, 'minutes');
-      var title = extraScheduleThing.title;
-      var calEvent = {
-        //<<<id: round._id,
-        title: title,
-        start: start,
-        end: end,
-        color: 'red',//<<<
+        color: color,
       };
       calEvents.push(calEvent);
     });
@@ -199,7 +202,7 @@ Template.editSchedule.rendered = function(){
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: '00:30:00',
-      snapDuration: '00:15:00',
+      snapDuration: '00:' + MIN_ROUND_MINUTES + ':00',
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
@@ -207,8 +210,10 @@ Template.editSchedule.rendered = function(){
       editable: true,
       contentHeight: 'auto',
       events: calEvents,
-      eventClick: function(calEvent, jsEvent, view){
-        editingEventReact.set(true);//<<<
+      eventClick: function(calEvent, jsEvent, view) {
+        var round = Rounds.findOne({ _id: calEvent.id });
+        extendRound(round);
+        editingRoundReact.set(round);
         template.$('#addEditSomethingModal').modal('show');
       },
       eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
@@ -219,4 +224,171 @@ Template.editSchedule.rendered = function(){
       },
     });
   });
+};
+
+Template.addEditSomethingModal.helpers({
+  editingRound: function() {
+    return editingRoundReact.get();
+  },
+  errors: function() {
+    return Template.instance().errorsReact.get();
+  },
+  errorCount: function() {
+    var errors = Template.instance().errorsReact.get();
+    var countsByType = _.countBy(_.values(errors), function(error) {
+      return error ? "error" : "success";
+    });
+    return countsByType.error || 0;
+  },
+});
+
+Template.addEditSomethingModal.rendered = function() {
+  var template = this;
+
+  template.$('input.time').timepicker({
+    selectOnBlur: true,
+  });
+
+  template.autorun(function() {
+    var data = Template.currentData();
+    var editingRound = editingRoundReact.get();
+    if(!editingRound) {
+      return;
+    }
+
+    var startPretty = null;
+    var startMinutes = null;
+    var endPretty = null;
+    if(typeof editingRound.startMinutes !== 'undefined' && editingRound.startMinutes !== null) {
+      startMinutes = editingRound.startMinutes;
+      startPretty = minutesToPrettyTime(editingRound.startMinutes);
+      if(typeof editingRound.durationMinutes !== 'undefined' && editingRound.durationMinutes !== null) {
+        var endMinutes = editingRound.startMinutes + editingRound.durationMinutes;
+        endPretty = minutesToPrettyTime(endMinutes);
+      }
+    }
+
+    var $startTime = $('#modalInputStartTime');
+    $startTime.val(startPretty || '');
+    var $endTime = $('#modalInputEndTime');
+    $endTime.val(endPretty || '');
+
+    var $title = template.$('#inputRoundTitle');
+    $title.val(editingRound.title);
+
+    // Now that we've updated the DOM, we can refresh the errors
+    refreshErrors(template.errorsReact, data.competitionId);
+  });
+};
+
+function getProposedRound() {
+  var editingRound = editingRoundReact.get();
+  if(!editingRound) {
+    return {};
+  }
+
+  var proposedRound = _.clone(editingRound);
+
+  var title = $("#inputRoundTitle").val();
+  proposedRound.title = title;
+
+  var startMinutes = $("#modalInputStartTime").timepicker('getSecondsFromMidnight') / 60;
+  proposedRound.startMinutes = startMinutes;
+
+  var endMinutes = $("#modalInputEndTime").timepicker('getSecondsFromMidnight') / 60;
+
+  proposedRound.durationMinutes = endMinutes - proposedRound.startMinutes;
+
+  return proposedRound;
+}
+
+function refreshErrors(errorsReact, competitionId) {
+  var proposedRound = getProposedRound();
+
+  var startMinutesError = '';
+  if(!proposedRound.startMinutes) {
+    startMinutesError = "required";
+  }
+  var endMinutesError = '';
+  if(!proposedRound.durationMinutes || proposedRound.durationMinutes <= 0) {
+    endMinutesError = "must be greater than start time";
+  }
+  var titleError = '';
+  if(!proposedRound.eventCode && !proposedRound.title) {
+    titleError = "required";
+  }
+  var errors = {
+    startMinutes: startMinutesError,
+    endMinutes: endMinutesError,
+    title: titleError,
+  };
+
+  var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
+  var calendarEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
+  var $startTime = $('#modalInputStartTime');
+  $startTime.timepicker('option', {
+    minTime: minutesToPrettyTime(calendarStartMinutes),
+    maxTime: minutesToPrettyTime(calendarEndMinutes),
+  });
+
+  var $endTime = $('#modalInputEndTime');
+  var earliestPossibleEndMinutes = MIN_ROUND_MINUTES + (proposedRound.startMinutes || 0);
+  $endTime.timepicker('option', {
+    minTime: minutesToPrettyTime(Math.max(calendarStartMinutes, earliestPossibleEndMinutes)),
+    maxTime: minutesToPrettyTime(calendarEndMinutes),
+  });
+
+  errorsReact.set(errors);
+}
+
+Template.addEditSomethingModal.events({
+  'changeTime input.time': function(e, template) {
+    refreshErrors(template.errorsReact, this.competitionId);
+  },
+  'input input.time': function(e, template) {
+    refreshErrors(template.errorsReact, this.competitionId);
+  },
+  'input input[name="title"]': function(e, template) {
+    refreshErrors(template.errorsReact, this.competitionId);
+  },
+  'click #saveOrEditButton': function(e, template) {
+    var proposedRound = getProposedRound();
+    if(proposedRound._id) {
+      // Updating an existing round
+      Rounds.update({
+        _id: proposedRound._id,
+      }, {
+        $set: {
+          title: proposedRound.title,
+          startMinutes: proposedRound.startMinutes,
+          durationMinutes: proposedRound.durationMinutes,
+        }
+      });
+      template.$('#addEditSomethingModal').modal('hide');
+    } else {
+      // Adding a new round
+      Meteor.call('addNonEventRound', this.competitionId, proposedRound, function(error, result) {
+        if(error) {
+          throw error;
+        }
+        template.$('#addEditSomethingModal').modal('hide');
+      });
+    }
+  },
+  'click #buttonDeleteRound': function(e, template) {
+    var proposedRound = getProposedRound();
+    assert(!proposedRound.eventCode);
+    assert(proposedRound._id);
+    Meteor.call('removeRound', proposedRound._id, function(error, result) {
+      if(error) {
+        throw error;
+      }
+      template.$('#deleteRoundConfirmModal').modal('hide');
+      template.$('#addEditSomethingModal').modal('hide');
+    });
+  },
+});
+
+Template.addEditSomethingModal.created = function() {
+  this.errorsReact = new ReactiveVar({});
 };

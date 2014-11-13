@@ -25,16 +25,15 @@
   "requireCommaBeforeLineBreak": true,
 
   "requireSpaceAfterKeywords": [
-    "return"
+    "return",
+    "try"
   ],
   "disallowSpaceAfterKeywords": [
     "if",
     "for",
     "while",
     "do",
-    "switch",
-    "try",
-    "catch"
+    "switch"
     // The following breaks "else if"
     //"else" // loldevin
   ],

@@ -105,6 +105,7 @@ if(Meteor.isServer) {
         'nthDay',
         'startMinutes',
         'durationMinutes',
+        'title',
       ];
 
       if(_.difference(fields, allowedFields).length > 0){

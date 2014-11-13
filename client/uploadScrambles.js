@@ -1,44 +1,44 @@
 var scrambleSetsReact = new ReactiveVar(null);
 var tnoodleStatusReact = new ReactiveVar(null);
 
-function getWarningForSheet(competitionId, sheet){
+function getWarningForSheet(competitionId, sheet) {
   var round = findRoundForSheet(competitionId, sheet);
-  if(!round){
+  if(!round) {
     return "Could not find round for sheet";
   }
   var existingGroup = Groups.findOne({
     roundId: round._id,
     group: sheet.group
   });
-  if(existingGroup){
+  if(existingGroup) {
     return "Existing group will be clobbered";
   }
   return null;
 }
 
-function getUploadButtonState(competitionId){
+function getUploadButtonState(competitionId) {
   var scrambleSets = scrambleSetsReact.get();
-  if(!scrambleSets || scrambleSets.length === 0){
+  if(!scrambleSets || scrambleSets.length === 0) {
     return "disabled";
   }
 
-  var error = _.some(scrambleSets, function(scrambleSet){
+  var error = _.some(scrambleSets, function(scrambleSet) {
     return scrambleSet.error;
   });
-  if(error){
+  if(error) {
     return "error";
   }
 
-  var warnings = _.some(scrambleSets, function(scrambleSet){
+  var warnings = _.some(scrambleSets, function(scrambleSet) {
 
-    if(!scrambleSet.tnoodleScrambles){
+    if(!scrambleSet.tnoodleScrambles) {
       return false;
     }
-    return _.some(scrambleSet.tnoodleScrambles.sheets, function(sheet){
+    return _.some(scrambleSet.tnoodleScrambles.sheets, function(sheet) {
       return getWarningForSheet(competitionId, sheet);
     });
   });
-  if(warnings){
+  if(warnings) {
     return "warning";
   }
 
@@ -50,29 +50,29 @@ var TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
 var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 
 var tnoodleStatusPoller = null;
-function startPollingTNoodleStatus(){
-  if(tnoodleStatusPoller === null){
+function startPollingTNoodleStatus() {
+  if(tnoodleStatusPoller === null) {
     tnoodleStatusPoller = setTimeout(pollTNoodleStatus, 0);
   }
 }
-function stopPollingTNoodleStatus(){
-  if(tnoodleStatusPoller !== null){
+function stopPollingTNoodleStatus() {
+  if(tnoodleStatusPoller !== null) {
     clearTimeout(tnoodleStatusPoller);
     tnoodleStatusPoller = null;
   }
 }
-function pollTNoodleStatus(){
+function pollTNoodleStatus() {
   $.ajax({
     url: TNOODLE_VERSION_URL
-  }).done(function(data){
+  }).done(function(data) {
     tnoodleStatusReact.set(data);
-  }).fail(function(){
+  }).fail(function() {
     tnoodleStatusReact.set(null);
   });
   tnoodleStatusPoller = setTimeout(pollTNoodleStatus, TNOODLE_VERSION_POLL_FREQUENCY_MILLIS);
 }
 
-function getRoundsWithoutScrambles(competitionId){
+function getRoundsWithoutScrambles(competitionId) {
   var groups = Groups.find({
     competitionId: competitionId
   }, {
@@ -89,7 +89,7 @@ function getRoundsWithoutScrambles(competitionId){
   return rounds;
 }
 
-function findRoundForSheet(competitionId, sheet){
+function findRoundForSheet(competitionId, sheet) {
   var round = Rounds.findOne({
     competitionId: competitionId,
     eventCode: sheet.event,
@@ -98,22 +98,22 @@ function findRoundForSheet(competitionId, sheet){
   return round;
 }
 
-function extractJsonFromZip(filename, zipId, pw, cb){
-  Meteor.call("unzipTNoodleZip", zipId, pw, function(error, data){
-    if(error){
-      if(error.reason == "invalid-password"){
+function extractJsonFromZip(filename, zipId, pw, cb) {
+  Meteor.call("unzipTNoodleZip", zipId, pw, function(error, data) {
+    if(error) {
+      if(error.reason == "invalid-password") {
         var promptStr = "Enter password for\n" + filename;
-        if(pw !== null){
+        if(pw !== null) {
           promptStr = "Wrong password! " + promptStr;
         }
         var newPw = prompt(promptStr);
-        if(newPw !== null){
+        if(newPw !== null) {
           extractJsonFromZip(filename, zipId, newPw, cb);
-        }else{
+        } else {
           cb("Wrong password");
         }
         return;
-      }else{
+      } else {
         throw error;
       }
     }
@@ -121,22 +121,22 @@ function extractJsonFromZip(filename, zipId, pw, cb){
   });
 }
 
-Template.uploadScrambles.created = function(){
+Template.uploadScrambles.created = function() {
   startPollingTNoodleStatus();
 };
 
-Template.uploadScrambles.destroyed = function(){
+Template.uploadScrambles.destroyed = function() {
   stopPollingTNoodleStatus();
 };
 
 Template.uploadScrambles.events({
-  'change input[type="file"]': function(e, t){
+  'change input[type="file"]': function(e, t) {
     var fileInput = e.currentTarget;
     // Convert FileList to javascript array
     var files = _.map(fileInput.files, _.identity);
     var scrambleSets = [];
 
-    files.forEach(function(file, index){
+    files.forEach(function(file, index) {
       var scrambleSet = {
         index: index,
         file: file,
@@ -144,13 +144,13 @@ Template.uploadScrambles.events({
       };
       scrambleSets.push(scrambleSet);
 
-      var addScramblesJsonStr = function(jsonStr){
+      var addScramblesJsonStr = function(jsonStr) {
         var scrambleData;
-        try{
+        try {
           scrambleData = JSON.parse(jsonStr);
           scrambleSet.tnoodleScrambles = scrambleData;
           scrambleSetsReact.set(scrambleSets);
-        }catch(e){
+        } catch(e) {
           scrambleSet.error = "Failed to parse JSON in:\n" + file.name + "\n\n" + e;
           scrambleSetsReact.set(scrambleSets);
           throw e;
@@ -169,18 +169,18 @@ Template.uploadScrambles.events({
       var isJson = extension == "json";
       var isZip = extension == "zip";
       var reader = new FileReader();
-      reader.onload = function(){
-        if(isJson){
+      reader.onload = function() {
+        if(isJson) {
           addScramblesJsonStr(reader.result);
-        }else if(isZip){
-          Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId){
-            if(error){
+        } else if(isZip) {
+          Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId) {
+            if(error) {
               scrambleSet.error = error;
               scrambleSetsReact.set(scrambleSets);
               throw error;
             }
-            extractJsonFromZip(file.name, zipId, null, function(error, jsonStr){
-              if(error){
+            extractJsonFromZip(file.name, zipId, null, function(error, jsonStr) {
+              if(error) {
                 scrambleSet.error = error;
                 scrambleSetsReact.set(scrambleSets);
                 throw error;
@@ -188,16 +188,15 @@ Template.uploadScrambles.events({
               addScramblesJsonStr(jsonStr);
             });
           });
-        }else{
+        } else {
           // Should never get here
-          throw "";
         }
       };
-      if(isJson){
+      if(isJson) {
         reader.readAsText(file);
-      }else if(isZip){
+      } else if(isZip) {
         reader.readAsBinaryString(file);
-      }else{
+      } else {
         scrambleSet.error = "Unrecognized file extension:\n" + file.name;
         scrambleSetsReact.set(scrambleSets);
       }
@@ -208,19 +207,19 @@ Template.uploadScrambles.events({
     // here.
     $(fileInput).val('');
   },
-  'click #buttonUploadScrambles': function(e, t){
+  'click #buttonUploadScrambles': function(e, t) {
     var competition = this.competition;
 
     var scrambleSets = scrambleSetsReact.get();
 
-    scrambleSets.forEach(function(scrambleSet){
-      if(!scrambleSet.tnoodleScrambles){
+    scrambleSets.forEach(function(scrambleSet) {
+      if(!scrambleSet.tnoodleScrambles) {
         return;
       }
       var tnoodleScrambles = scrambleSet.tnoodleScrambles;
-      tnoodleScrambles.sheets.forEach(function(sheet){
+      tnoodleScrambles.sheets.forEach(function(sheet) {
         var round = findRoundForSheet(competition._id, sheet);
-        if(!round){
+        if(!round) {
           console.warn("No round found for competitionId: " + competition._id);
           console.warn(sheet);
           return;
@@ -245,7 +244,7 @@ Template.uploadScrambles.events({
   }
 });
 
-Template.uploadScrambles.rendered = function(){
+Template.uploadScrambles.rendered = function() {
   // Bootstrap's tooltips are opt in, so just enable it on all elements with a
   // title.
   this.$('[title]').tooltip();
@@ -253,22 +252,22 @@ Template.uploadScrambles.rendered = function(){
 
 Template.uploadScrambles.helpers({
   tnoodleVersionUrl: TNOODLE_VERSION_URL,
-  tnoodleStatus: function(){
+  tnoodleStatus: function() {
     return tnoodleStatusReact.get();
   },
-  tnoodleRunningVersionAllowed: function(){
+  tnoodleRunningVersionAllowed: function() {
     var tnoodleStatus = tnoodleStatusReact.get();
-    if(!tnoodleStatus){
+    if(!tnoodleStatus) {
       return false;
     }
     return _.contains(tnoodleStatus.allowed, tnoodleStatus.running_version);
   },
 
-  roundsWithoutScrambles: function(){
+  roundsWithoutScrambles: function() {
     var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
     return roundsWithoutScrambles;
   },
-  generateMissingScramblesUrl: function(){
+  generateMissingScramblesUrl: function() {
     var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
 
     var params = {};
@@ -276,7 +275,7 @@ Template.uploadScrambles.helpers({
     params.competitionName = getCompetitionAttribute(this.competitionId, 'competitionName');
 
     var events = [];
-    roundsWithoutScrambles.forEach(function(round){
+    roundsWithoutScrambles.forEach(function(round) {
       var event = {
         eventID: round.eventCode,
         round: 1 + round.nthRound,
@@ -292,34 +291,34 @@ Template.uploadScrambles.helpers({
     var url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");
     return url;
   },
-  uploadedScrambleSets: function(){
+  uploadedScrambleSets: function() {
     return scrambleSetsReact.get();
   },
-  warningForUploadedSheet: function(){
+  warningForUploadedSheet: function() {
     var competitionId = Template.parentData(2).competitionId;
     var sheet = this;
     var warning = getWarningForSheet(competitionId, sheet);
     return warning;
   },
-  uploadWarning: function(){
+  uploadWarning: function() {
     var uploadButtonState = getUploadButtonState(this.competitionId);
-    if(uploadButtonState == "error"){
+    if(uploadButtonState == "error") {
       return "Errors detected, see above for details";
-    } else if(uploadButtonState == "warning"){
+    } else if(uploadButtonState == "warning") {
       return "Warnings detected, see above for details";
-    } else if(uploadButtonState == "disabled"){
+    } else if(uploadButtonState == "disabled") {
       return "";
     } else {
       return "";
     }
   },
-  classForUploadButton: function(){
+  classForUploadButton: function() {
     var uploadButtonState = getUploadButtonState(this.competitionId);
-    if(uploadButtonState == "error"){
+    if(uploadButtonState == "error") {
       return "btn-danger";
-    } else if(uploadButtonState == "warning"){
+    } else if(uploadButtonState == "warning") {
       return "btn-warning";
-    } else if(uploadButtonState == "disabled"){
+    } else if(uploadButtonState == "disabled") {
       return "disabled";
     } else {
       return "btn-success";

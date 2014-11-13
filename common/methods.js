@@ -1,11 +1,11 @@
 Meteor.methods({
-  createCompetition: function(competitionName){
+  createCompetition: function(competitionName) {
     check(competitionName, String);
-    if(competitionName.trim().length === 0){
+    if(competitionName.trim().length === 0) {
       throw new Meteor.Error(400, "Competition name must be nonempty");
     }
 
-    if(!this.userId){
+    if(!this.userId) {
       throw new Meteor.Error(401, "Must log in");
     }
 
@@ -15,7 +15,7 @@ Meteor.methods({
     });
     return competitionId;
   },
-  deleteCompetition: function(competitionId){
+  deleteCompetition: function(competitionId) {
     check(competitionId, String);
     throwUnlessOrganizer(this.userId, competitionId);
 
@@ -24,8 +24,8 @@ Meteor.methods({
     Results.remove({ competitionId: competitionId });
     Groups.remove({ competitionId: competitionId });
   },
-  addRound: function(competitionId, eventCode){
-    if(!canAddRound(this.userId, competitionId, eventCode)){
+  addRound: function(competitionId, eventCode) {
+    if(!canAddRound(this.userId, competitionId, eventCode)) {
       throw new Meteor.Error(400, "Cannot add another round");
     }
 
@@ -49,18 +49,32 @@ Meteor.methods({
 
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
   },
-  removeRound: function(roundId){
-    if(!canRemoveRound(this.userId, roundId)){
+  addNonEventRound: function(competitionId, round) {
+    check(competitionId, String);
+    throwUnlessOrganizer(this.userId, competitionId);
+    Rounds.insert({
+      competitionId: competitionId,
+      title: round.title,
+      startMinutes: round.startMinutes,
+      durationMinutes: round.durationMinutes,
+    });
+  },
+  removeRound: function(roundId) {
+    if(!canRemoveRound(this.userId, roundId)) {
       throw new Meteor.Error(400, "Cannot remove round. Make sure it is the last round for this event, and has no times entered.");
     }
 
     var round = Rounds.findOne({ _id: roundId });
+    assert(round); // canRemoveRound checked that roundId is valid
+
     Rounds.remove({ _id: roundId });
     Groups.remove({ roundId: roundId });
 
-    Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
+    if(round.eventCode) {
+      Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
+    }
   },
-  refreshRoundCodes: function(competitionId, eventCode){
+  refreshRoundCodes: function(competitionId, eventCode) {
     var rounds = Rounds.find({
       competitionId: competitionId,
       eventCode: eventCode
@@ -69,18 +83,18 @@ Meteor.methods({
         "nthRound": 1
       }
     }).fetch();
-    if(rounds.length > wca.maxRoundsPerEvent){
+    if(rounds.length > wca.maxRoundsPerEvent) {
       throw new Meteor.Error(400, "Too many rounds");
     }
-    rounds.forEach(function(round, nthRound){
+    rounds.forEach(function(round, nthRound) {
       // Note that we ignore the actual value of nthRound, and instead use the
       // index into rounds as the nthRound. This defragments any missing
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
-      if(nthRound == rounds.length - 1){
+      if(nthRound == rounds.length - 1) {
         supportedRoundsIndex = wca.maxRoundsPerEvent - 1;
-      }else{
+      } else {
         supportedRoundsIndex = nthRound;
       }
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
@@ -95,7 +109,7 @@ Meteor.methods({
       });
     });
   },
-  addOrUpdateGroup: function(newGroup){
+  addOrUpdateGroup: function(newGroup) {
     throwUnlessOrganizer(this.userId, newGroup.competitionId);
     var round = Rounds.findOne({ _id: newGroup.roundId });
     if(!round) {
@@ -107,33 +121,33 @@ Meteor.methods({
       roundId: newGroup.roundId,
       group: newGroup.group
     });
-    if(existingGroup){
+    if(existingGroup) {
       console.warn("Clobberring existing group");
       console.warn(existingGroup);
       Groups.update({
         _id: existingGroup._id
       }, newGroup);
-    }else{
+    } else {
       Groups.insert(newGroup);
     }
   }
 });
 
-if(Meteor.isServer){
+if(Meteor.isServer) {
   var child_process = Npm.require('child_process');
   var path = Npm.require("path");
   var fs = Npm.require('fs');
   var os = Npm.require('os');
   var mkdirp = Meteor.npmRequire('mkdirp');
 
-  var zipIdToFilename = function(zipId, userId){
+  var zipIdToFilename = function(zipId, userId) {
     var tmpdir = os.tmpdir();
     var filename = path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
     return filename;
   };
 
   Meteor.methods({
-    'uploadTNoodleZip': function(zipData){
+    'uploadTNoodleZip': function(zipData) {
       // TODO - this is pretty janky. What if the folder we try to create
       // exists, but isn't a folder? Permissions could also screw us up.
       // Ideally we would just decompress the zip file client side, but
@@ -144,7 +158,7 @@ if(Meteor.isServer){
       fs.writeFileSync(zipFilename, zipData, 'binary');
       return id;
     },
-    'unzipTNoodleZip': function(zipId, pw){
+    'unzipTNoodleZip': function(zipId, pw) {
       var args = [];
       args.push('-p'); // extract to stdout
 
@@ -158,26 +172,26 @@ if(Meteor.isServer){
       var zipFilename = zipIdToFilename(zipId, this.userId);
       args.push(zipFilename);
       args.push('*.json'); // there should be exactly one json file in the zip
-      function unzipAsync(cb){
-        child_process.execFile('unzip', args, function(error, stdout, stderr){
-          if(error){
+      function unzipAsync(cb) {
+        child_process.execFile('unzip', args, function(error, stdout, stderr) {
+          if(error) {
             // Error code 82 indicates bad password
             // See http://www.info-zip.org/FAQ.html
-            if(error.code == 82){
+            if(error.code == 82) {
               cb("invalid-password");
-            }else{
+            } else {
               cb("Unzip exited with error code " + error.code);
             }
-          }else{
+          } else {
             cb(null, stdout);
           }
         });
       }
       var unzipSync = Meteor.wrapAsync(unzipAsync);
-      try{
+      try {
         var jsonStr = unzipSync();
         return jsonStr;
-      }catch(e){
+      } catch(e) {
         throw new Meteor.Error('unzip', e.message);
       }
     }

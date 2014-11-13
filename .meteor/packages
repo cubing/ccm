@@ -17,4 +17,5 @@ mizzao:bootstrap-3
 reactive-var
 rajit:bootstrap3-datepicker
 mrt:moment
+mrt:assert
 
