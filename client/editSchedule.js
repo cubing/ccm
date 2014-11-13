@@ -303,6 +303,7 @@ function getProposedRound() {
 
   var proposedRound = {};
   proposedRound._id = editingRound._id;
+  proposedRound.eventCode = editingRound.eventCode;
 
   var title = $("#inputRoundTitle").val();
   proposedRound.title = title;
