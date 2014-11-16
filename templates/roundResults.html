@@ -1,14 +1,16 @@
 <template name="roundResults">
-  <p>
-    {{eventName roundEventCode}}: {{roundName roundRoundCode}}
-    {{formatName roundFormatCode}}
-  </p>
+  <div class="container">
+    <p>
+      {{eventName roundEventCode}}: {{roundName roundRoundCode}}
+      {{formatName roundFormatCode}}
+    </p>
 
-  <ul>
-    {{#each results}}
-      <li>
-        <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">{{competitorName}}</a>: {{solves}} best: {{best}}
-      </li> 
-    {{/each}}
-  </ul>
+    <ul>
+      {{#each results}}
+        <li>
+          <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">{{competitorName}}</a>: {{solves}} best: {{best}}
+        </li> 
+      {{/each}}
+    </ul>
+  </div>
 </template>

@@ -5,3 +5,8 @@
 .navbar a.brand > img {
   height: 30px;
 }
+
+/* Get rid of the whitespace between the navbar and the jumbotron */
+.navbar + .jumbotron {
+  margin-top: -20px;
+}

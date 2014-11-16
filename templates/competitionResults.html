@@ -1,16 +1,18 @@
 <template name="competitionResults">
-  {{#each events}}
-    <li>
-      {{eventCode}}
-      <ul>
-        {{#each rounds}}
-        <li>
-          <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode roundCode=roundCode}}">
-            {{roundName roundCode}}
-          </a>
-        </li>
-        {{/each}}
-      </ul>
-    </li>
-  {{/each}}
+  <div class="container">
+    {{#each events}}
+      <li>
+        {{eventCode}}
+        <ul>
+          {{#each rounds}}
+          <li>
+            <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode roundCode=roundCode}}">
+              {{roundName roundCode}}
+            </a>
+          </li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </div>
 </template>

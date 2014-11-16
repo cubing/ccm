@@ -1,23 +1,26 @@
 <template name="exportResults">
+  <div class="container">
 
-  <h4>Export Results</h4>
-  <hr>
+    <h4>Export Results</h4>
+    <hr>
 
-  <div>
-    <ul class="list-group problemsList">
-      {{#each problems}}
-        <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
-          {{message}}
-          <a href="{{fixUrl}}" class="pull-right">
-            <span class="glyphicon glyphicon-wrench"></span>
-          </a>
-        </li>
-      {{else}}
-        <li class="list-group-item list-group-item-success">
-          No problems detected with the results.
-        </li>
-      {{/each}}
-    </ul>
-    <pre class="resultsJson">{{wcaResultsJson}}</pre>
+    <div>
+      <ul class="list-group problemsList">
+        {{#each problems}}
+          <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
+            {{message}}
+            <a href="{{fixUrl}}" class="pull-right">
+              <span class="glyphicon glyphicon-wrench"></span>
+            </a>
+          </li>
+        {{else}}
+          <li class="list-group-item list-group-item-success">
+            No problems detected with the results.
+          </li>
+        {{/each}}
+      </ul>
+      <pre class="resultsJson">{{wcaResultsJson}}</pre>
+    </div>
+
   </div>
 </template>
