@@ -171,8 +171,14 @@ Router.route('/:competitionUrlId', {
   titlePrefix: null,
 });
 
-Router.route('/:competitionUrlId/:eventCode/:roundCode', {
-  name: 'round',
+Router.route('/:competitionUrlId/results', {
+  name: 'competitionResults',
+  controller: 'ViewCompetitionController',
+  titlePrefix: 'Results',
+});
+
+Router.route('/:competitionUrlId/results/:eventCode/:roundCode', {
+  name: 'roundResults',
   controller: 'ViewCompetitionController',
   data: function() {
     var roundCode = this.params.roundCode;
@@ -201,8 +207,8 @@ Router.route('/:competitionUrlId/:eventCode/:roundCode', {
     return data;
   },
 });
-Router.route('/:competitionUrlId/:competitorName', {
-  name: 'competitor',
+Router.route('/:competitionUrlId/results/:competitorName', {
+  name: 'competitorResults',
   controller: 'ViewCompetitionController',
   data: function() {
     var userName = this.params.competitorName;

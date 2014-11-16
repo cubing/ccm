@@ -1,4 +1,4 @@
-<template name="round">
+<template name="roundResults">
   <p>
     {{eventName roundEventCode}}: {{roundName roundRoundCode}}
     {{formatName roundFormatCode}}
@@ -7,7 +7,7 @@
   <ul>
     {{#each results}}
       <li>
-        <a href="{{pathFor 'competitor' competitionUrlId=../competitionUrlId competitorName=competitorName }}">{{competitorName}}</a>: {{solves}} best: {{best}}
+        <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">{{competitorName}}</a>: {{solves}} best: {{best}}
       </li> 
     {{/each}}
   </ul>
