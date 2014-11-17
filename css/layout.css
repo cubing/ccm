@@ -10,3 +10,9 @@
 .navbar + .jumbotron {
   margin-top: -20px;
 }
+
+/* Move navbar down when the connection status is visible */
+#connection-lost-banner + .navbar,
+#connection-try-reconnect + .navbar {
+  top: 41px;
+}
