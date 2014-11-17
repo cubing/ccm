@@ -1,29 +1,42 @@
-throwUnlessOrganizer = function(userId, competitionUrlId){
-  if(!userId){
-    throw new Meteor.Error(401, "Must log in");
+getCannotManageCompetitionReason = function(userId, competitionUrlId) {
+  if(!userId) {
+    return new Meteor.Error(401, "Must log in");
   }
-
   var competition = Competitions.findOne({
     $or: [
       { _id: competitionUrlId },
       { wcaCompetitionId: competitionUrlId }
     ]
+  }, {
+    fields: {
+      organizers: 1,
+    }
   });
-  if(!competition){
-    throw new Meteor.Error(404, "Competition does not exist");
+  if(!competition) {
+    return new Meteor.Error(404, "Competition does not exist");
   }
-  if(competition.organizers.indexOf(userId) == -1){
-    throw new Meteor.Error(403, "Not an organizer for this competition");
+
+  var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+  if(!siteAdmin && competition.organizers.indexOf(userId) == -1) {
+    return new Meteor.Error(403, "Not an organizer for this competition");
+  }
+  return false;
+};
+
+throwIfCannotManageCompetition = function(userId, competitionUrlId) {
+  var cannotManageReason = getCannotManageCompetitionReason(userId, competitionUrlId);
+  if(cannotManageReason) {
+    throw cannotManageReason;
   }
 };
 
-canRemoveRound = function(userId, roundId){
+canRemoveRound = function(userId, roundId) {
   check(roundId, String);
   var round = Rounds.findOne({ _id: roundId });
-  if(!round){
+  if(!round) {
     throw new Meteor.Error(404, "Unrecognized round id");
   }
-  throwUnlessOrganizer(userId, round.competitionId);
+  throwIfCannotManageCompetition(userId, round.competitionId);
   if(!round.eventCode) {
     // Round that don't correspond to a wca event are always available to be
     // deleted.
@@ -43,13 +56,13 @@ canRemoveRound = function(userId, roundId){
   return isLastRound && noResults;
 };
 
-canAddRound = function(userId, competitionId, eventCode){
-  if(!competitionId){
+canAddRound = function(userId, competitionId, eventCode) {
+  if(!competitionId) {
     return false;
   }
   check(competitionId, String);
-  throwUnlessOrganizer(userId, competitionId);
-  if(!wca.eventByCode[eventCode]){
+  throwIfCannotManageCompetition(userId, competitionId);
+  if(!wca.eventByCode[eventCode]) {
     throw new Meteor.Error(404, "Unrecognized event code");
   }
 
@@ -68,8 +81,8 @@ canAddRound = function(userId, competitionId, eventCode){
 if(Meteor.isServer) {
 
   Competitions.allow({
-    update: function(userId, competition, fields, modifier){
-      if(competition.organizers.indexOf(userId) == -1){
+    update: function(userId, competition, fields, modifier) {
+      if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
       }
       var allowedFields = [
@@ -87,7 +100,7 @@ if(Meteor.isServer) {
       // TODO - see https://github.com/jfly/gjcomps/issues/10
       allowedFields.push("listed");
 
-      if(_.difference(fields, allowedFields).length > 0){
+      if(_.difference(fields, allowedFields).length > 0) {
         return false;
       }
       return true;
@@ -96,11 +109,11 @@ if(Meteor.isServer) {
   });
 
   Rounds.allow({
-    update: function(userId, round, fields, modifier){
+    update: function(userId, round, fields, modifier) {
       var competition = Competitions.findOne({
         _id: round.competitionId
       });
-      if(competition.organizers.indexOf(userId) == -1){
+      if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
       }
 
@@ -113,7 +126,7 @@ if(Meteor.isServer) {
         'title',
       ];
 
-      if(_.difference(fields, allowedFields).length > 0){
+      if(_.difference(fields, allowedFields).length > 0) {
         return false;
       }
       return true;

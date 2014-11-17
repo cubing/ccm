@@ -29,6 +29,10 @@ Template.registerHelper("competition", function(attribute) {
   return getCompetitionAttribute(this.competitionId, attribute);
 });
 
+getUserAttribute = function(userId, attribute) {
+  return getDocumentAttribute(Meteor.users, userId, attribute);
+};
+
 getRoundAttribute = function(roundId, attribute) {
   return getDocumentAttribute(Rounds, roundId, attribute);
 };
@@ -98,6 +102,11 @@ Template.registerHelper("competitionCalendarEndMinutes", function() {
   return getCompetitionCalendarEndMinutes(this.competitionId);
 });
 
+Template.registerHelper("canManageCompetition", function(userId) {
+  var cannotManageReason = getCannotManageCompetitionReason(this.competitionId, userId);
+  return !!cannotManageReason;
+});
+
 minutesToPrettyTime = function(timeMinutes) {
   var duration = moment.duration(timeMinutes, 'minutes');
   var timeMoment = moment({
@@ -108,27 +117,6 @@ minutesToPrettyTime = function(timeMinutes) {
 };
 Template.registerHelper("minutesToPrettyTime", function(timeMinutes) {
   return minutesToPrettyTime(timeMinutes);
-});
-
-Template.registerHelper("isOrganizer", function(user) {
-  var competition = Competitions.findOne({
-    _id: this.competitionId
-  }, {
-    fields: {
-      organizers: 1
-    }
-  });
-  return _.contains(competition.organizers, user._id);
-});
-Template.registerHelper("isStaff", function(roundCode) {
-  var competition = Competitions.findOne({
-    _id: this.competitionId
-  }, {
-    fields: {
-      staff: 1
-    }
-  });
-  return _.contains(competition.staff, user._id);
 });
 
 Template.registerHelper("formatMomentRange", function(startMoment, endMoment) {

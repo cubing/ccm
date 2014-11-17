@@ -17,7 +17,7 @@ Meteor.methods({
   },
   deleteCompetition: function(competitionId) {
     check(competitionId, String);
-    throwUnlessOrganizer(this.userId, competitionId);
+    throwIfCannotManageCompetition(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
     Rounds.remove({ competitionId: competitionId });
@@ -51,7 +51,7 @@ Meteor.methods({
   },
   addNonEventRound: function(competitionId, round) {
     check(competitionId, String);
-    throwUnlessOrganizer(this.userId, competitionId);
+    throwIfCannotManageCompetition(this.userId, competitionId);
     Rounds.insert({
       competitionId: competitionId,
       title: round.title,
@@ -110,12 +110,12 @@ Meteor.methods({
     });
   },
   addOrUpdateGroup: function(newGroup) {
-    throwUnlessOrganizer(this.userId, newGroup.competitionId);
+    throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
     var round = Rounds.findOne({ _id: newGroup.roundId });
     if(!round) {
       throw new Meteor.Error("Invalid roundId");
     }
-    throwUnlessOrganizer(this.userId, round.competitionId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId);
 
     var existingGroup = Groups.findOne({
       roundId: newGroup.roundId,

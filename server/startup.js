@@ -133,14 +133,4 @@ Meteor.startup(function() {
       });
     });
   });
-
-  // Add devel account as an organizer for the competition we just created.
-  var develUser = Meteor.users.findOne({ 'emails.address': DEVEL_ACCOUNT_EMAIL });
-  var competitionName = competition.wcaCompetitionId.replace(/([a-z])([A-Z0-9])/g, '$1 $2');
-  Competitions.update({
-    wcaCompetitionId: competition.wcaCompetitionId
-  }, {
-    $addToSet: { organizers: develUser._id },
-    $set: { competitionName: competitionName }
-  });
 });

@@ -73,8 +73,7 @@
         <ul class="nav navbar-nav navbar-right">
           {{#if currentUser}}
             {{#if competitionId}}
-              {{! TODO - only display if I am staff or an organizer for this comp }}
-              {{#if isOrganizer currentUser}}
+              {{#if canManageCompetition currentUser._id}}
                 <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}">Manage</a>
                 </li>

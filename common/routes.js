@@ -66,27 +66,39 @@ ManageCompetitionController = RouteController.extend({
     return [
       Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
       // TODO - we only need scrambles on the uploadScrambles route
-      Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this))
+      Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
+    if(!this.ready()) {
+      // We explicitly render *NotFound templates based on what's missing, and
+      // that steps on the toes of iron-router's loading hook. If we're not
+      // ready, just do nothing and let the loading hook render our
+      // loadingTemplate.
+      return;
+    }
     var competitionUrlId = this.params.competitionUrlId;
     var competition = Competitions.findOne({
       $or: [
         { _id: competitionUrlId },
-        { wcaCompetitionId: competitionUrlId }
+        { wcaCompetitionId: competitionUrlId },
       ]
     }, {
       fields: {
-        _id: 1
+        _id: 1,
       }
     });
     if(!competition) {
+      this.render('competitionNotFound');
       return null;
+    }
+    if(getCannotManageCompetitionReason(Meteor.userId(), competition._id)) {
+      this.render('cannotManageCompetition');
+      return;
     }
     return {
       competitionUrlId: competitionUrlId,
-      competitionId: competition._id
+      competitionId: competition._id,
     };
   },
 });

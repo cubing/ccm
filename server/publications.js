@@ -1,18 +1,18 @@
-var getCompetitions = function(){
+var getCompetitions = function() {
   return Competitions.find(
     {},
     { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1, listed: 1 } }
   );
 };
-Meteor.publish('competitions', function(){
+Meteor.publish('competitions', function() {
   return getCompetitions();
 });
 
-HTTP.publish({collection: Competitions}, function(data){
+HTTP.publish({collection: Competitions}, function(data) {
   return getCompetitions();
 });
 
-Meteor.publish('competition', function(competitionUrlId){
+Meteor.publish('competition', function(competitionUrlId) {
   check(competitionUrlId, String);
 
   var competition = Competitions.findOne({
@@ -21,7 +21,7 @@ Meteor.publish('competition', function(competitionUrlId){
       { _id: competitionUrlId }
     ]
   });
-  if(!competition){
+  if(!competition) {
     return [];
   }
   return [
@@ -46,9 +46,11 @@ Meteor.publish('competition', function(competitionUrlId){
   ];
 });
 
-Meteor.publish('competitionScrambles', function(competitionUrlId){
+Meteor.publish('competitionScrambles', function(competitionUrlId) {
   check(competitionUrlId, String);
-  throwUnlessOrganizer(this.userId, competitionUrlId);
+  if(getCannotManageCompetitionReason(this.userId, competitionUrlId)) {
+    return [];
+  }
   var competition = Competitions.findOne({
     $or: [
       { _id: competitionUrlId },
