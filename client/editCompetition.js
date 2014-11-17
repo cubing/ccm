@@ -147,13 +147,12 @@ Template.editCompetition.helpers({
     return wca.formatsByEventCode[this.eventCode];
   },
   scheduleDescription: function() {
-    var startDate = getCompetitionAttribute(this.competitionId, 'startDate');
+    var startDate = getCompetitionStartDateMoment(this.competitionId);
     if(!startDate) {
       return "Unscheduled";
     }
-    startDate = moment(startDate);
-    var numberOfDays = getCompetitionAttribute(this.competitionId, 'numberOfDays');
-    var endDate = startDate.clone().add(numberOfDays, 'days').subtract(1);
+    var endDate = getCompetitionEndDateMoment(this.competitionId);
+    assert(endDate);
     var formatStr = "MMMM D, YYYY";
     var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
     return startDate.fromNow() + " (" + rangeStr + ")";

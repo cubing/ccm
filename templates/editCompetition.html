@@ -34,7 +34,12 @@
         <div class="col-sm-9 col-lg-10">
           <p class="form-control-static">
             <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">
-              {{scheduleDescription}}
+              {{#unless competitionStartDateMoment}}
+                Unscheduled
+              {{else}}
+                {{competitionStartDateMoment.fromNow}}
+                ({{formatMomentRange competitionStartDateMoment competitionEndDateMoment}})
+              {{/unless}}
             </a>
           </p>
         </div>
