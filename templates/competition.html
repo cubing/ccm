@@ -3,7 +3,11 @@
     <div class="container">
       <h1>{{competition 'competitionName'}}</h1>
       <p>
-        {{formatMomentRange competitionStartDateMoment competitionEndDateMoment}}
+        {{#unless competitionStartDateMoment}}
+          Unscheduled
+        {{else}}
+          {{formatMomentRange competitionStartDateMoment competitionEndDateMoment}}
+        {{/unless}}
       </p>
       <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
     </div>
