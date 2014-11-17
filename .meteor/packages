@@ -18,4 +18,5 @@ reactive-var
 rajit:bootstrap3-datepicker
 mrt:moment
 mrt:assert
+wylio:mandrill
 

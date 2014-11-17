@@ -1,6 +1,8 @@
-var url = Npm.require('url');
+Meteor.startup(function() {
+  if(!process.env.GJCOMPS_DEVEL) {
+    return;
+  }
 
-Meteor.startup(function(){
   // TODO - get a list of competitions somehow?
   // https://github.com/meteor/meteor/issues/1795
   var wcaCompetition = JSON.parse(Assets.getText("competitions/StarlightOpen2014.json"));
@@ -17,12 +19,12 @@ Meteor.startup(function(){
     { wcaCompetitionId: competition.wcaCompetitionId },
     competition
   );
-  var competitionId = Competitions.findOne(
-    { wcaCompetitionId: competition.wcaCompetitionId }
-  )._id;
+  var competitionId = Competitions.findOne({
+    wcaCompetitionId: competition.wcaCompetitionId
+  })._id;
 
   var userIdByJsonId = {};
-  wcaCompetition.persons.forEach(function(wcaPerson, i){
+  wcaCompetition.persons.forEach(function(wcaPerson, i) {
     var userProfile = {
       name: wcaPerson.name,
       wcaId: wcaPerson.wcaId,
@@ -32,20 +34,30 @@ Meteor.startup(function(){
     };
 
     var user;
-    if(wcaPerson.wcaId){
-      //check for user with WCAID and if user doesn't exist we create one
-      user = Meteor.users.findOne({username: userProfile.wcaId});
-      if(!user){
-        Accounts.createUser({username: userProfile.wcaId, password: userProfile.dob, profile: userProfile});
-        user = Meteor.users.findOne({username: userProfile.wcaId});
+    if(wcaPerson.wcaId) {
+      // Check for user with WCAID and if user doesn't exist we create one
+      user = Meteor.users.findOne({ username: userProfile.wcaId });
+      if(!user) {
+        Accounts.createUser({
+          username: userProfile.wcaId,
+          password: '',
+          profile: userProfile
+        });
+        user = Meteor.users.findOne({ username: userProfile.wcaId });
+        assert(user);
       }
     } else {
-      //create user if user doesn't exist and wcaId doesn't exist or look for one first
+      // Create user if user doesn't exist and wcaId doesn't exist or look for one first
       var username = userProfile.name + i;
       user = Meteor.users.findOne({ username: username });
-      if(!user){
-        Accounts.createUser({ username: username, password: userProfile.dob, profile: userProfile });
+      if(!user) {
+        Accounts.createUser({
+          username: username,
+          password: '',
+          profile: userProfile
+        });
         user = Meteor.users.findOne({ username: username });
+        assert(user);
       }
     }
     userIdByJsonId[wcaPerson.id] = user._id;
@@ -56,8 +68,8 @@ Meteor.startup(function(){
   // This competitor object contains an _id field whose value is the _id of
   // a document in the User collection.
   var competitors = [];
-  for(var jsonId in userIdByJsonId){
-    if(userIdByJsonId.hasOwnProperty(jsonId)){
+  for(var jsonId in userIdByJsonId) {
+    if(userIdByJsonId.hasOwnProperty(jsonId)) {
       var userId = userIdByJsonId[jsonId];
       competitors.push({
         _id: userId
@@ -74,13 +86,13 @@ Meteor.startup(function(){
   Rounds.remove({ competitionId: competitionId });
   Results.remove({ competitionId: competitionId });
   Groups.remove({ competitionId: competitionId });
-  wcaCompetition.events.forEach(function(wcaEvent){
+  wcaCompetition.events.forEach(function(wcaEvent) {
     // Sort rounds according to the order in which they must have occurred.
-    wcaEvent.rounds.sort(function(r1, r2){
+    wcaEvent.rounds.sort(function(r1, r2) {
       return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
                wca.roundByCode[r2.roundId].supportedRoundIndex );
     });
-    wcaEvent.rounds.forEach(function(wcaRound, nthRound){
+    wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
       var roundInfo = wca.roundByCode[wcaRound.roundId];
       var round = {
         combined: roundInfo.combined,
@@ -92,7 +104,7 @@ Meteor.startup(function(){
       };
       var roundId = Rounds.insert(round);
 
-      wcaRound.results.forEach(function(wcaResult){
+      wcaRound.results.forEach(function(wcaResult) {
         // wcaResult.personId refers to the personId in the wca json
         var userId = userIdByJsonId[wcaResult.personId];
 
@@ -108,7 +120,7 @@ Meteor.startup(function(){
         Results.insert(result);
       });
 
-      wcaRound.groups.forEach(function(wcaGroup){
+      wcaRound.groups.forEach(function(wcaGroup) {
         var group = {
           competitionId: competitionId,
           roundId: roundId,
@@ -122,32 +134,13 @@ Meteor.startup(function(){
     });
   });
 
-  var organizer = Meteor.users.findOne({username: "2011SELZ01"});
+  // Add devel account as an organizer for the competition we just created.
+  var develUser = Meteor.users.findOne({ 'emails.address': DEVEL_ACCOUNT_EMAIL });
   var competitionName = competition.wcaCompetitionId.replace(/([a-z])([A-Z0-9])/g, '$1 $2');
-  Competitions.update(
-    { wcaCompetitionId: competition.wcaCompetitionId },
-    {
-      $addToSet: { organizers: organizer._id },
-      $set: { competitionName: competitionName }
-    }
-  );
-
-  // Announce ourselves via Zeroconf
-  var mdns = Meteor.npmRequire('mdns-js');
-
-  // Wow, this is so gross. I couldn't find any way to get to
-  // our "runner" though.
-  // See https://github.com/meteor/meteor/blob/devel/tools/run-all.js#L344
-  var port = url.parse(process.env.ROOT_URL).port;
-  var service = new mdns.createAdvertisement(
-      mdns.tcp('_http'),
-      "" + port,
-      {
-        name: 'gjcomps',
-        txt: {
-          txtvers: '1'
-        }
-      }
-  );
-  service.start();
+  Competitions.update({
+    wcaCompetitionId: competition.wcaCompetitionId
+  }, {
+    $addToSet: { organizers: develUser._id },
+    $set: { competitionName: competitionName }
+  });
 });

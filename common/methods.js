@@ -147,6 +147,9 @@ if(Meteor.isServer) {
   };
 
   Meteor.methods({
+    'requestVerificationEmail': function() {
+      Accounts.sendVerificationEmail(this.userId);
+    },
     'uploadTNoodleZip': function(zipData) {
       // TODO - this is pretty janky. What if the folder we try to create
       // exists, but isn't a folder? Permissions could also screw us up.
