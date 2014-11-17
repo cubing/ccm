@@ -11,31 +11,10 @@ Template.registerHelper("formatName", function(formatCode) {
   return wca.formatByCode[formatCode].name;
 });
 
-var getDocumentAttribute = function(Collection, id, attribute) {
-  var fields = {};
-  fields[attribute] = 1;
-  var doc = Collection.findOne({
-    _id: id
-  }, {
-    fields: fields
-  });
-  return doc[attribute];
-};
-
-getCompetitionAttribute = function(competitionId, attribute) {
-  return getDocumentAttribute(Competitions, competitionId, attribute);
-};
 Template.registerHelper("competition", function(attribute) {
   return getCompetitionAttribute(this.competitionId, attribute);
 });
 
-getUserAttribute = function(userId, attribute) {
-  return getDocumentAttribute(Meteor.users, userId, attribute);
-};
-
-getRoundAttribute = function(roundId, attribute) {
-  return getDocumentAttribute(Rounds, roundId, attribute);
-};
 Template.registerHelper("roundEventCode", function() {
   return getRoundAttribute(this.roundId, 'eventCode');
 });
@@ -44,6 +23,10 @@ Template.registerHelper("roundRoundCode", function() {
 });
 Template.registerHelper("roundFormatCode", function() {
   return getRoundAttribute(this.roundId, 'formatCode');
+});
+
+Template.registerHelper("isSiteAdmin", function() {
+  return Meteor.user().profile.siteAdmin;
 });
 
 getCompetitionStartDateMoment = function(competitionId) {

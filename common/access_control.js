@@ -87,7 +87,6 @@ if(Meteor.isServer) {
       }
       var allowedFields = [
         'competitionName',
-        'wcaCompetitionId',
         'organizers',
         'staff',
 
@@ -97,8 +96,11 @@ if(Meteor.isServer) {
         'calendarEndMinutes',
       ];
 
-      // TODO - see https://github.com/jfly/gjcomps/issues/10
-      allowedFields.push("listed");
+      var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+      if(siteAdmin) {
+        allowedFields.push("listed");
+        allowedFields.push('wcaCompetitionId');
+      }
 
       if(_.difference(fields, allowedFields).length > 0) {
         return false;
