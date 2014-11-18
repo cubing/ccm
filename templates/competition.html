@@ -9,7 +9,15 @@
           {{formatMomentRange competitionStartDateMoment competitionEndDateMoment}}
         {{/unless}}
       </p>
-      <p><a href="#">Register here</a></p>
+      <p>
+        <a href="{{pathFor 'competitionRegistration' competitionUrlId=competitionUrlId}}">
+          {{#if registeredForCompetition}}
+            Edit registration
+          {{else}}
+            Register here
+          {{/if}}
+        </a>
+      </p>
     </div>
   </div>
 </template>

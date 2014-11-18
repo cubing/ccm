@@ -183,6 +183,12 @@ Router.route('/:competitionUrlId', {
   titlePrefix: null,
 });
 
+Router.route('/:competitionUrlId/registration', {
+  name: 'competitionRegistration',
+  controller: 'ViewCompetitionController',
+  titlePrefix: 'Registration',
+});
+
 Router.route('/:competitionUrlId/results', {
   name: 'competitionResults',
   controller: 'ViewCompetitionController',
