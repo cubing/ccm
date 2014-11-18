@@ -115,14 +115,16 @@
 </template>
 
 <template name="_loginButtonsAdditionalLoggedInDropdownActions">
+  <p class="text-center">
+    <a id="login-buttons-edit-profile">Edit profile</a>
+  </p>
+
   {{#if currentUser}}
     {{#unless currentUser.emails.[0].verified}}
       <button class="btn btn-danger btn-block" id="login-buttons-resend-emailverification"
-              data-toggle="tooltip" data-placement="bottom" title="Click to resend verification email">
-        Email not yet verified!
+              data-toggle="tooltip" data-placement="bottom" title="Your email address has not yet been verified">
+        Resend verification email
       </button>
     {{/unless}}
   {{/if}}
-
-  <button class="btn btn-default btn-block" id="login-buttons-edit-profile">Edit profile</button>
 </template>
