@@ -69,6 +69,9 @@
               <span class="glyphicon glyphicon-dashboard"></span>
             </a>
           </li>
+          <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}}">
+            <a href="{{pathFor 'competitionRegistration'}}">Registration</a>
+          </li>
         </ul>
         {{/if}}
         <ul class="nav navbar-nav navbar-right">
@@ -77,6 +80,9 @@
               {{#if canManageCompetition currentUser._id}}
                 <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}">Manage</a>
+                </li>
+                <li class="{{#if isActiveRoute 'manageRegistration'}}active{{/if}}">
+                  <a href="{{pathFor 'manageRegistration'}}">Registration</a>
                 </li>
                 <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}}">
                   <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}"
