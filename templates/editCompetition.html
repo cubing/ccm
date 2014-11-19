@@ -20,16 +20,16 @@
         <div class="col-sm-9 col-lg-10">
           {{#if isSiteAdmin}}
             <div id="toggleCompetitionListed" class="btn-group">
-              <button type="button" class="btn btn-default {{#if competitionListed}}active{{/if}}">
+              <button type="button" class="btn btn-default {{#if competition 'listed'}}active{{/if}}">
                 Listed
               </button>
-              <button type="button" class="btn btn-default {{#unless competitionListed}}active{{/unless}}">
+              <button type="button" class="btn btn-default {{#unless competition 'listed'}}active{{/unless}}">
                 Hidden
               </button>
             </div>
           {{else}}
             <p class="form-control-static">
-              {{#if competitionListed}}
+              {{#if competition "listed"}}
                 Listed
               {{else}}
                 Hidden

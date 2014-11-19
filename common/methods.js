@@ -130,7 +130,87 @@ Meteor.methods({
     } else {
       Groups.insert(newGroup);
     }
-  }
+  },
+
+  registerForCompetition: function(competitionId, desiredEventCodes) {
+    var userId = this.userId;
+    // TODO - do not allow user to register outside of the registration window
+    // TODO - require birthday, name, citizenship, gender, email
+
+    var firstRounds = Rounds.find({
+      competitionId: competitionId,
+      nthRound: 0,
+    }, {
+      fields: {
+        eventCode: 1,
+      }
+    }).fetch();
+    var firstRoundByEventCode = _.object(_.map(firstRounds, function(round) {
+      return [ round.eventCode, round ];
+    }));
+
+    // Check that the given event codes are valid
+    desiredEventCodes.forEach(function(eventCode) {
+      if(!firstRoundByEventCode[eventCode]) {
+        throw new Meteor.Error(404,
+            'Competition does not have a round with eventCode: ' + eventCode);
+      }
+    });
+
+    // TODO - we could be paranoid about not removing results that have results
+    var undesiredEventCodes = _.difference(_.pluck(firstRounds, 'eventCode'), desiredEventCodes);
+    _.each(undesiredEventCodes, function(undesiredEventCode) {
+      var roundId = firstRoundByEventCode[undesiredEventCode]._id;
+      var resultId = Results.remove({
+        competitionId: competitionId,
+        roundId: roundId,
+        userId: userId,
+      });
+    });
+
+    _.each(desiredEventCodes, function(desiredEventCode) {
+      var roundId = firstRoundByEventCode[desiredEventCode]._id;
+      Results.upsert({
+        competitionId: competitionId,
+        roundId: roundId,
+        userId: userId,
+      }, {
+        $set: {
+          competitionId: competitionId,
+          roundId: roundId,
+          userId: userId,
+        }
+      });
+    });
+
+    var shouldBeRegistered = desiredEventCodes.length > 0;
+    var isActuallyRegistered = isRegisteredForCompetition(userId, competitionId);
+    if(shouldBeRegistered != isActuallyRegistered) {
+      if(shouldBeRegistered) {
+        // Register!
+        Competitions.update({
+          _id: competitionId,
+        }, {
+          $push: {
+            competitors: {
+              _id: userId,
+            }
+          }
+        });
+      } else {
+        // Unregister!
+        Competitions.update({
+          _id: competitionId,
+        }, {
+          $pull: {
+            competitors: {
+              _id: userId,
+            }
+          }
+        });
+      }
+    }
+  },
 });
 
 if(Meteor.isServer) {
