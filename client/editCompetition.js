@@ -11,7 +11,7 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
 
 Template.editCompetition.events({
   'input input[type="text"]': function(e) {
-    if($(e.currentTarget).parent().hasClass('input-daterange')) {
+    if($(e.currentTarget).hasClass("typeahead")) {
       return;
     }
     var attribute = e.currentTarget.name;
