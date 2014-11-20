@@ -26,7 +26,7 @@ if(Meteor.isServer) {
     return "Welcome to live.cubing.net";
   };
   Accounts.emailTemplates.verifyEmail.text = function(user, url) {
-    return "To activate your account, simply click the link below:\n\n" + url;
+    return "To verify your email, simply click the link below:\n\n" + url;
   };
 }
 
