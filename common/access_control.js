@@ -107,13 +107,16 @@ if(Meteor.isServer) {
       }
       return true;
     },
-    fetch: [ 'organizers' ]
   });
 
   Rounds.allow({
     update: function(userId, round, fields, modifier) {
       var competition = Competitions.findOne({
         _id: round.competitionId
+      }, {
+        fields: {
+          _id: 1
+        }
       });
       if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
@@ -133,7 +136,7 @@ if(Meteor.isServer) {
       }
       return true;
     },
-    fetch: []
+    fetch: [ 'competitionId' ]
   });
 
 }

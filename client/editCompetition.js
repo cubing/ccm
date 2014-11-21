@@ -1,11 +1,14 @@
 setCompetitionAttribute = function(competitionId, attribute, value) {
-  // Coerce value to be null, because
-  //  { $unset: { field: undefined } }
-  // doesn't seem to work.
-  value = value || null;
-  var toSet = {};
-  toSet[attribute] = value;
-  var update = value ? { $set: toSet } : { $unset: toSet };
+  var update;
+  if(value === null || typeof value === "undefined") {
+    var toUnset = {};
+    toUnset[attribute] = 1;
+    update = { $unset: toUnset };
+  } else {
+    var toSet = {};
+    toSet[attribute] = value;
+    update = { $set: toSet };
+  }
   Competitions.update({ _id: competitionId }, update);
 };
 
@@ -28,12 +31,19 @@ Template.editCompetition.events({
     setCompetitionAttribute(this.competitionId, 'listed', !listed);
   },
   'click button[name="buttonDeleteCompetition"]': function(e) {
-    Meteor.call("deleteCompetition", this.competitionId, function(err, data) {
-      if(err) {
-        throw err;
-      }
-      Router.go('home');
-    });
+    var that = this;
+    // Note that we navigate away from the competition page first, and wait for the
+    // navigation to complete before we actually delete the competition. This
+    // avoids a bunch of spurious error messages in the console due to looking
+    // up attributes of a competition that no longer exists.
+    Router.go('home');
+    setTimeout(function() {
+      Meteor.call("deleteCompetition", that.competitionId, function(err, data) {
+        if(err) {
+          throw err;
+        }
+      });
+    }, 0);
   },
   'click button[name="buttonAddRound"]': function(e, t) {
     Meteor.call('addRound', this.competitionId, this.eventCode);

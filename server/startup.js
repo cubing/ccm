@@ -7,21 +7,22 @@ Meteor.startup(function() {
   // https://github.com/meteor/meteor/issues/1795
   var wcaCompetition = JSON.parse(Assets.getText("competitions/StarlightOpen2014.json"));
 
-  var competition = {
+  var competition = Competitions.findOne({
     wcaCompetitionId: wcaCompetition.competitionId,
-    competitors: [],
-    staff: [],
-    organizers: [],
-    listed: false,
-    startDate: new Date(),
-  };
-  Competitions.upsert(
-    { wcaCompetitionId: competition.wcaCompetitionId },
-    competition
-  );
-  var competitionId = Competitions.findOne({
-    wcaCompetitionId: competition.wcaCompetitionId
-  })._id;
+  });
+  if(!competition) {
+    var competitionId = Competitions.insert({
+      competitionName: wcaCompetition.competitionId,
+      wcaCompetitionId: wcaCompetition.competitionId,
+      competitors: [],
+      staff: [],
+      organizers: [],
+      listed: false,
+      startDate: new Date(),
+    });
+    competition = Competitions.findOne({ _id: competitionId });
+    assert(competition);
+  }
 
   var userIdByJsonId = {};
   wcaCompetition.persons.forEach(function(wcaPerson, i) {
@@ -77,15 +78,15 @@ Meteor.startup(function() {
     }
   }
   Competitions.update(
-    { _id: competitionId },
+    { _id: competition._id },
     { $set: { competitors: competitors } }
   );
 
   // Add all the rounds and results for this competition.
   // First remove any old rounds, results, and groups for this competition.
-  Rounds.remove({ competitionId: competitionId });
-  Results.remove({ competitionId: competitionId });
-  Groups.remove({ competitionId: competitionId });
+  Rounds.remove({ competitionId: competition._id });
+  Results.remove({ competitionId: competition._id });
+  Groups.remove({ competitionId: competition._id });
   wcaCompetition.events.forEach(function(wcaEvent) {
     // Sort rounds according to the order in which they must have occurred.
     wcaEvent.rounds.sort(function(r1, r2) {
@@ -97,7 +98,7 @@ Meteor.startup(function() {
       var round = {
         combined: roundInfo.combined,
         nthRound: nthRound,
-        competitionId: competitionId,
+        competitionId: competition._id,
         eventCode: wcaEvent.eventId,
         roundCode: wcaRound.roundId,
         formatCode: wcaRound.formatId,
@@ -109,7 +110,7 @@ Meteor.startup(function() {
         var userId = userIdByJsonId[wcaResult.personId];
 
         var result = {
-          competitionId: competitionId,
+          competitionId: competition._id,
           roundId: roundId,
           userId: userId,
           position: wcaResult.position,
@@ -122,7 +123,7 @@ Meteor.startup(function() {
 
       wcaRound.groups.forEach(function(wcaGroup) {
         var group = {
-          competitionId: competitionId,
+          competitionId: competition._id,
           roundId: roundId,
           group: wcaGroup.group,
           scrambles: wcaGroup.scrambles,

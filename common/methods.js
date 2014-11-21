@@ -11,7 +11,9 @@ Meteor.methods({
 
     var competitionId = Competitions.insert({
       competitionName: competitionName,
-      organizers: [ this.userId ]
+      organizers: [ this.userId ],
+      listed: false,
+      startDate: new Date(),
     });
     return competitionId;
   },
