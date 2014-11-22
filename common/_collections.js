@@ -82,7 +82,7 @@ Rounds.attachSchema({
   durationMinutes: {
     type: Number,
     min: 0,
-    defaultValue: 30,
+    defaultValue: 60,
   },
 
   // *** Attributes for real rounds for WCA events ***
