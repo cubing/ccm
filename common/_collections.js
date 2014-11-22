@@ -1,3 +1,10 @@
+// For filter to be false. I really wish this was the default for SimpleSchema.
+var oldClean = SimpleSchema.prototype.clean;
+SimpleSchema.prototype.clean = function(doc, options) {
+  options.filter = false;
+  return oldClean.call(this, doc, options);
+};
+
 Competitions = new Meteor.Collection("competitions");
 Competitions.attachSchema({
   competitionName: {
@@ -83,6 +90,12 @@ Rounds.attachSchema({
     type: Number,
     min: 0,
     defaultValue: 60,
+  },
+
+  title: {
+    // This is only used by rounds that do *not* correspond to WCA events.
+    type: String,
+    optional: true,
   },
 
   // *** Attributes for real rounds for WCA events ***

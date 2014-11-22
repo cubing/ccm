@@ -49,9 +49,10 @@ Meteor.methods({
       eventCode: eventCode,
       formatCode: formatCode,
 
-      // These will be filled in by refreshRoundCodes
-      roundCode: null,
-      nthRound: wca.maxRoundsPerEvent
+      // These will be filled in by refreshRoundCodes, but
+      // add valid value so the UI doesn't crap out.
+      roundCode: 'f',
+      nthRound: wca.maxRoundsPerEvent,
     });
 
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
@@ -133,7 +134,9 @@ Meteor.methods({
       console.warn(existingGroup);
       Groups.update({
         _id: existingGroup._id
-      }, newGroup);
+      }, {
+        $set: newGroup
+      });
     } else {
       Groups.insert(newGroup);
     }

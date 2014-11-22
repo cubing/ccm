@@ -208,7 +208,7 @@ Template.uploadScrambles.events({
     $(fileInput).val('');
   },
   'click #buttonUploadScrambles': function(e, t) {
-    var competition = this.competition;
+    var that = this;
 
     var scrambleSets = scrambleSetsReact.get();
 
@@ -218,9 +218,9 @@ Template.uploadScrambles.events({
       }
       var tnoodleScrambles = scrambleSet.tnoodleScrambles;
       tnoodleScrambles.sheets.forEach(function(sheet) {
-        var round = findRoundForSheet(competition._id, sheet);
+        var round = findRoundForSheet(that.competitionId, sheet);
         if(!round) {
-          console.warn("No round found for competitionId: " + competition._id);
+          console.warn("No round found for competitionId: " + that.competitionId);
           console.warn(sheet);
           return;
         }
