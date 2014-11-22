@@ -171,10 +171,8 @@ Template.editCompetition.helpers({
 
 function getSelectedUser(t) {
   var nameInput = t.find('input[name="name"]');
-  var username = getNameAndUsernameFromUserString(nameInput.value)[1];
-  var user = Meteor.users.findOne({
-    'username': username
-  });
+  var userId = getNameAndIdFromUserString(nameInput.value)[1];
+  var user = Meteor.users.findOne({ _id: userId });
   return user;
 }
 
@@ -228,7 +226,7 @@ Template.editCompetition_users.events({
   },
 });
 
-function getNameAndUsernameFromUserString(userStr) {
+function getNameAndIdFromUserString(userStr) {
   var match = userStr.match(/([^(]*)(?:\((.*)\))?/);
   var name = match[1].trim();
   var id = match[2];
@@ -238,7 +236,7 @@ function getNameAndUsernameFromUserString(userStr) {
 Template.editCompetition_users.rendered = function() {
   var substringMatcher = function(collection, attributes) {
     return function findMatches(q, cb) {
-      var name = getNameAndUsernameFromUserString(q)[0];
+      var name = getNameAndIdFromUserString(q)[0];
       var seenIds = {};
       var arr = [];
       var addResult = function(result) {
@@ -280,9 +278,9 @@ Template.editCompetition_users.rendered = function() {
   }, {
     name: 'users',
     displayKey: function(user) {
-      return user.profile.name + " (" + user.username + ")";
+      return user.profile.name + " (" + user._id + ")";
     },
-    source: substringMatcher(Meteor.users, [ 'profile.name', 'username' ]),
+    source: substringMatcher(Meteor.users, [ 'profile.name' ]),
   });
 
   maybeEnableUserSelectForm(this);
