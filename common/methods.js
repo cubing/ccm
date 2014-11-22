@@ -9,6 +9,11 @@ Meteor.methods({
       throw new Meteor.Error(401, "Must log in");
     }
 
+    var user = Meteor.users.findOne({ _id: this.userId });
+    if(!user.emails[0].verified) {
+      throw new Meteor.Error(401, "Must verify email");
+    }
+
     var competitionId = Competitions.insert({
       competitionName: competitionName,
       organizers: [ this.userId ],

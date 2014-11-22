@@ -1,0 +1,11 @@
+<template name="ifLoggedInAndVerified">
+  {{#unless currentUser}}
+    Please log in.
+  {{else}}
+    {{#unless currentUser.emails.[0].verified}}
+      Please verify your email address.
+    {{else}}
+      {{> UI.contentBlock}}
+    {{/unless}}
+  {{/unless}}
+</template>
