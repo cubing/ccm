@@ -187,19 +187,21 @@ Router.route('/:competitionUrlId', {
   controller: 'ViewCompetitionController',
   titlePrefix: null,
 });
-
 Router.route('/:competitionUrlId/registration', {
   name: 'competitionRegistration',
   controller: 'ViewCompetitionController',
   titlePrefix: 'Registration',
 });
-
+Router.route('/:competitionUrlId/schedule', {
+  name: 'competitionSchedule',
+  controller: 'ViewCompetitionController',
+  titlePrefix: 'Schedule',
+});
 Router.route('/:competitionUrlId/results', {
   name: 'competitionResults',
   controller: 'ViewCompetitionController',
   titlePrefix: 'Results',
 });
-
 Router.route('/:competitionUrlId/results/:eventCode/:roundCode', {
   name: 'roundResults',
   controller: 'ViewCompetitionController',

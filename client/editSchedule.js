@@ -71,6 +71,123 @@ function extendRound(round, competitionId) {
   round.nthDay = round.nthDay || DEFAULT_ROUND_NTHDAY;
 }
 
+// This is global so competitionSchedule.js can use it
+setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
+  template.autorun(function() {
+    var data = Template.currentData();
+    var competitionId = data.competitionId;
+
+    $calendarDiv.fullCalendar('destroy');
+
+    function timeMinutesToFullCalendarTime(timeMinutes) {
+      var duration = moment.duration(timeMinutes, 'minutes');
+      return duration.hours() + ":" + duration.minutes() + ":00";
+    }
+    var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
+    var calendarEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
+    var numberOfDays = getCompetitionNumberOfDays(competitionId);
+
+    var startDate = getCompetitionAttribute(competitionId, 'startDate');
+
+    var startDateMoment = null;
+    if(startDate) {
+      // strip all time zone info from date and use utc time
+      startDateMoment = moment.utc(moment(startDate).format("YYYY-MM-DD"));
+    } else {
+      startDateMoment = moment.utc().startOf('day');
+    }
+    var minTime = timeMinutesToFullCalendarTime(calendarStartMinutes);
+    var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
+
+    var eventChanged = function(calEvent) {
+      var nthDay = calEvent.start.diff(startDateMoment, 'days');
+      var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
+      var durationMinutes = calEvent.end.diff(calEvent.start, 'minutes');
+      Rounds.update({
+        _id: calEvent.id
+      }, {
+        $set: {
+          nthDay: nthDay,
+          startMinutes: startMinutes,
+          durationMinutes: durationMinutes,
+        }
+      });
+    };
+
+    $calendarDiv.fullCalendar({
+      header: {
+        left: '',
+        center: 'title',
+        right: '',
+      },
+      durationDays: numberOfDays,
+      allDaySlot: false,
+      slotDuration: '00:30:00',
+      snapDuration: '00:' + MIN_ROUND_DURATION_MINUTES + ':00',
+      minTime: minTime,
+      maxTime: maxTime,
+      defaultDate: startDateMoment.toISOString(),
+      defaultView: 'agendaDays',
+      editable: !!$editModal,
+      contentHeight: 'auto',
+      events: function(start, end, timezone, callback) {
+        var calEvents = [];
+        // We run the event fetching in a nonreactive block because we don't
+        // want to re-run the entire autorun block we're currently inside of
+        // every time an event changes, as that causes the entire
+        // calendar to flap. Instead, we'll explicitly call
+        //  $('#calendar').fullCalendar('refetchEvents')
+        // which will cause a more granular update of the calendar.
+        Tracker.nonreactive(function() {
+          var rounds = getRoundsWithSchedule(competitionId);
+          _.each(rounds, function(round) {
+            // startDateMoment is guaranteed to be in UTC, so there's no
+            // weirdness here with adding time to a midnight that is about to
+            // experience DST.
+            var day = startDateMoment.clone().add(round.nthDay, 'days');
+            var start = day.clone().add(round.startMinutes, 'minutes');
+            var end = start.clone().add(round.durationMinutes, 'minutes');
+            var title;
+            // Rounds don't necessarily have events, such as Lunch or Registration.
+            if(round.eventCode) {
+              title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+            } else {
+              title = round.title;
+            }
+            var color = round.eventCode ? "" : "#aa0000";
+            var calEvent = {
+              id: round._id,
+              title: title,
+              start: start,
+              end: end,
+              color: color,
+            };
+            calEvents.push(calEvent);
+          });
+        });
+        callback(calEvents);
+      },
+      eventClick: function(calEvent, jsEvent, view) {
+        var round = Rounds.findOne({ _id: calEvent.id });
+        extendRound(round, competitionId);
+        editingRoundReact.set(round);
+        $editModal.modal('show');
+      },
+      eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
+        eventChanged(calEvent);
+      },
+      eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
+        eventChanged(calEvent);
+      },
+    });
+  });
+  template.autorun(function() {
+    var data = Template.currentData();
+    var rounds = getRoundsWithSchedule(data.competitionId);
+    $calendarDiv.fullCalendar('refetchEvents');
+  });
+};
+
 Template.editSchedule.rendered = function() {
   var template = this;
 
@@ -125,119 +242,9 @@ Template.editSchedule.rendered = function() {
     $startDatePicker.datepicker('update', startDate);
   });
 
-  template.autorun(function() {
-    var data = Template.currentData();
-    var competitionId = data.competitionId;
-
-    $('#calendar').fullCalendar('destroy');
-
-    function timeMinutesToFullCalendarTime(timeMinutes) {
-      var duration = moment.duration(timeMinutes, 'minutes');
-      return duration.hours() + ":" + duration.minutes() + ":00";
-    }
-    var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
-    var calendarEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
-    var numberOfDays = getCompetitionNumberOfDays(competitionId);
-
-    var startDate = getCompetitionAttribute(competitionId, 'startDate');
-
-    var startDateMoment = null;
-    if(startDate) {
-      // strip all time zone info from date and use utc time
-      startDateMoment = moment.utc(moment(startDate).format("YYYY-MM-DD"));
-    } else {
-      startDateMoment = moment.utc().startOf('day');
-    }
-    var minTime = timeMinutesToFullCalendarTime(calendarStartMinutes);
-    var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
-
-    var eventChanged = function(calEvent) {
-      var nthDay = calEvent.start.diff(startDateMoment, 'days');
-      var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
-      var durationMinutes = calEvent.end.diff(calEvent.start, 'minutes');
-      Rounds.update({
-        _id: calEvent.id
-      }, {
-        $set: {
-          nthDay: nthDay,
-          startMinutes: startMinutes,
-          durationMinutes: durationMinutes,
-        }
-      });
-    };
-
-    $('#calendar').fullCalendar({
-      header: {
-        left: '',
-        center: 'title',
-        right: '',
-      },
-      durationDays: numberOfDays,
-      allDaySlot: false,
-      slotDuration: '00:30:00',
-      snapDuration: '00:' + MIN_ROUND_DURATION_MINUTES + ':00',
-      minTime: minTime,
-      maxTime: maxTime,
-      defaultDate: startDateMoment.toISOString(),
-      defaultView: 'agendaDays',
-      editable: true,
-      contentHeight: 'auto',
-      events: function(start, end, timezone, callback) {
-        var calEvents = [];
-        // We run the event fetching in a nonreactive block because we don't
-        // want to re-run the entire autorun block we're currently inside of
-        // every time an event changes, as that causes the entire
-        // calendar to flap. Instead, we'll explicitly call
-        //  $('#calendar').fullCalendar('refetchEvents')
-        // which will cause a more granular update of the calendar.
-        Tracker.nonreactive(function() {
-          var rounds = getRoundsWithSchedule(competitionId);
-          _.each(rounds, function(round) {
-            // startDateMoment is guaranteed to be in UTC, so there's no
-            // weirdness here with adding time to a midnight that is about to
-            // experience DST.
-            var day = startDateMoment.clone().add(round.nthDay, 'days');
-            var start = day.clone().add(round.startMinutes, 'minutes');
-            var end = start.clone().add(round.durationMinutes, 'minutes');
-            var title;
-            // Rounds don't necessarily have events, such as Lunch or Registration.
-            if(round.eventCode) {
-              title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
-            } else {
-              title = round.title;
-            }
-            var color = round.eventCode ? "" : "#aa0000";
-            var calEvent = {
-              id: round._id,
-              title: title,
-              start: start,
-              end: end,
-              color: color,
-            };
-            calEvents.push(calEvent);
-          });
-        });
-        callback(calEvents);
-      },
-      eventClick: function(calEvent, jsEvent, view) {
-        var round = Rounds.findOne({ _id: calEvent.id });
-        extendRound(round, competitionId);
-        editingRoundReact.set(round);
-        template.$('#addEditSomethingModal').modal('show');
-      },
-      eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
-        eventChanged(calEvent);
-      },
-      eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
-        eventChanged(calEvent);
-      },
-    });
-  });
-  template.autorun(function() {
-    var data = Template.currentData();
-    var rounds = getRoundsWithSchedule(data.competitionId);
-    $('#calendar').fullCalendar('refetchEvents');
-  });
+  var $calendar = template.$('#calendar');
+  var $addEditSomethingModal = template.$('#addEditSomethingModal');
+  setupCompetitionCalendar(template, $calendar, $addEditSomethingModal);
 };
 
 Template.addEditSomethingModal.helpers({
