@@ -127,6 +127,12 @@ Rounds.attachSchema({
     allowedValues: _.keys(wca.formatByCode),
     optional: true,
   },
+  status: {
+    type: String,
+    allowedValues: _.keys(wca.roundStatuses),
+    defaultValue: wca.roundStatuses.unstarted,
+    optional: true,
+  },
 });
 
 // TODO - add indices. do we want a compound index on average, best?
@@ -145,15 +151,19 @@ Results.attachSchema({
   position: {
     type: Number,
     min: 0,
+    optional: true,
   },
   solves: {
     type: [Number],
+    optional: true,
   },
   best: {
     type: Number,
+    optional: true,
   },
   average: {
     type: Number,
+    optional: true,
   },
 });
 

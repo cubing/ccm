@@ -14,11 +14,12 @@ Meteor.startup(function() {
     var competitionId = Competitions.insert({
       competitionName: wcaCompetition.competitionId,
       wcaCompetitionId: wcaCompetition.competitionId,
+      listed: false,
+      startDate: new Date(),
+      numberOfDays: 1,
       competitors: [],
       staff: [],
       organizers: [],
-      listed: false,
-      startDate: new Date(),
     });
     competition = Competitions.findOne({ _id: competitionId });
     assert(competition);
@@ -95,21 +96,20 @@ Meteor.startup(function() {
     });
     wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
       var roundInfo = wca.roundByCode[wcaRound.roundId];
-      var round = {
+      var roundId = Rounds.insert({
         combined: roundInfo.combined,
         nthRound: nthRound,
         competitionId: competition._id,
         eventCode: wcaEvent.eventId,
         roundCode: wcaRound.roundId,
         formatCode: wcaRound.formatId,
-      };
-      var roundId = Rounds.insert(round);
+        status: wca.roundStatuses.closed,
+      });
 
       wcaRound.results.forEach(function(wcaResult) {
         // wcaResult.personId refers to the personId in the wca json
         var userId = userIdByJsonId[wcaResult.personId];
-
-        var result = {
+        Results.insert({
           competitionId: competition._id,
           roundId: roundId,
           userId: userId,
@@ -117,20 +117,18 @@ Meteor.startup(function() {
           solves: wcaResult.results,
           best: wcaResult.best,
           average: wcaResult.average
-        };
-        Results.insert(result);
+        });
       });
 
       wcaRound.groups.forEach(function(wcaGroup) {
-        var group = {
+        Groups.insert({
           competitionId: competition._id,
           roundId: roundId,
           group: wcaGroup.group,
           scrambles: wcaGroup.scrambles,
           extraScrambles: wcaGroup.extraScrambles,
           scrambleProgram: wcaCompetition.scrambleProgram
-        };
-        Groups.insert(group);
+        });
       });
     });
   });

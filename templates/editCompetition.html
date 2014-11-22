@@ -123,10 +123,11 @@
                       <tr>
                         <th>Round Name</th>
                         <th>Format</th>
-                        <th>Status</th>
                         <th>Progress</th>
                         <th>#</th>
-                        <th></th>
+                        <th>
+                          <span class="glyphicon glyphicon-wrench"></span>
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -151,8 +152,6 @@
                             </div>
                           </td>
 
-                          <td>In Progress</td>
-
                           <td>
                             <div class="progress">
                               <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
@@ -164,6 +163,15 @@
                           <td>{{competitorCount}}</td>
 
                           <td>
+                            <button type="button" name="buttonOpenRound" class="btn btn-default btn-xs">
+                              <i class="fa fa-unlock"></i>
+                            </button>
+                            <button type="button" name="buttonCloseRound" class="btn btn-default btn-xs">
+                              <i class="fa fa-lock"></i>
+                            </button>
+                            <button type="button" name="buttonAdvanceCompetitors" class="btn btn-default btn-xs">
+                              <span class="glyphicon glyphicon-step-forward"></span>
+                            </button>
                             {{#if canRemoveRound}}
                               <button type="button" name="buttonRemoveRound" class="btn btn-default btn-xs">
                                 <span class="glyphicon glyphicon-minus"></span>
@@ -212,6 +220,9 @@
 
 <template name="editCompetition_userRow">
   {{profile.name}} ({{_id}})
+  {{#if isMe}}
+    <span class="label label-default">Me</span>
+  {{/if}}
 </template>
 
 <template name="editCompetition_users">
@@ -228,7 +239,7 @@
     <ul class="list-group">
       {{#each users}}
         <li class="list-group-item">
-          {{> editCompetition_userRow }}
+          {{> editCompetition_userRow}}
           {{#unless isCurrentUser}}
             <button type="button" name="buttonRemoveUser" class="btn btn-default btn-xs pull-right">
               <span class="glyphicon glyphicon-remove"></span>

@@ -1,5 +1,11 @@
 wca = {};
 
+wca.roundStatuses = {
+  unstarted: 'unstarted',
+  open: 'open',
+  closed: 'closed',
+};
+
 // We don't support qualification rounds (combined or uncombined), and we do
 // not support B Finals.
 wca.supportedRounds = [

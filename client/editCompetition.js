@@ -303,3 +303,9 @@ Template.editCompetition_users.helpers({
     return Meteor.userId() == this._id;
   }
 });
+
+Template.editCompetition_userRow.helpers({
+  isMe: function() {
+    return this._id == Meteor.userId();
+  },
+});
