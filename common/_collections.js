@@ -41,6 +41,14 @@ Competitions.attachSchema({
     min: 1,
     defaultValue: 1,
   },
+  registrationOpenDate: {
+    type: Date,
+    optional: true,
+  },
+  registrationCloseDate: {
+    type: Date,
+    optional: true,
+  },
 
   // I'm not wild about the fact that competitors is an array of objects
   // containing ids, but staff and organizers is an array of ids.

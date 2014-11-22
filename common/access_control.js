@@ -94,6 +94,8 @@ if(Meteor.isServer) {
         'numberOfDays',
         'calendarStartMinutes',
         'calendarEndMinutes',
+        'registrationOpenDate',
+        'registrationCloseDate',
       ];
 
       var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');

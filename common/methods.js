@@ -143,8 +143,19 @@ Meteor.methods({
   },
 
   registerForCompetition: function(competitionId, desiredEventCodes) {
+    var open = getCompetitionRegistrationOpenMoment(competitionId);
+    var close = getCompetitionRegistrationCloseMoment(competitionId);
+    var now = moment();
+    if(now.isAfter(close)) {
+      throw new Meteor.Error(403,
+            'Competition registration is now closed!');
+    }
+    if(now.isBefore(open)) {
+      throw new Meteor.Error(403,
+            'Competition registration is not yet open!');
+    }
+
     var userId = this.userId;
-    // TODO - do not allow user to register outside of the registration window
     // TODO - require birthday, name, citizenship, gender, email
 
     var firstRounds = Rounds.find({

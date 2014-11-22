@@ -14,11 +14,14 @@ Template.editSchedule.helpers({
   editingRound: function() {
     return editingRoundReact.get();
   },
+  defaultRegistrationEndDate: function() {
+    return getCompetitionStartDateMoment(this.competitionId).subtract(1, 'days').subtract(1, 'second').calendar();
+  },
 });
 
 Template.editSchedule.events({
-  'changeDate #startDatePicker': function(e) {
-    var attribute = 'startDate';
+  'changeDate .date': function(e) {
+    var attribute = e.currentTarget.dataset.attribute;
     var value = e.date;
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
@@ -236,10 +239,12 @@ Template.editSchedule.rendered = function() {
 
   template.autorun(function() {
     var data = Template.currentData();
-    var startDate = getCompetitionAttribute(data.competitionId, 'startDate');
+    template.$('.date').each(function() {
+      var date = getCompetitionAttribute(data.competitionId, this.dataset.attribute);
 
-    var $startDatePicker = template.$('#startDatePicker');
-    $startDatePicker.datepicker('update', startDate);
+      var $datePicker = template.$(this);
+      $datePicker.datepicker('update', date);
+    });
   });
 
   var $calendar = template.$('#calendar');

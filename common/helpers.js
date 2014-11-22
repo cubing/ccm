@@ -44,6 +44,22 @@ if(Meteor.isClient) {
   });
 }
 
+getCompetitionRegistrationOpenMoment = function(competitionId) {
+  var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
+  if(!open) {
+    return null;
+  }
+  return moment(open);
+};
+
+getCompetitionRegistrationCloseMoment = function(competitionId) {
+  var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
+  if(!close) {
+    return null;
+  }
+  return moment(close);
+};
+
 getCompetitionEndDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
   if(!startDate) {

@@ -11,7 +11,8 @@
             <div class="col-sm-8">
               <div class="input-group date" id="startDatePicker"
                    data-provide="datepicker" data-date-today-btn="true" data-date-today-highlight="true"
-                   data-date-format="D M d, yyyy">
+                   data-date-format="D M d, yyyy"
+                   data-attribute='startDate'>
                 <input type="text" name="startDate" id="inputCompetitionStart" class="form-control" />
                 <span class="input-group-addon">
                   <span class="glyphicon glyphicon-calendar"></span>
@@ -39,6 +40,36 @@
               <label for="inputEndTime" class="col-sm-4 control-label">End time</label>
               <div class="col-sm-8">
                 <input name="calendarEndMinutes" id="inputEndTime" type="text" class="time end form-control" value="{{minutesToPrettyTime competitionCalendarEndMinutes}}" />
+              </div>
+            </div>
+          </div>
+
+          <div id="registrationOpenDate" class="form-group">
+            <label for="inputRegistrationOpen" class="col-sm-4 control-label">Registration Open Date</label>
+            <div class="col-sm-8">
+              <div class="input-group date" id="inputRegistrationOpenPicker"
+                   data-provide="datepicker" data-date-today-btn="true" data-date-today-highlight="true"
+                   data-date-format="D M d, yyyy"
+                   data-attribute='registrationOpenDate'>
+                <input type="text" name="registrationOpenDate" placeholder='Now' id="inputRegistrationOpen" class="form-control" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div id="registrationCloseDate" class="form-group">
+            <label for="inputRegistrationClose" class="col-sm-4 control-label">Registration Close Date</label>
+            <div class="col-sm-8">
+              <div class="input-group date" id="inputRegistrationClosePicker"
+                   data-provide="datepicker" data-date-today-btn="true" data-date-today-highlight="true"
+                   data-date-format="D M d, yyyy"
+                   data-attribute='registrationCloseDate'>
+                <input type="text" name="startDate" placeholder='{{defaultRegistrationEndDate}}' id="inputRegistrationClose" class="form-control" />
+                <span class="input-group-addon">
+                  <span class="glyphicon glyphicon-calendar"></span>
+                </span>
               </div>
             </div>
           </div>
