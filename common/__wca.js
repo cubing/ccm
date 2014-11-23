@@ -27,7 +27,25 @@ wca.supportedRounds = [
   },
 ];
 
-wca.maxRoundsPerEvent = wca.supportedRounds.length;
+
+// https://www.worldcubeassociation.org/regulations/#9p1
+wca.MINIMUM_CUTOFF_PERCENTAGE = 25;
+
+// https://www.worldcubeassociation.org/regulations/#9m
+wca.MAX_ROUNDS_PER_EVENT = 4;
+assert.equal(wca.supportedRounds.length, wca.MAX_ROUNDS_PER_EVENT);
+wca.maxRoundsAllowed = function(firstRoundSize) {
+  if(firstRoundSize <= 7) {
+    return 1;
+  } else if(firstRoundSize <= 15) {
+    return 2;
+  } else if(firstRoundSize <= 99) {
+    return 3;
+  } else {
+    return MAX_ROUNDS;
+  }
+};
+
 
 wca.roundByCode = {
   "1": {

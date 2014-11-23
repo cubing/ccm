@@ -52,7 +52,7 @@ Meteor.methods({
       // These will be filled in by refreshRoundCodes, but
       // add valid value so the UI doesn't crap out.
       roundCode: 'f',
-      nthRound: wca.maxRoundsPerEvent,
+      nthRound: wca.MAX_ROUNDS_PER_EVENT,
     });
 
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
@@ -95,7 +95,7 @@ Meteor.methods({
         "nthRound": 1
       }
     }).fetch();
-    if(rounds.length > wca.maxRoundsPerEvent) {
+    if(rounds.length > wca.MAX_ROUNDS_PER_EVENT) {
       throw new Meteor.Error(400, "Too many rounds");
     }
     rounds.forEach(function(round, nthRound) {
@@ -105,7 +105,7 @@ Meteor.methods({
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
       if(nthRound == rounds.length - 1) {
-        supportedRoundsIndex = wca.maxRoundsPerEvent - 1;
+        supportedRoundsIndex = wca.MAX_ROUNDS_PER_EVENT - 1;
       } else {
         supportedRoundsIndex = nthRound;
       }

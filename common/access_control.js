@@ -75,7 +75,7 @@ canAddRound = function(userId, competitionId, eventCode) {
     }
   });
   var nthRound = rounds.count();
-  return nthRound < wca.maxRoundsPerEvent;
+  return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
 
 if(Meteor.isServer) {
