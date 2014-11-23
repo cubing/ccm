@@ -209,6 +209,7 @@ Template.editCompetition.helpers({
   canOpenRound: function() {
     var nextRound = Rounds.findOne({
       competitionId: this.competitionId,
+      eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
       fields: {
@@ -241,6 +242,7 @@ Template.editCompetition.helpers({
     }
     var nextRound = Rounds.findOne({
       competitionId: this.competitionId,
+      eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
       fields: {
