@@ -197,6 +197,58 @@ Groups.attachSchema({
   },
 });
 
+Meteor.users.attachSchema(new SimpleSchema({
+  emails: {
+    type: [Object],
+  },
+  "emails.$.address": {
+    type: String,
+    regEx: SimpleSchema.RegEx.Email,
+  },
+  "emails.$.verified": {
+    type: Boolean,
+  },
+  createdAt: {
+    type: Date,
+  },
+  profile: {
+    type: new SimpleSchema({
+      name: {
+        label: "Name",
+        type: String,
+        regEx: /^[a-zA-Z- ]{2,50}$/,
+      },
+      wcaId: {
+        label: "WCA id",
+        type: String,
+        regEx: /(19|20)\d{2}[A-Z]{4}\d{2}/,
+        optional: true,
+      },
+      countryId: {
+        type: String,
+        regEx: /^[A-Z]{2}$/,
+      },
+      gender: {
+        type: String,
+        allowedValues: ['m', 'f', 'o'],
+      },
+      dob: {
+        type: Date,
+      },
+
+      siteAdmin: {
+        type: Boolean,
+      },
+    }),
+    optional: true,
+  },
+  services: {
+    type: Object,
+    optional: true,
+    blackbox: true,
+  },
+}));
+
 var getDocumentAttribute = function(Collection, id, attribute) {
   var fields = {};
   fields[attribute] = 1;

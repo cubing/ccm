@@ -9,7 +9,7 @@ gjcomps [![Build Status](https://travis-ci.org/jfly/gjcomps.png?branch=master)](
 ## To run
 - `GJCOMPS_DEVEL=1 meteor`
 - To enable emailing, be sure to set the MANDRILL_USERNAME and MANDRILL_APIKEY environment variables.
-- [http://localhost:3000/organizer](http://localhost:3000/organizer), log in as gjcomps/gjcomps (must set the GJCOMPS_DEVEL environment variable for the gjcomps user to be created).
+- [http://localhost:3000/organizer](http://localhost:3000/organizer), log in as gjcomps@gjcomps.com/gjcomps (must set the GJCOMPS_DEVEL environment variable for the gjcomps user to be created).
 
 ## To lint
 - `(cd tests; npm run-script lint)`

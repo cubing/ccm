@@ -1,4 +1,4 @@
-DEVEL_ACCOUNT_EMAIL = 'gjcomps';
+DEVEL_ACCOUNT_EMAIL = 'gjcomps@gjcomps.com';
 DEVEL_ACCOUNT_PASSWORD = 'gjcomps';
 
 if(Meteor.isServer) {
@@ -7,17 +7,23 @@ if(Meteor.isServer) {
       return;
     }
 
-    // Create devel account
-    Meteor.users.remove({ 'emails.address': DEVEL_ACCOUNT_EMAIL });
-    Accounts.createUser({
-      password: DEVEL_ACCOUNT_PASSWORD,
-      email: DEVEL_ACCOUNT_EMAIL,
-      profile: {
-        name: 'gjcomps devel account',
-        siteAdmin: true,
-      }
-    });
+    // Only create devel account if it doesn't exist. That way we don't log
+    // out someone who may have been logged in with the devel account already.
     var develUser = Meteor.users.findOne({ 'emails.address': DEVEL_ACCOUNT_EMAIL });
+    if(!develUser) {
+      var develUserId = Accounts.createUser({
+        password: DEVEL_ACCOUNT_PASSWORD,
+        email: DEVEL_ACCOUNT_EMAIL,
+        profile: {
+          name: "gjcomps devel account",
+          siteAdmin: true,
+          countryId: "US",
+          gender: "o",
+          dob: new Date(),
+        }
+      });
+      develUser = Meteor.users.findOne({ _id: develUserId });
+    }
     assert(develUser);
     // Mark email as verified.
     Meteor.users.update({
@@ -28,15 +34,4 @@ if(Meteor.isServer) {
       }
     });
   });
-}
-
-if(Meteor.isClient) {
-  // Hack to allow "gjcomps" as an email address.
-  var oldValidateEmail = Accounts._loginButtons.validateEmail;
-  Accounts._loginButtons.validateEmail = function(email) {
-    if(email == DEVEL_ACCOUNT_EMAIL) {
-      return true;
-    }
-    return oldValidateEmail(email);
-  };
 }
