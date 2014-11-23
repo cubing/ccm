@@ -154,7 +154,7 @@
 
                           <td>
                             <div class="progress">
-                              <div class="progress-bar progress-bar-striped {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
+                              <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
                                 {{roundProgressPercentage}}%
                               </div>
                             </div>
@@ -168,19 +168,21 @@
                                 <button type="button" name="buttonOpenRound"
                                         class="btn btn-default btn-xs btn-unlock"
                                         data-toggle="tooltip" data-placement="left" data-original-title="Open round" data-container="body">
+                                  <i class="fa"></i>
                                 </button>
                               {{/if}}
                               {{#if canCloseRound}}
                                 <button type="button" name="buttonCloseRound"
                                         class="btn btn-default btn-xs btn-lock"
                                         data-toggle="tooltip" data-placement="left" data-original-title="Close round" data-container="body">
+                                  <i class="fa"></i>
                                 </button>
                               {{/if}}
                               {{#if canAdvanceRound}}
                                 <button type="button" name="buttonAdvanceCompetitors"
                                         class="btn btn-default btn-xs"
                                         data-toggle="tooltip" data-placement="left" data-original-title="Advance competitors to next round" data-container="body">
-                                  <span class="glyphicon glyphicon-step-forward"></span>
+                                  <i class="fa fa-step-forward"></i>
                                 </button>
                               {{/if}}
                             </div> 
