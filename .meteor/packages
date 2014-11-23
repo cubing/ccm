@@ -13,7 +13,6 @@ npm-container
 cfs:http-publish
 ian:accounts-ui-bootstrap-3
 less
-mizzao:bootstrap-3
 reactive-var
 rajit:bootstrap3-datepicker
 mrt:moment
@@ -22,4 +21,5 @@ wylio:mandrill
 natestrauser:connection-banner
 aldeed:collection2
 linto:fontawesome
+ian:bootstrap-3
 
