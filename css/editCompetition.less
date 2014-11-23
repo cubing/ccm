@@ -43,3 +43,27 @@
 .panel-title img + span {
   padding-left: @iconSize + 5px;
 }
+
+.btn-unlock {
+  width: 2em;
+  text-align: center;
+}
+.btn-unlock:before {
+  font-family: FontAwesome;
+  content: "\f023"; /* fa-lock */
+}
+.btn-unlock:hover:before {
+  content: "\f09c"; /* fa-unlock */
+}
+
+.btn-lock {
+  width: 2em;
+  text-align: center;
+}
+.btn-lock:before {
+  font-family: FontAwesome;
+  content: "\f09c"; /* fa-unlock */
+}
+.btn-lock:hover:before {
+  content: "\f023"; /* fa-lock */
+}

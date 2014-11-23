@@ -186,26 +186,31 @@ wca.eventByCode = {
 wca.formatByCode = {
   "1": {
     "name": "Best of 1",
+    "shortName": "Bo1",
     "count": 1,
     "code": "1"
   },
   "2": {
     "name": "Best of 2",
+    "shortName": "Bo2",
     "count": 2,
     "code": "2"
   },
   "3": {
     "name": "Best of 3",
+    "shortName": "Bo3",
     "count": 3,
     "code": "3"
   },
   "a": {
     "name": "Average of 5",
+    "shortName": "Ao5",
     "count": 5,
     "code": "a"
   },
   "m": {
     "name": "Mean of 3",
+    "shortName": "Mo3",
     "count": 3,
     "code": "m"
   },

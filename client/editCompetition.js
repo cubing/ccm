@@ -49,8 +49,8 @@ Template.editCompetition.events({
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonRemoveRound"]': function(e, t) {
-    var roundId = this._id;
-    Meteor.call('removeRound', roundId);
+    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    Meteor.call('removeRound', lastRoundId);
   },
   'click .dropdown-menu li a': function(e) {
     var target = e.currentTarget;
@@ -65,6 +65,28 @@ Template.editCompetition.events({
     });
   },
 });
+
+function roundProgressPercentage(roundId) {
+  var results = Results.find({
+    roundId: roundId,
+  }, {
+    fields: {
+      solves: 1,
+    }
+  });
+  var solves = _.chain(results.fetch())
+    .pluck("solves")
+    .flatten()
+    .map(function(time) {
+      return time ? 1 : 0;
+    })
+    .value();
+  if(solves.length === 0) {
+    return 0;
+  }
+  var percent = Math.round(100*_.reduce(solves, function(a, b) {return a + b;})/solves.length);
+  return percent;
+}
 
 var eventCountPerRowByDeviceSize = {
   xs: 1,
@@ -126,29 +148,14 @@ Template.editCompetition.helpers({
     return results.count();
   },
   roundProgressPercentage: function() {
-    var results = Results.find({
-      competitionId: this.competitionId,
-      roundId: this._id
-    }, {
-      fields: {
-        solves: 1
-      }
-    });
-    var solves = _.chain(results.fetch())
-      .pluck("solves")
-      .flatten()
-      .map(function(time) {
-        return time ? 1 : 0;
-      })
-      .value();
-    if(solves.length === 0) {
-      return 0;
-    }
-    var percent = Math.round(100*_.reduce(solves, function(a, b) {return a + b;})/solves.length);
-    return percent;
+    return roundProgressPercentage(this._id);
   },
   canRemoveRound: function() {
-    return canRemoveRound(Meteor.userId(), this._id);
+    var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    if(!roundId) {
+      return false;
+    }
+    return canRemoveRound(Meteor.userId(), roundId);
   },
   canAddRound: function() {
     return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
@@ -166,6 +173,25 @@ Template.editCompetition.helpers({
     var formatStr = "MMMM D, YYYY";
     var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
     return startDate.fromNow() + " (" + rangeStr + ")";
+  },
+  roundComplete: function() {
+    return roundProgressPercentage(this._id) === 100;
+  },
+  roundOpen: function() {
+    var status = getRoundAttribute(this._id, 'status');
+    return status == wca.roundStatuses.open;
+  },
+  canCloseRound: function() {
+    var status = getRoundAttribute(this._id, 'status');
+    return status == wca.roundStatuses.open;
+  },
+  canOpenRound: function() {
+    var status = getRoundAttribute(this._id, 'status');
+    return status == wca.roundStatuses.closed || status == wca.roundStatuses.unstarted;
+  },
+  canAdvanceRound: function() {
+    var status = getRoundAttribute(this._id, 'status');
+    return status == wca.roundStatuses.closed;
   },
 });
 

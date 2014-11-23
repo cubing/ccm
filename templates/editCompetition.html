@@ -124,9 +124,9 @@
                         <th>Round Name</th>
                         <th>Format</th>
                         <th>Progress</th>
-                        <th>#</th>
-                        <th>
-                          <span class="glyphicon glyphicon-wrench"></span>
+                        <th class="text-center">#</th>
+                        <th class="text-center">
+                          <span class="glyphicon glyphicon-cog"></span>
                         </th>
                       </tr>
                     </thead>
@@ -139,7 +139,7 @@
                           <td>
                             <div class="dropdown">
                               <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
-                                {{formatName formatCode}}
+                                {{formatShortName formatCode}}
                                 <span class="caret"></span>
                               </button>
                               <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -154,29 +154,30 @@
 
                           <td>
                             <div class="progress">
-                              <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
+                              <div class="progress-bar progress-bar-striped {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
                                 {{roundProgressPercentage}}%
                               </div>
                             </div>
                           </td>
 
-                          <td>{{competitorCount}}</td>
+                          <td class="text-right">{{competitorCount}}</td>
 
-                          <td>
-                            <button type="button" name="buttonOpenRound" class="btn btn-default btn-xs">
-                              <i class="fa fa-unlock"></i>
-                            </button>
-                            <button type="button" name="buttonCloseRound" class="btn btn-default btn-xs">
-                              <i class="fa fa-lock"></i>
-                            </button>
-                            <button type="button" name="buttonAdvanceCompetitors" class="btn btn-default btn-xs">
-                              <span class="glyphicon glyphicon-step-forward"></span>
-                            </button>
-                            {{#if canRemoveRound}}
-                              <button type="button" name="buttonRemoveRound" class="btn btn-default btn-xs">
-                                <span class="glyphicon glyphicon-minus"></span>
-                              </button>
-                            {{/if}}
+                          <td class="text-center">
+                            <div class="btn-group">
+                              {{#if canOpenRound}}
+                                <button type="button" name="buttonOpenRound" class="btn btn-default btn-xs btn-unlock">
+                                </button>
+                              {{/if}}
+                              {{#if canCloseRound}}
+                                <button type="button" name="buttonCloseRound" class="btn btn-default btn-xs btn-lock">
+                                </button>
+                              {{/if}}
+                              {{#if canAdvanceRound}}
+                                <button type="button" name="buttonAdvanceCompetitors" class="btn btn-default btn-xs">
+                                  <span class="glyphicon glyphicon-step-forward"></span>
+                                </button>
+                              {{/if}}
+                            </div> 
                           </td>
 
                         </tr>
@@ -184,17 +185,23 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>
-                          {{#if canAddRound}}
-                            <button type="button" name="buttonAddRound" class="btn btn-default btn-xs">
-                              <span class="glyphicon glyphicon-plus"></span>
-                            </button>
-                          {{/if}}
+                        <td colspan="5">
+                          <div class="btn-group btn-group-justified">
+                            <div class="btn-group">
+                              <button type="button" name="buttonRemoveRound"
+                                      class="btn btn-default btn-xs"
+                                      disabled="{{#unless canRemoveRound}}disabled{{/unless}}">
+                                <span class="glyphicon glyphicon-minus"></span> Delete last round
+                              </button>
+                            </div>
+                            <div class="btn-group">
+                              <button type="button" name="buttonAddRound"
+                                      class="btn btn-default btn-xs"
+                                      disabled="{{#unless canAddRound}}disabled{{/unless}}">
+                                <span class="glyphicon glyphicon-plus"></span> Add round
+                              </button>
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     </tfoot>

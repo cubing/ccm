@@ -67,6 +67,10 @@ Meteor.methods({
       durationMinutes: round.durationMinutes,
     });
   },
+  // TODO - i think this would be a bit cleaner if we just had a
+  // removeLastRoundForEvent method or something. This might
+  // require pulling non wca-event rounds out into a
+  // separate collection.
   removeRound: function(roundId) {
     if(!canRemoveRound(this.userId, roundId)) {
       throw new Meteor.Error(400, "Cannot remove round. Make sure it is the last round for this event, and has no times entered.");

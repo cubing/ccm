@@ -32,26 +32,26 @@ throwIfCannotManageCompetition = function(userId, competitionUrlId) {
 
 canRemoveRound = function(userId, roundId) {
   check(roundId, String);
-  var round = Rounds.findOne({ _id: roundId });
+  var round = Rounds.findOne({
+    _id: roundId
+  }, {
+    fields: {
+      competitionId: 1,
+      eventCode: 1,
+    }
+  });
   if(!round) {
     throw new Meteor.Error(404, "Unrecognized round id");
   }
   throwIfCannotManageCompetition(userId, round.competitionId);
   if(!round.eventCode) {
-    // Round that don't correspond to a wca event are always available to be
-    // deleted.
+    // Rounds that don't correspond to a wca event are always
+    // available to be deleted.
     return true;
   }
 
-  var lastRound = Rounds.findOne({
-    competitionId: round.competitionId,
-    eventCode: round.eventCode
-  }, {
-    sort: {
-      "nthRound": -1
-    }
-  });
-  var isLastRound = lastRound._id == roundId;
+  var lastRoundId = getLastRoundIdForEvent(round.competitionId, round.eventCode);
+  var isLastRound = lastRoundId == roundId;
   var noResults = true; // TODO - actually compute this<<<
   return isLastRound && noResults;
 };

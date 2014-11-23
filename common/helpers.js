@@ -11,6 +11,9 @@ if(Meteor.isClient) {
   Template.registerHelper("formatName", function(formatCode) {
     return wca.formatByCode[formatCode].name;
   });
+  Template.registerHelper("formatShortName", function(formatCode) {
+    return wca.formatByCode[formatCode].shortName;
+  });
 
   Template.registerHelper("competition", function(attribute) {
     return getCompetitionAttribute(this.competitionId, attribute);
@@ -179,6 +182,24 @@ if(Meteor.isClient) {
     return minutesToPrettyTime(timeMinutes);
   });
 }
+
+getLastRoundIdForEvent = function(competitionId, eventCode) {
+  var lastRoundForEvent = Rounds.findOne({
+    competitionId: competitionId,
+    eventCode: eventCode,
+  }, {
+    sort: {
+      "nthRound": -1
+    },
+    fields: {
+      _id: 1
+    }
+  });
+  if(!lastRoundForEvent) {
+    return null;
+  }
+  return lastRoundForEvent._id;
+};
 
 if(Meteor.isClient) {
   Template.registerHelper("formatMomentRange", function(startMoment, endMoment) {
