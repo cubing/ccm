@@ -27,38 +27,41 @@ Meteor.startup(function() {
 
   var userIdByJsonId = {};
   wcaCompetition.persons.forEach(function(wcaPerson, i) {
+    var dobMoment = moment.utc(wcaPerson.dob);
     var userProfile = {
       name: wcaPerson.name,
       wcaId: wcaPerson.wcaId,
       countryId: wcaPerson.countryId,
       gender: wcaPerson.gender,
-      dob: wcaPerson.dob
+      dob: dobMoment.toDate(),
+      siteAdmin: false,
     };
 
-    var user;
+    var user, email, userId;
     if(wcaPerson.wcaId) {
       // Check for user with WCAID and if user doesn't exist we create one
-      user = Meteor.users.findOne({ username: userProfile.wcaId });
+      email = userProfile.wcaId + "@gjcomps.com";
+      user = Meteor.users.findOne({ "emails.address": email });
       if(!user) {
-        Accounts.createUser({
-          username: userProfile.wcaId,
+        userId = Accounts.createUser({
+          email: email,
           password: '',
           profile: userProfile
         });
-        user = Meteor.users.findOne({ username: userProfile.wcaId });
+        user = Meteor.users.findOne({ _id: userId });
         assert(user);
       }
     } else {
       // Create user if user doesn't exist and wcaId doesn't exist or look for one first
-      var username = userProfile.name + i;
-      user = Meteor.users.findOne({ username: username });
+      email = (userProfile.name.replace(/\s/g, "_") + i) + "@gjcomps.com";
+      user = Meteor.users.findOne({ "emails.address": email });
       if(!user) {
-        Accounts.createUser({
-          username: username,
+        userId = Accounts.createUser({
+          email: email,
           password: '',
           profile: userProfile
         });
-        user = Meteor.users.findOne({ username: username });
+        user = Meteor.users.findOne({ _id: userId });
         assert(user);
       }
     }

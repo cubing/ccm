@@ -216,7 +216,6 @@ Meteor.users.attachSchema(new SimpleSchema({
       name: {
         label: "Name",
         type: String,
-        regEx: /^[a-zA-Z- ]{2,50}$/,
       },
       wcaId: {
         label: "WCA id",
