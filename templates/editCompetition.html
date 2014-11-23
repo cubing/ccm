@@ -165,15 +165,21 @@
                           <td class="text-center">
                             <div class="btn-group">
                               {{#if canOpenRound}}
-                                <button type="button" name="buttonOpenRound" class="btn btn-default btn-xs btn-unlock">
+                                <button type="button" name="buttonOpenRound"
+                                        class="btn btn-default btn-xs btn-unlock"
+                                        data-toggle="tooltip" data-placement="left" data-original-title="Open round" data-container="body">
                                 </button>
                               {{/if}}
                               {{#if canCloseRound}}
-                                <button type="button" name="buttonCloseRound" class="btn btn-default btn-xs btn-lock">
+                                <button type="button" name="buttonCloseRound"
+                                        class="btn btn-default btn-xs btn-lock"
+                                        data-toggle="tooltip" data-placement="left" data-original-title="Close round" data-container="body">
                                 </button>
                               {{/if}}
                               {{#if canAdvanceRound}}
-                                <button type="button" name="buttonAdvanceCompetitors" class="btn btn-default btn-xs">
+                                <button type="button" name="buttonAdvanceCompetitors"
+                                        class="btn btn-default btn-xs"
+                                        data-toggle="tooltip" data-placement="left" data-original-title="Advance competitors to next round" data-container="body">
                                   <span class="glyphicon glyphicon-step-forward"></span>
                                 </button>
                               {{/if}}

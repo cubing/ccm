@@ -131,6 +131,7 @@ if(Meteor.isServer) {
         'startMinutes',
         'durationMinutes',
         'title',
+        'status',
       ];
 
       if(_.difference(fields, allowedFields).length > 0) {

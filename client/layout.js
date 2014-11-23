@@ -4,8 +4,22 @@ Template.layout.events({
     // elements with a data-toggle="tooltip" attribute.
     var $target = $(e.currentTarget);
     if(!$target.data("tooltip-applied")) {
-      $(e.currentTarget).tooltip('show');
+      $target.tooltip('show');
       $target.data("tooltip-applied", "true");
+
+      // When this DOM element is removed, we must remove the corresponding
+      // tooltip element.
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if(!document.body.contains($target[0])) {
+            // $target has been removed from the DOM
+            var tipId = $target.attr('aria-describedby');
+            var $tip = $('#' + tipId).remove();
+            observer.disconnect();
+          }
+        });
+      });
+      observer.observe($target.parent()[0], { childList: true });
     }
   },
 });

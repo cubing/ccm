@@ -52,6 +52,27 @@ Template.editCompetition.events({
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     Meteor.call('removeRound', lastRoundId);
   },
+  'click button[name="buttonOpenRound"]': function(e, t) {
+    Rounds.update({
+      _id: this._id,
+    }, {
+      $set: {
+        status: wca.roundStatuses.open,
+      }
+    });
+  },
+  'click button[name="buttonCloseRound"]': function(e, t) {
+    Rounds.update({
+      _id: this._id,
+    }, {
+      $set: {
+        status: wca.roundStatuses.closed,
+      }
+    });
+  },
+  'click button[name="buttonAdvanceCompetitors"]': function(e, t) {
+    console.log(this);//<<<
+  },
   'click .dropdown-menu li a': function(e) {
     var target = e.currentTarget;
     var formatCode = target.dataset.format_code;
@@ -66,7 +87,7 @@ Template.editCompetition.events({
   },
 });
 
-function roundProgressPercentage(roundId) {
+function getRoundProgressPercentage(roundId) {
   var results = Results.find({
     roundId: roundId,
   }, {
@@ -148,7 +169,7 @@ Template.editCompetition.helpers({
     return results.count();
   },
   roundProgressPercentage: function() {
-    return roundProgressPercentage(this._id);
+    return getRoundProgressPercentage(this._id);
   },
   canRemoveRound: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
@@ -175,7 +196,7 @@ Template.editCompetition.helpers({
     return startDate.fromNow() + " (" + rangeStr + ")";
   },
   roundComplete: function() {
-    return roundProgressPercentage(this._id) === 100;
+    return getRoundProgressPercentage(this._id) === 100;
   },
   roundOpen: function() {
     var status = getRoundAttribute(this._id, 'status');
@@ -186,12 +207,52 @@ Template.editCompetition.helpers({
     return status == wca.roundStatuses.open;
   },
   canOpenRound: function() {
-    var status = getRoundAttribute(this._id, 'status');
-    return status == wca.roundStatuses.closed || status == wca.roundStatuses.unstarted;
+    var nextRound = Rounds.findOne({
+      competitionId: this.competitionId,
+      nthRound: this.nthRound + 1,
+    }, {
+      fields: {
+        status: 1
+      }
+    });
+    if(nextRound && nextRound.status != wca.roundStatuses.unstarted) {
+      // If there's a next round that is already opened (or
+      // closed), we can't reopen this round.
+      return false;
+    }
+    if(this.status == wca.roundStatuses.unstarted) {
+      var results = Results.find({
+        roundId: this._id,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      });
+      // Only allow opening this unstarted round if there are some people *in*
+      // the round.
+      return results.count() > 0;
+    }
+    return this.status == wca.roundStatuses.closed;
   },
   canAdvanceRound: function() {
-    var status = getRoundAttribute(this._id, 'status');
-    return status == wca.roundStatuses.closed;
+    if(this.status != wca.roundStatuses.closed) {
+      // We only allow advancing from rounds when they are closed
+      return false;
+    }
+    var nextRound = Rounds.findOne({
+      competitionId: this.competitionId,
+      nthRound: this.nthRound + 1,
+    }, {
+      fields: {
+        status: 1
+      }
+    });
+    if(!nextRound) {
+      // We can't possibly advance people from this round if there is no next
+      // round.
+      return false;
+    }
+    return nextRound.status == wca.roundStatuses.unstarted;
   },
 });
 
