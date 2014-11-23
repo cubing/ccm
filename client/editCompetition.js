@@ -49,7 +49,18 @@ Template.editCompetition.events({
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonRemoveRound"]': function(e, t) {
+    var lastRoundResultsCount = getLastRoundResultsCount(this.competitionId, this.eventCode);
+    if(lastRoundResultsCount > 0) {
+      $("#modalReallyRemoveRound" + this.eventCode).modal('show');
+    } else {
+      var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+      Meteor.call('removeRound', lastRoundId);
+    }
+  },
+  'click button[name="buttonReallyRemoveRound"]': function(e, t) {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    assert(lastRoundId);
+    $("#modalReallyRemoveRound" + this.eventCode).modal('hide');
     Meteor.call('removeRound', lastRoundId);
   },
   'click button[name="buttonOpenRound"]': function(e, t) {
@@ -107,6 +118,21 @@ function getRoundProgressPercentage(roundId) {
   }
   var percent = Math.round(100*_.reduce(solves, function(a, b) {return a + b;})/solves.length);
   return percent;
+}
+
+function getLastRoundResultsCount(competitionId, eventCode) {
+  var roundId = getLastRoundIdForEvent(competitionId, eventCode);
+  if(!roundId) {
+    return false;
+  }
+  var resultsForRound = Results.find({
+    roundId: roundId,
+  }, {
+    fields: {
+      _id: 1,
+    }
+  });
+  return resultsForRound.count();
 }
 
 var eventCountPerRowByDeviceSize = {
@@ -170,6 +196,9 @@ Template.editCompetition.helpers({
   },
   roundProgressPercentage: function() {
     return getRoundProgressPercentage(this._id);
+  },
+  lastRoundResultsCount: function() {
+    return getLastRoundResultsCount(this.competitionId, this.eventCode);
   },
   canRemoveRound: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);

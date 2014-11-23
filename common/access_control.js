@@ -46,14 +46,14 @@ canRemoveRound = function(userId, roundId) {
   throwIfCannotManageCompetition(userId, round.competitionId);
   if(!round.eventCode) {
     // Rounds that don't correspond to a wca event are always
-    // available to be deleted.
+    // available to be deleted, no warnings.
     return true;
   }
 
   var lastRoundId = getLastRoundIdForEvent(round.competitionId, round.eventCode);
   var isLastRound = lastRoundId == roundId;
-  var noResults = true; // TODO - actually compute this<<<
-  return isLastRound && noResults;
+  // Only let the user remove the last round for an event.
+  return isLastRound;
 };
 
 canAddRound = function(userId, competitionId, eventCode) {

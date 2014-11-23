@@ -189,6 +189,29 @@
                           </td>
 
                         </tr>
+
+                        <div id="modalReallyRemoveRound{{eventCode}}" class="modal fade">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+                                <h4 class="modal-title">
+                                  Are you sure you want to remove {{eventName eventCode}}: {{roundName roundCode}}?
+                                </h4>
+                              </div>
+                              <div class="modal-body">
+                                <p>It appears that this round contains results. If you remove it, those results will be lost.</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" name="buttonReallyRemoveRound">
+                                  <span class="glyphicon glyphicon-trash"></span> Remove round
+                                </button>
+                              </div>
+                            </div><!-- /.modal-content -->
+                          </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+
                       {{/each}}
                     </tbody>
                     <tfoot>
@@ -196,8 +219,9 @@
                         <td colspan="5">
                           <div class="btn-group btn-group-justified">
                             <div class="btn-group">
+
                               <button type="button" name="buttonRemoveRound"
-                                      class="btn btn-default btn-xs"
+                                      class="btn btn-default btn-xs {{#if lastRoundResultsCount}}btn-danger{{/if}}"
                                       disabled="{{#unless canRemoveRound}}disabled{{/unless}}">
                                 <span class="glyphicon glyphicon-minus"></span> Delete last round
                               </button>
