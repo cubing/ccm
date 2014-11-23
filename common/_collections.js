@@ -216,6 +216,7 @@ Meteor.users.attachSchema(new SimpleSchema({
       name: {
         label: "Name",
         type: String,
+        optional: true,
       },
       wcaId: {
         label: "WCA id",
@@ -226,17 +227,22 @@ Meteor.users.attachSchema(new SimpleSchema({
       countryId: {
         type: String,
         regEx: /^[A-Z]{2}$/,
+        optional: true,
       },
       gender: {
         type: String,
         allowedValues: ['m', 'f', 'o'],
+        optional: true,
       },
       dob: {
         type: Date,
+        optional: true,
       },
 
       siteAdmin: {
         type: Boolean,
+        defaultValue: false,
+        optional: true,
       },
     }),
     optional: true,
