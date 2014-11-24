@@ -1,75 +1,62 @@
-var inputChangeDep = new Deps.Dependency();
-var unsavedChangesReact = new ReactiveVar(false);
-
-function isRegisteredForEvent(userId, eventCode, competitionId) {
-  var firstRound = Rounds.findOne({
-    competitionId: competitionId,
-    eventCode: eventCode,
-    nthRound: 0, // first round for event
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
-  assert(firstRound);
-  var result = Results.findOne({
-    competitionId: competitionId,
-    roundId: firstRound._id,
+function userIsRegistered(userId, competitionId) {
+  var hasRegistrationEntry = Registrations.findOne({
     userId: userId,
+    competitionId: competitionId,
   });
-  return !!result;
+  if(hasRegistrationEntry == null) {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 Template.competitionRegistration.rendered = function() {
   var template = this;
   template.autorun(function() {
-    var data = Template.currentData();
-    inputChangeDep.depend();
 
-    var userId = Meteor.userId();
-    var competitionId = data.competitionId;
-
-    var checkboxes = template.findAll('input[name="eventCode"]');
-    var editedCheckboxes = _.filter(checkboxes, function(checkbox) {
-      var eventCode = checkbox.value;
-      var isWantsToBeRegisteredForEvent = checkbox.checked;
-      var isActuallyRegisteredForEvent = isRegisteredForEvent(userId, eventCode, competitionId);
-      return isWantsToBeRegisteredForEvent != isActuallyRegisteredForEvent;
-    });
-    unsavedChangesReact.set(editedCheckboxes.length > 0);
   });
 };
 
 Template.competitionRegistration.helpers({
-  registeredForEvent: function() {
-    var userId = Meteor.userId();
-    var eventCode = this.eventCode;
+  eventOptions: function () {
     var competitionId = this.competitionId;
-    return isRegisteredForEvent(userId, eventCode, competitionId);
+    var events = getCompetitionEvents(competitionId);
+
+    return events.map(function (c) {
+      return {label: wca.eventByCode[c.eventCode].name, value: wca.eventByCode[c.eventCode].code};
+    });
   },
-  unsavedChanges: function() {
-    return unsavedChangesReact.get();
+
+  defaultRegistrationData: function () {
+    var competitionId = this.competitionId;
+    var userId = Meteor.userId();
+    if(userIsRegistered(competitionId, userId)) {
+      // need doc with registration data if they have registered
+      debugger;
+      return this;
+    } else {
+      // populate user / competition data if there is no registration for this person yet
+      return {
+        userId: userId,
+        competitionId: competitionId,
+      };
+    }
   },
+
+  registrationFormType: function () {
+    var competitionId = this.competitionId;
+    var userId = Meteor.userId();
+    if(userIsRegistered(competitionId, userId)) {
+      // update type if there is a registration
+      return "update";
+    } else {
+      // insert type if no registration
+      return "insert";
+    }
+  }
+
 });
 
 Template.competitionRegistration.events({
-  'click #registerButton': function(e, t) {
-    e.preventDefault();
-
-    var $checkedBoxes = t.$('input[name="eventCode"]:checked');
-    var eventCodes = [];
-    $checkedBoxes.each(function() {
-      eventCodes.push($(this).val());
-    });
-    Meteor.call("registerForCompetition", this.competitionId, eventCodes);
-  },
-  'click #unregisterButton': function(e, t) {
-    e.preventDefault();
-    // To unregister, just set our eventCodes list to empty
-    Meteor.call("registerForCompetition", this.competitionId, []);
-    $('#modalConfirmDeregistration').modal('hide');
-  },
-  'change input': function(e, t) {
-    inputChangeDep.changed();
-  },
+  
 });

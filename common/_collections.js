@@ -68,6 +68,30 @@ Competitions.attachSchema({
   },
 });
 
+Registrations = new Meteor.Collection("registrations");
+Registrations.attachSchema({
+  userId: {
+    type: String,
+    autoform: {
+      type: "hidden"
+    },
+  },
+  competitionId: {
+    type: String,
+    autoform: {
+      type: "hidden"
+    },
+  },
+  events: {
+    type: [String],
+    allowedValues: _.keys(wca.eventByCode),
+    autoform: {
+      type: "select-checkbox",
+    },
+  }
+});
+
+
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.

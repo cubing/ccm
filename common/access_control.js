@@ -142,4 +142,24 @@ if(Meteor.isServer) {
     fetch: [ 'competitionId' ]
   });
 
+
+  Registrations.allow({
+    insert: function(userId, registration) {
+      // can only edit entries with their user id
+      if(registration.userId == userId) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    update: function(userId, registration, fields, modifier) {
+      // can only edit entries with their user id
+      if(registration.userId == userId) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+  });
+
 }

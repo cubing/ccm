@@ -4,36 +4,20 @@
       {{! TODO - link to sign up, don't make them hunt for it}}
       Log in to register for {{competition 'competitionName'}}.
     {{else}}
-      <form role="form">
-        {{#each competitionEvents}}
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="eventCode" value="{{eventCode}}" checked="{{registeredForEvent}}">
-              {{eventName eventCode}}
-            </label>
-          </div>
-        {{/each}}
-        <p class="help-block">
-          {{#if isRegisteredForCompetition currentUser._id}}
-            You are registered for {{competition 'competitionName'}}!
-          {{else}}
-            You are not registered for {{competition 'competitionName'}}.
-          {{/if}}
-        </p>
-        <button type="submit" class="btn btn-default" id="registerButton" disabled="{{#unless unsavedChanges}}disabled{{/unless}}">
-          <span class="glyphicon glyphicon-floppy-save"></span>
-          {{#if isRegisteredForCompetition currentUser._id}}
-            Change registration
-          {{else}}
-            Register
-          {{/if}}
-        </button>
-        {{#if isRegisteredForCompetition currentUser._id}}
-          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmDeregistration">
-            <span class="glyphicon glyphicon-floppy-remove"></span> Unregister
-          </button>
-        {{/if}}
-      </form>
+
+    {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
+
+      {{> afFieldInput name="userId" }}
+      {{> afFieldInput name="competitionId" }}
+      {{> afQuickField name="events" options=eventOptions }}
+
+      <button type="submit" class="btn btn-default" id="registerButton">
+        <span class="glyphicon glyphicon-floppy-save"></span>
+          Register
+      </button>
+
+    {{/autoForm}}
+
     {{/unless}}
   </div>
 

@@ -62,3 +62,7 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
     Groups.find({ competitionId: competition._id })
   ];
 });
+
+Meteor.publish('registrations', function() {
+  return Registrations.find();
+});

@@ -105,7 +105,10 @@ ManageCompetitionController = RouteController.extend({
 
 ViewCompetitionController = RouteController.extend({
   waitOn: function() {
-    return Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this));
+    return [
+      Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+      Meteor.subscribe('registrations', subscriptionError(this)),
+    ];
   },
   data: function() {
     if(!this.ready()) {
