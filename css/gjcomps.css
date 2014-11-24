@@ -65,3 +65,12 @@ a[rel="external"]:after {
   cursor: inherit;
   display: block;
 }
+
+/*
+ * http://stackoverflow.com/a/20692495
+ */
+.input-xs, select.input-xs {
+  height: 20px;
+  line-height: 20px;
+  padding: 0px;
+}

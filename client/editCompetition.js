@@ -84,10 +84,10 @@ Template.editCompetition.events({
   'click button[name="buttonAdvanceCompetitors"]': function(e, t) {
     console.log(this);//<<<
   },
-  'click .dropdown-menu li a': function(e) {
-    var target = e.currentTarget;
-    var formatCode = target.dataset.format_code;
-    var roundId = target.dataset.round_id;
+  'change select[name="roundFormat"]': function(e) {
+    var select = e.currentTarget;
+    var formatCode = select.value;
+    var roundId = this._id;
     Rounds.update({
       _id: roundId
     }, {
@@ -284,6 +284,11 @@ Template.editCompetition.helpers({
       return false;
     }
     return nextRound.status == wca.roundStatuses.unstarted;
+  },
+  isCurrentRoundFormat: function() {
+    var round = Template.parentData(1);
+    var formatCode = this.toString();
+    return round.formatCode == formatCode;
   },
 });
 
