@@ -1,13 +1,10 @@
-function userIsRegistered(userId, competitionId) {
+function getUserRegistration(userId, competitionId) {
   var hasRegistrationEntry = Registrations.findOne({
     userId: userId,
     competitionId: competitionId,
   });
-  if(hasRegistrationEntry == null) {
-    return false;
-  } else {
-    return true;
-  }
+
+  return hasRegistrationEntry;
 }
 
 Template.competitionRegistration.rendered = function() {
@@ -30,10 +27,9 @@ Template.competitionRegistration.helpers({
   defaultRegistrationData: function () {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
-    if(userIsRegistered(competitionId, userId)) {
-      // need doc with registration data if they have registered
-      debugger;
-      return this;
+    var registration = getUserRegistration(userId, competitionId);
+    if(registration) {
+      return registration;
     } else {
       // populate user / competition data if there is no registration for this person yet
       return {
@@ -46,7 +42,7 @@ Template.competitionRegistration.helpers({
   registrationFormType: function () {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
-    if(userIsRegistered(competitionId, userId)) {
+    if(getUserRegistration(userId, competitionId)) {
       // update type if there is a registration
       return "update";
     } else {
