@@ -32,6 +32,21 @@ if(Meteor.isClient) {
   Template.registerHelper("isSiteAdmin", function() {
     return Meteor.user().profile.siteAdmin;
   });
+
+  Template.registerHelper("toAtMostFixed", function(n, fixed) {
+    // Neat trick from http://stackoverflow.com/a/18358056
+    return +(n.toFixed(fixed));
+  });
+  Template.registerHelper("percentage", function(a, b) {
+    if(_.isArray(a)) {
+      b = a[1];
+      a = a[0];
+    }
+    if(b === 0) {
+      return 0;
+    }
+    return Math.round(100.0 * a / b);
+  });
 }
 
 getCompetitionStartDateMoment = function(competitionId) {

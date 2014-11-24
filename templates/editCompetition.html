@@ -124,7 +124,6 @@
                         <th>Round Name</th>
                         <th>Format</th>
                         <th>Progress</th>
-                        <th class="text-center">#</th>
                         <th class="text-center">
                           <span class="glyphicon glyphicon-cog"></span>
                         </th>
@@ -146,13 +145,11 @@
 
                           <td>
                             <div class="progress">
-                              <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{roundProgressPercentage}}%;">
-                                {{roundProgressPercentage}}%
+                              <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundDoneAndTotal}}%;">
+                                {{toAtMostFixed roundDoneAndTotal.[0] 1}}/{{roundDoneAndTotal.[1]}}
                               </div>
                             </div>
                           </td>
-
-                          <td class="text-right">{{competitorCount}}</td>
 
                           <td class="text-center">
                             <div class="btn-group">

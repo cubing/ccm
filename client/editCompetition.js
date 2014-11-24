@@ -98,15 +98,15 @@ Template.editCompetition.events({
   },
 });
 
-function getRoundProgressPercentage(roundId) {
+function getCompetitorsDoneAndTotal(roundId) {
   var results = Results.find({
     roundId: roundId,
   }, {
     fields: {
       solves: 1,
     }
-  });
-  var solves = _.chain(results.fetch())
+  }).fetch();
+  var solves = _.chain(results)
     .pluck("solves")
     .flatten()
     .map(function(time) {
@@ -114,10 +114,10 @@ function getRoundProgressPercentage(roundId) {
     })
     .value();
   if(solves.length === 0) {
-    return 0;
+    return [ 0, results.length ];
   }
-  var percent = Math.round(100*_.reduce(solves, function(a, b) {return a + b;})/solves.length);
-  return percent;
+  var doneRatio = _.reduce(solves, function(a, b) {return a + b;})/solves.length;
+  return [ doneRatio*results.length, results.length ];
 }
 
 function getLastRoundResultsCount(competitionId, eventCode) {
@@ -183,19 +183,12 @@ Template.editCompetition.helpers({
     });
     return rounds;
   },
-  competitorCount: function() {
-    var results = Results.find({
-      competitionId: this.competitionId,
-      roundId: this._id
-    }, {
-      fields: {
-        _id: 1
-      }
-    });
-    return results.count();
+  roundDoneAndTotal: function() {
+    return getCompetitorsDoneAndTotal(this._id);
   },
-  roundProgressPercentage: function() {
-    return getRoundProgressPercentage(this._id);
+  roundComplete: function() {
+    var done_total = getCompetitorsDoneAndTotal(this._id);
+    return done_total[0] == done_total[1];
   },
   lastRoundResultsCount: function() {
     return getLastRoundResultsCount(this.competitionId, this.eventCode);
@@ -223,9 +216,6 @@ Template.editCompetition.helpers({
     var formatStr = "MMMM D, YYYY";
     var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
     return startDate.fromNow() + " (" + rangeStr + ")";
-  },
-  roundComplete: function() {
-    return getRoundProgressPercentage(this._id) === 100;
   },
   roundOpen: function() {
     var status = getRoundAttribute(this._id, 'status');
