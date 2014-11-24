@@ -121,10 +121,18 @@
                   <table class="table table-condensed">
                     <thead>
                       <tr>
-                        <th>Round Name</th>
-                        <th>Format</th>
-                        <th>Progress</th>
-                        <th class="text-center">
+                        <th class="tight-cell">Round Name</th>
+                        <th class="tight-cell text-center">
+                          <a href="#" tabindex="0" class="" role="button"
+                             data-toggle="popover" data-trigger="focus"
+                             data-html="true"
+                             title="WCA Round Formats"
+                             data-content="<table class='table-condensed'>{{#each wcaFormats}}<tr><td><strong>{{shortName}}</strong></td><td>{{name}}</td></tr>{{/each}}</table>">
+                            Format
+                          </a>
+                        </th>
+                        <th class="text-center">Progress</th>
+                        <th class="tight-cell text-center">
                           <span class="glyphicon glyphicon-cog"></span>
                         </th>
                       </tr>
@@ -133,12 +141,12 @@
                       {{#each rounds}}
                         <tr>
 
-                          <td>{{roundName roundCode}}</td>
+                          <td class="tight-cell">{{roundName roundCode}}</td>
 
-                          <td>
+                          <td class="tight-cell">
                             <select name="roundFormat" class="form-control input-xs">
                               {{#each formats}}
-                                <option value="{{this}}" selected="{{#if isCurrentRoundFormat}}selected{{/if}}">{{formatName this}}</option>
+                                <option value="{{this}}" selected="{{#if isCurrentRoundFormat}}selected{{/if}}">{{formatShortName this}}</option>
                               {{/each}}
                             </select>
                           </td>
@@ -151,30 +159,28 @@
                             </div>
                           </td>
 
-                          <td class="text-center">
-                            <div class="btn-group">
-                              {{#if canOpenRound}}
-                                <button type="button" name="buttonOpenRound"
-                                        class="btn btn-default btn-xs btn-unlock"
-                                        data-toggle="tooltip" data-placement="left" data-original-title="Click to open round" data-container="body">
-                                  <i class="fa"></i>
-                                </button>
-                              {{/if}}
-                              {{#if canCloseRound}}
-                                <button type="button" name="buttonCloseRound"
-                                        class="btn btn-default btn-xs btn-lock"
-                                        data-toggle="tooltip" data-placement="left" data-original-title="Click to close round" data-container="body">
-                                  <i class="fa"></i>
-                                </button>
-                              {{/if}}
-                              {{#if canAdvanceRound}}
-                                <button type="button" name="buttonAdvanceCompetitors"
-                                        class="btn btn-default btn-xs"
-                                        data-toggle="tooltip" data-placement="left" data-original-title="Click to advance competitors to next round" data-container="body">
-                                  <i class="fa fa-step-forward"></i>
-                                </button>
-                              {{/if}}
-                            </div> 
+                          <td class="tight-cell text-center">
+                            {{#if canOpenRound}}
+                              <button type="button" name="buttonOpenRound"
+                                      class="btn btn-default btn-xs btn-unlock"
+                                      data-toggle="tooltip" data-placement="left" data-original-title="Click to open round" data-container="body">
+                                <i class="fa"></i>
+                              </button>
+                            {{/if}}
+                            {{#if canCloseRound}}
+                              <button type="button" name="buttonCloseRound"
+                                      class="btn btn-default btn-xs btn-lock"
+                                      data-toggle="tooltip" data-placement="left" data-original-title="Click to close round" data-container="body">
+                                <i class="fa"></i>
+                              </button>
+                            {{/if}}
+                            {{#if canAdvanceRound}}
+                              <button type="button" name="buttonAdvanceCompetitors"
+                                      class="btn btn-default btn-xs"
+                                      data-toggle="tooltip" data-placement="left" data-original-title="Click to advance competitors to next round" data-container="body">
+                                <i class="fa fa-step-forward"></i>
+                              </button>
+                            {{/if}}
                           </td>
 
                         </tr>
@@ -205,7 +211,7 @@
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colspan="5">
+                        <td colspan="4">
                           <div class="btn-group btn-group-justified">
                             <div class="btn-group">
 

@@ -14,6 +14,9 @@ if(Meteor.isClient) {
   Template.registerHelper("formatShortName", function(formatCode) {
     return wca.formatByCode[formatCode].shortName;
   });
+  Template.registerHelper("wcaFormats", function() {
+    return wca.formats;
+  });
 
   Template.registerHelper("competition", function(attribute) {
     return getCompetitionAttribute(this.competitionId, attribute);

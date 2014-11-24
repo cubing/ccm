@@ -22,6 +22,16 @@ Template.layout.events({
       observer.observe($target.parent()[0], { childList: true });
     }
   },
+  'mouseover [data-toggle="popover"]': function(e) {
+    var $target = $(e.currentTarget);
+    if(!$target.data("popover-applied")) {
+      $target.popover();
+      $target.data("popover-applied", "true");
+      // NOTE: we're not currently handling the case where a popup is showing
+      // as the DOM element that triggered it goes away, as we are handling
+      // for tooltips above.
+    }
+  },
 });
 
 var verificationSendSuccessReact = new ReactiveVar(null);
