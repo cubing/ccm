@@ -54,5 +54,5 @@ Template.competitionRegistration.helpers({
 });
 
 Template.competitionRegistration.events({
-  
+
 });

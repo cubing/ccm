@@ -70,13 +70,13 @@ Competitions.attachSchema({
 
 Registrations = new Meteor.Collection("registrations");
 Registrations.attachSchema({
-  userId: {
+  competitionId: {
     type: String,
     autoform: {
       type: "hidden"
     },
   },
-  competitionId: {
+  userId: {
     type: String,
     autoform: {
       type: "hidden"
@@ -88,9 +88,11 @@ Registrations.attachSchema({
     autoform: {
       type: "select-checkbox",
     },
-  }
+  },
 });
-
+if(Meteor.isServer) {
+  Registrations._ensureIndex({ competitionId: 1, userId: 1 }, { unique: 1 });
+}
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
