@@ -139,9 +139,29 @@ Rounds.attachSchema({
     min: 0,
     optional: true,
   },
-  combined: {
-    type: Boolean,
+  softCutoff: {
+    type: new SimpleSchema({
+      seconds: {
+        // Number of seconds
+        type: String,
+        optional: true,
+      },
+      in: {
+        // This is the number of attempts the competitor gets to beat the
+        // cutoff. If 0, this is a "cumulative time limit":
+        //  https://www.worldcubeassociation.org/regulations/#A1a2
+        type: Number,
+        optional: true,
+      }
+    }),
     optional: true,
+  },
+  hardCutoffSeconds: {
+    // This is the time limit per solve. Anything over the hard cutoff is a
+    // DNF.
+    type: Number,
+    optional: true,
+    defaultValue: wca.DEFAULT_HARD_CUTOFF_SECONDS,
   },
   eventCode: {
     type: String,

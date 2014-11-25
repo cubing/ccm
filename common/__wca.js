@@ -27,6 +27,8 @@ wca.supportedRounds = [
   },
 ];
 
+// https://www.worldcubeassociation.org/regulations/#A1a1
+wca.DEFAULT_HARD_CUTOFF_SECONDS = 10*60;
 
 // https://www.worldcubeassociation.org/regulations/#9p1
 wca.MINIMUM_CUTOFF_PERCENTAGE = 25;

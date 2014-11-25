@@ -100,7 +100,6 @@ Meteor.startup(function() {
     wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
       var roundInfo = wca.roundByCode[wcaRound.roundId];
       var roundId = Rounds.insert({
-        combined: roundInfo.combined,
         nthRound: nthRound,
         competitionId: competition._id,
         eventCode: wcaEvent.eventId,

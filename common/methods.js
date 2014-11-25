@@ -43,8 +43,6 @@ Meteor.methods({
 
     var formatCode = wca.formatsByEventCode[eventCode][0];
     Rounds.insert({
-      combined: false,
-
       competitionId: competitionId,
       eventCode: eventCode,
       formatCode: formatCode,
@@ -92,7 +90,8 @@ Meteor.methods({
       eventCode: eventCode
     }, {
       sort: {
-        "nthRound": 1
+        nthRound: 1,
+        softCutoff: 1,
       }
     }).fetch();
     if(rounds.length > wca.MAX_ROUNDS_PER_EVENT) {
@@ -110,7 +109,7 @@ Meteor.methods({
         supportedRoundsIndex = nthRound;
       }
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
-      var roundCode = round.combined ? roundCodes.combined : roundCodes.uncombined;
+      var roundCode = round.softCutoff ? roundCodes.combined : roundCodes.uncombined;
       Rounds.update({
         _id: round._id
       }, {
