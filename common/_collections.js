@@ -94,6 +94,18 @@ if(Meteor.isServer) {
   Registrations._ensureIndex({ competitionId: 1, userId: 1 }, { unique: 1 });
 }
 
+SolveTime = new SimpleSchema({
+  millis: {
+    type: Number,
+    min: 0,
+  },
+  decimals: {
+    type: Number,
+    min: 0,
+    max: 3,
+  }
+});
+
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.
@@ -141,27 +153,35 @@ Rounds.attachSchema({
   },
   softCutoff: {
     type: new SimpleSchema({
-      seconds: {
-        // Number of seconds
-        type: String,
-        optional: true,
+      time: {
+        type: SolveTime,
       },
       in: {
         // This is the number of attempts the competitor gets to beat the
         // cutoff. If 0, this is a "cumulative time limit":
         //  https://www.worldcubeassociation.org/regulations/#A1a2
         type: Number,
-        optional: true,
+        min: 0,
       }
     }),
     optional: true,
   },
-  hardCutoffSeconds: {
+  hardCutoffTime: {
     // This is the time limit per solve. Anything over the hard cutoff is a
     // DNF.
-    type: Number,
+    type: SolveTime,
     optional: true,
-    defaultValue: wca.DEFAULT_HARD_CUTOFF_SECONDS,
+    autoValue: function() {
+      var eventCodeField = this.field("eventCode");
+      if(eventCodeField.isSet) {
+        return {
+          millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCodeField.value],
+          decimals: 0,
+        };
+      } else {
+        this.unset();
+      }
+    },
   },
   eventCode: {
     type: String,

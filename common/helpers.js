@@ -36,6 +36,36 @@ if(Meteor.isClient) {
     return Meteor.user().profile.siteAdmin;
   });
 
+  Template.registerHelper("clockFormat", function(solveTime) {
+    var millis = solveTime.millis;
+    var minutesField = Math.floor(millis / (60*1000));
+    millis %= (60*1000);
+
+    var secondsField = Math.floor(millis / 1000);
+    millis %= 1000;
+
+    function pad(toPad, padVal, minLength) {
+      var padded = toPad + "";
+      while(padded.length < minLength) {
+        padded = padVal + padded;
+      }
+      return padded;
+    }
+
+    var clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
+    var decimals = solveTime.decimals;
+    if(decimals > 0) {
+      // It doesn't make sense to format to more decimal places than the
+      // accuracy we have.
+      decimals = Math.min(3, decimals);
+      var millisStr = pad(millis, "0", 3);
+      clockFormat += ".";
+      for(var i = 0; i < decimals; i++) {
+        clockFormat += millisStr.charAt(i);
+      }
+    }
+    return clockFormat;
+  });
   Template.registerHelper("toAtMostFixed", function(n, fixed) {
     // Neat trick from http://stackoverflow.com/a/18358056
     return +(n.toFixed(fixed));

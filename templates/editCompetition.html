@@ -154,9 +154,21 @@
                               </select>
                             </td>
 
-                            <td>{{softCutoff.seconds}} in {{softCutoff.in}}</td>
+                            <td>
+                              {{#if softCutoff}}
+                                {{clockFormat softCutoff.time}} in {{softCutoff.in}}
+                              {{else}}
+                                -
+                              {{/if}}
+                            </td>
 
-                            <td>{{hardCutoffSeconds}}</td>
+                            <td>
+                              {{#if hardCutoffTime}}
+                                {{clockFormat hardCutoffTime}}
+                              {{else}}
+                                -
+                              {{/if}}
+                            </td>
 
                             <td>
                               <div class="progress">
