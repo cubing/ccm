@@ -180,7 +180,7 @@ Template.editCompetition.helpers({
       sort: {
         "nthRound": 1
       }
-    });
+    }).fetch();
     return rounds;
   },
   roundDoneAndTotal: function() {
@@ -279,6 +279,10 @@ Template.editCompetition.helpers({
     var round = Template.parentData(1);
     var formatCode = this.toString();
     return round.formatCode == formatCode;
+  },
+  lastRoundCode: function() {
+    var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    return getRoundAttribute(roundId, 'roundCode');
   },
 });
 
