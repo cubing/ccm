@@ -156,32 +156,33 @@ Rounds.attachSchema({
       time: {
         type: SolveTime,
       },
-      in: {
-        // This is the number of attempts the competitor gets to beat the
-        // cutoff. If 0, this is a "cumulative time limit":
-        //  https://www.worldcubeassociation.org/regulations/#A1a2
-        type: Number,
-        min: 0,
+      formatCode: {
+        type: String,
+        allowedValues: _.keys(wca.softCutoffFormatsByCode),
       }
     }),
     optional: true,
   },
-  hardCutoffTime: {
-    // This is the time limit per solve. Anything over the hard cutoff is a
-    // DNF.
-    type: SolveTime,
-    optional: true,
-    autoValue: function() {
-      var eventCodeField = this.field("eventCode");
-      if(eventCodeField.isSet) {
-        return {
-          millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCodeField.value],
-          decimals: 0,
-        };
-      } else {
-        this.unset();
+  hardCutoff: {
+    type: new SimpleSchema({
+      time: {
+        // This is the time limit per solve. Anything over the hard cutoff is a
+        // DNF.
+        type: SolveTime,
+        autoValue: function() {
+          var eventCodeField = this.field("eventCode");
+          if(eventCodeField.isSet) {
+            return {
+              millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCodeField.value],
+              decimals: 0,
+            };
+          } else {
+            this.unset();
+          }
+        },
       }
-    },
+    }),
+    optional: true,
   },
   eventCode: {
     type: String,

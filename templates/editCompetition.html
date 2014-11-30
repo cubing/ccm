@@ -2,7 +2,7 @@
 
   <div class="container-fluid">
 
-    <form class="form-horizontal" role="form">
+    <form class="form-horizontal" id="competitionAttributes" role="form">
       <div class="form-group">
         <label for="inputCompetitionName" class="col-sm-3 col-lg-2 control-label">Competition Name</label>
         <div class="col-sm-9 col-lg-10">
@@ -132,8 +132,8 @@
                               Format
                             </a>
                           </th>
-                          <th class="tight-cell">Soft</th>
-                          <th class="tight-cell">Hard</th>
+                          <th class="tight-cell text-center">Soft</th>
+                          <th class="tight-cell text-center">Hard</th>
                           <th class="text-center">Progress</th>
                           <th class="tight-cell text-center">
                             <span class="glyphicon glyphicon-cog"></span>
@@ -154,20 +154,26 @@
                               </select>
                             </td>
 
-                            <td>
-                              {{#if softCutoff}}
-                                {{clockFormat softCutoff.time}} in {{softCutoff.in}}
-                              {{else}}
-                                -
-                              {{/if}}
+                            <td class="tight-cell text-center">
+                              <button type="button" name="buttonSoftCutoff"
+                                      class="btn btn-default btn-xs">
+                                {{#if softCutoff}}
+                                  {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
+                                {{else}}
+                                  -
+                                {{/if}}
+                              </button>
                             </td>
 
-                            <td>
-                              {{#if hardCutoffTime}}
-                                {{clockFormat hardCutoffTime}}
-                              {{else}}
-                                -
-                              {{/if}}
+                            <td class="tight-cell text-center">
+                              <button type="button" name="buttonHardCutoff"
+                                      class="btn btn-default btn-xs">
+                                {{#if hardCutoff}}
+                                  {{clockFormat hardCutoff.time}}
+                                {{else}}
+                                  -
+                                {{/if}}
+                              </button>
                             </td>
 
                             <td>
@@ -209,7 +215,7 @@
                     </table>
 
                     {{#if rounds}}
-                      <div id="modalReallyRemoveRound{{eventCode}}" class="modal fade">
+                      <div id="modalReallyRemoveRound_{{eventCode}}" class="modal fade">
                         <div class="modal-dialog">
                           <div class="modal-content">
                             <div class="modal-header">
@@ -267,6 +273,78 @@
 
   </div>
 
+  {{> modalSoftCutoff currentEditingRound}}
+  {{> modalHardCutoff currentEditingRound}}
+
+</template>
+
+<template name="modalSoftCutoff">
+  <div id="modalSoftCutoff" class="modal fade">
+    <div class="modal-dialog">
+      {{#if this}}
+        <form class="form-horizontal" role="form">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+              <h4 class="modal-title">
+                Change soft cutoff for {{eventName eventCode}}: {{roundName roundCode}}
+              </h4>
+            </div>
+            <div class="modal-body">
+              {{#if softCutoff}}
+                <input type="text" class="form-control" value="{{clockFormat softCutoff.time}}" />
+              {{/if}}
+              <select name="in" class="form-control input-xs">
+                <!-- will end up selected if nothing else is -->
+                <option value="" selected="">No soft cutoff</option>
+
+                <!-- http://stackoverflow.com/a/23498190 -->
+                <optgroup label="───────────────"></optgroup>
+
+                {{#each softCutoffFormats}}
+                  <option value="{{code}}" selected="{{#if isCurrentSoftCutoffFormat}}selected{{/if}}">{{name}}</option>
+                {{/each}}
+              </select>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success">
+                Save
+              </button>
+            </div>
+          </div><!-- /.modal-content -->
+        </form>
+      {{/if}}
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</template>
+
+<template name="modalHardCutoff">
+  <div id="modalHardCutoff" class="modal fade">
+    <div class="modal-dialog">
+      {{#if this}}
+        <form class="form-horizontal" role="form">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+              <h4 class="modal-title">
+                Change hard cutoff for {{eventName eventCode}}: {{roundName roundCode}}
+              </h4>
+            </div>
+            <div class="modal-body">
+              <input type="text" class="form-control" value="{{clockFormat hardCutoff.time}}" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-success">
+                Save
+              </button>
+            </div>
+          </div><!-- /.modal-content -->
+        </form>
+      {{/if}}
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 </template>
 
 <template name="editCompetition_userRow">

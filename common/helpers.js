@@ -18,6 +18,13 @@ if(Meteor.isClient) {
     return wca.formats;
   });
 
+  Template.registerHelper("softCutoffFormats", function() {
+    return wca.softCutoffFormats;
+  });
+  Template.registerHelper("softCutoffFormatName", function(softCutoffFormatCode) {
+    return wca.softCutoffFormatsByCode[softCutoffFormatCode].name;
+  });
+
   Template.registerHelper("competition", function(attribute) {
     return getCompetitionAttribute(this.competitionId, attribute);
   });

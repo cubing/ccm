@@ -6,6 +6,33 @@ wca.roundStatuses = {
   closed: 'closed',
 };
 
+// The various kinds of soft cutoffs we support. Usually, this is the number of
+// attempts the competitor gets to beat the "soft cutoff time". However, we
+// also support "cumulative time limits":
+//  https://www.worldcubeassociation.org/regulations/#A1a2
+wca.softCutoffFormats = [
+  {
+    name: 'cumulative',
+    code: 'cumulative',
+  },
+  {
+    name: 'in 1',
+    code: '1',
+  },
+  {
+    name: 'in 2',
+    code: '2',
+  },
+  {
+    name: 'in 3',
+    code: '3',
+  }
+];
+wca.softCutoffFormatsByCode = {};
+_.each(wca.softCutoffFormats, function(softCutoffFormat) {
+  wca.softCutoffFormatsByCode[softCutoffFormat.code] = softCutoffFormat;
+});
+
 // We don't support qualification rounds (combined or uncombined), and we do
 // not support B Finals.
 wca.supportedRounds = [
@@ -205,31 +232,36 @@ wca.formats = [
     "name": "Best of 1",
     "shortName": "Bo1",
     "count": 1,
-    "code": "1"
+    "code": "1",
+    "softCutoffFormatCodes": [],
   },
   {
     "name": "Best of 2",
     "shortName": "Bo2",
     "count": 2,
-    "code": "2"
+    "code": "2",
+    "softCutoffFormatCodes": [ 'cumulative', '1' ],
   },
   {
     "name": "Best of 3",
     "shortName": "Bo3",
     "count": 3,
-    "code": "3"
+    "code": "3",
+    "softCutoffFormatCodes": [ 'cumulative', '1', '2' ],
   },
   {
     "name": "Average of 5",
     "shortName": "Ao5",
     "count": 5,
-    "code": "a"
+    "code": "a",
+    "softCutoffFormatCodes": [ 'cumulative', '1', '2', '3' ],
   },
   {
     "name": "Mean of 3",
     "shortName": "Mo3",
     "count": 3,
-    "code": "m"
+    "code": "m",
+    "softCutoffFormatCodes": [ 'cumulative', '1', '2' ],
   },
 ];
 

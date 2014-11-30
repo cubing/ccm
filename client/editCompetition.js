@@ -1,3 +1,5 @@
+var currentEditingRoundReact = new ReactiveVar(null);
+
 setCompetitionAttribute = function(competitionId, attribute, value) {
   var update;
   if(value === null || typeof value === "undefined") {
@@ -13,7 +15,7 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
 };
 
 Template.editCompetition.events({
-  'input input[type="text"]': function(e) {
+  'input #competitionAttributes input[type="text"]': function(e) {
     if($(e.currentTarget).hasClass("typeahead")) {
       return;
     }
@@ -21,12 +23,12 @@ Template.editCompetition.events({
     var value = e.currentTarget.value;
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
-  'change input[type="checkbox"]': function(e) {
+  'change #competitionAttributes input[type="checkbox"]': function(e) {
     var attribute = e.currentTarget.name;
     var value = e.currentTarget.checked;
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
-  'click #toggleCompetitionListed': function(e) {
+  'click #competitionAttributes #toggleCompetitionListed': function(e) {
     var listed = getCompetitionAttribute(this.competitionId, 'listed');
     setCompetitionAttribute(this.competitionId, 'listed', !listed);
   },
@@ -51,7 +53,7 @@ Template.editCompetition.events({
   'click button[name="buttonRemoveRound"]': function(e, t) {
     var lastRoundResultsCount = getLastRoundResultsCount(this.competitionId, this.eventCode);
     if(lastRoundResultsCount > 0) {
-      $("#modalReallyRemoveRound" + this.eventCode).modal('show');
+      $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
       var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
       Meteor.call('removeRound', lastRoundId);
@@ -60,7 +62,7 @@ Template.editCompetition.events({
   'click button[name="buttonReallyRemoveRound"]': function(e, t) {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     assert(lastRoundId);
-    $("#modalReallyRemoveRound" + this.eventCode).modal('hide');
+    $("#modalReallyRemoveRound_" + this.eventCode).modal('hide');
     Meteor.call('removeRound', lastRoundId);
   },
   'click button[name="buttonOpenRound"]': function(e, t) {
@@ -95,6 +97,76 @@ Template.editCompetition.events({
         formatCode: formatCode
       }
     });
+  },
+  'click button[name="buttonHardCutoff"]': function(e, t) {
+    // We look up the round rather than using "this", because it gets us a copy
+    // of the round.
+    var round = Rounds.findOne({ _id: this._id });
+    currentEditingRoundReact.set(round);
+    $("#modalHardCutoff").modal('show');
+  },
+  'click button[name="buttonSoftCutoff"]': function(e, t) {
+    // We look up the round rather than using "this", because it gets us a copy
+    // of the round.
+    var round = Rounds.findOne({ _id: this._id });
+    currentEditingRoundReact.set(round);
+    $("#modalSoftCutoff").modal('show');
+  },
+  'hidden.bs.modal .modal': function(e, t) {
+    currentEditingRoundReact.set(null);
+  }
+});
+
+Template.modalSoftCutoff.helpers({
+  isCurrentSoftCutoffFormat: function() {
+    var round = Template.parentData(1);
+    if(!round.softCutoff) {
+      return false;
+    }
+    var formatCode = this.code;
+    return round.softCutoff.formatCode == formatCode;
+  },
+});
+
+Template.modalSoftCutoff.events({
+  'shown.bs.modal .modal': function(e, t) {
+    // Focus first input when we become visible
+    t.$('input').filter(':visible:first').focus();
+  },
+  'change select[name="in"]': function(e) {
+    var formatCode = e.currentTarget.value;
+    var round = currentEditingRoundReact.get();
+    if(formatCode) {
+      round.softCutoff = round.softCutoff || { time: { millis: 0, decimals: 0 } };
+      round.softCutoff.formatCode = formatCode;
+    } else {
+      round.softCutoff = null;
+    }
+    currentEditingRoundReact.set(round);
+  },
+  'submit form': function(e) {
+    e.preventDefault();
+
+    var round = currentEditingRoundReact.get();
+    var toSet = {};
+    if(round.softCutoff) {
+      toSet.$set = { softCutoff: round.softCutoff };
+    } else {
+      toSet.$unset = { softCutoff: 1 };
+    }
+    Rounds.update({ _id: this._id }, toSet);
+    $("#modalSoftCutoff").modal('hide');
+  },
+});
+
+Template.modalHardCutoff.events({
+  'shown.bs.modal .modal': function(e, t) {
+    // Focus first input when we become visible
+    t.$('input').filter(':visible:first').focus();
+  },
+  'submit form': function(e) {
+    e.preventDefault();
+    $("#modalHardCutoff").modal('hide');
   },
 });
 
@@ -283,6 +355,9 @@ Template.editCompetition.helpers({
   lastRoundCode: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     return getRoundAttribute(roundId, 'roundCode');
+  },
+  currentEditingRound: function() {
+    return currentEditingRoundReact.get();
   },
 });
 

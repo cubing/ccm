@@ -126,6 +126,8 @@ if(Meteor.isServer) {
 
       var allowedFields = [
         'formatCode',
+        'softCutoff',
+        'hardCutoff',
 
         'nthDay',
         'startMinutes',
