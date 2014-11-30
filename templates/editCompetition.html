@@ -132,8 +132,10 @@
                               Format
                             </a>
                           </th>
-                          <th class="tight-cell text-center">Soft</th>
-                          <th class="tight-cell text-center">Hard</th>
+                          {{#if eventAllowsCutoffs eventCode}}
+                            <th class="tight-cell text-center">Soft</th>
+                            <th class="tight-cell text-center">Hard</th>
+                          {{/if}}
                           <th class="text-center">Progress</th>
                           <th class="tight-cell text-center">
                             <span class="glyphicon glyphicon-cog"></span>
@@ -154,27 +156,29 @@
                               </select>
                             </td>
 
-                            <td class="tight-cell text-center">
-                              <button type="button" name="buttonSoftCutoff"
-                                      class="btn {{#if roundSoftCutoffAllowed}}btn-default{{else}}btn-warning{{/if}} btn-xs">
-                                {{#if softCutoff}}
-                                  {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
-                                {{else}}
-                                  -
-                                {{/if}}
-                              </button>
-                            </td>
+                            {{#if eventAllowsCutoffs eventCode}}
+                              <td class="tight-cell text-center">
+                                <button type="button" name="buttonSoftCutoff"
+                                        class="btn {{#if roundSoftCutoffAllowed}}btn-default{{else}}btn-warning{{/if}} btn-xs">
+                                  {{#if softCutoff}}
+                                    {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
+                                  {{else}}
+                                    -
+                                  {{/if}}
+                                </button>
+                              </td>
 
-                            <td class="tight-cell text-center">
-                              <button type="button" name="buttonHardCutoff"
-                                      class="btn btn-default btn-xs">
-                                {{#if hardCutoff}}
-                                  {{clockFormat hardCutoff.time}}
-                                {{else}}
-                                  -
-                                {{/if}}
-                              </button>
-                            </td>
+                              <td class="tight-cell text-center">
+                                <button type="button" name="buttonHardCutoff"
+                                        class="btn btn-default btn-xs">
+                                  {{#if hardCutoff}}
+                                    {{clockFormat hardCutoff.time}}
+                                  {{else}}
+                                    -
+                                  {{/if}}
+                                </button>
+                              </td>
+                            {{/if}}
 
                             <td>
                               <div class="progress">

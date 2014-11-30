@@ -22,6 +22,10 @@ if(Meteor.isClient) {
     return wca.softCutoffFormatByCode[softCutoffFormatCode].name;
   });
 
+  Template.registerHelper("eventAllowsCutoffs", function(eventCode) {
+    return wca.eventAllowsCutoffs(eventCode);
+  });
+
   Template.registerHelper("competition", function(attribute) {
     return getCompetitionAttribute(this.competitionId, attribute);
   });

@@ -298,6 +298,10 @@ wca.formatsByEventCode = {
   "333mbf": [ '3', '2', '1' ],
 };
 
+wca.eventAllowsCutoffs = function(eventCode) {
+  return eventCode != '333fm';
+};
+
 // https://www.worldcubeassociation.org/regulations/#A1a1
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE = {};
 _.each(_.keys(wca.formatsByEventCode), function(eventCode) {
