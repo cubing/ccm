@@ -28,9 +28,9 @@ wca.softCutoffFormats = [
     code: '3',
   }
 ];
-wca.softCutoffFormatsByCode = {};
+wca.softCutoffFormatByCode = {};
 _.each(wca.softCutoffFormats, function(softCutoffFormat) {
-  wca.softCutoffFormatsByCode[softCutoffFormat.code] = softCutoffFormat;
+  wca.softCutoffFormatByCode[softCutoffFormat.code] = softCutoffFormat;
 });
 
 // We don't support qualification rounds (combined or uncombined), and we do

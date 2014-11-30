@@ -156,7 +156,7 @@
 
                             <td class="tight-cell text-center">
                               <button type="button" name="buttonSoftCutoff"
-                                      class="btn btn-default btn-xs">
+                                      class="btn {{#if roundSoftCutoffAllowed}}btn-default{{else}}btn-warning{{/if}} btn-xs">
                                 {{#if softCutoff}}
                                   {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
                                 {{else}}
@@ -294,7 +294,7 @@
               {{#if softCutoff}}
                 <input type="text" class="form-control" value="{{clockFormat softCutoff.time}}" />
               {{/if}}
-              <select name="in" class="form-control input-xs">
+              <select name="softCutoffFormatCode" class="form-control input-xs">
                 <!-- will end up selected if nothing else is -->
                 <option value="" selected="">No soft cutoff</option>
 
@@ -302,7 +302,7 @@
                 <optgroup label="───────────────"></optgroup>
 
                 {{#each softCutoffFormats}}
-                  <option value="{{code}}" selected="{{#if isCurrentSoftCutoffFormat}}selected{{/if}}">{{name}}</option>
+                  <option value="{{code}}" selected="{{#if isCurrentSoftCutoffFormat}}selected{{/if}}" disabled="{{#unless isAllowedSoftCutoffFormat}}disabled{{/unless}}">{{name}}</option>
                 {{/each}}
               </select>
             </div>

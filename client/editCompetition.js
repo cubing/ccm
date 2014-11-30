@@ -118,13 +118,22 @@ Template.editCompetition.events({
 });
 
 Template.modalSoftCutoff.helpers({
+  softCutoffFormats: function() {
+    return wca.softCutoffFormats;
+  },
   isCurrentSoftCutoffFormat: function() {
     var round = Template.parentData(1);
     if(!round.softCutoff) {
       return false;
     }
-    var formatCode = this.code;
-    return round.softCutoff.formatCode == formatCode;
+    var softCutoffFormatCode = this.code;
+    return round.softCutoff.formatCode == softCutoffFormatCode;
+  },
+  isAllowedSoftCutoffFormat: function() {
+    var round = Template.parentData(1);
+    var roundFormat = wca.formatByCode[round.formatCode];
+    var softCutoffFormatCode = this.code;
+    return _.contains(roundFormat.softCutoffFormatCodes, softCutoffFormatCode);
   },
 });
 
@@ -133,7 +142,7 @@ Template.modalSoftCutoff.events({
     // Focus first input when we become visible
     t.$('input').filter(':visible:first').focus();
   },
-  'change select[name="in"]': function(e) {
+  'change select[name="softCutoffFormatCode"]': function(e) {
     var formatCode = e.currentTarget.value;
     var round = currentEditingRoundReact.get();
     if(formatCode) {
@@ -254,6 +263,14 @@ Template.editCompetition.helpers({
       }
     }).fetch();
     return rounds;
+  },
+  roundSoftCutoffAllowed: function() {
+    if(!this.softCutoff) {
+      return true;
+    }
+    var format = wca.formatByCode[this.formatCode];
+    var allowedSoftCutoffFormatCodes = format.softCutoffFormatCodes;
+    return _.contains(allowedSoftCutoffFormatCodes, this.softCutoff.formatCode);
   },
   roundDoneAndTotal: function() {
     return getCompetitorsDoneAndTotal(this._id);

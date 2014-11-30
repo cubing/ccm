@@ -158,7 +158,7 @@ Rounds.attachSchema({
       },
       formatCode: {
         type: String,
-        allowedValues: _.keys(wca.softCutoffFormatsByCode),
+        allowedValues: _.keys(wca.softCutoffFormatByCode),
       }
     }),
     optional: true,
