@@ -126,7 +126,7 @@ getCompetitionEndDateMoment = function(competitionId) {
   }
   startDate = moment(startDate);
   var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
-  var endDate = startDate.clone().add(numberOfDays - 1, 'days').subtract(1);
+  var endDate = startDate.clone().add(numberOfDays - 1, 'days');
   return endDate;
 };
 if(Meteor.isClient) {
