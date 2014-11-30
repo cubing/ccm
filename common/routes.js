@@ -164,10 +164,10 @@ Router.route('/:competitionUrlId/manage', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
 });
-Router.route('/:competitionUrlId/manage/registration', {
-  name: 'manageRegistration',
+Router.route('/:competitionUrlId/manage/check-in', {
+  name: 'manageCheckin',
   controller: 'ManageCompetitionController',
-  titlePrefix: "Manage registration",
+  titlePrefix: "Check-in",
 });
 Router.route('/:competitionUrlId/manage/uploadScrambles', {
   name: 'uploadScrambles',
