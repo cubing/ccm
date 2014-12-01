@@ -20,6 +20,18 @@ Template.editSchedule.helpers({
 });
 
 Template.editSchedule.events({
+  'input .date': function(e) {
+    var attribute = e.currentTarget.dataset.attribute;
+    var $target = $(e.currentTarget);
+    var $input = $target.find('input');
+    var value = $input.val();
+    if(value.length === 0) {
+      // bootstrap-datepicker doesn't fire changeDate when someone deletes all
+      // the text from the input (https://github.com/jfly/gjcomps/issues/46).
+      // This is a workaround for that.
+      setCompetitionAttribute(this.competitionId, attribute, null);
+    }
+  },
   'changeDate .date': function(e) {
     var attribute = e.currentTarget.dataset.attribute;
     var value = e.date;
