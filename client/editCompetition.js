@@ -98,6 +98,10 @@ Template.editCompetition.events({
       }
     });
   },
+  'click button[name="buttonSetRoundSize"]': function(e, t) {
+    currentEditingRoundReact.set(this);
+    $("#modalSetRoundSize").modal('show');
+  },
   'click button[name="buttonHardCutoff"]': function(e, t) {
     currentEditingRoundReact.set(this);
     $("#modalHardCutoff").modal('show');
@@ -109,6 +113,51 @@ Template.editCompetition.events({
   'hidden.bs.modal .modal': function(e, t) {
     currentEditingRoundReact.set(null);
   }
+});
+
+Template.modalSetRoundSize.created = function() {
+  var template = this;
+  template.isSaveableReact = new ReactiveVar(true);
+  template.autorun(function() {
+    var data = Template.currentData();
+    template.isSaveableReact.set(!!data);
+  });
+};
+Template.modalSetRoundSize.helpers({
+  isSaveable: function() {
+    var template = Template.instance();
+    return template.isSaveableReact.get();
+  },
+});
+Template.modalSetRoundSize.events({
+  'shown.bs.modal .modal': function(e, t) {
+    // Focus first input when we become visible
+    t.$('input').filter(':visible:first').focus();
+    t.$('input').filter(':visible:first').select();
+  },
+  'input input[name="roundSize"]': function(e, t) {
+    var $input = $(e.currentTarget);
+    var potentialRoundSizeStr = $input.val();
+    var isNonNegIntOrEmptyStr = potentialRoundSizeStr.match(/^\d*$/);
+    t.isSaveableReact.set(isNonNegIntOrEmptyStr);
+  },
+  'submit form': function(e, t) {
+    e.preventDefault();
+
+    var $input = $('input[name="roundSize"]');
+    var sizeStr = $input.val();
+    var toSet = {};
+    if(sizeStr) {
+      var size = parseInt(sizeStr);
+      toSet.$set = { size: size };
+    } else {
+      toSet.$unset = { size: 1 };
+    }
+    Rounds.update({
+      _id: this._id,
+    }, toSet);
+    t.$(".modal").modal('hide');
+  },
 });
 
 Template.modalSoftCutoff.created = function() {
@@ -187,7 +236,7 @@ Template.modalSoftCutoff.events({
     }
 
     Rounds.update({ _id: this._id }, toSet);
-    $("#modalSoftCutoff").modal('hide');
+    t.$(".modal").modal('hide');
   },
 });
 
@@ -223,7 +272,7 @@ Template.modalHardCutoff.events({
       }
     });
 
-    $("#modalHardCutoff").modal('hide');
+    t.$(".modal").modal('hide');
   },
 });
 Template.modalHardCutoff.helpers({
@@ -268,6 +317,24 @@ function getLastRoundResultsCount(competitionId, eventCode) {
     }
   });
   return resultsForRound.count();
+}
+function getMaxAllowedSize(round) {
+  var prevRound = Rounds.findOne({
+    competitionId: round.competitionId,
+    eventCode: round.eventCode,
+    nthRound: round.nthRound - 1,
+  }, {
+    fields: {
+      status: 1,
+      size: 1,
+    }
+  });
+  if(!prevRound || !prevRound.size) {
+    return null;
+  }
+
+  var maxAllowedRoundSize = Math.floor(prevRound.size*(1-wca.MINIMUM_CUTOFF_PERCENTAGE/100.0));
+  return maxAllowedRoundSize;
 }
 
 var eventCountPerRowByDeviceSize = {
@@ -329,6 +396,17 @@ Template.editCompetition.helpers({
   roundDoneAndTotal: function() {
     return getCompetitorsDoneAndTotal(this._id);
   },
+  maxAllowedRoundSize: function() {
+    var maxAllowedRoundSize = getMaxAllowedSize(this);
+    return maxAllowedRoundSize;
+  },
+  roundSizeWarning: function() {
+    var maxAllowedRoundSize = getMaxAllowedSize(this);
+    if(maxAllowedRoundSize === null) {
+      return false;
+    }
+    return this.size > maxAllowedRoundSize;
+  },
   roundComplete: function() {
     var done_total = getCompetitorsDoneAndTotal(this._id);
     return done_total[0] == done_total[1];
@@ -365,8 +443,7 @@ Template.editCompetition.helpers({
     return status == wca.roundStatuses.open;
   },
   canCloseRound: function() {
-    var status = getRoundAttribute(this._id, 'status');
-    return status == wca.roundStatuses.open;
+    return this.status == wca.roundStatuses.open;
   },
   canOpenRound: function() {
     var nextRound = Rounds.findOne({
@@ -375,7 +452,7 @@ Template.editCompetition.helpers({
       nthRound: this.nthRound + 1,
     }, {
       fields: {
-        status: 1
+        status: 1,
       }
     });
     if(nextRound && nextRound.status != wca.roundStatuses.unstarted) {

@@ -151,6 +151,14 @@ Rounds.attachSchema({
     min: 0,
     optional: true,
   },
+  size: {
+    // How many competitors we expect to allow into this round.
+    // Based on attendance and time, more or fewer people may end up competing
+    // in this round.
+    type: Number,
+    min: 0,
+    optional: true,
+  },
   softCutoff: {
     type: new SimpleSchema({
       time: {

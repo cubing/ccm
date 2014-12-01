@@ -128,6 +128,7 @@ if(Meteor.isServer) {
         'formatCode',
         'softCutoff',
         'hardCutoff',
+        'size',
 
         'nthDay',
         'startMinutes',
