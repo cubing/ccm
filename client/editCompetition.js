@@ -99,17 +99,11 @@ Template.editCompetition.events({
     });
   },
   'click button[name="buttonHardCutoff"]': function(e, t) {
-    // We look up the round rather than using "this", because it gets us a copy
-    // of the round.
-    var round = Rounds.findOne({ _id: this._id });
-    currentEditingRoundReact.set(round);
+    currentEditingRoundReact.set(this);
     $("#modalHardCutoff").modal('show');
   },
   'click button[name="buttonSoftCutoff"]': function(e, t) {
-    // We look up the round rather than using "this", because it gets us a copy
-    // of the round.
-    var round = Rounds.findOne({ _id: this._id });
-    currentEditingRoundReact.set(round);
+    currentEditingRoundReact.set(this);
     $("#modalSoftCutoff").modal('show');
   },
   'hidden.bs.modal .modal': function(e, t) {
@@ -117,6 +111,16 @@ Template.editCompetition.events({
   }
 });
 
+Template.modalSoftCutoff.created = function() {
+  var template = this;
+  template.showTimeEntryReact = new ReactiveVar(false);
+  template.isSaveableReact = new ReactiveVar(false);
+  template.autorun(function() {
+    var data = Template.currentData();
+    template.showTimeEntryReact.set(data && data.softCutoff);
+    template.isSaveableReact.set(!!data);
+  });
+};
 Template.modalSoftCutoff.helpers({
   softCutoffFormats: function() {
     return wca.softCutoffFormats;
@@ -135,48 +139,98 @@ Template.modalSoftCutoff.helpers({
     var softCutoffFormatCode = this.code;
     return _.contains(roundFormat.softCutoffFormatCodes, softCutoffFormatCode);
   },
+  showTimeEntry: function() {
+    var template = Template.instance();
+    return template.showTimeEntryReact.get();
+  },
+  isSaveable: function() {
+    var template = Template.instance();
+    return template.isSaveableReact.get();
+  },
 });
-
 Template.modalSoftCutoff.events({
   'shown.bs.modal .modal': function(e, t) {
     // Focus first input when we become visible
     t.$('input').filter(':visible:first').focus();
+    t.$('input').filter(':visible:first').select();
   },
-  'change select[name="softCutoffFormatCode"]': function(e) {
-    var formatCode = e.currentTarget.value;
-    var round = currentEditingRoundReact.get();
-    if(formatCode) {
-      round.softCutoff = round.softCutoff || { time: { millis: 0, decimals: 0 } };
-      round.softCutoff.formatCode = formatCode;
-    } else {
-      round.softCutoff = null;
-    }
-    currentEditingRoundReact.set(round);
+  'change select[name="softCutoffFormatCode"]': function(e, t) {
+    var select = e.currentTarget;
+    var softCutoffFormatCode = select.value;
+    t.showTimeEntryReact.set(!!softCutoffFormatCode);
   },
-  'submit form': function(e) {
+  'gj.timeChanged [name="inputSoftCutoff"]': function(e, t) {
+    var time = $(e.currentTarget).data('time');
+    t.isSaveableReact.set(!!time);
+  },
+  'submit form': function(e, t) {
     e.preventDefault();
 
-    var round = currentEditingRoundReact.get();
+    var $selectCutoffFormat = t.$('select[name="softCutoffFormatCode"]');
+    var formatCode = $selectCutoffFormat.val();
+
+    var $inputSoftCutoff = t.$('[name="inputSoftCutoff"]');
+    var time = $inputSoftCutoff.data('time');
+
     var toSet = {};
-    if(round.softCutoff) {
-      toSet.$set = { softCutoff: round.softCutoff };
+    if(formatCode) {
+      toSet.$set = {
+        softCutoff: {
+          time: time,
+          formatCode: formatCode,
+        }
+      };
     } else {
-      toSet.$unset = { softCutoff: 1 };
+      toSet.$unset = {
+        softCutoff: 1,
+      };
     }
+
     Rounds.update({ _id: this._id }, toSet);
     $("#modalSoftCutoff").modal('hide');
   },
 });
 
+Template.modalHardCutoff.created = function() {
+  var template = this;
+  template.isSaveableReact = new ReactiveVar(false);
+  template.autorun(function() {
+    var data = Template.currentData();
+    template.isSaveableReact.set(!!data);
+  });
+};
 Template.modalHardCutoff.events({
   'shown.bs.modal .modal': function(e, t) {
     // Focus first input when we become visible
     t.$('input').filter(':visible:first').focus();
+    t.$('input').filter(':visible:first').select();
   },
-  'submit form': function(e) {
+  'gj.timeChanged [name="inputHardCutoff"]': function(e, t) {
+    var time = $(e.currentTarget).data('time');
+    t.isSaveableReact.set(!!time);
+  },
+  'submit form': function(e, t) {
     e.preventDefault();
+
+    var $inputHardCutoff = t.$('[name="inputHardCutoff"]');
+    var time = $inputHardCutoff.data('time');
+
+    Rounds.update({
+      _id: this._id,
+    }, {
+      $set: {
+        'hardCutoff.time': time
+      }
+    });
+
     $("#modalHardCutoff").modal('hide');
   },
+});
+Template.modalHardCutoff.helpers({
+  isSaveable: function() {
+    var template = Template.instance();
+    return template.isSaveableReact.get();
+  }
 });
 
 function getCompetitorsDoneAndTotal(roundId) {

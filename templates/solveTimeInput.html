@@ -1,0 +1,10 @@
+<template name="solveTimeInput">
+  <div name="{{name}}">
+    <div class="form-group {{#if warning}}has-warning{{/if}}">
+      <input type="text" for="inputSuccess1" class="form-control" value="{{#if time}}{{clockFormat time}}{{/if}}" />
+      {{#if warning}}
+        <span class="help-block">{{warning}}</span>
+      {{/if}}
+    </div>
+  </div>
+</template>

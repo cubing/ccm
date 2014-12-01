@@ -170,6 +170,10 @@ Rounds.attachSchema({
         // DNF.
         type: SolveTime,
         autoValue: function() {
+          if(this.isSet) {
+            // If time is already set, don't overwrite it with the default.
+            return;
+          }
           var eventCodeField = this.field("eventCode");
           if(eventCodeField.isSet) {
             return {

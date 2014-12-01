@@ -44,36 +44,6 @@ if(Meteor.isClient) {
     return Meteor.user().profile.siteAdmin;
   });
 
-  Template.registerHelper("clockFormat", function(solveTime) {
-    var millis = solveTime.millis;
-    var minutesField = Math.floor(millis / (60*1000));
-    millis %= (60*1000);
-
-    var secondsField = Math.floor(millis / 1000);
-    millis %= 1000;
-
-    function pad(toPad, padVal, minLength) {
-      var padded = toPad + "";
-      while(padded.length < minLength) {
-        padded = padVal + padded;
-      }
-      return padded;
-    }
-
-    var clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
-    var decimals = solveTime.decimals;
-    if(decimals > 0) {
-      // It doesn't make sense to format to more decimal places than the
-      // accuracy we have.
-      decimals = Math.min(3, decimals);
-      var millisStr = pad(millis, "0", 3);
-      clockFormat += ".";
-      for(var i = 0; i < decimals; i++) {
-        clockFormat += millisStr.charAt(i);
-      }
-    }
-    return clockFormat;
-  });
   Template.registerHelper("toAtMostFixed", function(n, fixed) {
     // Neat trick from http://stackoverflow.com/a/18358056
     return +(n.toFixed(fixed));
@@ -90,6 +60,63 @@ if(Meteor.isClient) {
   });
 }
 
+var MILLIS_PER_SECOND = 1000;
+var MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
+parseClockFormat = function(clockFormat) {
+  var m = clockFormat.match(/^(?:(\d*):)?(\d+)(?:[.,](\d*))?$/);
+  if(!m) {
+    throw "Invalid clock format";
+  }
+
+  var minutes = parseInt(m[1] || "0");
+  var seconds = parseInt(m[2]);
+  var decimalStr = m[3] || "";
+  var decimal = parseInt(decimalStr || "0");
+  var decimalValueInMillis = !decimal ? 0 : Math.round( decimal /
+      Math.pow(10, 1 + Math.floor(Math.log10(decimal)) - 3 /* subtract 3 to get millis instead of seconds */) );
+
+  var millis = minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
+  var decimals = decimalStr.length;
+  return {
+    millis: millis,
+    decimals: decimals,
+  };
+};
+toClockFormat = function(solveTime) {
+  var millis = solveTime.millis;
+  var minutesField = Math.floor(millis / (60*1000));
+  millis %= (60*1000);
+
+  var secondsField = Math.floor(millis / 1000);
+  millis %= 1000;
+
+  function pad(toPad, padVal, minLength) {
+    var padded = toPad + "";
+    while(padded.length < minLength) {
+      padded = padVal + padded;
+    }
+    return padded;
+  }
+
+  var clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
+  var decimals = solveTime.decimals;
+  if(decimals > 0) {
+    // It doesn't make sense to format to more decimal places than the
+    // accuracy we have.
+    decimals = Math.min(3, decimals);
+    var millisStr = pad(millis, "0", 3);
+    clockFormat += ".";
+    for(var i = 0; i < decimals; i++) {
+      clockFormat += millisStr.charAt(i);
+    }
+  }
+  return clockFormat;
+};
+if(Meteor.isClient) {
+  Template.registerHelper("clockFormat", function(solveTime) {
+    return toClockFormat(solveTime);
+  });
+}
 getCompetitionStartDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
   if(!startDate) {

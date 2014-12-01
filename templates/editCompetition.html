@@ -286,7 +286,7 @@
   <div id="modalSoftCutoff" class="modal fade">
     <div class="modal-dialog">
       {{#if this}}
-        <form class="form-horizontal" role="form">
+        <form role="form">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
@@ -295,8 +295,8 @@
               </h4>
             </div>
             <div class="modal-body">
-              {{#if softCutoff}}
-                <input type="text" class="form-control" value="{{clockFormat softCutoff.time}}" />
+              {{#if showTimeEntry}}
+                {{> solveTimeInput time=softCutoff.time name="inputSoftCutoff"}}
               {{/if}}
               <select name="softCutoffFormatCode" class="form-control input-xs">
                 <!-- will end up selected if nothing else is -->
@@ -312,7 +312,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-success">
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
                 Save
               </button>
             </div>
@@ -327,7 +327,7 @@
   <div id="modalHardCutoff" class="modal fade">
     <div class="modal-dialog">
       {{#if this}}
-        <form class="form-horizontal" role="form">
+        <form role="form">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
@@ -336,11 +336,11 @@
               </h4>
             </div>
             <div class="modal-body">
-              <input type="text" class="form-control" value="{{clockFormat hardCutoff.time}}" />
+              {{> solveTimeInput time=hardCutoff.time name="inputHardCutoff"}}
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn btn-success">
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
                 Save
               </button>
             </div>
