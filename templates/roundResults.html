@@ -7,8 +7,10 @@
 
     <ul>
       {{#each results}}
-        <li>
-          <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">{{competitorName}}</a>: {{solves}} best: {{best}}
+        <li class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
+          <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
+            {{competitorName}}
+          </a>: {{solves}} best: {{best}}
         </li> 
       {{/each}}
     </ul>
