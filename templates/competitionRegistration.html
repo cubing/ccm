@@ -5,18 +5,25 @@
       Log in to register for {{competition 'competitionName'}}.
     {{else}}
 
-    {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
+      {{#if registrationIsOpen}}
 
-      {{> afFieldInput name="userId" }}
-      {{> afFieldInput name="competitionId" }}
-      {{> afQuickField name="events" options=eventOptions }}
+        <span>Please note that registration closes on {{registrationCloseMomentText}}</span>
 
-      <button type="submit" class="btn btn-default" id="registerButton">
-        <span class="glyphicon glyphicon-floppy-save"></span>
-          Register
-      </button>
+        {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
 
-    {{/autoForm}}
+          {{> afFieldInput name="userId" }}
+          {{> afFieldInput name="competitionId" }}
+          {{> afQuickField name="events" options=eventOptions }}
+
+          <button type="submit" class="btn btn-default" id="registerButton">
+            <span class="glyphicon glyphicon-floppy-save"></span>
+              Register
+          </button>
+
+        {{/autoForm}}
+      {{else}}
+        <span>Aww, shucks!  Registration isn't open right now.  The registration window is/was from ___ to ___.</span>
+      {{/if}}
 
     {{/unless}}
   </div>

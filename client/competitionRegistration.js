@@ -49,7 +49,34 @@ Template.competitionRegistration.helpers({
       // insert type if no registration
       return "insert";
     }
-  }
+  },
+
+  registrationIsOpen: function() {
+    var competitionId = this.competitionId;
+
+    var open = getCompetitionRegistrationOpenMoment(competitionId);
+    var close = getCompetitionRegistrationCloseMoment(competitionId);
+    var now = moment();
+    if(now.isAfter(close)) {
+      throw new Meteor.Error(403,
+            'Competition registration is now closed!');
+      return false;
+    }
+    if(now.isBefore(open)) {
+      throw new Meteor.Error(403,
+            'Competition registration is not yet open!');
+      return false;
+    }
+    return true;
+  },
+
+  registrationCloseMomentText: function() {
+    var competitionId = this.competitionId;
+
+    var close = getCompetitionRegistrationCloseMoment(competitionId);
+
+    return close.format("dddd, MMMM Do YYYY, h:mm:ss a");
+  },
 
 });
 

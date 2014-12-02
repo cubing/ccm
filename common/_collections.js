@@ -50,15 +50,7 @@ Competitions.attachSchema({
     optional: true,
   },
 
-  // I'm not wild about the fact that competitors is an array of objects
-  // containing ids, but staff and organizers is an array of ids.
-  competitors: {
-    type: [Object],
-    defaultValue: [],
-  },
-  "competitors.$._id": {
-    type: String,
-  },
+  // Should these be moved to isStaff and isOrganizer fields in Registrations?
   staff: {
     type: [String],
     defaultValue: [],
@@ -89,6 +81,8 @@ Registrations.attachSchema({
       type: "select-checkbox",
     },
   },
+
+
 });
 if(Meteor.isServer) {
   Registrations._ensureIndex({ competitionId: 1, userId: 1 }, { unique: 1 });
