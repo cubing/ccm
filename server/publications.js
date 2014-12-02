@@ -24,13 +24,21 @@ Meteor.publish('competition', function(competitionUrlId) {
   if(!competition) {
     return [];
   }
+
+  var registrations = Registrations.find({
+    competitionId: competition._id
+  }).fetch();
+  if(!registrations) {
+    return [];
+  }
+
   return [
     Competitions.find({ _id: competition._id }),
     Rounds.find({ competitionId: competition._id }),
     Results.find({ competitionId: competition._id }),
     Meteor.users.find({
       _id: {
-        $in: _.pluck(competition.competitors, "_id")
+        $in: _.pluck(registrations, "userId")
       }
     }, {
       fields: {
