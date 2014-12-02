@@ -136,8 +136,15 @@ Template.modalAdvanceRound.created = function() {
         size: 1,
       }
     });
-    if(nextRound && nextRound.size) {
-      template.advanceCountReact.set(nextRound.size);
+    if(nextRound) {
+      var competitorsInRound = Results.find({
+        roundId: nextRound._id,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      }).count();
+      template.advanceCountReact.set(nextRound.size || competitorsInRound || null);
     } else {
       template.advanceCountReact.set(null);
     }
