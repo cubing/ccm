@@ -24,7 +24,7 @@ Meteor.startup(function() {
     assert(competition);
   }
 
-  var userIdByJsonId = {};
+  var userInfoByJsonId = {};
   wcaCompetition.persons.forEach(function(wcaPerson, i) {
     var dobMoment = moment.utc(wcaPerson.dob);
     var userProfile = {
@@ -64,7 +64,10 @@ Meteor.startup(function() {
         assert(user);
       }
     }
-    userIdByJsonId[wcaPerson.id] = user._id;
+    userInfoByJsonId[wcaPerson.id] = {
+      userId: user._id,
+      events: [],
+    };
   });
 
   // Add all the rounds, results, and registrations for this competition.
@@ -73,22 +76,6 @@ Meteor.startup(function() {
   Results.remove({ competitionId: competition._id });
   Groups.remove({ competitionId: competition._id });
   Registrations.remove({ competitionId: competition._id });
-
-  // Add registrations for people as documents in the registrations collection.
-  // Each document in registrations contains a competitionId and userId field
-  // whose values are the _id values of documents in the Competition and User
-  // collections.
-  for(var jsonId in userIdByJsonId) {
-    if(userIdByJsonId.hasOwnProperty(jsonId)) {
-      var userId = userIdByJsonId[jsonId];
-      Registrations.insert({
-        competitionId: competition._id,
-        userId: userId,
-        // to-do: events
-        events: [],
-      });
-    }
-  }
 
   // Add data for rounds, results, and groups
   wcaCompetition.events.forEach(function(wcaEvent) {
@@ -110,11 +97,15 @@ Meteor.startup(function() {
 
       wcaRound.results.forEach(function(wcaResult) {
         // wcaResult.personId refers to the personId in the wca json
-        var userId = userIdByJsonId[wcaResult.personId];
+        var userInfo = userInfoByJsonId[wcaResult.personId];
+        assert(userInfo);
+        if(!_.contains(userInfo.events, wcaEvent.eventId)) {
+          userInfo.events.push(wcaEvent.eventId);
+        }
         Results.insert({
           competitionId: competition._id,
           roundId: roundId,
-          userId: userId,
+          userId: userInfo.userId,
           position: wcaResult.position,
           solves: wcaResult.results,
           best: wcaResult.best,
@@ -134,4 +125,20 @@ Meteor.startup(function() {
       });
     });
   });
+
+  // Add registrations for people as documents in the registrations collection.
+  // Each document in registrations contains a competitionId and userId field
+  // whose values are the _id values of documents in the Competitions and Users
+  // collections.
+  for(var jsonId in userInfoByJsonId) {
+    if(userInfoByJsonId.hasOwnProperty(jsonId)) {
+      var userInfo = userInfoByJsonId[jsonId];
+      Registrations.insert({
+        competitionId: competition._id,
+        userId: userInfo.userId,
+        events: userInfo.events,
+      });
+    }
+  }
+
 });
