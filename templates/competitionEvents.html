@@ -1,0 +1,43 @@
+<template name="competitionEvents">
+  <div class="container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th rowspan="2">Event Name</th>
+          {{#each roundsInCompetition}}
+            <th colspan="4">Round {{this}}</th>
+          {{/each}}
+        </tr>
+        <tr>
+          {{#each roundsInCompetition}}
+            <th>Format</th>
+            <th>Soft</th>
+            <th>Hard</th>
+            <th>Num</th>
+          {{/each}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each events}}
+          <tr>
+            <td>{{eventName eventCode}}</td>
+            {{#each rounds}}
+              <td>{{formatName formatCode}}</td>
+              <td>
+                {{#if softCutoff}}
+                  {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
+                {{/if}}
+              </td>
+              <td>{{clockFormat hardCutoff.time}}</td>
+              <td>
+                {{#if size}}
+                  {{size}}
+                {{/if}}
+              </td>
+            {{/each}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</template>

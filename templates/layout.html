@@ -72,6 +72,9 @@
           <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}}">
             <a href="{{pathFor 'competitionRegistration'}}">Registration</a>
           </li>
+          <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}}">
+            <a href="{{pathFor 'competitionEvents'}}">Events</a>
+          </li>
           <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}}">
             <a href="{{pathFor 'competitionSchedule' competitionUrlId=competitionUrlId}}"
               data-toggle="tooltip" data-placement="bottom" title="View schedule">

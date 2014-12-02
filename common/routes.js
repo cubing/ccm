@@ -195,6 +195,11 @@ Router.route('/:competitionUrlId/registration', {
   controller: 'ViewCompetitionController',
   titlePrefix: 'Registration',
 });
+Router.route('/:competitionUrlId/events', {
+  name: 'competitionEvents',
+  controller: 'ViewCompetitionController',
+  titlePrefix: 'Events',
+});
 Router.route('/:competitionUrlId/schedule', {
   name: 'competitionSchedule',
   controller: 'ViewCompetitionController',
