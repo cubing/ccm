@@ -17,7 +17,6 @@ Meteor.startup(function() {
       listed: false,
       startDate: new Date(),
       numberOfDays: 1,
-      competitors: [],
       staff: [],
       organizers: [],
     });
@@ -68,29 +67,30 @@ Meteor.startup(function() {
     userIdByJsonId[wcaPerson.id] = user._id;
   });
 
-  // Each competition contains a competitors attribute.
-  // This is an array of objects, where each object represents a competitor.
-  // This competitor object contains an _id field whose value is the _id of
-  // a document in the User collection.
-  var competitors = [];
-  for(var jsonId in userIdByJsonId) {
-    if(userIdByJsonId.hasOwnProperty(jsonId)) {
-      var userId = userIdByJsonId[jsonId];
-      competitors.push({
-        _id: userId
-      });
-    }
-  }
-  Competitions.update(
-    { _id: competition._id },
-    { $set: { competitors: competitors } }
-  );
-
-  // Add all the rounds and results for this competition.
-  // First remove any old rounds, results, and groups for this competition.
+  // Add all the rounds, results, and registrations for this competition.
+  // First remove any old rounds, results, registrations, and groups for this competition.
   Rounds.remove({ competitionId: competition._id });
   Results.remove({ competitionId: competition._id });
   Groups.remove({ competitionId: competition._id });
+  Registrations.remove({ competitionId: competition._id });
+
+  // Add registrations for people as documents in the registrations collection.
+  // Each document in registrations contains a competitionId and userId field
+  // whose values are the _id values of documents in the Competition and User
+  // collections.
+  for(var jsonId in userIdByJsonId) {
+    if(userIdByJsonId.hasOwnProperty(jsonId)) {
+      var userId = userIdByJsonId[jsonId];
+        Registrations.insert({
+          competitionId: competition._id,
+          userId: userId,
+          // to-do: events
+          events: [],
+        });
+    }
+  }
+
+  // Add data for rounds, results, and groups
   wcaCompetition.events.forEach(function(wcaEvent) {
     // Sort rounds according to the order in which they must have occurred.
     wcaEvent.rounds.sort(function(r1, r2) {
