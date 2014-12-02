@@ -114,10 +114,10 @@ if(Meteor.isServer) {
   Rounds.allow({
     update: function(userId, round, fields, modifier) {
       var competition = Competitions.findOne({
-        _id: round.competitionId
+        _id: round.competitionId,
       }, {
         fields: {
-          _id: 1
+          _id: 1,
         }
       });
       if(getCannotManageCompetitionReason(userId, competition._id)) {
@@ -142,9 +142,8 @@ if(Meteor.isServer) {
       }
       return true;
     },
-    fetch: [ 'competitionId' ]
+    fetch: [ 'competitionId' ],
   });
-
 
   Registrations.allow({
     insert: function(userId, registration) {

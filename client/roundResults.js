@@ -1,4 +1,4 @@
-Template.roundResults.helpers({
+Template.roundResultsList.helpers({
   results: function() {
     var results = Results.find({
       competitionId: this.competitionId,
@@ -42,5 +42,12 @@ Template.roundResults.helpers({
       userId: this.userId,
     });
     return !!results;
+  },
+  drawAdvanceLine: function() {
+    var rootData = Template.parentData(2);
+    if(!rootData.configurableAdvanceCount) {
+      return false;
+    }
+    return rootData.advanceCount == this.position;
   },
 });

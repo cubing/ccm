@@ -226,10 +226,10 @@ Router.route('/:competitionUrlId/results/:eventCode/:roundCode', {
     var round = Rounds.findOne({
       competitionId: data.competitionId,
       eventCode: eventCode,
-      roundCode: roundCode
+      roundCode: roundCode,
     }, {
       fields: {
-        _id: 1
+        _id: 1,
       }
     });
     if(!round) {

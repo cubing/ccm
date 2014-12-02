@@ -130,19 +130,89 @@ Meteor.methods({
 
     var existingGroup = Groups.findOne({
       roundId: newGroup.roundId,
-      group: newGroup.group
+      group: newGroup.group,
     });
     if(existingGroup) {
-      console.warn("Clobberring existing group");
+      console.warn("Clobbering existing group");
       console.warn(existingGroup);
       Groups.update({
-        _id: existingGroup._id
+        _id: existingGroup._id,
       }, {
-        $set: newGroup
+        $set: newGroup,
       });
     } else {
       Groups.insert(newGroup);
     }
+  },
+  advanceCompetitorsFromRound: function(competitorCount, roundId) {
+    var competitionId = getRoundAttribute(roundId, 'competitionId');
+    throwIfCannotManageCompetition(this.userId, competitionId);
+
+    var results = Results.find({
+      roundId: roundId,
+    }, {
+      sort: {
+        position: 1,
+      }
+    }).fetch();
+    if(competitorCount < 0) {
+      throw new Meteor.Error(400,
+            'Cannot advance a negative number of competitors');
+    }
+    if(competitorCount > results.length) {
+      throw new Meteor.Error(400,
+            'Cannot advance more people than there are in round');
+    }
+    var eventCode = getRoundAttribute(roundId, 'eventCode');
+    var nthRound = getRoundAttribute(roundId, 'nthRound');
+    var nextRound = Rounds.findOne({
+      competitionId: competitionId,
+      eventCode: eventCode,
+      nthRound: nthRound + 1,
+    }, {
+      fields: {
+        _id: 1,
+      }
+    });
+    if(!nextRound) {
+      throw new Meteor.Error(404,
+            'No next round found for roundId ' + roundId);
+    }
+
+    var desiredUserIds = [];
+    for(var i = 0; i < competitorCount; i++) {
+      var result = results[i];
+      desiredUserIds.push(result.userId);
+    }
+
+    var actualUserIds = _.pluck(Results.find({
+      roundId: nextRound._id,
+    }).fetch(), 'userId');
+
+    var userIdsToRemove = _.difference(actualUserIds, desiredUserIds);
+    var userIdsToAdd = _.difference(desiredUserIds, actualUserIds);
+
+    // We're ready to actually advance competitors to the next round!
+
+    // First, remove any results that are currently in the next round that
+    // shouldn't be.
+    _.each(userIdsToRemove, function(userId) {
+      Results.remove({
+        competitionId: result.competitionId,
+        roundId: nextRound._id,
+        userId: userId,
+      });
+    });
+
+    // Now copy competitorCount results from the current round to the next
+    // round.
+    _.each(userIdsToAdd, function(userId) {
+      Results.insert({
+        competitionId: result.competitionId,
+        roundId: nextRound._id,
+        userId: userId,
+      });
+    });
   },
 
   registerForCompetition: function(competitionId, desiredEventCodes) {

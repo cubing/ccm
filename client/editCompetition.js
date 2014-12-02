@@ -84,7 +84,8 @@ Template.editCompetition.events({
     });
   },
   'click button[name="buttonAdvanceCompetitors"]': function(e, t) {
-    console.log(this);//<<<
+    currentEditingRoundReact.set(this);
+    $("#modalAdvanceRound").modal('show');
   },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
@@ -115,9 +116,94 @@ Template.editCompetition.events({
   }
 });
 
+Template.modalAdvanceRound.created = function() {
+  var template = this;
+
+  template.advanceCountReact = new ReactiveVar(null);
+  template.autorun(function() {
+    var data = Template.currentData();
+    if(!data) {
+      template.advanceCountReact.set(null);
+      return;
+    }
+
+    var nextRound = Rounds.findOne({
+      competitionId: data.competitionId,
+      eventCode: data.eventCode,
+      nthRound: data.nthRound + 1,
+    }, {
+      fields: {
+        size: 1,
+      }
+    });
+    if(nextRound && nextRound.size) {
+      template.advanceCountReact.set(nextRound.size);
+    } else {
+      template.advanceCountReact.set(null);
+    }
+  });
+
+  template.isSaveableReact = new ReactiveVar(false);
+  template.autorun(function() {
+    var data = Template.currentData();
+    if(!data) {
+      template.isSaveableReact.set(null);
+      return;
+    }
+    template.isSaveableReact.set(template.advanceCountReact.get());
+  });
+};
+// TODO - let user drag the advance cutoff line
+// TODO - show warning for potentially illegal advancing
+Template.modalAdvanceRound.events({
+  'shown.bs.modal .modal': function(e, t) {
+    // Focus first input when we become visible
+    t.$('input').filter(':visible:first').focus();
+    t.$('input').filter(':visible:first').select();
+  },
+  'input input[name="advanceCount"]': function(e, t) {
+    var $input = $(e.currentTarget);
+    var advanceCountStr = $input.val();
+    var isNonNegInt = String.isNonNegInt(advanceCountStr);
+    if(isNonNegInt) {
+      var advanceCount = parseInt(advanceCountStr);
+      t.advanceCountReact.set(advanceCount);
+    } else {
+      t.advanceCountReact.set(null);
+    }
+  },
+  'submit form': function(e, t) {
+    e.preventDefault();
+
+    var advanceCount = t.advanceCountReact.get();
+    Meteor.call('advanceCompetitorsFromRound', advanceCount, this._id, function(err, data) {
+      if(err) {
+        throw err;
+      }
+      t.$(".modal").modal('hide');
+    });
+  },
+});
+Template.modalAdvanceRound.helpers({
+  isSaveable: function() {
+    var template = Template.instance();
+    return template.isSaveableReact.get();
+  },
+  competitorsInRound: function() {
+    var competitorCount = Results.find({
+      roundId: this._id,
+    }).count();
+    return competitorCount;
+  },
+  advanceCount: function() {
+    var template = Template.instance();
+    return template.advanceCountReact.get();
+  },
+});
+
 Template.modalSetRoundSize.created = function() {
   var template = this;
-  template.isSaveableReact = new ReactiveVar(true);
+  template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
     var data = Template.currentData();
     template.isSaveableReact.set(!!data);
@@ -136,10 +222,7 @@ Template.modalSetRoundSize.events({
     t.$('input').filter(':visible:first').select();
   },
   'input input[name="roundSize"]': function(e, t) {
-    var $input = $(e.currentTarget);
-    var potentialRoundSizeStr = $input.val();
-    var isNonNegIntOrEmptyStr = potentialRoundSizeStr.match(/^\d*$/);
-    t.isSaveableReact.set(isNonNegIntOrEmptyStr);
+    t.isSaveableReact.set(e.currentTarget.validity.valid);
   },
   'submit form': function(e, t) {
     e.preventDefault();
@@ -439,8 +522,7 @@ Template.editCompetition.helpers({
     return startDate.fromNow() + " (" + rangeStr + ")";
   },
   roundOpen: function() {
-    var status = getRoundAttribute(this._id, 'status');
-    return status == wca.roundStatuses.open;
+    return this.status == wca.roundStatuses.open;
   },
   canCloseRound: function() {
     return this.status == wca.roundStatuses.open;
@@ -493,7 +575,7 @@ Template.editCompetition.helpers({
       // round.
       return false;
     }
-    return nextRound.status == wca.roundStatuses.unstarted;
+    return true;
   },
   isCurrentRoundFormat: function() {
     var round = Template.parentData(1);

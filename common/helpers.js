@@ -44,6 +44,9 @@ if(Meteor.isClient) {
   Template.registerHelper("roundFormatCode", function() {
     return getRoundAttribute(this.roundId, 'formatCode');
   });
+  Template.registerHelper("roundCompetitionId", function() {
+    return getRoundAttribute(this.roundId, 'competitionId');
+  });
 
   Template.registerHelper("isSiteAdmin", function() {
     return Meteor.user().profile.siteAdmin;

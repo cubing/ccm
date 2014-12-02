@@ -1,18 +1,18 @@
 var exportProblems = new ReactiveVar(null);
 
 Template.exportResults.helpers({
-  wcaResultsJson: function(){
+  wcaResultsJson: function() {
     var competition = this.competition;
     var wcaResults = exportWcaResultsObj(this.competitionId, this.competitionUrlId);
     var wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
     return wcaResultsJson;
   },
-  problems: function(){
+  problems: function() {
     return exportProblems.get();
   }
 });
 
-function exportWcaResultsObj(competitionId, competitionUrlId){
+function exportWcaResultsObj(competitionId, competitionUrlId) {
   var problems = [];
 
   var uploadScramblesRoute = Router.routes.uploadScrambles;
@@ -20,7 +20,7 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
 
   var groups = Groups.find({ competitionId: competitionId }).fetch();
   var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
-  if(scramblePrograms.length > 1){
+  if(scramblePrograms.length > 1) {
     // TODO - more details
     problems.push({
       warning: true,
@@ -37,7 +37,7 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
     }
   }).fetch();
   // TODO - compare this list of people to the people who *actually* competed
-  var wcaPersons = _.map(users, function(user){
+  var wcaPersons = _.map(users, function(user) {
     var wcaPerson = {
       "id": user._id,
       "name": user.profile.name,
@@ -50,16 +50,16 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
   });
 
   var wcaEvents = [];
-  _.toArray(wca.eventByCode).forEach(function(e, i){
+  _.toArray(wca.eventByCode).forEach(function(e, i) {
     var wcaRounds = [];
     Rounds.find({
       competitionId: competitionId,
       eventCode: e.code
-    }).forEach(function(round){
+    }).forEach(function(round) {
       var wcaResults = [];
       Results.find({
         roundId: round._id
-      }).forEach(function(result){
+      }).forEach(function(result) {
         var wcaResult = {
           personId: result.userId,
           position: result.position,
@@ -73,7 +73,7 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
       var wcaGroups = [];
       Groups.find({
         roundId: round._id
-      }).forEach(function(group){
+      }).forEach(function(group) {
         var wcaGroup = {
           group: group.group,
           scrambles: group.scrambles,
@@ -81,7 +81,7 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
         };
         wcaGroups.push(wcaGroup);
       });
-      if(wcaGroups.length === 0){
+      if(wcaGroups.length === 0) {
         problems.push({
           error: true,
           message: "No scramble groups found for " + e.code +
@@ -98,7 +98,7 @@ function exportWcaResultsObj(competitionId, competitionUrlId){
       };
       wcaRounds.push(wcaRound);
     });
-    if(wcaRounds.length === 0){
+    if(wcaRounds.length === 0) {
       return;
     }
     var wcaEvent = {

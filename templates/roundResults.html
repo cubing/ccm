@@ -5,14 +5,29 @@
       {{formatName roundFormatCode}}
     </p>
 
+    {{> roundResultsList roundId=roundId competitionUrlId=competitionUrlId}}
+
+  </div>
+</template>
+
+<template name="roundResultsList">
+  {{#with roundId=roundId competitionId=roundCompetitionId competitionUrlId=competitionUrlId}}
     <ul>
       {{#each results}}
         <li class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
-          <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
+          {{#if ../competitionUrlId}}
+            <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
+              {{competitorName}}
+            </a>
+          {{else}}
             {{competitorName}}
-          </a>: {{solves}} best: {{best}}
+          {{/if}}
+          : {{solves}} best: {{best}}
         </li> 
+        {{#if drawAdvanceLine}}
+          <hr>
+        {{/if}}
       {{/each}}
     </ul>
-  </div>
+  {{/with}}
 </template>

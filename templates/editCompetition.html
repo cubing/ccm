@@ -292,7 +292,45 @@
   {{> modalSoftCutoff currentEditingRound}}
   {{> modalHardCutoff currentEditingRound}}
   {{> modalSetRoundSize currentEditingRound}}
+  {{> modalAdvanceRound currentEditingRound}}
 
+</template>
+
+<template name="modalAdvanceRound">
+  <div id="modalAdvanceRound" class="modal fade">
+    <div class="modal-dialog">
+      {{#if this}}
+        <form role="form">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+              <h4 class="modal-title">
+                Advance competitors from {{eventName eventCode}}: {{roundName roundCode}}
+              </h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <div id="roundResultsListWrapper">
+                  {{! TODO unfortunately, passing down advanceCount like
+                  this is very non performant. I guess that rerendering the
+                  entire list is painful. Someday we should come up with a
+                  more efficient implementation of this.}}
+                  {{> roundResultsList roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
+                </div>
+                <input type="number" min="1" max="{{competitorsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
+                Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
+              </button>
+            </div>
+          </div><!-- /.modal-content -->
+        </form>
+      {{/if}}
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 </template>
 
 <template name="modalSetRoundSize">
@@ -309,7 +347,7 @@
             </div>
             <div class="modal-body">
               <div class="form-group">
-                <input type="number" name="roundSize" class="form-control" value="{{size}}" />
+                <input type="number" min="1" name="roundSize" class="form-control" value="{{size}}" />
               </div>
             </div>
             <div class="modal-footer">
