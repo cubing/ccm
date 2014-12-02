@@ -8,7 +8,8 @@
   "private": true,
   "devDependencies": {
     "precommit-hook": "1.0.7",
-    "jscs": "1.7.3"
+    "jscs": "1.8.1",
+    "jshint": "2.5.10"
   },
   "scripts": {
     "run": "meteor",
