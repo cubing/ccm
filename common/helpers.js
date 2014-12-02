@@ -244,9 +244,9 @@ if(Meteor.isClient) {
 }
 
 isRegisteredForCompetition = function(userId, competitionId) {
-  var competition = Competitions.findOne({
-    _id: competitionId,
-    'competitors._id': userId,
+  var competition = Registrations.findOne({
+    competitionId: competitionId,
+    userId: userId,
   }, {
     fields: {
       _id: 1,
