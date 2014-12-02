@@ -7,7 +7,7 @@
 
       {{#if registrationIsOpen}}
 
-        <span>Please note that registration closes on {{registrationCloseMomentText}}</span>
+        <span>{{registrationCloseMomentText}}</span>
 
         {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
 

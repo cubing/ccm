@@ -70,10 +70,14 @@ Template.competitionRegistration.helpers({
 
   registrationCloseMomentText: function() {
     var competitionId = this.competitionId;
-
     var close = getCompetitionRegistrationCloseMoment(competitionId);
 
-    return close.format("dddd, MMMM Do YYYY, h:mm:ss a");
+    if(close) {
+      return "Please note that registration closes on " + close.format("dddd, MMMM Do YYYY, h:mm:ss a");
+    } else {
+      // no close date specified.
+      return "Registration is currently open.";
+    }
   },
 
 });

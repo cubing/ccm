@@ -30,7 +30,11 @@ function exportWcaResultsObj(competitionId, competitionUrlId) {
   }
   var scrambleProgram = scramblePrograms[0];
 
-  var competitors = getCompetitionAttribute(competitionId, 'competitors');
+  var competitors = Registrations.find({
+    competitionId: this.competitionId,
+  }, {
+    _id: 1,
+  }).fetch();
   var users = Meteor.users.find({
     _id: {
       $in: _.pluck(competitors, "_id")

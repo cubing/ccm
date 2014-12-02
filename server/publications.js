@@ -26,7 +26,9 @@ Meteor.publish('competition', function(competitionUrlId) {
   }
 
   var registrations = Registrations.find({
-    competitionId: competition._id
+    competitionId: competition._id,
+  }, {
+    userId: 1,
   }).fetch();
   if(!registrations) {
     return [];
