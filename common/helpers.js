@@ -1,4 +1,9 @@
 if(Meteor.isClient) {
+  // oh handlebars
+  Template.registerHelper("add", function(a, b) {
+    return a + b;
+  });
+
   Template.registerHelper("roundName", function(roundCode) {
     return wca.roundByCode[roundCode].name;
   });
@@ -72,11 +77,11 @@ parseClockFormat = function(clockFormat) {
   var seconds = parseInt(m[2]);
   var decimalStr = m[3] || "";
   var decimal = parseInt(decimalStr || "0");
-  var decimalValueInMillis = !decimal ? 0 : Math.round( decimal /
-      Math.pow(10, 1 + Math.floor(Math.log10(decimal)) - 3 /* subtract 3 to get millis instead of seconds */) );
+  var denominator = Math.pow(10, decimal.toString().length - 3); /* subtract 3 to get millis instead of seconds */
+  var decimalValueInMillis = !decimal ? 0 : Math.round(decimal / denominator);
 
   var millis = minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
-  var decimals = decimalStr.length;
+  var decimals = Math.min(3, decimalStr.length); /* max allowed decimals is 3 */
   return {
     millis: millis,
     decimals: decimals,
