@@ -36,6 +36,10 @@ Template.roundResultsList.helpers({
         competitionId: 1,
       }
     });
+    if(!nextRound) {
+      // Nobody advances from final rounds =)
+      return false;
+    }
     var results = Results.findOne({
       competitionId: nextRound.competitionId,
       roundId: nextRound._id,

@@ -81,12 +81,12 @@ Meteor.startup(function() {
   for(var jsonId in userIdByJsonId) {
     if(userIdByJsonId.hasOwnProperty(jsonId)) {
       var userId = userIdByJsonId[jsonId];
-        Registrations.insert({
-          competitionId: competition._id,
-          userId: userId,
-          // to-do: events
-          events: [],
-        });
+      Registrations.insert({
+        competitionId: competition._id,
+        userId: userId,
+        // to-do: events
+        events: [],
+      });
     }
   }
 

@@ -60,12 +60,10 @@ Template.competitionRegistration.helpers({
     if(now.isAfter(close)) {
       throw new Meteor.Error(403,
             'Competition registration is now closed!');
-      return false;
     }
     if(now.isBefore(open)) {
       throw new Meteor.Error(403,
             'Competition registration is not yet open!');
-      return false;
     }
     return true;
   },
