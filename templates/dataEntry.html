@@ -32,12 +32,16 @@
       </li>
     </ul>
 
-    {{#if isSelectedRoundClosed}}
-      <div class="alert alert-warning" role="alert">
-        <strong>Warning!</strong> You're entering times for a round that is
-        already closed. This could create in inconsistencies in the people who
-        advanced to the next round.
-      </div>
+    {{#if roundId}}
+      {{#if isSelectedRoundClosed}}
+        <div class="alert alert-warning" role="alert">
+          <strong>Warning!</strong> You're entering times for a closed round.
+          This could create in inconsistencies in the set of people who
+          advanced to the next round.
+        </div>
+      {{/if}}
+
+      {{> roundResultsList roundId=roundId}}
     {{/if}}
 
   </div>

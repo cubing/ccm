@@ -1,5 +1,10 @@
 Template.dataEntry.helpers({
   isSelectedRoundClosed: function() {
+    if(!this.roundId) {
+      // If there's no round selected, then the selected round is definitely
+      // *not* closed =)
+      return false;
+    }
     var status = getRoundAttribute(this.roundId, 'status');
     return status === wca.roundStatuses.closed;
   },
