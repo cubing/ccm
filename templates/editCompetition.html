@@ -180,7 +180,7 @@
                               </td>
                             {{/if}}
 
-                            <td>
+                            <td class="text-center">
                               {{#if roundDoneAndTotal.[1]}}
                                 <div class="progress">
                                   <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundDoneAndTotal}}%;">
@@ -188,15 +188,19 @@
                                   </div>
                                 </div>
                               {{else}}
-                                <button type="button" name="buttonSetRoundSize"
-                                        class="btn {{#if roundSizeWarning}}btn-warning{{else}}btn-default{{/if}} btn-xs btn-block"
-                                        data-toggle="tooltip" data-placement="left" data-original-title="{{#if roundSizeWarning}}Round cannot be larger than {{maxAllowedRoundSize}}{{/if}}" data-container="body">
-                                  {{#if size}}
-                                    Size: {{size}}
-                                  {{else}}
-                                    Set round size
-                                  {{/if}}
-                                </button>
+                                {{#if isFirstRound}}
+                                  {{competitorsRegisteredForEventCount}} registered
+                                {{else}}
+                                  <button type="button" name="buttonSetRoundSize"
+                                          class="btn {{#if roundSizeWarning}}btn-warning{{else}}btn-default{{/if}} btn-xs btn-block"
+                                          data-toggle="tooltip" data-placement="left" data-original-title="{{#if roundSizeWarning}}Round cannot be larger than {{maxAllowedRoundSize}}{{/if}}" data-container="body">
+                                    {{#if size}}
+                                      Size: {{size}}
+                                    {{else}}
+                                      Set round size
+                                    {{/if}}
+                                  </button>
+                                {{/if}}
                               {{/if}}
                             </td>
 

@@ -483,6 +483,20 @@ Template.editCompetition.helpers({
     var allowedSoftCutoffFormatCodes = format.softCutoffFormatCodes;
     return _.contains(allowedSoftCutoffFormatCodes, this.softCutoff.formatCode);
   },
+  isFirstRound: function() {
+    return this.nthRound === 0;
+  },
+  competitorsRegisteredForEventCount: function() {
+    var competitorsCount = Registrations.find({
+      competitionId: this.competitionId,
+      events: this.eventCode,
+    }, {
+      fields: {
+        _id: 1
+      }
+    }).count();
+    return competitorsCount;
+  },
   roundDoneAndTotal: function() {
     return getCompetitorsDoneAndTotal(this._id);
   },
