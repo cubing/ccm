@@ -173,14 +173,14 @@ if(Meteor.isServer) {
     insert: function(userId, registration) {
       if(getCannotRegisterReasons(registration.competitionId)) {
         return false;
-      } 
+      }
       // can only edit entries with their user id
       return registration.userId == userId;
     },
     update: function(userId, registration, fields, modifier) {
       if(getCannotRegisterReasons(registration.competitionId)) {
         return false;
-      } 
+      }
       // can only edit entries with their user id
       return registration.userId == userId;
     },
