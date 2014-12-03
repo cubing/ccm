@@ -51,21 +51,10 @@ Template.competitionRegistration.helpers({
     }
   },
 
-  registrationIsOpen: function() {
+  cannotRegisterReasons: function() {
     var competitionId = this.competitionId;
 
-    var open = getCompetitionRegistrationOpenMoment(competitionId);
-    var close = getCompetitionRegistrationCloseMoment(competitionId);
-    var now = moment();
-    if(now.isAfter(close)) {
-      throw new Meteor.Error(403,
-            'Competition registration is now closed!');
-    }
-    if(now.isBefore(open)) {
-      throw new Meteor.Error(403,
-            'Competition registration is not yet open!');
-    }
-    return true;
+    return getCannotRegisterReasons(competitionId);
   },
 
   registrationCloseMomentText: function() {

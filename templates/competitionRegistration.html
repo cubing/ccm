@@ -5,7 +5,11 @@
       Log in to register for {{competition 'competitionName'}}.
     {{else}}
 
-      {{#if registrationIsOpen}}
+      {{#each cannotRegisterReasons}}
+        <div class="alert alert-danger">
+          {{this}}
+        </div>
+      {{else}}
 
         <span>{{registrationCloseMomentText}}</span>
 
@@ -21,9 +25,7 @@
           </button>
 
         {{/autoForm}}
-      {{else}}
-        <span>Aww, shucks!  Registration isn't open right now.  The registration window is/was from ___ to ___.</span>
-      {{/if}}
+      {{/each}}
 
     {{/unless}}
   </div>

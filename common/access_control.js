@@ -23,6 +23,30 @@ getCannotManageCompetitionReason = function(userId, competitionUrlId) {
   return false;
 };
 
+getCannotRegisterReasons = function(competitionId) {
+  var reasons = [];
+
+  var open = getCompetitionRegistrationOpenMoment(competitionId);
+  var close = getCompetitionRegistrationCloseMoment(competitionId);
+  var now = moment();
+  if(now.isAfter(close)) {
+    reasons.push("Competition registration is now closed!");
+  } else if(now.isBefore(open)) {
+    reasons.push("Competition registration is not yet open!");
+  }
+
+  // could be closed due to hitting capacity
+  // if()...
+  // reasons.push("Hit Total (guests + competitors) Capacity");
+  // reasons.push("Hit Competitor Capacity");
+
+  if(reasons.length > 0) {
+    return reasons;
+  }
+
+  return false;
+};
+
 throwIfCannotManageCompetition = function(userId, competitionUrlId) {
   var cannotManageReason = getCannotManageCompetitionReason(userId, competitionUrlId);
   if(cannotManageReason) {
@@ -147,10 +171,17 @@ if(Meteor.isServer) {
 
   Registrations.allow({
     insert: function(userId, registration) {
+      if(getCannotRegisterReasons(registration.competitionId)) {
+        return false;
+      } 
       // can only edit entries with their user id
       return registration.userId == userId;
     },
     update: function(userId, registration, fields, modifier) {
+      if(getCannotRegisterReasons(registration.competitionId)) {
+        return false;
+      } 
+      // can only edit entries with their user id
       return registration.userId == userId;
     },
   });
