@@ -183,6 +183,11 @@ Router.route('/:competitionUrlId/manage/schedule', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
+Router.route('/:competitionUrlId/manage/data-entry', {
+  name: 'dataEntry',
+  controller: 'ManageCompetitionController',
+  titlePrefix: "Data entry",
+});
 
 Router.route('/:competitionUrlId', {
   name: 'competition',
