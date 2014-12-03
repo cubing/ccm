@@ -1,6 +1,6 @@
 <template name="dataEntry">
   <div class="container">
-    <ul class="nav nav-pills">
+    <ul class="nav nav-pills nav-justified">
       {{#each openRounds}}
         <li role="presentation" class="{{#if isSelectedRound}}active{{/if}}">
           <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
@@ -8,9 +8,37 @@
             {{eventName eventCode}}: {{roundName roundCode}}
           </a>
         </li>
-      {{else}}
-        <h4>No open rounds!</h4>
       {{/each}}
+      <li role="presentation" class="dropdown {{#if isSelectedRoundClosed}}active{{/if}}">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+          {{#if isSelectedRoundClosed}}
+            <img class="img-thumbnail icon" src="{{eventIcon roundEventCode}}" alt="{{roundEventCode}}">
+            {{eventName roundEventCode}}: {{roundName roundRoundCode}}
+          {{else}}
+            Closed rounds
+          {{/if}}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+          {{#each closedRounds}}
+            <li class="{{#if isSelectedRound}}active{{/if}}">
+              <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                <img class="img-thumbnail icon" src="{{eventIcon eventCode}}" alt="{{eventCode}}">
+                {{eventName eventCode}}: {{roundName roundCode}}
+              </a>
+            </li>
+          {{/each}}
+        </ul>
+      </li>
     </ul>
+
+    {{#if isSelectedRoundClosed}}
+      <div class="alert alert-warning" role="alert">
+        <strong>Warning!</strong> You're entering times for a round that is
+        already closed. This could create in inconsistencies in the people who
+        advanced to the next round.
+      </div>
+    {{/if}}
+
   </div>
 </template>
