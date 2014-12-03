@@ -54,4 +54,73 @@ Template.roundResultsList.helpers({
     }
     return rootData.advanceCount == this.position;
   },
+
+  autocompleteSettings: function() {
+    var results = Results.find({
+      competitionId: this.competitionId,
+      roundId: this.roundId,
+    }, {
+      fields: {
+        userId: 1,
+      }
+    }).fetch();
+    return {
+      position: 'bottom',
+      limit: 10,
+      rules: [
+        {
+          // token: '',
+          collection: MeteorUsersPreferentialMatching,
+          filter: {
+            _id: {
+              $in: _.pluck(results, 'userId'),
+            }
+          },
+          field: 'profile.name',
+          matchAll: true,
+          template: Template.roundResults_namePill,
+          callback: function(doc, element) {
+            console.log(doc);//<<<
+            console.log(element);//<<<
+          }
+        }
+      ]
+    };
+  },
+});
+
+var autocompleteEnteredReact = new ReactiveVar(null);
+
+Template.roundResultsList.events({
+  'input #inputCompetitorName': function(e) {
+    autocompleteEnteredReact.set(e.currentTarget.value);
+  },
+});
+
+Template.roundResults_namePill.helpers({
+  highlightedName: function() {
+    var substring = autocompleteEnteredReact.get();
+    var string = this.profile.name;
+
+    if(substring.length === 0) {
+      return _.escape(string);
+    }
+
+    var prettyFormat = "";
+    var index = 0;
+    while(index < string.length) {
+      var substringStartIndex = string.toLowerCase().indexOf(substring.toLowerCase(), index);
+      if(substringStartIndex < 0) {
+        prettyFormat += _.escape(string.substring(index));
+        break;
+      }
+      prettyFormat += _.escape(string.substring(index, substringStartIndex));
+      var substringEndIndex = substringStartIndex + substring.length;
+      assert(substringEndIndex <= string.length);
+      prettyFormat += "<strong>" + _.escape(string.substring(substringStartIndex, substringEndIndex)) + "</strong>";
+      index = substringEndIndex;
+    }
+
+    return prettyFormat;
+  },
 });

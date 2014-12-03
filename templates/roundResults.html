@@ -12,6 +12,9 @@
 
 <template name="roundResultsList">
   {{#with roundId=roundId competitionId=roundCompetitionId competitionUrlId=competitionUrlId}}
+    {{#if ../selectCompetitor}}
+      {{> inputAutocomplete settings=autocompleteSettings id="inputCompetitorName" class="form-control" placeholder="Competitor name"}}
+    {{/if}}
     <ul>
       {{#each results}}
         <li class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
@@ -30,4 +33,8 @@
       {{/each}}
     </ul>
   {{/with}}
+</template>
+
+<template name="roundResults_namePill">
+  <span>{{{highlightedName}}}</span>
 </template>
