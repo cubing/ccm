@@ -103,10 +103,10 @@ Meteor.methods({
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
-      if(nthRound == rounds.length - 1) {
+      if(nthRound == rounds.length) {
         supportedRoundsIndex = wca.MAX_ROUNDS_PER_EVENT - 1;
       } else {
-        supportedRoundsIndex = nthRound;
+        supportedRoundsIndex = nthRound - 1;
       }
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
       var roundCode = round.softCutoff ? roundCodes.combined : roundCodes.uncombined;

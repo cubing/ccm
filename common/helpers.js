@@ -1,9 +1,4 @@
 if(Meteor.isClient) {
-  // oh handlebars
-  Template.registerHelper("add", function(a, b) {
-    return a + b;
-  });
-
   Template.registerHelper("roundName", function(roundCode) {
     return wca.roundByCode[roundCode].name;
   });

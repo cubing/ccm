@@ -34,6 +34,13 @@ Template.layout.events({
   },
 });
 
+Router.onBeforeAction(function() {
+  // As the page changes, remove any leftover tooltips that might get
+  // abandoned because they were set to data-container="body"
+  $('.tooltip').remove();
+  this.next();
+});
+
 var verificationSendSuccessReact = new ReactiveVar(null);
 
 Template.layout.helpers({

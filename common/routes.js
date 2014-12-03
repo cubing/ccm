@@ -139,6 +139,41 @@ ViewCompetitionController = RouteController.extend({
   }
 });
 
+function getRoundData() {
+  // Hack to call our controller's data function
+  var data = this.constructor.prototype.data.call(this);
+  if(!data) {
+    return null;
+  }
+
+  if(!this.params.nthRound) {
+    data.eventCode = this.params.eventCode;
+    return data;
+  }
+  if(!String.isNonNegInt(this.params.nthRound)) {
+    this.render('roundNotFound');
+    return;
+  }
+  var nthRound = parseInt(this.params.nthRound);
+  var eventCode = this.params.eventCode;
+
+  var round = Rounds.findOne({
+    competitionId: data.competitionId,
+    eventCode: eventCode,
+    nthRound: nthRound,
+  }, {
+    fields: {
+      _id: 1,
+    }
+  });
+  if(!round) {
+    this.render('roundNotFound');
+    return;
+  }
+  data.roundId = round._id;
+  return data;
+}
+
 Router.route('/', {
   name: 'home',
   waitOn: function() {
@@ -183,10 +218,13 @@ Router.route('/:competitionUrlId/manage/schedule', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
-Router.route('/:competitionUrlId/manage/data-entry', {
+Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
   controller: 'ManageCompetitionController',
   titlePrefix: "Data entry",
+  data: function() {
+    return getRoundData.call(this);
+  },
 });
 
 Router.route('/:competitionUrlId', {
@@ -214,34 +252,11 @@ Router.route('/:competitionUrlId/results', {
   controller: 'ViewCompetitionController',
   titlePrefix: 'Results',
 });
-Router.route('/:competitionUrlId/results/:eventCode/:roundCode', {
+Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
   name: 'roundResults',
   controller: 'ViewCompetitionController',
   data: function() {
-    var roundCode = this.params.roundCode;
-    var eventCode = this.params.eventCode;
-
-    // Hack to call our controller's data function
-    var data = this.constructor.prototype.data.call(this);
-    if(!data) {
-      return null;
-    }
-
-    var round = Rounds.findOne({
-      competitionId: data.competitionId,
-      eventCode: eventCode,
-      roundCode: roundCode,
-    }, {
-      fields: {
-        _id: 1,
-      }
-    });
-    if(!round) {
-      this.render('roundNotFound');
-      return;
-    }
-    data.roundId = round._id;
-    return data;
+    return getRoundData.call(this);
   },
 });
 Router.route('/:competitionUrlId/results/:competitorName', {

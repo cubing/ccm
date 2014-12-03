@@ -468,7 +468,7 @@ Template.editCompetition.helpers({
       eventCode: this.eventCode
     }, {
       sort: {
-        "nthRound": 1
+        nthRound: 1
       }
     }).fetch();
     return rounds;

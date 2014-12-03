@@ -140,9 +140,9 @@ Rounds.attachSchema({
 
   // *** Attributes for real rounds for WCA events ***
   nthRound: {
-    // How many rounds come before this round for this eventCode
+    // Indexed from 1, because humans will see this in urls
     type: Number,
-    min: 0,
+    min: 1,
     optional: true,
   },
   size: {

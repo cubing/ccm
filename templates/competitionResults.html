@@ -6,7 +6,7 @@
         <ul>
           {{#each rounds}}
           <li>
-            <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode roundCode=roundCode}}">
+            <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
               {{roundName roundCode}}
             </a>
           </li>

@@ -10,7 +10,7 @@ Template.competitionEvents.helpers({
         nthRound: 1,
       }
     });
-    return _.range(1, mostAdvancedRound.nthRound + 2);
+    return _.range(0, mostAdvancedRound.nthRound + 1);
   },
   events: function() {
     return getCompetitionEvents(this.competitionId);

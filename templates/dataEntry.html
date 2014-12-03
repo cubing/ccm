@@ -1,5 +1,16 @@
 <template name="dataEntry">
   <div class="container">
-    data entry, yo
+    <ul class="nav nav-pills">
+      {{#each openRounds}}
+        <li role="presentation" class="{{#if isSelectedRound}}active{{/if}}">
+          <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+            <img class="img-thumbnail icon" src="{{eventIcon eventCode}}" alt="{{eventCode}}">
+            {{eventName eventCode}}: {{roundName roundCode}}
+          </a>
+        </li>
+      {{else}}
+        <h4>No open rounds!</h4>
+      {{/each}}
+    </ul>
   </div>
 </template>

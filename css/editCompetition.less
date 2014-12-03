@@ -33,14 +33,17 @@
 
 @iconSize: 50px;
 
-.panel-title img {
-  position: absolute;
-  top: 20px - @iconSize / 2;
+.icon {
   height: @iconSize;
   width: @iconSize;
 }
 
-.panel-title img + span {
+.panel-title .icon {
+  position: absolute;
+  top: 20px - @iconSize / 2;
+}
+
+.panel-title .icon + span {
   padding-left: @iconSize + 5px;
 }
 
