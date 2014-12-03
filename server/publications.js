@@ -30,7 +30,7 @@ Meteor.publish('competition', function(competitionUrlId) {
   }, {
     userId: 1,
   }).fetch();
-  if(!registrations) {
+  if(registrations.length === 0) {
     return [];
   }
 
@@ -38,6 +38,7 @@ Meteor.publish('competition', function(competitionUrlId) {
     Competitions.find({ _id: competition._id }),
     Rounds.find({ competitionId: competition._id }),
     Results.find({ competitionId: competition._id }),
+    Registrations.find({ competitionId: competition._id }),
     Meteor.users.find({
       _id: {
         $in: _.pluck(registrations, "userId")
@@ -71,8 +72,4 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
   return [
     Groups.find({ competitionId: competition._id })
   ];
-});
-
-Meteor.publish('registrations', function() {
-  return Registrations.find();
 });
