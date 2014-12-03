@@ -160,8 +160,6 @@ Template.modalAdvanceRound.created = function() {
     template.isSaveableReact.set(template.advanceCountReact.get());
   });
 };
-// TODO - let user drag the advance cutoff line
-// TODO - show warning for potentially illegal advancing
 Template.modalAdvanceRound.events({
   'shown.bs.modal .modal': function(e, t) {
     // Focus first input when we become visible
