@@ -1,4 +1,11 @@
 var selectedCompetitor = new ReactiveVar(null);
+Router.onBeforeAction(function() {
+  // Clear selected competitor
+  selectedCompetitor.set(null);
+  $('#inputCompetitorName').val('');
+
+  this.next();
+});
 Template.dataEntry.helpers({
   isSelectedRoundClosed: function() {
     if(!this.roundId) {
