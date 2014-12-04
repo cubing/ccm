@@ -47,7 +47,15 @@ Template.dataEntry.helpers({
   },
   selectCompetitorListener: function() {
     return function(user) {
-      selectedCompetitor.set(user);
+      // First clear the selectedCompetitor, and give Blaze a chance
+      // to remove all the corresponding DOM nodes. This is needed to
+      // clear all solve inputs because Blaze doesn't handle
+      // case where an input's current value is different than the value
+      // Blaze assigned it.
+      selectedCompetitor.set(null);
+      Meteor.setTimeout(function() {
+        selectedCompetitor.set(user);
+      }, 0);
     };
   },
   selectedCompetitor: function() {
