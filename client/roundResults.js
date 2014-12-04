@@ -6,7 +6,8 @@ Template.roundResultsList.rendered = function() {
     offset: {
       top: function() {
         var parentTop = $sidebar.parent().offset().top;
-        return parentTop - 20;//<<<
+        var affixTopSpacing = 20; // From .results-sidebar.affix in roundResults.css
+        return parentTop - affixTopSpacing;
       },
     }
   });
