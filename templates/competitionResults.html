@@ -5,11 +5,11 @@
         {{eventCode}}
         <ul>
           {{#each rounds}}
-          <li>
-            <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-              {{roundName roundCode}}
-            </a>
-          </li>
+            <li>
+              <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                {{roundName roundCode}}
+              </a>
+            </li>
           {{/each}}
         </ul>
       </li>
