@@ -101,7 +101,12 @@ toClockFormat = function(solveTime) {
     return padded;
   }
 
-  var clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
+  var clockFormat;
+  if(minutesField) {
+    clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
+  } else {
+    clockFormat = "" + secondsField;
+  }
   var decimals = solveTime.decimals;
   if(decimals > 0) {
     // It doesn't make sense to format to more decimal places than the
