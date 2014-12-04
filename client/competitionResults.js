@@ -7,6 +7,7 @@ Template.competitionResults.helpers({
       fields: {
         roundCode: 1,
         eventCode: 1,
+        nthRound: 1,
       }
     });
     return rounds;

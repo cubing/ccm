@@ -1,3 +1,20 @@
 li.competitor-advanced {
   font-weight: bold;
 }
+
+.results-sidebar {
+  width: 250px;
+}
+
+.results-sidebar.affix {
+  top: 20px;
+}
+
+@media(max-width: 768px) {
+  .results-sidebar.affix {
+    top: 0px;
+    background-color: white;
+    z-index: 1;
+    width: 90%;
+  }
+}

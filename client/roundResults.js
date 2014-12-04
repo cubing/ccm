@@ -1,3 +1,16 @@
+Template.roundResultsList.rendered = function() {
+  var template = this;
+
+  var $sidebar = template.$('.results-sidebar');
+  $sidebar.affix({
+    offset: {
+      top: function() {
+        var parentTop = $sidebar.parent().offset().top;
+        return parentTop - 20;//<<<
+      },
+    }
+  });
+};
 Template.roundResultsList.helpers({
   results: function() {
     var results = Results.find({
@@ -94,6 +107,9 @@ var autocompleteEnteredReact = new ReactiveVar(null);
 Template.roundResultsList.events({
   'input #inputCompetitorName': function(e) {
     autocompleteEnteredReact.set(e.currentTarget.value);
+  },
+  'focus #inputCompetitorName': function(e) {
+    e.currentTarget.select();
   },
 });
 

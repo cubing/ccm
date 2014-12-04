@@ -12,26 +12,36 @@
 
 <template name="roundResultsList">
   {{#with roundId=roundId competitionId=roundCompetitionId competitionUrlId=competitionUrlId}}
-    {{#if ../selectCompetitor}}
-      {{> inputAutocomplete settings=autocompleteSettings id="inputCompetitorName" class="form-control" placeholder="Competitor name"}}
-    {{/if}}
-    <ul>
-      {{#each results}}
-        <li class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
-          {{#if ../competitionUrlId}}
-            <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
-              {{competitorName}}
-            </a>
-          {{else}}
-            {{competitorName}}
-          {{/if}}
-          : {{solves}} best: {{best}}
-        </li> 
-        {{#if drawAdvanceLine}}
-          <hr>
-        {{/if}}
-      {{/each}}
-    </ul>
+    <div class="row">
+      {{#if ../selectCompetitor}}
+        <div class="col-xs-12 col-sm-4">
+          <div class="results-sidebar">
+            {{> inputAutocomplete settings=autocompleteSettings id="inputCompetitorName" class="form-control" placeholder="Competitor name"}}
+
+            {{> UI.contentBlock}}
+          </div>
+        </div>
+      {{/if}}
+      <div class="col-xs-12 col-sm-7">
+        <ul>
+          {{#each results}}
+            <li class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
+              {{#if ../competitionUrlId}}
+                <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
+                  {{competitorName}}
+                </a>
+              {{else}}
+                {{competitorName}}
+              {{/if}}
+              : {{solves}} best: {{best}}
+            </li> 
+            {{#if drawAdvanceLine}}
+              <hr>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
   {{/with}}
 </template>
 
