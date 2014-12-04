@@ -24,55 +24,47 @@
   "requireParenthesesAroundIIFE": true,
   "requireCommaBeforeLineBreak": true,
 
+  "requireSpacesInFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+
   "requireSpaceAfterKeywords": [
     "return",
-    "try"
+    "try",
+    "do",
+    "else"
   ],
   "disallowSpaceAfterKeywords": [
     "if",
     "for",
     "while",
-    "do",
-    "switch"
-    // The following breaks "else if"
-    //"else" // loldevin
+    "switch",
+    "catch"
   ],
-  // https://github.com/jscs-dev/node-jscs/commit/76be22933f4e0f589d0df33299a5139d9da26f9f
-  // add support for disallowSpaceBeforeKeywords, but is not yet released.
-  //"disallowSpaceBeforeKeywords": [
-    //"else",
-    //"catch" // loldevin
-  //],
   "requireSpacesInConditionalExpression": true,
+  //"requireSpaceAfterBinaryOperators": true,
+  //"requireSpaceBeforeBinaryOperators": true,
   "requireLineFeedAtFileEnd": true,
 
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
+  "requireSpacesInNamedFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  },
   "validateLineBreaks": "LF",
 
   "disallowKeywords": [ "with" ],
   "disallowKeywordsOnNewLine": [ "else" ],
-
-  //"disallowSpaceBeforeBlockStatements": true,
-
-  //"disallowSpacesInAnonymousFunctionExpression": {
-    //"beforeOpeningRoundBrace": true,
-    //"beforeOpeningCurlyBrace": true
-  //},
-  //"disallowSpacesInNamedFunctionExpression": {
-    //"beforeOpeningRoundBrace": true,
-    //"beforeOpeningCurlyBrace": true
-  //},
-  //"disallowSpacesInFunctionExpression": {
-    //"beforeOpeningRoundBrace": true,
-    //"beforeOpeningCurlyBrace": true
-  //},
-  //"disallowSpacesInNamedFunctionExpression": {
-    //"beforeOpeningRoundBrace": true,
-    //"beforeOpeningCurlyBrace": true
-  //},
-  //"disallowSpacesInAnonymousFunctionExpression": {
-    //"beforeOpeningRoundBrace": true,
-    //"beforeOpeningCurlyBrace": true
-  //},
+  "disallowSpacesInFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInNamedFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "disallowSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
   "disallowSpaceAfterObjectKeys": true,
   "disallowSpaceAfterPrefixUnaryOperators": true,
   "disallowSpaceBeforePostfixUnaryOperators": true,
@@ -80,8 +72,5 @@
   "disallowMultipleLineBreaks": true,
 
   "disallowSpaceBeforeBinaryOperators": [ ",", ":" ],
-  "disallowMultipleLineBreaks": null,
-
-  "disallowSpaceAfterObjectKeys": true,
-  "requireSpaceBeforeObjectValues": true
+  "disallowMultipleLineBreaks": null
 }

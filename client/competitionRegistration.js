@@ -15,16 +15,16 @@ Template.competitionRegistration.rendered = function() {
 };
 
 Template.competitionRegistration.helpers({
-  eventOptions: function () {
+  eventOptions: function() {
     var competitionId = this.competitionId;
     var events = getCompetitionEvents(competitionId);
 
-    return events.map(function (c) {
+    return events.map(function(c) {
       return {label: wca.eventByCode[c.eventCode].name, value: wca.eventByCode[c.eventCode].code};
     });
   },
 
-  defaultRegistrationData: function () {
+  defaultRegistrationData: function() {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
     var registration = getUserRegistration(userId, competitionId);
@@ -39,7 +39,7 @@ Template.competitionRegistration.helpers({
     }
   },
 
-  registrationFormType: function () {
+  registrationFormType: function() {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
     if(getUserRegistration(userId, competitionId)) {
