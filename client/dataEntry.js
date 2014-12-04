@@ -61,13 +61,6 @@ Template.dataEntry.helpers({
   selectedCompetitor: function() {
     return selectedCompetitor.get();
   },
-  time: function() {
-    // TODO - time objects should become a full fledged part of our database
-    return {
-      millis: this*10,
-      decimals: 2,
-    };
-  },
   selectedSolves: function() {
     var competitor = selectedCompetitor.get();
     var result = Results.findOne({

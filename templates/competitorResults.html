@@ -4,7 +4,11 @@
     <ul>
       {{#each results}}
         <li>
-          {{solves}} best: {{best}}
+          {{! TODO - perhaps combine this and the code in roundResults into a template? }}
+          {{#each solves}}
+            {{clockFormat this}}
+          {{/each}}
+          best: {{clockFormat best}}
         </li> 
       {{/each}}
     </ul>

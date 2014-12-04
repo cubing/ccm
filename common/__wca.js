@@ -1,5 +1,99 @@
 wca = {};
 
+/* From https://www.worldcubeassociation.org/results/misc/export.html
+
+- The result values are in fields value1-value5, best and average.
+- Value -1 means DNF
+- Value -2 means DNS
+- Value 0 means "nothing", for example a best-of-3 has value4=value5=average=0
+- Positive values depend on the event, see column "format" in Events.
+  - Most events have format "time", where the value represents centiseconds.
+    For example, 8653 means 1 minute and 26.53 seconds.
+  - Format "number" means the value is a raw number, currently only used
+    by "fewest moves" for number of moves.
+  - Format "multi" is for old and new multi-blind, encoding not only the time
+    but also the number of attempted and solved cubes. Writing the value in
+    decimal it is interpreted like this:
+      old: 1SSAATTTTT
+             solved        = 99 - SS
+             attempted     = AA
+             timeInSeconds = TTTTT (99999 means unknown)
+      new: 0DDTTTTTMM
+             difference    = 99 - DD
+             timeInSeconds = TTTTT (99999 means unknown)
+             missed        = MM
+             solved        = difference + missed
+             attempted     = solved + missed
+    Note that this is designed so that a smaller value means a better result.
+*/
+
+var WCA_DNF_VALUE = -1;
+var WCA_DNS_VALUE = -2;
+
+wca.solveTimeToWcaValue = function(solveTime) {
+  if(solveTime.penalties) {
+    // DNF takes precedence over DNS
+    if(_.contains(solveTime.penalties, wca.penalties.DNF)) {
+      return WCA_DNF_VALUE;
+    }
+    if(_.contains(solveTime.penalties, wca.penalties.DNS)) {
+      return WCA_DNS_VALUE;
+    }
+  }
+  // TODO - handle FMC and MBLD
+  var millis = solveTime.millis || 0;
+  var centiseconds = Math.floor(millis / 10);
+  return centiseconds;
+};
+
+wca.valueToSolveTime = function(wcaValue) {
+  // TODO - handle FMC and MBLD
+  if(wcaValue == WCA_DNF_VALUE) {
+    return {
+      penalties: [ wca.penalties.DNF ],
+    };
+  }
+  if(wcaValue == WCA_DNS_VALUE) {
+    return {
+      penalties: [ wca.penalties.DNS ],
+    };
+  }
+  var centiseconds = wcaValue;
+  return {
+    millis: centiseconds*10,
+    decimals: 2,
+  };
+};
+
+wca.penalties = {};
+_.each([
+  'DNF',
+  'DNS',
+
+  // All the kinds of +2s the WCA regulations define.
+  // Naming convention is as follows:
+  //  PLUSTWO_THING_THEY_DID_WRONG
+  //
+  // https://www.worldcubeassociation.org/regulations/#10e3
+  'PLUSTWO_ONE_MOVE_AWAY',
+  // https://www.worldcubeassociation.org/regulations/#A3d1
+  'PLUSTWO_PUZZLE_ON_TIMER',
+  // https://www.worldcubeassociation.org/regulations/#A4b
+  'PLUSTWO_START_PALMS_NOT_DOWN',
+  // https://www.worldcubeassociation.org/regulations/#A4b1
+  'PLUSTWO_START_TOUCHING_PUZZLE',
+  // https://www.worldcubeassociation.org/regulations/#A4d1
+  'PLUSTWO_START_AFTER_INSPECTION',
+  // https://www.worldcubeassociation.org/regulations/#A6c
+  'PLUSTWO_STOP_TOUCHING_PUZZLE',
+  // https://www.worldcubeassociation.org/regulations/#A6d
+  'PLUSTWO_STOP_PALMS_NOT_DOWN',
+  // https://www.worldcubeassociation.org/regulations/#A6e
+  'PLUSTWO_STOP_TOUCHED_PUZZLE_BEFORE_JUDGE_INSPECTED',
+], function(penaltyName) {
+  wca.penalties[penaltyName] = penaltyName;
+});
+
 wca.roundStatuses = {
   unstarted: 'unstarted',
   open: 'open',

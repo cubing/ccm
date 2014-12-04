@@ -33,7 +33,11 @@
               {{else}}
                 {{competitorName}}
               {{/if}}
-              : {{solves}} best: {{best}}
+              :
+              {{#each solves}}
+                {{clockFormat this}}
+              {{/each}}
+              best: {{clockFormat best}}
             </li> 
             {{#if drawAdvanceLine}}
               <hr>

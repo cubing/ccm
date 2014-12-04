@@ -86,6 +86,12 @@ parseClockFormat = function(clockFormat) {
   };
 };
 toClockFormat = function(solveTime) {
+  if(_.contains(solveTime.penalties, wca.penalties.DNF)) {
+    return "DNF";
+  }
+  if(_.contains(solveTime.penalties, wca.penalties.DNS)) {
+    return "DNS";
+  }
   var millis = solveTime.millis;
   var minutesField = Math.floor(millis / (60*1000));
   millis %= (60*1000);

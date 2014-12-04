@@ -90,14 +90,41 @@ if(Meteor.isServer) {
 
 SolveTime = new SimpleSchema({
   millis: {
+    // The solve time in milliseconds, *with* any penalties applied
     type: Number,
     min: 0,
+    optional: true,
   },
   decimals: {
     type: Number,
     min: 0,
     max: 3,
-  }
+    optional: true,
+  },
+  penalties: {
+    type: [String],
+    allowedValues: _.keys(wca.penalties),
+    optional: true,
+  },
+  wcaValue: {
+    type: Number,
+    min: -2,
+    autoValue: function() {
+      // TODO - handle FMC and MBLD
+      var penaltiesField = this.field("penalties");
+      var millisField = this.field("millis");
+      if(!penaltiesField.isSet && !millisField.isSet) {
+        this.unset();
+        return;
+      }
+      var wcaValue = wca.solveTimeToWcaValue({
+        penalties: penaltiesField.value,
+        millis: millisField.value,
+      });
+      return wcaValue;
+    },
+    optional: true,
+  },
 });
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
@@ -235,15 +262,15 @@ Results.attachSchema({
     optional: true,
   },
   solves: {
-    type: [Number],
+    type: [SolveTime],
     optional: true,
   },
   best: {
-    type: Number,
+    type: SolveTime,
     optional: true,
   },
   average: {
-    type: Number,
+    type: SolveTime,
     optional: true,
   },
 });
