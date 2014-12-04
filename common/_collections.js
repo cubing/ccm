@@ -85,7 +85,12 @@ Registrations.attachSchema({
 
 });
 if(Meteor.isServer) {
-  Registrations._ensureIndex({ competitionId: 1, userId: 1 }, { unique: 1 });
+  Registrations._ensureIndex({
+    competitionId: 1,
+    userId: 1
+  }, {
+    unique: 1
+  });
 }
 
 SolveTime = new SimpleSchema({
@@ -111,8 +116,8 @@ SolveTime = new SimpleSchema({
     min: -2,
     autoValue: function() {
       // TODO - handle FMC and MBLD
-      var penaltiesField = this.field("penalties");
-      var millisField = this.field("millis");
+      var penaltiesField = this.siblingField("penalties");
+      var millisField = this.siblingField("millis");
       if(!penaltiesField.isSet && !millisField.isSet) {
         this.unset();
         return;
@@ -243,8 +248,6 @@ Rounds.attachSchema({
   },
 });
 
-// TODO - add indices. do we want a compound index on average, best?
-//  https://github.com/aldeed/meteor-collection2/issues/88
 Results = new Meteor.Collection("results");
 Results.attachSchema({
   competitionId: {
@@ -274,6 +277,15 @@ Results.attachSchema({
     optional: true,
   },
 });
+if(Meteor.isServer) {
+  Results._ensureIndex({
+    competitionId: 1,
+    roundId: 1,
+    'average.wcaValue': 1,
+    'best.wcaValue': 1,
+    userId: 1, // As a last resort to break ties, sort by userId
+  });
+}
 
 Groups = new Meteor.Collection("groups");
 Groups.attachSchema({

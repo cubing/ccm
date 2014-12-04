@@ -64,13 +64,13 @@ function exportWcaResultsObj(competitionId, competitionUrlId) {
       Results.find({
         roundId: round._id
       }).forEach(function(result) {
-        var wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
+        var wcaValues = _.pluck(result.solves, 'wcaValue');
         var wcaResult = {
           personId: result.userId,
           position: result.position,
           results: wcaValues,
-          best: wca.solveTimeToWcaValue(result.best),
-          average: wca.solveTimeToWcaValue(result.average),
+          best: result.best.wcaValues,
+          average: result.average.wcaValues,
         };
         wcaResults.push(wcaResult);
       });

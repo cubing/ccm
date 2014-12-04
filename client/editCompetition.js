@@ -371,6 +371,10 @@ Template.modalHardCutoff.helpers({
 });
 
 function getCompetitorsDoneAndTotal(roundId) {
+  var formatCode = getRoundAttribute(roundId, 'formatCode');
+  var format = wca.formatByCode[formatCode];
+  var expectedSolvesPerResult = format.count;
+
   var results = Results.find({
     roundId: roundId,
   }, {
@@ -378,17 +382,23 @@ function getCompetitorsDoneAndTotal(roundId) {
       solves: 1,
     }
   }).fetch();
-  var solves = _.chain(results)
-    .pluck("solves")
-    .flatten()
-    .map(function(time) {
-      return time ? 1 : 0;
-    })
-    .value();
-  if(solves.length === 0) {
+
+  var actualSolveCount = 0;
+  _.each(results, function(result) {
+    _.each(result.solves, function(solve) {
+      if(solve.wcaValue !== 0) {
+        // wcaValue of 0 means "nothing"
+        actualSolveCount++;
+      }
+    });
+  });
+  if(actualSolveCount === 0) {
     return [ 0, results.length ];
   }
-  var doneRatio = _.reduce(solves, function(a, b) {return a + b;})/solves.length;
+
+  // TODO - this doesn't take into account soft cutoffs
+  var expectedSolveCount = results.length * expectedSolvesPerResult;
+  var doneRatio = actualSolveCount / expectedSolveCount;
   return [ doneRatio*results.length, results.length ];
 }
 
