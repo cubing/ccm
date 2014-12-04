@@ -93,9 +93,9 @@ Template.roundResultsList.helpers({
           field: 'profile.name',
           matchAll: true,
           template: Template.roundResults_namePill,
-          callback: function(doc, element) {
-            console.log(doc);//<<<
-            console.log(element);//<<<
+          callback: function() {
+            var rootData = Template.parentData(2);
+            rootData.selectCompetitorListener.apply(this, arguments);
           }
         }
       ]

@@ -41,8 +41,16 @@
         </div>
       {{/if}}
 
-      {{#roundResultsList roundId=roundId selectCompetitor=true}}
-        SHOW EDITABLE TIMES HERE WOW WE ARE GETTING CLOSE
+      {{#roundResultsList roundId=roundId selectCompetitor=true selectCompetitorListener=selectCompetitorListener}}
+        {{#if selectedCompetitor}}
+          <ul>
+            {{#with resultForSelectedCompetitor}}
+              {{#each solves}}
+                <li>{{this}}</li>
+              {{/each}}
+            {{/with}}
+          </ul>
+        {{/if}}
       {{/roundResultsList}}
     {{/if}}
 

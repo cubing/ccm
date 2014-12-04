@@ -1,3 +1,4 @@
+var selectedCompetitor = new ReactiveVar(null);
 Template.dataEntry.helpers({
   isSelectedRoundClosed: function() {
     if(!this.roundId) {
@@ -36,5 +37,22 @@ Template.dataEntry.helpers({
     var data = Template.parentData(1);
     var selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
+  },
+  selectCompetitorListener: function() {
+    return function(user) {
+      selectedCompetitor.set(user);
+    };
+  },
+  selectedCompetitor: function() {
+    return selectedCompetitor.get();
+  },
+  resultForSelectedCompetitor: function() {
+    var competitor = selectedCompetitor.get();
+    var result = Results.findOne({
+      competitionId: this.competitionId,
+      roundId: this.roundId,
+      userId: competitor._id,
+    });
+    return result;
   },
 });
