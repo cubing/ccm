@@ -43,10 +43,12 @@
 
       {{#roundResultsList roundId=roundId selectCompetitor=true selectCompetitorListener=selectCompetitorListener}}
         {{#if selectedCompetitor}}
-          <ul>
+          <ul class="list-unstyled">
             {{#with resultForSelectedCompetitor}}
               {{#each solves}}
-                <li>{{this}}</li>
+                <li>
+                  {{> solveTimeInput time=time name="inputSoftCutoff"}}
+                </li>
               {{/each}}
             {{/with}}
           </ul>

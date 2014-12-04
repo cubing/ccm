@@ -55,4 +55,11 @@ Template.dataEntry.helpers({
     });
     return result;
   },
+  time: function() {
+    // TODO - time objects should become a full fledged part of our database
+    return {
+      millis: this*10,
+      decimals: 2,
+    };
+  },
 });
