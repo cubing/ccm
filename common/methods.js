@@ -97,25 +97,26 @@ Meteor.methods({
     if(rounds.length > wca.MAX_ROUNDS_PER_EVENT) {
       throw new Meteor.Error(400, "Too many rounds");
     }
-    rounds.forEach(function(round, nthRound) {
+    rounds.forEach(function(round, index) {
       // Note that we ignore the actual value of nthRound, and instead use the
       // index into rounds as the nthRound. This defragments any missing
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
-      if(nthRound == rounds.length) {
+      if(index == rounds.length) {
         supportedRoundsIndex = wca.MAX_ROUNDS_PER_EVENT - 1;
       } else {
-        supportedRoundsIndex = nthRound - 1;
+        supportedRoundsIndex = index;
       }
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
+      assert(roundCodes);
       var roundCode = round.softCutoff ? roundCodes.combined : roundCodes.uncombined;
       Rounds.update({
-        _id: round._id
+        _id: round._id,
       }, {
         $set: {
           roundCode: roundCode,
-          nthRound: nthRound
+          nthRound: index + 1,
         }
       });
     });
