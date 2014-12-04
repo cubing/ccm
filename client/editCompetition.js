@@ -434,12 +434,12 @@ var eventCountPerRowByDeviceSize = {
 Template.editCompetition.helpers({
   events: function() {
     var that = this;
-    var events = _.map(_.toArray(wca.eventByCode), function(e, i) {
+    var events = _.map(wca.events, function(e, i) {
       return {
         index: i,
         competitionId: that.competitionId,
         eventCode: e.code,
-        eventName: e.name
+        eventName: e.name,
       };
     });
     return events;

@@ -194,8 +194,7 @@ getCompetitionEvents = function(competitionId) {
   rounds.forEach(function(round) {
     eventCodes[round.eventCode] = true;
   });
-  var events = _.chain(wca.eventByCode)
-    .toArray()
+  var events = _.chain(wca.events)
     .filter(function(e) {
       return eventCodes[e.code];
     })

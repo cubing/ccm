@@ -196,9 +196,9 @@ Rounds.attachSchema({
     optional: true,
   },
   roundCode: {
-    // A WCA round code (this can be computed from nthRound, combined, and the
-    // total number of rounds for this eventCode). For example, round 1/4 is a
-    // "(Combined) First Round", but round 1/1 is a "(Combined) Final"
+    // A WCA round code (this can be computed from nthRound, softCutoff, and
+    // the total number of rounds for this eventCode). For example, round 1/4
+    // is a "(Combined) First Round", but round 1/1 is a "(Combined) Final".
     type: String,
     allowedValues: _.keys(wca.roundByCode),
     optional: true,

@@ -152,80 +152,85 @@ wca.roundByCode = {
   },
 };
 
-wca.eventByCode = {
-  "222": {
+wca.events = [
+  {
     "code": "222",
     "name": "2x2 Cube",
   },
-  "333": {
+  {
     "code": "333",
     "name": "Rubik's Cube",
   },
-  "444": {
+  {
     "code": "444",
     "name": "4x4 Cube",
   },
-  "555": {
+  {
     "code": "555",
     "name": "5x5 Cube",
   },
-  "666": {
+  {
     "code": "666",
     "name": "6x6 Cube",
   },
-  "777": {
+  {
     "code": "777",
     "name": "7x7 Cube",
   },
-  "333bf": {
+  {
     "code": "333bf",
     "name": "Rubik's Cube: Blindfolded",
   },
-  "333oh": {
+  {
     "code": "333oh",
     "name": "Rubik's Cube: One-handed",
   },
-  "333fm": {
+  {
     "code": "333fm",
     "name": "Rubik's Cube: Fewest moves",
   },
-  "333ft": {
+  {
     "code": "333ft",
     "name": "Rubik's Cube: With feet",
   },
-  "minx": {
+  {
     "code": "minx",
     "name": "Megaminx",
   },
-  "pyram": {
+  {
     "code": "pyram",
     "name": "Pyraminx",
   },
-  "sq1": {
+  {
     "code": "sq1",
     "name": "Square-1",
   },
-  "clock": {
+  {
     "code": "clock",
     "name": "Rubik's Clock",
   },
-  "skewb": {
+  {
     "code": "skewb",
     "name": "Skewb",
   },
-  "444bf": {
+  {
     "code": "444bf",
     "name": "4x4 Cube: Blindfolded",
   },
-  "555bf": {
+  {
     "code": "555bf",
     "name": "4x4 Cube: Blindfolded",
   },
-  "333mbf": {
+  {
     "code": "333mbf",
     "name": "Rubik's Cube: Multiple Blindfolded",
   },
-};
+];
+
+wca.eventByCode = {};
+_.each(wca.events, function(event) {
+  wca.eventByCode[event.code] = event;
+});
 
 wca.formats = [
   {
