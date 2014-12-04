@@ -182,11 +182,13 @@
 
                             <td class="text-center">
                               {{#if roundDoneAndTotal.[1]}}
-                                <div class="progress">
-                                  <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundDoneAndTotal}}%;">
-                                    {{toAtMostFixed roundDoneAndTotal.[0] 1}}/{{roundDoneAndTotal.[1]}}
+                                <a href="{{pathFor 'dataEntry' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                                  <div class="progress">
+                                    <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}progress-bar-warning{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundDoneAndTotal}}%;">
+                                      {{toAtMostFixed roundDoneAndTotal.[0] 1}}/{{roundDoneAndTotal.[1]}}
+                                    </div>
                                   </div>
-                                </div>
+                                </a>
                               {{else}}
                                 {{#if isFirstRound}}
                                   {{competitorsRegisteredForEventCount}} registered
