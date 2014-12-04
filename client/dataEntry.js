@@ -53,20 +53,26 @@ Template.dataEntry.helpers({
   selectedCompetitor: function() {
     return selectedCompetitor.get();
   },
-  resultForSelectedCompetitor: function() {
-    var competitor = selectedCompetitor.get();
-    var result = Results.findOne({
-      competitionId: this.competitionId,
-      roundId: this.roundId,
-      userId: competitor._id,
-    });
-    return result;
-  },
   time: function() {
     // TODO - time objects should become a full fledged part of our database
     return {
       millis: this*10,
       decimals: 2,
     };
+  },
+  selectedSolves: function() {
+    var competitor = selectedCompetitor.get();
+    var result = Results.findOne({
+      competitionId: this.competitionId,
+      roundId: this.roundId,
+      userId: competitor._id,
+    });
+    var roundFormatCode = getRoundAttribute(this.roundId, 'formatCode');
+    var roundFormat = wca.formatByCode[roundFormatCode];
+    var solves = result.solves || [];
+    while(solves.length < roundFormat.count) {
+      solves.push(null);
+    }
+    return solves;
   },
 });
