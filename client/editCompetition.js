@@ -311,10 +311,16 @@ Template.modalSoftCutoff.events({
     var toSet = {};
     if(formatCode) {
       toSet.$set = {
-        softCutoff: {
-          time: time,
-          formatCode: formatCode,
-        }
+        // Explicitly listing all the fields in SolveTime as a workaround for
+        //  https://github.com/aldeed/meteor-simple-schema/issues/202
+        //softCutoff: {
+          //time: time,
+          //formatCode: formatCode,
+        //}
+        'softCutoff.time.millis': time.millis,
+        'softCutoff.time.decimals': time.decimals,
+        'softCutoff.time.penalties': time.penalties,
+        'softCutoff.formatCode': formatCode,
       };
     } else {
       toSet.$unset = {
@@ -354,7 +360,12 @@ Template.modalHardCutoff.events({
       _id: this._id,
     }, {
       $set: {
-        'hardCutoff.time': time
+        // Explicitly listing all the fields in SolveTime as a workaround for
+        //  https://github.com/aldeed/meteor-simple-schema/issues/202
+        //'hardCutoff.time': time
+        'hardCutoff.time.millis': time.millis,
+        'hardCutoff.time.decimals': time.decimals,
+        'hardCutoff.time.penalties': time.penalties,
       }
     });
 
