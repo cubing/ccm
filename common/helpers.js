@@ -65,7 +65,7 @@ if(Meteor.isClient) {
 
 if(Meteor.isClient) {
   Template.registerHelper("clockFormat", function(solveTime) {
-    return $.solveTimeToClockFormat(solveTime);
+    return $.solveTimeToStopwatchFormat(solveTime);
   });
 }
 
