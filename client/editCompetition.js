@@ -1,4 +1,4 @@
-var currentEditingRoundReact = new ReactiveVar(null);
+var roundPopupReact = new ReactiveVar(null);
 
 setCompetitionAttribute = function(competitionId, attribute, value) {
   var update;
@@ -84,7 +84,7 @@ Template.editCompetition.events({
     });
   },
   'click button[name="buttonAdvanceCompetitors"]': function(e, t) {
-    currentEditingRoundReact.set(this);
+    roundPopupReact.set({ advanceCompetitors: this });
     $("#modalAdvanceRound").modal('show');
   },
   'change select[name="roundFormat"]': function(e) {
@@ -100,19 +100,19 @@ Template.editCompetition.events({
     });
   },
   'click button[name="buttonSetRoundSize"]': function(e, t) {
-    currentEditingRoundReact.set(this);
+    roundPopupReact.set({ setRoundSize: this });
     $("#modalSetRoundSize").modal('show');
   },
   'click button[name="buttonHardCutoff"]': function(e, t) {
-    currentEditingRoundReact.set(this);
+    roundPopupReact.set({ hardCutoff: this });
     $("#modalHardCutoff").modal('show');
   },
   'click button[name="buttonSoftCutoff"]': function(e, t) {
-    currentEditingRoundReact.set(this);
+    roundPopupReact.set({softCutoff: this });
     $("#modalSoftCutoff").modal('show');
   },
   'hidden.bs.modal .modal': function(e, t) {
-    currentEditingRoundReact.set(null);
+    roundPopupReact.set(null);
   }
 });
 
@@ -624,8 +624,8 @@ Template.editCompetition.helpers({
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     return getRoundAttribute(roundId, 'roundCode');
   },
-  currentEditingRound: function() {
-    return currentEditingRoundReact.get();
+  roundPopup: function() {
+    return roundPopupReact.get();
   },
 });
 
