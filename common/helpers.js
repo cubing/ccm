@@ -63,74 +63,12 @@ if(Meteor.isClient) {
   });
 }
 
-var MILLIS_PER_SECOND = 1000;
-var MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
-parseClockFormat = function(clockFormat) {
-  var m = clockFormat.match(/^(?:(\d*):)?(\d+)(?:[.,](\d*))?$/);
-  if(!m) {
-    throw "Invalid clock format";
-  }
-
-  var minutes = parseInt(m[1] || "0");
-  var seconds = parseInt(m[2]);
-  var decimalStr = m[3] || "";
-  var decimal = parseInt(decimalStr || "0");
-  var denominator = Math.pow(10, decimal.toString().length - 3); /* subtract 3 to get millis instead of seconds */
-  var decimalValueInMillis = !decimal ? 0 : Math.round(decimal / denominator);
-
-  var millis = minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
-  var decimals = Math.min(3, decimalStr.length); /* max allowed decimals is 3 */
-  return {
-    millis: millis,
-    decimals: decimals,
-  };
-};
-toClockFormat = function(solveTime) {
-  if(_.contains(solveTime.penalties, wca.penalties.DNF)) {
-    return "DNF";
-  }
-  if(_.contains(solveTime.penalties, wca.penalties.DNS)) {
-    return "DNS";
-  }
-  var millis = solveTime.millis;
-  var minutesField = Math.floor(millis / (60*1000));
-  millis %= (60*1000);
-
-  var secondsField = Math.floor(millis / 1000);
-  millis %= 1000;
-
-  function pad(toPad, padVal, minLength) {
-    var padded = toPad + "";
-    while(padded.length < minLength) {
-      padded = padVal + padded;
-    }
-    return padded;
-  }
-
-  var clockFormat;
-  if(minutesField) {
-    clockFormat = minutesField + ":" + pad(secondsField, "0", 2);
-  } else {
-    clockFormat = "" + secondsField;
-  }
-  var decimals = solveTime.decimals;
-  if(decimals > 0) {
-    // It doesn't make sense to format to more decimal places than the
-    // accuracy we have.
-    decimals = Math.min(3, decimals);
-    var millisStr = pad(millis, "0", 3);
-    clockFormat += ".";
-    for(var i = 0; i < decimals; i++) {
-      clockFormat += millisStr.charAt(i);
-    }
-  }
-  return clockFormat;
-};
 if(Meteor.isClient) {
   Template.registerHelper("clockFormat", function(solveTime) {
-    return toClockFormat(solveTime);
+    return $.solveTimeToClockFormat(solveTime);
   });
 }
+
 getCompetitionStartDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
   if(!startDate) {

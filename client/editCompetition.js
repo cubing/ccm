@@ -296,9 +296,8 @@ Template.modalSoftCutoff.events({
     var softCutoffFormatCode = select.value;
     t.showTimeEntryReact.set(!!softCutoffFormatCode);
   },
-  'gj.timeChanged [name="inputSoftCutoff"]': function(e, t) {
-    var time = $(e.currentTarget).data('time');
-    t.isSaveableReact.set(!!time);
+  'solveTimeInput [name="inputSoftCutoff"]': function(e, t, solveTime) {
+    t.isSaveableReact.set(!!solveTime);
   },
   'submit form': function(e, t) {
     e.preventDefault();
@@ -307,7 +306,7 @@ Template.modalSoftCutoff.events({
     var formatCode = $selectCutoffFormat.val();
 
     var $inputSoftCutoff = t.$('[name="inputSoftCutoff"]');
-    var time = $inputSoftCutoff.data('time');
+    var time = $inputSoftCutoff.jChester('getSolveTime');
 
     var toSet = {};
     if(formatCode) {
@@ -342,15 +341,14 @@ Template.modalHardCutoff.events({
     t.$('input').filter(':visible:first').focus();
     t.$('input').filter(':visible:first').select();
   },
-  'gj.timeChanged [name="inputHardCutoff"]': function(e, t) {
-    var time = $(e.currentTarget).data('time');
-    t.isSaveableReact.set(!!time);
+  'solveTimeInput [name="inputHardCutoff"]': function(e, t, solveTime) {
+    t.isSaveableReact.set(!!solveTime);
   },
   'submit form': function(e, t) {
     e.preventDefault();
 
     var $inputHardCutoff = t.$('[name="inputHardCutoff"]');
-    var time = $inputHardCutoff.data('time');
+    var time = $inputHardCutoff.jChester('getSolveTime');
 
     Rounds.update({
       _id: this._id,

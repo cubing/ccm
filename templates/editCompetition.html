@@ -383,7 +383,7 @@
             </div>
             <div class="modal-body">
               {{#if showTimeEntry}}
-                {{> solveTimeInput time=softCutoff.time name="inputSoftCutoff"}}
+                {{> mjChester solveTime=softCutoff.time name="inputSoftCutoff"}}
               {{/if}}
               <select name="softCutoffFormatCode" class="form-control input-xs">
                 <!-- will end up selected if nothing else is -->
@@ -423,7 +423,7 @@
               </h4>
             </div>
             <div class="modal-body">
-              {{> solveTimeInput time=hardCutoff.time name="inputHardCutoff"}}
+              {{> mjChester solveTime=hardCutoff.time name="inputHardCutoff"}}
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
