@@ -31,38 +31,82 @@ var WCA_DNF_VALUE = -1;
 var WCA_DNS_VALUE = -2;
 
 wca.solveTimeToWcaValue = function(solveTime) {
-  if(solveTime.penalties) {
-    // DNF takes precedence over DNS
-    if(_.contains(solveTime.penalties, wca.penalties.DNF)) {
-      return WCA_DNF_VALUE;
-    }
-    if(_.contains(solveTime.penalties, wca.penalties.DNS)) {
-      return WCA_DNS_VALUE;
-    }
+  if($.solveTimeIsDNF(solveTime)) {
+    return WCA_DNF_VALUE;
   }
-  // TODO - handle FMC and MBLD
-  var millis = solveTime.millis || 0;
-  var centiseconds = Math.floor(millis / 10);
-  return centiseconds;
+  if($.solveTimeIsDNS(solveTime)) {
+    return WCA_DNS_VALUE;
+  }
+  if(solveTime.moveCount) {
+    // If moveCount is set, assume we're dealing with an FMC solve.
+    return solveTime.moveCount;
+  } else if(solveTime.puzzlesAttemptedCount && solveTime.puzzlesAttemptedCount > 1) {
+    // If more than one puzzle was attempted, assume it's a MBLD solve.
+    assert(solveTime.puzzlesAttemptedCount >= solveTime.puzzlesSolvedCount);
+
+    var puzzlesUnsolvedCount = solveTime.puzzlesAttemptedCount - solveTime.puzzlesSolvedCount;
+    var DD = 99 - puzzlesUnsolvedCount;
+    var timeInSeconds = Math.floor(solveTime.millis / 1000);
+
+    assert(0 <= puzzlesUnsolvedCount);
+    assert(puzzlesUnsolvedCount <= 99);
+
+    assert(0 <= timeInSeconds);
+    assert(timeInSeconds < 1e5);
+
+    var wcaValue = 1e7 * DD + 1e2 * timeInSeconds + puzzlesUnsolvedCount;
+    return wcaValue;
+  } else {
+    // Otherwise, it must be a regular solve.
+    var millis = solveTime.millis || 0;
+    var centiseconds = Math.floor(millis / 10);
+    return centiseconds;
+  }
 };
 
-wca.valueToSolveTime = function(wcaValue) {
-  // TODO - handle FMC and MBLD
+wca.valueToSolveTime = function(wcaValue, eventId) {
   if(wcaValue == WCA_DNF_VALUE) {
     return {
-      penalties: [ wca.penalties.DNF ],
+      puzzlesSolvedCount: 0,
+      puzzlesAttemptedCount: 1,
     };
   }
   if(wcaValue == WCA_DNS_VALUE) {
     return {
-      penalties: [ wca.penalties.DNS ],
+      puzzlesSolvedCount: 0,
+      puzzlesAttemptedCount: 0,
     };
   }
-  var centiseconds = wcaValue;
-  return {
-    millis: centiseconds*10,
-    decimals: 2,
-  };
+
+  if(eventId == '333fm') {
+    var moveCount = wcaValue;
+    return {
+      moveCount: moveCount,
+    };
+  } else if(eventId == '333mbf') {
+    // From https://www.worldcubeassociation.org/results/misc/export.html
+    var difference = 99 - Math.floor(wcaValue / 1e7);
+    wcaValue %= 1e7;
+
+    var timeInSeconds = Math.floor(wcaValue / 1e2);
+    wcaValue %= 1e2;
+
+    var missed = wcaValue;
+    var solved = difference + missed;
+    var attempted = solved + missed;
+
+    return {
+      millis: timeInSeconds*1000,
+      puzzlesSolvedCount: solved,
+      puzzlesAttemptedCount: attempted,
+    };
+  } else {
+    var centiseconds = wcaValue;
+    return {
+      millis: centiseconds*10,
+      decimals: 2,
+    };
+  }
 };
 
 wca.penalties = {};

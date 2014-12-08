@@ -93,6 +93,8 @@ if(Meteor.isServer) {
   });
 }
 
+// This is a copy of jChester's SolveTime schema
+//  http://www.jflei.com/jChester/
 SolveTime = new SimpleSchema({
   millis: {
     // The solve time in milliseconds, *with* any penalties applied
@@ -106,25 +108,49 @@ SolveTime = new SimpleSchema({
     max: 3,
     optional: true,
   },
+  moveCount: {
+    type: Number,
+    min: 0,
+    optional: true,
+  },
   penalties: {
     type: [String],
     allowedValues: _.keys(wca.penalties),
+    optional: true,
+  },
+  puzzlesSolvedCount: {
+    type: Number,
+    min: 0,
+    optional: true,
+  },
+  puzzlesAttemptedCount: {
+    type: Number,
+    min: 0,
     optional: true,
   },
   wcaValue: {
     type: Number,
     min: -2,
     autoValue: function() {
-      // TODO - handle FMC and MBLD
-      var penaltiesField = this.siblingField("penalties");
       var millisField = this.siblingField("millis");
-      if(!penaltiesField.isSet && !millisField.isSet) {
+      var moveCountField = this.siblingField("moveCount");
+      var penaltiesField = this.siblingField("penalties");
+      var puzzlesSolvedCountField = this.siblingField("puzzlesSolvedCount");
+      var puzzlesAttemptedCountField = this.siblingField("puzzlesAttemptedCount");
+      if(!millisField.isSet &&
+         !moveCountField.isSet &&
+         !penaltiesField.isSet &&
+         !puzzlesSolvedCountField.isSet &&
+         !puzzlesAttemptedCountField.isSet) {
         this.unset();
         return;
       }
       var wcaValue = wca.solveTimeToWcaValue({
-        penalties: penaltiesField.value,
         millis: millisField.value,
+        moveCount: moveCountField.value,
+        penalties: penaltiesField.value,
+        puzzlesSolvedCount: puzzlesSolvedCountField.value,
+        puzzlesAttemptedCount: puzzlesAttemptedCountField.value,
       });
       return wcaValue;
     },

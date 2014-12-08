@@ -102,15 +102,17 @@ Meteor.startup(function() {
         if(!_.contains(userInfo.events, wcaEvent.eventId)) {
           userInfo.events.push(wcaEvent.eventId);
         }
-        var solves = _.map(wcaResult.results, wca.valueToSolveTime);
+        var solves = _.map(wcaResult.results, function(wcaValue) {
+          return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
+        });
         Results.insert({
           competitionId: competition._id,
           roundId: roundId,
           userId: userInfo.userId,
           position: wcaResult.position,
           solves: solves,
-          best: wca.valueToSolveTime(wcaResult.best),
-          average: wca.valueToSolveTime(wcaResult.average),
+          best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),
+          average: wca.valueToSolveTime(wcaResult.average, wcaEvent.eventId),
         });
       });
 
