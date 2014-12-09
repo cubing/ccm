@@ -50,6 +50,12 @@ Template.roundResultsList.helpers({
     return user.profile.name;
   },
   competitorAdvanced: function() {
+    //<<< The following code is really slow. >>>
+    // We're going to have to expand our schema to keep track of advancement.
+    // See https://github.com/jfly/gjcomps/issues/23
+    if(true) {
+      return false;//<<<
+    }
     var round = Rounds.findOne({
       _id: this.roundId,
     }, {
