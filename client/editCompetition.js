@@ -380,6 +380,9 @@ Template.modalHardCutoff.helpers({
 });
 
 function getCompetitorsDoneAndTotal(roundId) {
+  if(true) {
+    return [ 5, 10 ];//<<<
+  }
   var formatCode = getRoundAttribute(roundId, 'formatCode');
   var format = wca.formatByCode[formatCode];
   var expectedSolvesPerResult = format.count;
@@ -412,6 +415,9 @@ function getCompetitorsDoneAndTotal(roundId) {
 }
 
 function getLastRoundResultsCount(competitionId, eventCode) {
+  if(true) {
+    return 1;//<<<
+  }
   var roundId = getLastRoundIdForEvent(competitionId, eventCode);
   if(!roundId) {
     return false;

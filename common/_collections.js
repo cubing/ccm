@@ -59,6 +59,11 @@ Competitions.attachSchema({
     type: [String],
   },
 });
+if(Meteor.isServer) {
+  Competitions._ensureIndex({
+    wcaCompetitionId: 1,
+  });
+}
 
 Registrations = new Meteor.Collection("registrations");
 Registrations.attachSchema({
@@ -273,6 +278,11 @@ Rounds.attachSchema({
     optional: true,
   },
 });
+if(Meteor.isServer) {
+  Rounds._ensureIndex({
+    competitionId: 1,
+  });
+}
 
 Results = new Meteor.Collection("results");
 Results.attachSchema({
@@ -306,6 +316,8 @@ Results.attachSchema({
 if(Meteor.isServer) {
   Results._ensureIndex({
     competitionId: 1,
+  });
+  Results._ensureIndex({
     roundId: 1,
     'average.wcaValue': 1,
     'best.wcaValue': 1,
@@ -334,6 +346,11 @@ Groups.attachSchema({
     type: String,
   },
 });
+if(Meteor.isServer) {
+  Results._ensureIndex({
+    competitionId: 1,
+  });
+}
 
 Meteor.users.attachSchema(new SimpleSchema({
   emails: {
