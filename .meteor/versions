@@ -19,7 +19,7 @@ coffeescript@1.0.4
 ctl-helper@1.0.4
 ctl@1.0.2
 dandv:caret-position@2.1.0-3
-ddp@1.0.11
+ddp@1.0.12
 deps@1.0.5
 ejson@1.0.4
 email@1.0.4
@@ -61,7 +61,7 @@ minimongo@1.0.5
 mizzao:autocomplete@0.4.10
 mobile-status-bar@1.0.1
 mongo-livedata@1.0.6
-mongo@1.0.8
+mongo@1.0.9
 mrt:assert@0.2.5
 mrt:moment@2.8.1
 natestrauser:connection-banner@0.4.3
