@@ -25,6 +25,7 @@ Meteor.publish('competition', function(competitionUrlId) {
     return [];
   }
 
+  /*<<<
   var registrations = Registrations.find({
     competitionId: competition._id,
   }, {
@@ -33,6 +34,7 @@ Meteor.publish('competition', function(competitionUrlId) {
   if(registrations.length === 0) {
     return [];
   }
+  */
 
   return [
     Competitions.find({ _id: competition._id }),
@@ -40,9 +42,9 @@ Meteor.publish('competition', function(competitionUrlId) {
     Results.find({ competitionId: competition._id }),
     Registrations.find({ competitionId: competition._id }),
     Meteor.users.find({
-      _id: {
+      /*<<<_id: {
         $in: _.pluck(registrations, "userId")
-      }
+      }*/
     }, {
       fields: {
         _id: 1,
