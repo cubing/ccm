@@ -377,6 +377,8 @@ wca.formats = [
     "count": 1,
     "code": "1",
     "softCutoffFormatCodes": [],
+    "averageName": "",
+    "sortBy": "best",
   },
   {
     "name": "Best of 2",
@@ -384,6 +386,8 @@ wca.formats = [
     "count": 2,
     "code": "2",
     "softCutoffFormatCodes": [ 'cumulative', '1' ],
+    "averageName": "",
+    "sortBy": "best",
   },
   {
     "name": "Best of 3",
@@ -391,6 +395,11 @@ wca.formats = [
     "count": 3,
     "code": "3",
     "softCutoffFormatCodes": [ 'cumulative', '1', '2' ],
+
+    // 333bf is a best of 3, but people do get a mean, even though we don't
+    // sort by it.
+    "averageName": "Mean",
+    "sortBy": "best",
   },
   {
     "name": "Average of 5",
@@ -398,6 +407,9 @@ wca.formats = [
     "count": 5,
     "code": "a",
     "softCutoffFormatCodes": [ 'cumulative', '1', '2', '3' ],
+
+    "averageName": "Average",
+    "sortBy": "average",
   },
   {
     "name": "Mean of 3",
@@ -405,6 +417,9 @@ wca.formats = [
     "count": 3,
     "code": "m",
     "softCutoffFormatCodes": [ 'cumulative', '1', '2' ],
+
+    "averageName": "Mean",
+    "sortBy": "average",
   },
 ];
 

@@ -13,10 +13,29 @@ Template.roundResultsList.rendered = function() {
   });
 };
 Template.roundResultsList.helpers({
+  solveCount: function() {
+    var formatCode = getRoundAttribute(this.roundId, 'formatCode');
+    var format = wca.formatByCode[formatCode];
+    return format.count;
+  },
+  roundCumulativeResultFieldName: function() {
+    var formatCode = getRoundAttribute(this.roundId, 'formatCode');
+    var format = wca.formatByCode[formatCode];
+    return format.averageName;
+  },
+  isPrimarySortField: function(fieldName) {
+    var formatCode = getRoundAttribute(this.roundId, 'formatCode');
+    var format = wca.formatByCode[formatCode];
+    return fieldName == format.sortBy;
+  },
   results: function() {
     var results = Results.find({
       competitionId: this.competitionId,
       roundId: this.roundId,
+    }, {
+      sort: {
+        'position': 1,
+      }
     });
     return results;
   },
