@@ -5,7 +5,7 @@ Meteor.startup(function() {
 
   // TODO - get a list of competitions somehow?
   // https://github.com/meteor/meteor/issues/1795
-  var wcaCompetition = JSON.parse(Assets.getText("competitions/StarlightOpen2014.json"));
+  var wcaCompetition = JSON.parse(Assets.getText("competitions/USNationals2014.json"));
 
   var competition = Competitions.findOne({
     wcaCompetitionId: wcaCompetition.competitionId,
