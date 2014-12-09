@@ -66,7 +66,7 @@ Meteor.startup(function() {
     }
     userInfoByJsonId[wcaPerson.id] = {
       userId: user._id,
-      events: [],
+      events: {},
     };
   });
 
@@ -79,6 +79,7 @@ Meteor.startup(function() {
 
   // Add data for rounds, results, and groups
   wcaCompetition.events.forEach(function(wcaEvent) {
+    console.log(Date.now() + " adding data for " + wcaEvent.eventId);
     // Sort rounds according to the order in which they must have occurred.
     wcaEvent.rounds.sort(function(r1, r2) {
       return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
@@ -98,10 +99,8 @@ Meteor.startup(function() {
       wcaRound.results.forEach(function(wcaResult) {
         // wcaResult.personId refers to the personId in the wca json
         var userInfo = userInfoByJsonId[wcaResult.personId];
-        assert(userInfo);
-        if(!_.contains(userInfo.events, wcaEvent.eventId)) {
-          userInfo.events.push(wcaEvent.eventId);
-        }
+        userInfo.events[wcaEvent.eventId] = true;
+
         var solves = _.map(wcaResult.results, function(wcaValue) {
           return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
         });
@@ -113,6 +112,15 @@ Meteor.startup(function() {
           solves: solves,
           best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),
           average: wca.valueToSolveTime(wcaResult.average, wcaEvent.eventId),
+        }, {
+          // meteor-collection2 is *killing* us here when we are inserting
+          // a bunch of stuff at once. Turning off all the validation it
+          // does for us gives a huge speed boost.
+          validate: false,
+          filter: false,
+          autoConvert: false,
+          removeEmptyStrings: false,
+          getAutoValues: false,
         });
       });
 
@@ -127,6 +135,7 @@ Meteor.startup(function() {
         });
       });
     });
+    console.log(Date.now() + " finished adding data for " + wcaEvent.eventId);
   });
 
   // Add registrations for people as documents in the registrations collection.
@@ -139,7 +148,7 @@ Meteor.startup(function() {
       Registrations.insert({
         competitionId: competition._id,
         userId: userInfo.userId,
-        events: userInfo.events,
+        events: _.keys(userInfo.events),
       });
     }
   }

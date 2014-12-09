@@ -69,12 +69,14 @@ wca.valueToSolveTime = function(wcaValue, eventId) {
     return {
       puzzlesSolvedCount: 0,
       puzzlesAttemptedCount: 1,
+      wcaValue: wcaValue,
     };
   }
   if(wcaValue == WCA_DNS_VALUE) {
     return {
       puzzlesSolvedCount: 0,
       puzzlesAttemptedCount: 0,
+      wcaValue: wcaValue,
     };
   }
 
@@ -82,6 +84,7 @@ wca.valueToSolveTime = function(wcaValue, eventId) {
     var moveCount = wcaValue;
     return {
       moveCount: moveCount,
+      wcaValue: wcaValue,
     };
   } else if(eventId == '333mbf') {
     // From https://www.worldcubeassociation.org/results/misc/export.html
@@ -99,12 +102,14 @@ wca.valueToSolveTime = function(wcaValue, eventId) {
       millis: timeInSeconds*1000,
       puzzlesSolvedCount: solved,
       puzzlesAttemptedCount: attempted,
+      wcaValue: wcaValue,
     };
   } else {
     var centiseconds = wcaValue;
     return {
       millis: centiseconds*10,
       decimals: 2,
+      wcaValue: wcaValue,
     };
   }
 };
