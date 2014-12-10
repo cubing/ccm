@@ -8,6 +8,9 @@ Template.competitionResults.helpers({
         roundCode: 1,
         eventCode: 1,
         nthRound: 1,
+      },
+      sort: {
+        nthRound: 1,
       }
     });
     return rounds;
