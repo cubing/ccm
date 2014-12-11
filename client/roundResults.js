@@ -1,4 +1,5 @@
 Template.roundResultsList.rendered = function() {
+  console.log(Date.now() + " roundResultsList.rendered");//<<<
   var template = this;
 
   var $sidebar = template.$('.results-sidebar');
@@ -23,31 +24,45 @@ Template.roundResultsList.helpers({
     var format = wca.formatByCode[formatCode];
     return format.averageName;
   },
-  isPrimarySortField: function(fieldName) {
-    var formatCode = getRoundAttribute(this.roundId, 'formatCode');
-    var format = wca.formatByCode[formatCode];
-    return fieldName == format.sortBy;
-  },
-  results: function() {
+  resultsData: function() {
     var results = Results.find({
       competitionId: this.competitionId,
       roundId: this.roundId,
     }, {
+      //limit: 50, https://github.com/jfly/gjcomps/issues/75
       sort: {
         'position': 1,
-      }
+      },
     });
-    return results;
-  },
-  competitorName: function() {
-    var user = Meteor.users.findOne({
-      _id: this.userId
+
+    var users = Meteor.users.find({
     }, {
       fields: {
         "profile.name": 1
-      }
+      },
+      reactive: false,
+    }).fetch();
+    var userById = {};
+    _.each(users, function(user) {
+      userById[user._id] = user;
     });
-    return user.profile.name;
+
+    var formatCode = getRoundAttribute(this.roundId, 'formatCode');
+    var format = wca.formatByCode[formatCode];
+
+    return {
+      results: results,
+      userById: userById,
+      primarySortField: format.averageName,
+    };
+  },
+  competitorName: function() {
+    var resultsData = Template.parentData(1);
+    return resultsData.userById[this.userId].profile.name;
+  },
+  isPrimarySortField: function(fieldName) {
+    var resultsData = Template.parentData(1);
+    return resultsData.primarySortField.toLowerCase() == fieldName.toLowerCase();
   },
   competitorAdvanced: function() {
     //<<< The following code is really slow. >>>

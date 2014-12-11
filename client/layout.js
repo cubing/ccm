@@ -35,6 +35,7 @@ Template.layout.events({
 });
 
 Router.onBeforeAction(function() {
+  console.log(Date.now() + " LEAVING PAGE NOW");//<<<
   // As the page changes, remove any leftover tooltips that might get
   // abandoned because they were set to data-container="body"
   $('.tooltip').remove();
