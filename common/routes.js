@@ -132,6 +132,7 @@ ViewCompetitionController = RouteController.extend({
       this.render('competitionNotFound');
       return;
     }
+    console.log(Date.now() + " ViewCompetitionController data received");//<<<
     return {
       competitionUrlId: competitionUrlId,
       competitionId: competition._id,

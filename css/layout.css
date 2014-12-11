@@ -7,7 +7,7 @@
 }
 
 /* Get rid of the whitespace between the navbar and the jumbotron */
-.navbar + .jumbotron {
+.navbar ~ .jumbotron {
   margin-top: -20px;
 }
 

@@ -36,28 +36,30 @@
             </tr>
           </thead>
           <tbody>
-            {{#each results}}
-              <tr class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
-                <td>{{position}}</td>
-                <td>
-                  {{#if ../competitionUrlId}}
-                    <a href="{{pathFor 'competitorResults' competitionUrlId=../competitionUrlId competitorName=competitorName }}">
+            {{#with resultsData}}
+              {{#each results}}
+                <tr class="{{#if competitorAdvanced}}competitor-advanced{{/if}}">
+                  <td>{{position}}</td>
+                  <td>
+                    {{#if ../../competitionUrlId}}
+                      <a href="{{pathFor 'competitorResults' competitionUrlId=../../competitionUrlId competitorName=competitorName }}">
+                        {{competitorName}}
+                      </a>
+                    {{else}}
                       {{competitorName}}
-                    </a>
-                  {{else}}
-                    {{competitorName}}
-                  {{/if}}
-                </td>
-                <td class="results-average text-right {{#if isPrimarySortField 'average'}}results-primary-sort-field{{/if}}">{{clockFormat average}}</td>
-                <td class="results-best text-right {{#if isPrimarySortField 'best'}}results-primary-sort-field{{/if}}">{{clockFormat best}}</td>
-                {{#each solves}}
-                  <td class="results-solve text-right">{{clockFormat this}}</td>
-                {{/each}}
-              </tr>
-              {{#if drawAdvanceLine}}
-                <hr>
-              {{/if}}
-            {{/each}}
+                    {{/if}}
+                  </td>
+                  <td class="results-average text-right {{#if isPrimarySortField 'average'}}results-primary-sort-field{{/if}}">{{clockFormat average}}</td>
+                  <td class="results-best text-right {{#if isPrimarySortField 'best'}}results-primary-sort-field{{/if}}">{{clockFormat best}}</td>
+                  {{#each solves}}
+                    <td class="results-solve text-right">{{clockFormat this}}</td>
+                  {{/each}}
+                </tr>
+                {{#if drawAdvanceLine}}
+                  <hr>
+                {{/if}}
+              {{/each}}
+            {{/with}}
           </tbody>
         </table>
       </div>
