@@ -254,7 +254,16 @@ Router.route('/:competitionUrlId/results', {
   titlePrefix: 'Results',
 });
 Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
-  name: 'roundResults',
+  name: 'roundResultsBlaze',//<<<
+  template: 'roundResults',//<<<
+  controller: 'ViewCompetitionController',
+  data: function() {
+    return getRoundData.call(this);
+  },
+});
+Router.route('/:competitionUrlId/results-reactjs/:eventCode/:nthRound', {
+  name: 'roundResults',//<<<
+  template: 'roundResultsReactjs',//<<<
   controller: 'ViewCompetitionController',
   data: function() {
     return getRoundData.call(this);

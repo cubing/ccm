@@ -63,15 +63,18 @@ if(Meteor.isClient) {
   });
 }
 
+clockFormat = function(solveTime) {
+  if(solveTime.wcaValue === 0) {
+    // A wcaValue of 0 means "nothing happened here", so we just show an
+    // empty string, rather than something like "0.00" which would look like
+    // clutter.
+    return "";
+  }
+  return $.solveTimeToStopwatchFormat(solveTime);
+};
 if(Meteor.isClient) {
   Template.registerHelper("clockFormat", function(solveTime) {
-    if(solveTime.wcaValue === 0) {
-      // A wcaValue of 0 means "nothing happened here", so we just show an
-      // empty string, rather than something like "0.00" which would look like
-      // clutter.
-      return "";
-    }
-    return $.solveTimeToStopwatchFormat(solveTime);
+    return clockFormat(solveTime);
   });
 }
 
