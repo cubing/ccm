@@ -76,7 +76,8 @@ var ResultRow = React.createClass({
   render: function() {
     var result = this.props.result;
 
-    var formatCode = getRoundAttribute(result.roundId, 'formatCode');
+    //<<<var formatCode = getRoundAttribute(result.roundId, 'formatCode');
+    var formatCode = 'a';//<<<
     var format = wca.formatByCode[formatCode];
     var primarySortField = format.averageName.toLowerCase();
 
