@@ -129,7 +129,8 @@ ResultsList = React.createClass({//<<<
   getMeteorState: function() {
     var roundId = this.props.roundId;
     //<<<
-    return {
+    console.log(performance.now() + " computing state");//<<<
+    var state = {
       resultsData: (function() {
         var results = Results.find({
           roundId: roundId,
@@ -162,11 +163,14 @@ ResultsList = React.createClass({//<<<
         };
       })(),
     };
+    console.log(performance.now() + " done computing state");//<<<
+    return state;
   },
   componentDidMount: function() {
     console.log(performance.now() + " component did mount");
   },
   render: function() {
+    console.log(performance.now() + " starting to ResultsList.render");//<<<
     var selectCompetitor = false;//<<<
     var roundId = this.props.roundId;
 
