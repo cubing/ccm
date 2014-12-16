@@ -175,8 +175,11 @@ var ResultsList = React.createClass({
       primarySortField: format.averageName,
     }
   },
+  componentWillMount: function() {
+    console.log(performance.now() + " component will mount");//<<<
+  },
   componentDidMount: function() {
-    console.log(performance.now() + " component did mount");
+    console.log(performance.now() + " component did mount");//<<<
   },
   componentWillUpdate(nextProps, nextState) {
     console.log(performance.now() + " componentWillUpdate");//<<<
