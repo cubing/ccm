@@ -43,6 +43,7 @@ Meteor.publish('competition', function(competitionUrlId) {
     Registrations.find({ competitionId: competition._id }),
     Meteor.users.find({
       /*<<<_id: {
+       * https://github.com/jfly/gjcomps/issues/71
         $in: _.pluck(registrations, "userId")
       }*/
     }, {

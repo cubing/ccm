@@ -1,17 +1,24 @@
 Template.roundResultsReactjs.rendered = function() {
   var template = this;
 
+  // To give the illusion of loading quickly, first render
+  // a small subset of all the results for this round, and then
+  // render the rest later.
+  var resultsListLimitReact = new ReactiveVar(25);
+  setTimeout(function() {
+    resultsListLimitReact.set(0);
+  }, 0);
+
   template.autorun(function() {
     var data = Template.currentData();
 
     var start = performance.now();
-    console.log(start + " about to call render");
+    var limit = resultsListLimitReact.get();
     React.render(
-      <ResultsList roundId={data.roundId}/>,
+      <ResultsList limit={limit} roundId={data.roundId}/>,
       template.$("#reactRenderArea")[0]
     );
     var end = performance.now();
-    console.log(end + " done calling render, took " + (end-start));
   });
 
   var $sidebar = template.$('.results-sidebar');
@@ -122,57 +129,65 @@ var ResultRow = React.createClass({
   },
 });
 
-//<<<var ResultsList = React.createClass({
-ResultsList = React.createClass({//<<<
+var ResultsList = React.createClass({
   mixins: [ReactMeteor.Mixin],
 
   getMeteorState: function() {
     var roundId = this.props.roundId;
-    //<<<
-    console.log(performance.now() + " computing state");//<<<
-    var state = {
-      resultsData: (function() {
-        var results = Results.find({
-          roundId: roundId,
-        }, {
-          //limit: 50, https://github.com/jfly/gjcomps/issues/75
-          sort: {
-            'position': 1,
-          },
-        });
+    var resultsCursor = Results.find({
+      roundId: roundId,
+    }, {
+      limit: this.props.limit, // https://github.com/jfly/gjcomps/issues/75
+      sort: {
+        // Note that limiting without sorting will result in an
+        // essentially random set of people being displayed, but
+        // that's fine, because we care more about speed than
+        // correctness. See comment below about sorting.
+        //'position': 1,
+      },
+    });
+    // This is *insane*, but asking meteor to sort is
+    // *significantly* slower than just fetching and doing
+    // it ourselves. So here we go.
+    var results = resultsCursor.fetch();
+    results.sort(function(a, b) {
+      return a.position - b.position;
+    });
 
-        var users = Meteor.users.find({
-        }, {
-          fields: {
-            "profile.name": 1
-          },
-          reactive: false,
-        }).fetch();
-        var userById = {};
-        _.each(users, function(user) {
-          userById[user._id] = user;
-        });
+    var users = Meteor.users.find({
+    }, {
+      fields: {
+        "profile.name": 1
+      },
+      reactive: false,
+    }).fetch();
+    var userById = {};
+    _.each(users, function(user) {
+      userById[user._id] = user;
+    });
 
-        var formatCode = getRoundAttribute(roundId, 'formatCode');
-        var format = wca.formatByCode[formatCode];
+    var formatCode = getRoundAttribute(roundId, 'formatCode');
+    var format = wca.formatByCode[formatCode];
 
-        return {
-          results: results,
-          userById: userById,
-          primarySortField: format.averageName,
-        };
-      })(),
-    };
-    console.log(performance.now() + " done computing state");//<<<
-    return state;
+    return {
+      results: results,
+      userById: userById,
+      primarySortField: format.averageName,
+    }
   },
   componentDidMount: function() {
     console.log(performance.now() + " component did mount");
   },
+  componentWillUpdate(nextProps, nextState) {
+    console.log(performance.now() + " componentWillUpdate");//<<<
+  },
+  componentDidUpdate(prevProps, prevState) {
+    console.log(performance.now() + " componentDidUpdate");//<<<
+  },
   render: function() {
-    console.log(performance.now() + " starting to ResultsList.render");//<<<
+    var that = this;
     var selectCompetitor = false;//<<<
-    var roundId = this.props.roundId;
+    var roundId = that.props.roundId;
 
     var formatCode = getRoundAttribute(roundId, 'formatCode');
     var format = wca.formatByCode[formatCode];
@@ -182,7 +197,6 @@ ResultsList = React.createClass({//<<<
     var format = wca.formatByCode[formatCode];
     var solveCount = format.count;
 
-    var resultsData = this.state.resultsData;
     return (
       <div className={selectCompetitor ? 'col-xs-12 col-sm-7' : ''}>
         <table className="table">
@@ -198,10 +212,10 @@ ResultsList = React.createClass({//<<<
             </tr>
           </thead>
           <tbody>
-            {resultsData.results.map(function(result) {
+            {that.state.results.map(function(result) {
               return (
                 <ResultRow key={result._id} result={result}
-                           competitorName={resultsData.userById[result.userId].profile.name} />
+                           competitorName={that.state.userById[result.userId].profile.name} />
               );
             })}
           </tbody>
