@@ -15,9 +15,23 @@
  * Move navbar down when the connection status is visible
  * by making the conneciton banner fixed to the page, rather than the
  * window.
-*/
+ */
 #connection-lost-banner,
 #connection-try-reconnect {
   position: relative;
   margin-bottom: 0px;
+}
+
+/*
+ * https://github.com/Multiply/iron-router-progress#customization
+ */
+#iron-router-progress {
+  background-color: #337ab7; /* color copied from bootstrap */
+}
+
+
+/* Speed up progress bar transition */
+#iron-router-progress.loading {
+  transition: 0.5s width, 0.1s opacity;
+  transition-delay: 0s, 0.5s;
 }
