@@ -66,6 +66,8 @@ ManageCompetitionController = RouteController.extend({
   waitOn: function() {
     return [
       Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+      Meteor.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
+      Meteor.subscribe('competitionResults', this.params.competitionUrlId, subscriptionError(this)),
       // TODO - we only need scrambles on the uploadScrambles route
       Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
     ];
@@ -141,9 +143,26 @@ ViewCompetitionController = RouteController.extend({
   }
 });
 
-function getRoundData() {
-  // Hack to call our controller's data function
-  var data = this.constructor.prototype.data.call(this);
+ViewRoundController = ViewCompetitionController.extend({
+  waitOn: function() {
+    var waitOn = this.constructor.__super__.waitOn.call(this);
+    waitOn.push(Meteor.subscribe('competitionResults',
+                                 this.params.competitionUrlId,
+                                 subscriptionError(this)));
+    // TODO - ideally we'd denormalize our data so that we wouldn't
+    // need to publish the Users collection as well.
+    waitOn.push(Meteor.subscribe('competitionUsers',
+                                 this.params.competitionUrlId,
+                                 subscriptionError(this)));
+    return waitOn;
+  },
+  data: function() {
+    var parentData = this.constructor.__super__.data.call(this);
+    return getRoundData.call(this, parentData);
+  },
+});
+
+function getRoundData(data) {
   if(!data) {
     return null;
   }
@@ -225,7 +244,8 @@ Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Data entry",
   data: function() {
-    return getRoundData.call(this);
+    var data = this.constructor.prototype.data.call(this);
+    return getRoundData.call(this, data);
   },
 });
 
@@ -257,18 +277,12 @@ Router.route('/:competitionUrlId/results', {
 Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
   name: 'roundResultsBlaze',//<<<
   template: 'roundResults',//<<<
-  controller: 'ViewCompetitionController',
-  data: function() {
-    return getRoundData.call(this);
-  },
+  controller: 'ViewRoundController',
 });
 Router.route('/:competitionUrlId/results-reactjs/:eventCode/:nthRound', {
   name: 'roundResults',//<<<
   template: 'roundResultsReactjs',//<<<
-  controller: 'ViewCompetitionController',
-  data: function() {
-    return getRoundData.call(this);
-  },
+  controller: 'ViewRoundController',
 });
 Router.route('/:competitionUrlId/results/:competitorName', {
   name: 'competitorResults',

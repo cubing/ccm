@@ -12,35 +12,43 @@ HTTP.publish({collection: Competitions}, function(data) {
   return getCompetitions();
 });
 
-Meteor.publish('competition', function(competitionUrlId) {
-  check(competitionUrlId, String);
-
+function competitionUrlIdToId(competitionUrlId) {
   var competition = Competitions.findOne({
     $or: [
+      { _id: competitionUrlId },
       { wcaCompetitionId: competitionUrlId },
-      { _id: competitionUrlId }
     ]
+  }, {
+    fields: {
+      _id: 1,
+    }
   });
   if(!competition) {
+    return null;
+  }
+  return competition._id;
+}
+
+Meteor.publish('competition', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
     return [];
   }
-
-  /*<<<
-  var registrations = Registrations.find({
-    competitionId: competition._id,
-  }, {
-    userId: 1,
-  }).fetch();
-  if(registrations.length === 0) {
-    return [];
-  }
-  */
-
   return [
-    Competitions.find({ _id: competition._id }),
-    Rounds.find({ competitionId: competition._id }),
-    Results.find({ competitionId: competition._id }),
-    Registrations.find({ competitionId: competition._id }),
+    Competitions.find({ _id: competitionId }),
+    Rounds.find({ competitionId: competitionId }),
+  ];
+});
+
+Meteor.publish('competitionUsers', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  return [
+    Registrations.find({ competitionId: competitionId }),
     Meteor.users.find({
       // https://github.com/jfly/gjcomps/issues/71
       //_id: {
@@ -60,19 +68,28 @@ Meteor.publish('competition', function(competitionUrlId) {
   ];
 });
 
-Meteor.publish('competitionScrambles', function(competitionUrlId) {
+Meteor.publish('competitionResults', function(competitionUrlId) {
   check(competitionUrlId, String);
-  if(getCannotManageCompetitionReason(this.userId, competitionUrlId)) {
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
     return [];
   }
-  var competition = Competitions.findOne({
-    $or: [
-      { _id: competitionUrlId },
-      { wcaCompetitionId: competitionUrlId }
-    ]
-  });
+  return [
+    Results.find({ competitionId: competitionId }),
+  ];
+});
+
+Meteor.publish('competitionScrambles', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  if(getCannotManageCompetitionReason(this.userId, competitionId)) {
+    return [];
+  }
 
   return [
-    Groups.find({ competitionId: competition._id })
+    Groups.find({ competitionId: competitionId })
   ];
 });

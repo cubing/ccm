@@ -1,12 +1,9 @@
-getCannotManageCompetitionReason = function(userId, competitionUrlId) {
+getCannotManageCompetitionReason = function(userId, competitionId) {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
   var competition = Competitions.findOne({
-    $or: [
-      { _id: competitionUrlId },
-      { wcaCompetitionId: competitionUrlId }
-    ]
+    _id: competitionId,
   }, {
     fields: {
       organizers: 1,
@@ -47,7 +44,7 @@ getCannotRegisterReasons = function(competitionId) {
   return false;
 };
 
-throwIfCannotManageCompetition = function(userId, competitionUrlId) {
+throwIfCannotManageCompetition = function(userId, competitionId) {
   var cannotManageReason = getCannotManageCompetitionReason(userId, competitionUrlId);
   if(cannotManageReason) {
     throw cannotManageReason;
