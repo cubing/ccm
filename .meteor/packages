@@ -28,4 +28,5 @@ meteorhacks:kadira
 react
 multiply:iron-router-progress
 meteorhacks:fast-render
+meteorhacks:subs-manager
 

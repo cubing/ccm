@@ -1,3 +1,8 @@
+var subs = new SubsManager({
+  cacheLimit: 10,
+  expireIn: 5, // minutes
+});
+
 Router.configure({
   layoutTemplate: "layout",
   loadingTemplate: "loading",
@@ -65,11 +70,11 @@ ManageCompetitionController = RouteController.extend({
   notFoundTemplate: "competitionNotFound",
   waitOn: function() {
     return [
-      Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
-      Meteor.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
-      Meteor.subscribe('competitionResults', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competitionResults', this.params.competitionUrlId, subscriptionError(this)),
       // TODO - we only need scrambles on the uploadScrambles route
-      Meteor.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
@@ -110,7 +115,7 @@ ViewCompetitionController = RouteController.extend({
   fastRender: true,
   waitOn: function() {
     return [
-      Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
@@ -146,12 +151,12 @@ ViewCompetitionController = RouteController.extend({
 ViewRoundController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
-    waitOn.push(Meteor.subscribe('competitionResults',
+    waitOn.push(subs.subscribe('competitionResults',
                                  this.params.competitionUrlId,
                                  subscriptionError(this)));
     // TODO - ideally we'd denormalize our data so that we wouldn't
     // need to publish the Users collection as well.
-    waitOn.push(Meteor.subscribe('competitionUsers',
+    waitOn.push(subs.subscribe('competitionUsers',
                                  this.params.competitionUrlId,
                                  subscriptionError(this)));
     return waitOn;
@@ -198,7 +203,7 @@ function getRoundData(data) {
 Router.route('/', {
   name: 'home',
   waitOn: function() {
-    return Meteor.subscribe('competitions', subscriptionError(this));
+    return subs.subscribe('competitions', subscriptionError(this));
   },
   titlePrefix: '',
 });
