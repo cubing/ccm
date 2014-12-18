@@ -42,10 +42,10 @@ Meteor.publish('competition', function(competitionUrlId) {
     Results.find({ competitionId: competition._id }),
     Registrations.find({ competitionId: competition._id }),
     Meteor.users.find({
-      /*<<<_id: {
-       * https://github.com/jfly/gjcomps/issues/71
-        $in: _.pluck(registrations, "userId")
-      }*/
+      // https://github.com/jfly/gjcomps/issues/71
+      //_id: {
+        //$in: _.pluck(registrations, "userId")
+      //}
     }, {
       fields: {
         _id: 1,
