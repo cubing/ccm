@@ -105,6 +105,7 @@ ManageCompetitionController = RouteController.extend({
 });
 
 ViewCompetitionController = RouteController.extend({
+  fastRender: true,
   waitOn: function() {
     return [
       Meteor.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),

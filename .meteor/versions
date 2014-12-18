@@ -15,6 +15,7 @@ callback-hook@1.0.1
 cfs:http-methods@0.0.24
 cfs:http-publish@0.0.0
 check@1.0.2
+chuangbo:cookie@1.1.0
 coffeescript@1.0.4
 ctl-helper@1.0.4
 ctl@1.0.2
@@ -23,6 +24,7 @@ ddp@1.0.12
 deps@1.0.5
 ejson@1.0.4
 email@1.0.4
+fast-render@2.1.1
 fastclick@1.0.1
 follower-livedata@1.0.2
 geojson-utils@1.0.1

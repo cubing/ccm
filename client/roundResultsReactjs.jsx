@@ -217,8 +217,10 @@ var ResultsList = React.createClass({
           <tbody>
             {that.state.results.map(function(result) {
               return (
-                <ResultRow key={result._id} result={result}
-                           competitorName={that.state.userById[result.userId].profile.name} />
+                <ResultRow key={result._id}
+                           result={result}
+                           competitorName={that.state.userById[result.userId].profile.name}
+                />
               );
             })}
           </tbody>
