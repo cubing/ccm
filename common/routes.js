@@ -151,14 +151,17 @@ ViewCompetitionController = RouteController.extend({
 ViewRoundController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
-    waitOn.push(subs.subscribe('competitionResults',
-                                 this.params.competitionUrlId,
-                                 subscriptionError(this)));
+    var nthRound = parseInt(this.params.nthRound);
+    waitOn.push(subs.subscribe('roundResults',
+                               this.params.competitionUrlId,
+                               this.params.eventCode,
+                               nthRound,
+                               subscriptionError(this)));
     // TODO - ideally we'd denormalize our data so that we wouldn't
     // need to publish the Users collection as well.
     waitOn.push(subs.subscribe('competitionUsers',
-                                 this.params.competitionUrlId,
-                                 subscriptionError(this)));
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
     return waitOn;
   },
   data: function() {

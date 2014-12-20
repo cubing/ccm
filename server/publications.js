@@ -79,6 +79,30 @@ Meteor.publish('competitionResults', function(competitionUrlId) {
   ];
 });
 
+Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
+  check(competitionUrlId, String);
+  check(eventCode, String);
+  check(nthRound, Number);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  var round = Rounds.findOne({
+    competitionId: competitionId,
+    eventCode: eventCode,
+    nthRound: nthRound,
+  }, {
+    fields: {
+      _id: 1,
+    }
+  });
+  return [
+    Results.find({
+      roundId: round._id,
+    }),
+  ];
+});
+
 Meteor.publish('competitionScrambles', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
