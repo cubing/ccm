@@ -1,19 +1,46 @@
 <template name="newCompetition">
   <div class="container">
     {{#ifLoggedInAndVerified}}
-      <h4>New Competition</h4>
-      <hr>
 
-      <form class="form-horizontal" role="form">
-        <div class="form-group">
-          <label for="inputCompetitionName" class="col-sm-3 col-lg-2 control-label">Competition Name</label>
-          <div class="col-sm-9 col-lg-10">
-            <input type="text" class="form-control" id="inputCompetitionName" name="competitionName" value="{{competitionName}}" />
-          </div>
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="{{#if isActiveRoute 'newCompetition'}}active{{/if}}"><a href="{{pathFor 'newCompetition'}}">New competition</a></li>
+        <li role="presentation" class="{{#if isActiveRoute 'importCompetition'}}active{{/if}}"><a href="{{pathFor 'importCompetition'}}">Import competition</a></li>
+      </ul>
+
+      {{#if isActiveRoute 'newCompetition'}}
+        <div class="tab-content">
+          <form id="formNewCompetition" class="form-horizontal" role="form">
+            <div class="form-group">
+              <label for="inputCompetitionName" class="col-sm-3 col-lg-2 control-label">Competition Name</label>
+              <div class="col-sm-9 col-lg-10">
+                <input type="text" class="form-control" id="inputCompetitionName" name="competitionName" value="{{competitionName}}" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-control" disabled="{{#unless newCompetitionName}}active{{/unless}}">Create competition</button>
+          </form>
         </div>
+      {{/if}}
 
-        <button type="submit" class="btn btn-primary form-control">Create competition</button>
-      </form>
+      {{#if isActiveRoute 'importCompetition'}}
+        <div class="tab-content">
+          <form id="formImportCompetition" class="form-horizontal" role="form">
+            <p>
+              <button class="btn btn-default btn-block btn-file">
+                Upload competition JSON...
+                <input type="file">
+              </button>
+            </p>
+            <button type="submit" class="btn btn-primary form-control" disabled="{{#unless uploadedCompetition}}active{{/unless}}">
+              Import
+              {{#if uploadedCompetition}}
+                {{uploadedCompetition.competitionId}}
+              {{/if}}
+            </button>
+          </form>
+        </div>
+      {{/if}}
+
     {{/ifLoggedInAndVerified}}
   </div>
 </template>

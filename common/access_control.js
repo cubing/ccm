@@ -45,7 +45,7 @@ getCannotRegisterReasons = function(competitionId) {
 };
 
 throwIfCannotManageCompetition = function(userId, competitionId) {
-  var cannotManageReason = getCannotManageCompetitionReason(userId, competitionUrlId);
+  var cannotManageReason = getCannotManageCompetitionReason(userId, competitionId);
   if(cannotManageReason) {
     throw cannotManageReason;
   }

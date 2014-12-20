@@ -14,6 +14,15 @@ if(Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
 
   Template.registerHelper("isActiveRoute", function(routeName) {
+    /* The following code might come in useful when we finally improve
+     * our links for browsing results. I think we'll want something more heirarchical.
+    var currentParams = Router.current().params;
+    var route = Router.routes[routeName];
+    var routePath = route.path(currentParams);
+    // Check if our current path begins with the given route
+    var currentPath = Router.current().url;
+    return currentPath.indexOf(routePath) === 0;
+    */
     return Router.current().route.getName() == routeName;
   });
 
@@ -218,7 +227,13 @@ Router.route('/settings/profile', {
 
 Router.route('/new', {
   name: 'newCompetition',
-  titlePrefix: 'New competition',
+  titlePrefix: 'Create competition',
+});
+
+Router.route('/new/import', {
+  name: 'importCompetition',
+  template: 'newCompetition',
+  titlePrefix: 'Import competition',
 });
 
 Router.route('/:competitionUrlId/manage', {

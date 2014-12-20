@@ -62,6 +62,7 @@ if(Meteor.isServer) {
   Competitions._ensureIndex({
     wcaCompetitionId: 1,
   }, {
+    sparse: 1,
     unique: 1,
   });
 }

@@ -74,3 +74,14 @@ a[rel="external"]:after {
   line-height: 20px;
   padding: 0px;
 }
+
+/*
+ * http://stackoverflow.com/a/15317094 (with changes)
+ */
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
