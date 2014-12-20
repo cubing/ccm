@@ -1,5 +1,4 @@
 Template.roundResultsList.rendered = function() {
-  console.log(Date.now() + " roundResultsList.rendered");//<<<
   var template = this;
 
   var $sidebar = template.$('.results-sidebar');
