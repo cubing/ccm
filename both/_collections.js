@@ -88,7 +88,7 @@ Registrations.attachSchema({
       type: "select-checkbox",
     },
   },
-  guests: {
+  guestCount: {
     // Number of guests a competitor is bringing
     // (in case the venue has a size limit)
     type: Number,

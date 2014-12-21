@@ -7,6 +7,13 @@ function getUserRegistration(userId, competitionId) {
   return hasRegistrationEntry;
 }
 
+function styleRegistrationInputButtonsOnChange() {
+  // style buttons to demonstrate changes need to be submitted
+  $("#changeRegistrationButton").removeClass("btn-default").addClass("btn-primary");
+  $("#revertFormButton").prop('disabled', false);
+  $("#changeRegistrationButton").prop('disabled', false);
+}
+
 Template.competitionRegistration.rendered = function() {
   var template = this;
   template.autorun(function() {
@@ -79,14 +86,16 @@ Template.competitionRegistration.helpers({
 
 Template.competitionRegistration.events({
   'change form': function() {
-    // style buttons to demonstrate changes need to be submitted
-    $("#changeRegistrationButton").removeClass("btn-default").addClass("btn-primary");
-    $("#revertFormButton").prop('disabled', false);
+    styleRegistrationInputButtonsOnChange();
+  },
+  'input': function() {
+    styleRegistrationInputButtonsOnChange();
   },
 
   'click #unregisterButton': function(e, t) {
     e.preventDefault();
-    // Need to unregister.
+    // Need to re-implement unregister functionality.
+
     $('#modalConfirmDeregistration').modal('hide');
   },
 });
