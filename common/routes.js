@@ -298,12 +298,12 @@ Router.route('/:competitionUrlId/results', {
   controller: 'ViewCompetitionController',
   titlePrefix: 'Results',
 });
-Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
+Router.route('/:competitionUrlId/results-blaze/:eventCode/:nthRound', {
   name: 'roundResults',//<<<
   template: 'roundResults',//<<<
   controller: 'ViewRoundController',
 });
-Router.route('/:competitionUrlId/results-reactjs/:eventCode/:nthRound', {
+Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
   name: 'roundResultsReactjs',//<<<
   template: 'roundResultsReactjs',//<<<
   controller: 'ViewRoundController',
