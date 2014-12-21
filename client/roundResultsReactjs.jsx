@@ -82,11 +82,7 @@ Template.roundResultsReact_namePill.helpers({
 var ResultRow = React.createClass({
   render: function() {
     var result = this.props.result;
-
-    //<<<var formatCode = getRoundAttribute(result.roundId, 'formatCode');
-    var formatCode = 'a';//<<<
-    var format = wca.formatByCode[formatCode];
-    var primarySortField = format.averageName.toLowerCase();
+    var primarySortField = this.props.primarySortField.toLowerCase();
 
     var competitorAdvanced = false;//<<<
     var competitionUrlId = null;//<<<
@@ -166,12 +162,11 @@ var ResultsList = React.createClass({
     });
 
     var formatCode = getRoundAttribute(roundId, 'formatCode');
-    var format = wca.formatByCode[formatCode];
 
     return {
       results: results,
       userById: userById,
-      primarySortField: format.averageName,
+      formatCode: formatCode,
     }
   },
   componentWillMount: function() {
@@ -191,13 +186,7 @@ var ResultsList = React.createClass({
     var selectCompetitor = false;//<<<
     var roundId = that.props.roundId;
 
-    var formatCode = getRoundAttribute(roundId, 'formatCode');
-    var format = wca.formatByCode[formatCode];
-    var roundCumulativeResultFieldName = format.averageName;
-
-    var formatCode = getRoundAttribute(roundId, 'formatCode');
-    var format = wca.formatByCode[formatCode];
-    var solveCount = format.count;
+    var format = wca.formatByCode[that.state.formatCode];
 
     return (
       <div className={selectCompetitor ? 'col-xs-12 col-sm-7' : ''}>
@@ -207,10 +196,10 @@ var ResultsList = React.createClass({
               <th></th>
               <th>Name</th>
               <th className="results-average text-right">
-                {roundCumulativeResultFieldName}
+                {format.averageName}
               </th>
               <th className="results-best text-right">Best</th>
-              <th className="text-center" colSpan={solveCount}>Solves</th>
+              <th className="text-center" colSpan={format.count}>Solves</th>
             </tr>
           </thead>
           <tbody>
@@ -218,6 +207,7 @@ var ResultsList = React.createClass({
               return (
                 <ResultRow key={result._id}
                            result={result}
+                           primarySortField={format.sortBy}
                            competitorName={that.state.userById[result.userId].profile.name}
                 />
               );
