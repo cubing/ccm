@@ -176,16 +176,16 @@ var ResultsList = React.createClass({
     }
   },
   componentWillMount: function() {
-    log.l0("component will mount");
+    log.l1("component will mount");
   },
   componentDidMount: function() {
-    log.l0("component did mount");
+    log.l1("component did mount");
   },
   componentWillUpdate(nextProps, nextState) {
-    log.l0("component will update");
+    log.l1("component will update");
   },
   componentDidUpdate(prevProps, prevState) {
-    log.l0("component did update");
+    log.l1("component did update");
   },
   render: function() {
     var that = this;
@@ -196,7 +196,7 @@ var ResultsList = React.createClass({
 
     return (
       <div className={selectCompetitor ? 'col-xs-12 col-sm-7' : ''}>
-        <table className="table table-striped">
+        <table className="table table-striped table-responsive">
           <thead>
             <tr>
               <th></th>
