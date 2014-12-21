@@ -63,12 +63,23 @@ if(Meteor.isClient) {
   });
 }
 
-clockFormat = function(solveTime) {
+clockFormat = function(solveTime, isAverage) {
   if(solveTime.wcaValue === 0) {
     // A wcaValue of 0 means "nothing happened here", so we just show an
     // empty string, rather than something like "0.00" which would look like
     // clutter.
     return "";
+  }
+  if(solveTime.moveCount) {
+    // jChester's solveTimeToStopwatchFormat doesn't handle FMC, which is fine,
+    // FMC is *weird*.
+    if(isAverage) {
+      // The average field for FMC is bizarre:
+      // it's the average times 100 rounded to the nearest integer.
+      return (solveTime.moveCount / 100).toFixed(2);
+    } else {
+      return "" + solveTime.moveCount;
+    }
   }
   return $.solveTimeToStopwatchFormat(solveTime);
 };

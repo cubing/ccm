@@ -119,7 +119,7 @@ var ResultRow = React.createClass({
       <tr className={result.advanced ? 'competitor-advanced' : ''}>
         <td>{result.position}</td>
         <td>{competitorNameNode}</td>
-        <td className={averageClasses}>{clockFormat(result.average)}</td>
+        <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
         {result.solves.map(function(solve, i) {
           return (
