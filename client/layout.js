@@ -35,6 +35,9 @@ Template.layout.events({
 });
 
 Router.onBeforeAction(function() {
+  // Workaround for https://github.com/EventedMind/iron-router/issues/96.
+  $(window).scrollTop(0);
+
   // As the page changes, remove any leftover tooltips that might get
   // abandoned because they were set to data-container="body"
   $('.tooltip').remove();
