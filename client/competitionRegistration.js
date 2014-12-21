@@ -39,6 +39,12 @@ Template.competitionRegistration.helpers({
     }
   },
 
+  userIsRegistered: function() {
+    var competitionId = this.competitionId;
+    var userId = Meteor.userId();
+    return getUserRegistration(userId, competitionId);
+  },
+
   registrationFormType: function() {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
@@ -72,5 +78,26 @@ Template.competitionRegistration.helpers({
 });
 
 Template.competitionRegistration.events({
+  'change form': function() {
+    // style buttons to demonstrate changes need to be submitted
+    $("#changeRegistrationButton").removeClass("btn-default").addClass("btn-primary");
+    $("#revertFormButton").prop('disabled', false);
+  },
 
+  'click #unregisterButton': function(e, t) {
+    e.preventDefault();
+    // Need to unregister.
+    $('#modalConfirmDeregistration').modal('hide');
+  },
+});
+
+AutoForm.addHooks('registrationForm', {
+  onSuccess: function(operation, result, template) {
+    // successful submission!
+    FlashMessages.sendSuccess("Submission successful!", { autoHide: true, hideDelay: 5000 });
+  },
+  onError: function(operation, error, template) {
+    // unsuccessful submission... display error message
+    FlashMessages.sendError("Error submitting form!", { autoHide: true, hideDelay: 5000 });
+  },
 });
