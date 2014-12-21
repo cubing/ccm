@@ -245,9 +245,12 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
 };
 
 if(Meteor.isClient) {
-  Template.registerHelper("formatMomentRange", function(startMoment, endMoment) {
+  Template.registerHelper("formatMomentDateRange", function(startMoment, endMoment) {
     var formatStr = "MMMM D, YYYY";
     var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, formatStr);
     return rangeStr;
+  });
+  Template.registerHelper("formatMomentTime", function(m) {
+    return m.format("dddd, MMMM Do YYYY, h:mm:ss a");
   });
 }

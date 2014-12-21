@@ -12,7 +12,13 @@
       {{else}}
 
         <div class='alert alert-info'>
-          {{registrationCloseMomentText}}
+          {{#if registrationCloseMoment}}
+            Please note that registration closes
+            <strong>{{registrationCloseMoment.fromNow}}</strong> on
+            {{formatMomentTime registrationCloseMoment}}.
+          {{else}}
+            Registration is currently open.
+          {{/if}}
         </div>
 
         {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}

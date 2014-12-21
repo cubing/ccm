@@ -7,7 +7,7 @@
           Unscheduled
         {{else}}
           <a href="{{pathFor 'competitionSchedule' competitionUrlId=competitionUrlId}}">
-            {{formatMomentRange competitionStartDateMoment competitionEndDateMoment}}
+            {{formatMomentDateRange competitionStartDateMoment competitionEndDateMoment}}
           </a>
         {{/unless}}
       </p>
