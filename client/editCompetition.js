@@ -380,8 +380,9 @@ Template.modalHardCutoff.helpers({
 });
 
 function getCompetitorsDoneAndTotal(roundId) {
+  // Neutered until https://github.com/jfly/gjcomps/issues/81
   if(true) {
-    return [ 5, 10 ];//<<<
+    return [ 5, 10 ];
   }
   var formatCode = getRoundAttribute(roundId, 'formatCode');
   var format = wca.formatByCode[formatCode];
@@ -415,8 +416,9 @@ function getCompetitorsDoneAndTotal(roundId) {
 }
 
 function getLastRoundResultsCount(competitionId, eventCode) {
+  // Neutered until https://github.com/jfly/gjcomps/issues/81
   if(true) {
-    return 1;//<<<
+    return 1;
   }
   var roundId = getLastRoundIdForEvent(competitionId, eventCode);
   if(!roundId) {
