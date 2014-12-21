@@ -16,7 +16,10 @@ Template.roundResultsReactjs.rendered = function() {
 
     var limit = resultsListLimitReact.get();
     React.render(
-      <ResultsList limit={limit} roundId={data.roundId}/>,
+      <ResultsList competitionUrlId={data.competitionUrlId}
+                   roundId={data.roundId}
+                   limit={limit}
+      />,
       template.$("#reactRenderArea")[0]
     );
   });
@@ -81,16 +84,16 @@ Template.roundResultsReact_namePill.helpers({
 
 var ResultRow = React.createClass({
   render: function() {
-    var result = this.props.result;
-    var primarySortField = this.props.primarySortField.toLowerCase();
-
-    var competitorAdvanced = false;//<<<
-    var competitionUrlId = null;//<<<
+    var competitionUrlId = this.props.competitionUrlId;
     var competitorName = this.props.competitorName;
     var competitorNameNode;
     if(competitionUrlId) {
+      var path = Router.routes['competitorResults'].path({
+        competitionUrlId: competitionUrlId,
+        competitorName: competitorName,
+      });
       competitorNameNode = (
-        <a href="{{pathFor 'competitorResults' competitionUrlId=../../competitionUrlId competitorName=competitorName }}">
+        <a href={path}>
           {competitorName}
         </a>
       );
@@ -98,6 +101,7 @@ var ResultRow = React.createClass({
       competitorNameNode = competitorName;
     }
 
+    var primarySortField = this.props.primarySortField.toLowerCase();
     var averageClasses = React.addons.classSet({
       'results-average': true,
       'text-right': true,
@@ -109,6 +113,10 @@ var ResultRow = React.createClass({
       'text-right': true,
       'results-primary-sort-field': (primarySortField == 'best'),
     });
+
+    var result = this.props.result;
+    // https://github.com/jfly/gjcomps/issues/23
+    var competitorAdvanced = false;
     return (
       <tr className={competitorAdvanced ? 'competitor-advanced' : ''}>
         <td>{result.position}</td>
@@ -206,6 +214,7 @@ var ResultsList = React.createClass({
             {that.state.results.map(function(result) {
               return (
                 <ResultRow key={result._id}
+                           competitionUrlId={that.props.competitionUrlId}
                            result={result}
                            primarySortField={format.sortBy}
                            competitorName={that.state.userById[result.userId].profile.name}

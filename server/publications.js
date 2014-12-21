@@ -41,6 +41,20 @@ Meteor.publish('competition', function(competitionUrlId) {
   ];
 });
 
+function findUsers(criteria) {
+  return Meteor.users.find({
+    // https://github.com/jfly/gjcomps/issues/71
+    //_id: {
+    //  $in: _.pluck(registrations, "userId")
+    //}
+  }, {
+    fields: {
+      _id: 1,
+      "profile.name": 1,
+    }
+  });
+}
+
 Meteor.publish('competitionUsers', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
@@ -49,22 +63,7 @@ Meteor.publish('competitionUsers', function(competitionUrlId) {
   }
   return [
     Registrations.find({ competitionId: competitionId }),
-    Meteor.users.find({
-      // https://github.com/jfly/gjcomps/issues/71
-      //_id: {
-        //$in: _.pluck(registrations, "userId")
-      //}
-    }, {
-      fields: {
-        _id: 1,
-        username: 1,
-        "profile.name": 1,
-        "profile.wcaId": 1,
-        "profile.countryId": 1,
-        "profile.gender": 1,
-        "profile.dob": 1,
-      }
-    })
+    findUsers({}),
   ];
 });
 
@@ -76,6 +75,39 @@ Meteor.publish('competitionResults', function(competitionUrlId) {
   }
   return [
     Results.find({ competitionId: competitionId }),
+    // TODO - perhaps we should denormalize our data so everything we
+    // need is in Results?
+    //  https://github.com/jfly/gjcomps/issues/71#issuecomment-67763004
+    findUsers({}),
+  ];
+});
+
+Meteor.publish('competitorResults', function(competitionUrlId, competitorName) {
+  check(competitionUrlId, String);
+  check(competitorName, String);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+
+  // TODO - what about multiple users with the same name?
+  //  https://github.com/jfly/gjcomps/issues/83
+  var user = Meteor.users.findOne({
+    'profile.name': competitorName,
+  }, {
+    fields: {
+      _id: 1,
+    }
+  });
+  if(!user) {
+    return [];
+  }
+  return [
+    Results.find({ competitionId: competitionId, userId: user._id, }),
+    // TODO - perhaps we should denormalize our data so everything we
+    // need is in Results?
+    //  https://github.com/jfly/gjcomps/issues/71#issuecomment-67763004
+    findUsers({ _id: user._id, }),
   ];
 });
 
@@ -97,9 +129,10 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
     }
   });
   return [
-    Results.find({
-      roundId: round._id,
-    }),
+    Results.find({ roundId: round._id, }),
+    // TODO - ideally we'd denormalize our data so that we wouldn't
+    // need to publish the Users collection as well.
+    findUsers({}),
   ];
 });
 

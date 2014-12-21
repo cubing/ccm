@@ -166,11 +166,6 @@ ViewRoundController = ViewCompetitionController.extend({
                                this.params.eventCode,
                                nthRound,
                                subscriptionError(this)));
-    // TODO - ideally we'd denormalize our data so that we wouldn't
-    // need to publish the Users collection as well.
-    waitOn.push(subs.subscribe('competitionUsers',
-                               this.params.competitionUrlId,
-                               subscriptionError(this)));
     return waitOn;
   },
   data: function() {
@@ -314,6 +309,14 @@ Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
 Router.route('/:competitionUrlId/results/:competitorName', {
   name: 'competitorResults',
   controller: 'ViewCompetitionController',
+  waitOn: function() {
+    var waitOn = this.constructor.prototype.waitOn.call(this);
+    waitOn.push(subs.subscribe('competitorResults',
+                               this.params.competitionUrlId,
+                               this.params.competitorName,
+                               subscriptionError(this)));
+    return waitOn;
+  },
   data: function() {
     var userName = this.params.competitorName;
 
@@ -323,8 +326,10 @@ Router.route('/:competitionUrlId/results/:competitorName', {
       return null;
     }
 
+    // TODO - what about multiple users with the same name?
+    // https://github.com/jfly/gjcomps/issues/83
     var user = Meteor.users.findOne({
-      "profile.name": userName
+      "profile.name": userName,
     });
     if(!user) {
       this.render('competitorNotFound');
