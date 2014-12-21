@@ -67,6 +67,18 @@ Meteor.publish('competitionUsers', function(competitionUrlId) {
   ];
 });
 
+Meteor.publish('myCompetitionRegistration', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var userId = this.userId;
+  if(!competitionId || !userId) {
+    return [];
+  }
+  return [
+    Registrations.find({ competitionId: competitionId, userId: userId })
+  ];
+});
+
 Meteor.publish('competitionResults', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);

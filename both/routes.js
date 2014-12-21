@@ -276,6 +276,13 @@ Router.route('/:competitionUrlId/registration', {
   name: 'competitionRegistration',
   controller: 'ViewCompetitionController',
   titlePrefix: 'Registration',
+  waitOn: function() {
+    var waitOn = this.constructor.prototype.waitOn.call(this);
+    waitOn.push(subs.subscribe('myCompetitionRegistration',
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
+    return waitOn;
+  },
 });
 Router.route('/:competitionUrlId/events', {
   name: 'competitionEvents',

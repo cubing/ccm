@@ -88,7 +88,23 @@ Registrations.attachSchema({
       type: "select-checkbox",
     },
   },
-
+  guests: {
+    // Number of guests a competitor is bringing
+    // (in case the venue has a size limit)
+    type: Number,
+    min: 0,
+    optional: true,
+  },
+  comments: {
+    // Comments a user makes upon registering
+    type: String,
+    optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "textarea"
+      }
+    },
+  },
 
 });
 if(Meteor.isServer) {
