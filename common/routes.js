@@ -209,6 +209,7 @@ function getRoundData(data) {
     return;
   }
   data.roundId = round._id;
+  console.log(performance.now() + " returning round data");//<<<
   return data;
 }
 
@@ -298,12 +299,12 @@ Router.route('/:competitionUrlId/results', {
   titlePrefix: 'Results',
 });
 Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
-  name: 'roundResultsBlaze',//<<<
+  name: 'roundResults',//<<<
   template: 'roundResults',//<<<
   controller: 'ViewRoundController',
 });
 Router.route('/:competitionUrlId/results-reactjs/:eventCode/:nthRound', {
-  name: 'roundResults',//<<<
+  name: 'roundResultsReactjs',//<<<
   template: 'roundResultsReactjs',//<<<
   controller: 'ViewRoundController',
 });

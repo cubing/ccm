@@ -11,6 +11,7 @@ Template.roundResultsList.rendered = function() {
       },
     }
   });
+  console.log(performance.now() + " Template.roundResultsList.rendered");//<<<
 };
 Template.roundResultsList.helpers({
   solveCount: function() {
@@ -24,11 +25,12 @@ Template.roundResultsList.helpers({
     return format.averageName;
   },
   resultsData: function() {
+    console.log(performance.now() + " resultsData");//<<<
     var results = Results.find({
       competitionId: this.competitionId,
       roundId: this.roundId,
     }, {
-      //limit: 50, https://github.com/jfly/gjcomps/issues/75
+      //limit: 25, // https://github.com/jfly/gjcomps/issues/75 <<<
       sort: {
         'position': 1,
       },

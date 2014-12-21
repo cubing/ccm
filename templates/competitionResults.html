@@ -7,7 +7,10 @@
           {{#each rounds}}
             <li>
               <a href="{{pathFor 'roundResults' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-                {{roundName roundCode}}
+                blaze {{roundName roundCode}}
+              </a>
+              <a href="{{pathFor 'roundResultsReactjs' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                react {{roundName roundCode}}
               </a>
             </li>
           {{/each}}
