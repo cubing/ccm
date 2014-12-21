@@ -318,6 +318,10 @@ Results.attachSchema({
     min: 0,
     optional: true,
   },
+  advanced: {
+    type: Boolean,
+    optional: true,
+  },
   solves: {
     type: [SolveTime],
     optional: true,

@@ -1,5 +1,6 @@
-li.competitor-advanced {
+tr.competitor-advanced td:first-child {
   font-weight: bold;
+  background-color: yellow; /* idea shamelessly stolen from cubecomps */
 }
 
 .results-best {

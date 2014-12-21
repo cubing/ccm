@@ -115,10 +115,8 @@ var ResultRow = React.createClass({
     });
 
     var result = this.props.result;
-    // https://github.com/jfly/gjcomps/issues/23
-    var competitorAdvanced = false;
     return (
-      <tr className={competitorAdvanced ? 'competitor-advanced' : ''}>
+      <tr className={result.advanced ? 'competitor-advanced' : ''}>
         <td>{result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average)}</td>
@@ -198,7 +196,7 @@ var ResultsList = React.createClass({
 
     return (
       <div className={selectCompetitor ? 'col-xs-12 col-sm-7' : ''}>
-        <table className="table">
+        <table className="table table-striped">
           <thead>
             <tr>
               <th></th>

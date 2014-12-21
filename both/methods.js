@@ -85,6 +85,21 @@ Meteor.methods({
 
     if(round.eventCode) {
       Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
+
+      // Deleting a round affects the set of people who advanced
+      // from the previous round =)
+      var previousRound = Rounds.findOne({
+        competitionId: round.competitionId,
+        eventCode: round.eventCode,
+        nthRound: round.nthRound - 1,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      });
+      if(previousRound) {
+        Meteor.call('recomputeWhoAdvanced', previousRound._id);
+      }
     }
   },
   refreshRoundCodes: function(competitionId, eventCode) {
@@ -217,6 +232,7 @@ Meteor.methods({
         userId: userId,
       });
     });
+    Meteor.call('recomputeWhoAdvanced', roundId);
   },
 });
 
@@ -234,10 +250,10 @@ if(Meteor.isServer) {
   };
 
   Meteor.methods({
-    'requestVerificationEmail': function() {
+    requestVerificationEmail: function() {
       Accounts.sendVerificationEmail(this.userId);
     },
-    'uploadTNoodleZip': function(zipData) {
+    uploadTNoodleZip: function(zipData) {
       // TODO - this is pretty janky. What if the folder we try to create
       // exists, but isn't a folder? Permissions could also screw us up.
       // Ideally we would just decompress the zip file client side, but
@@ -248,7 +264,7 @@ if(Meteor.isServer) {
       fs.writeFileSync(zipFilename, zipData, 'binary');
       return id;
     },
-    'unzipTNoodleZip': function(zipId, pw) {
+    unzipTNoodleZip: function(zipId, pw) {
       var args = [];
       args.push('-p'); // extract to stdout
 
@@ -285,7 +301,7 @@ if(Meteor.isServer) {
         throw new Meteor.Error('unzip', e.message);
       }
     },
-    'uploadCompetition': function(wcaCompetition) {
+    uploadCompetition: function(wcaCompetition) {
       throwIfNotVerifiedUser(this.userId);
 
       var competitionId = Competitions.insert({
@@ -361,6 +377,7 @@ if(Meteor.isServer) {
           return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
                    wca.roundByCode[r2.roundId].supportedRoundIndex );
         });
+        var newRoundIds = [];
         wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
           var roundInfo = wca.roundByCode[wcaRound.roundId];
           var roundId = Rounds.insert({
@@ -371,6 +388,7 @@ if(Meteor.isServer) {
             formatCode: wcaRound.formatId,
             status: wca.roundStatuses.closed,
           });
+          newRoundIds.push(roundId);
 
           wcaRound.results.forEach(function(wcaResult) {
             // wcaResult.personId refers to the personId in the wca json
@@ -380,7 +398,7 @@ if(Meteor.isServer) {
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
             });
-            Results.insert({
+            var id = Results.insert({
               competitionId: competition._id,
               roundId: roundId,
               userId: userInfo.userId,
@@ -411,6 +429,11 @@ if(Meteor.isServer) {
             });
           });
         });
+
+        newRoundIds.forEach(function(roundId) {
+          Meteor.call('recomputeWhoAdvanced', roundId);
+        });
+
         console.log(Date.now() + " finished adding data for " + wcaEvent.eventId);
       });
 
@@ -430,6 +453,52 @@ if(Meteor.isServer) {
       }
 
       return competition._id;
+    },
+    recomputeWhoAdvanced: function(roundId) {
+      check(roundId, String);
+
+      var round = Rounds.findOne({ _id: roundId });
+      var nextRound = Rounds.findOne({
+        competitionId: round.competitionId,
+        eventCode: round.eventCode,
+        nthRound: round.nthRound + 1,
+      }, {
+        fields: {
+          size: 1,
+        }
+      });
+
+      var results = Results.find({
+        roundId: roundId,
+      }, {
+        fields: {
+          _id: 1,
+          userId: 1,
+        }
+      });
+
+      results.forEach(function(result) {
+        var advanced;
+        if(nextRound) {
+          // If the userId for this result is present in the next round,
+          // then they advanced!
+          advanced = !!Results.findOne({
+            roundId: nextRound._id,
+            userId: result.userId
+          });
+        } else {
+          // If there is no next round, then this result cannot possibly have
+          // advanced.
+          advanced = false;
+        }
+        Results.update({
+          _id: result._id,
+        }, {
+          $set: {
+            advanced: advanced,
+          }
+        });
+      });
     },
   });
 }
