@@ -24,8 +24,8 @@ Package._transitional_registerBuildPlugin({
 
 Package.on_use(function(api) {
   // Standard distribution of React, same version as react-tools.
-  //<<< JFLY api.add_files("vendor/react-" + reactVersion + ".js", "client");
-  api.add_files("vendor/react-with-addons-" + reactVersion + ".js", "client");//<<< JFLY
+  //JFLY api.add_files("vendor/react-" + reactVersion + ".js", "client");
+  api.add_files("vendor/react-with-addons-" + reactVersion + ".js", "client");//JFLY
 
   // On the server, we use the modules that ship with react.
   api.add_files("src/require-react.js", "server");

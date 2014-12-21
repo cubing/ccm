@@ -1,25 +1,24 @@
+var log = logging.handle("roundResultsReact");
+
 Template.roundResultsReactjs.rendered = function() {
   var template = this;
 
   // To give the illusion of loading quickly, first render
   // a small subset of all the results for this round, and then
   // render the rest later.
-  //<<<var resultsListLimitReact = new ReactiveVar(25);
-  var resultsListLimitReact = new ReactiveVar(0);
-  //<<<setTimeout(function() {
-  //<<<resultsListLimitReact.set(0);
-  //<<<}, 0);
+  var resultsListLimitReact = new ReactiveVar(25);
+  setTimeout(function() {
+    resultsListLimitReact.set(0);
+  }, 0);
 
   template.autorun(function() {
     var data = Template.currentData();
 
-    var start = performance.now();//<<<
     var limit = resultsListLimitReact.get();
     React.render(
       <ResultsList limit={limit} roundId={data.roundId}/>,
       template.$("#reactRenderArea")[0]
     );
-    var end = performance.now();//<<<
   });
 
   var $sidebar = template.$('.results-sidebar');
@@ -176,16 +175,16 @@ var ResultsList = React.createClass({
     }
   },
   componentWillMount: function() {
-    console.log(performance.now() + " component will mount");//<<<
+    log.l0("component will mount");
   },
   componentDidMount: function() {
-    console.log(performance.now() + " component did mount");//<<<
+    log.l0("component did mount");
   },
   componentWillUpdate(nextProps, nextState) {
-    console.log(performance.now() + " componentWillUpdate");//<<<
+    log.l0("component will update");
   },
   componentDidUpdate(prevProps, prevState) {
-    console.log(performance.now() + " componentDidUpdate");//<<<
+    log.l0("component did update");
   },
   render: function() {
     var that = this;

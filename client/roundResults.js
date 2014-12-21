@@ -1,3 +1,6 @@
+// ***** NOTE: the following code is unused, and only exists to compare
+// performance between blaze and react. Eventually this will get deleted. ***
+// https://github.com/jfly/gjcomps/issues/78
 Template.roundResultsList.rendered = function() {
   var template = this;
 
@@ -11,7 +14,7 @@ Template.roundResultsList.rendered = function() {
       },
     }
   });
-  console.log(performance.now() + " Template.roundResultsList.rendered");//<<<
+  console.log(performance.now() + " Template.roundResultsList.rendered");
 };
 Template.roundResultsList.helpers({
   solveCount: function() {
@@ -25,12 +28,12 @@ Template.roundResultsList.helpers({
     return format.averageName;
   },
   resultsData: function() {
-    console.log(performance.now() + " resultsData");//<<<
+    console.log(performance.now() + " resultsData");
     var results = Results.find({
       competitionId: this.competitionId,
       roundId: this.roundId,
     }, {
-      //limit: 25, // https://github.com/jfly/gjcomps/issues/75 <<<
+      //limit: 25, // https://github.com/jfly/gjcomps/issues/75
       sort: {
         'position': 1,
       },
@@ -66,11 +69,11 @@ Template.roundResultsList.helpers({
     return resultsData.primarySortField.toLowerCase() == fieldName.toLowerCase();
   },
   competitorAdvanced: function() {
-    //<<< The following code is really slow. >>>
+    // TODO - The following code is really slow.
     // We're going to have to expand our schema to keep track of advancement.
     // See https://github.com/jfly/gjcomps/issues/23
     if(true) {
-      return false;//<<<
+      return false;
     }
     var round = Rounds.findOne({
       _id: this.roundId,

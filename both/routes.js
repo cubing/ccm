@@ -209,7 +209,6 @@ function getRoundData(data) {
     return;
   }
   data.roundId = round._id;
-  console.log(performance.now() + " returning round data");//<<<
   return data;
 }
 
@@ -298,16 +297,20 @@ Router.route('/:competitionUrlId/results', {
   controller: 'ViewCompetitionController',
   titlePrefix: 'Results',
 });
+
+// TODO - this route exists only to compare with reactjs. Eventually we should
+// delete it: https://github.com/jfly/gjcomps/issues/78.
 Router.route('/:competitionUrlId/results-blaze/:eventCode/:nthRound', {
-  name: 'roundResults',//<<<
-  template: 'roundResults',//<<<
+  name: 'roundResultsBlaze',
+  template: 'roundResults',
   controller: 'ViewRoundController',
 });
 Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
-  name: 'roundResultsReactjs',//<<<
-  template: 'roundResultsReactjs',//<<<
+  name: 'roundResults',
+  template: 'roundResultsReactjs',
   controller: 'ViewRoundController',
 });
+
 Router.route('/:competitionUrlId/results/:competitorName', {
   name: 'competitorResults',
   controller: 'ViewCompetitionController',
