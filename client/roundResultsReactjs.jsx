@@ -160,7 +160,6 @@ var ResultsList = React.createClass({
       fields: {
         "profile.name": 1
       },
-      reactive: false,
     }).fetch();
     var userById = {};
     _.each(users, function(user) {
