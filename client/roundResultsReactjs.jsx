@@ -115,9 +115,10 @@ var ResultRow = React.createClass({
     });
 
     var result = this.props.result;
+    var hidePosition = this.props.hidePosition;
     return (
       <tr className={result.advanced ? 'competitor-advanced' : ''}>
-        <td>{result.position}</td>
+        <td>{hidePosition ? '' : result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
@@ -209,12 +210,14 @@ var ResultsList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {that.state.results.map(function(result) {
+            {that.state.results.map(function(result, i) {
+              var prevResult = i > 0 ? that.state.results[i - 1] : null;
               return (
                 <ResultRow key={result._id}
                            competitionUrlId={that.props.competitionUrlId}
                            result={result}
                            primarySortField={format.sortBy}
+                           hidePosition={prevResult && prevResult.position == result.position}
                            competitorName={that.state.userById[result.userId].profile.name}
                 />
               );
