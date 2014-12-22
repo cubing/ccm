@@ -304,7 +304,7 @@
 
 <template name="modalAdvanceRound">
   <div id="modalAdvanceRound" class="modal fade">
-    <div class="modal-dialog">
+    <div class="modal-dialog full-screen">
       {{#if this}}
         <form role="form">
           <div class="modal-content">
@@ -317,11 +317,7 @@
             <div class="modal-body">
               <div class="form-group">
                 <div id="roundResultsListWrapper">
-                  {{! TODO unfortunately, passing down advanceCount like
-                  this is very non performant. I guess that rerendering the
-                  entire list is painful. Someday we should come up with a
-                  more efficient implementation of this.}}
-                  {{> roundResultsList roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
+                  {{> roundResultsListReactjs roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
                 </div>
                 <input type="number" min="1" max="{{competitorsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
               </div>

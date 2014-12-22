@@ -5,9 +5,13 @@
       {{formatName roundFormatCode}}
     </p>
 
-    <div id="reactRenderArea"></div>
+    {{> roundResultsListReactjs roundId=roundId competitionUrlId=competitionUrlId}}
 
   </div>
+</template>
+
+<template name="roundResultsListReactjs">
+  <div class="reactRenderArea"></div>
 </template>
 
 <template name="roundResultsReact_namePill">

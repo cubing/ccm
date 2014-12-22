@@ -1,6 +1,6 @@
 var log = logging.handle("roundResultsReact");
 
-Template.roundResultsReactjs.rendered = function() {
+Template.roundResultsListReactjs.rendered = function() {
   var template = this;
 
   // To give the illusion of loading quickly, first render
@@ -18,9 +18,11 @@ Template.roundResultsReactjs.rendered = function() {
     React.render(
       <ResultsList competitionUrlId={data.competitionUrlId}
                    roundId={data.roundId}
+                   advanceCount={data.advanceCount}
+                   configurableAdvanceCount={data.configurableAdvanceCount}
                    limit={limit}
       />,
-      template.$("#reactRenderArea")[0]
+      template.$(".reactRenderArea")[0]
     );
   });
 
@@ -36,16 +38,16 @@ Template.roundResultsReactjs.rendered = function() {
   });
 };
 
-Template.roundResultsReactjs.destroyed = function() {
+Template.roundResultsListReactjs.destroyed = function() {
   var template = this;
   React.unmountComponentAtNode(
-    template.$("#reactRenderArea")[0]
+    template.$(".reactRenderArea")[0]
   );
 };
 
 var autocompleteEnteredReact = new ReactiveVar(null);
 
-Template.roundResultsReactjs.events({
+Template.roundResultsListReactjs.events({
   'input #inputCompetitorName': function(e) {
     autocompleteEnteredReact.set(e.currentTarget.value);
   },
@@ -115,9 +117,15 @@ var ResultRow = React.createClass({
     });
 
     var result = this.props.result;
+
+    var rowClasses = React.addons.classSet({
+      'competitor-advanced': result.advanced,
+      'last-competitor-to-advance': this.props.drawLine,
+    });
+
     var hidePosition = this.props.hidePosition;
     return (
-      <tr className={result.advanced ? 'competitor-advanced' : ''}>
+      <tr className={rowClasses}>
         <td>{hidePosition ? '' : result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
@@ -212,11 +220,13 @@ var ResultsList = React.createClass({
           <tbody>
             {that.state.results.map(function(result, i) {
               var prevResult = i > 0 ? that.state.results[i - 1] : null;
+              var drawLine = that.props.configurableAdvanceCount && that.props.advanceCount == i + 1;
               return (
                 <ResultRow key={result._id}
                            competitionUrlId={that.props.competitionUrlId}
                            result={result}
                            primarySortField={format.sortBy}
+                           drawLine={drawLine}
                            hidePosition={prevResult && prevResult.position == result.position}
                            competitorName={that.state.userById[result.userId].profile.name}
                 />

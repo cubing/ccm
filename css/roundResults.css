@@ -3,6 +3,10 @@ tr.competitor-advanced td:first-child {
   background-color: yellow; /* idea shamelessly stolen from cubecomps */
 }
 
+tr.last-competitor-to-advance {
+  border-bottom: 2px solid yellow;
+}
+
 .results-best {
   border-right: 1px solid #ddd; /* color copied from Bootstrap */
 }
