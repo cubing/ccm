@@ -106,22 +106,6 @@ if(Meteor.isClient) {
   });
 }
 
-getCompetitionRegistrationOpenMoment = function(competitionId) {
-  var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
-  if(!open) {
-    return null;
-  }
-  return moment(open);
-};
-
-getCompetitionRegistrationCloseMoment = function(competitionId) {
-  var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
-  if(!close) {
-    return null;
-  }
-  return moment(close);
-};
-
 getCompetitionEndDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
   if(!startDate) {
@@ -135,6 +119,36 @@ getCompetitionEndDateMoment = function(competitionId) {
 if(Meteor.isClient) {
   Template.registerHelper("competitionEndDateMoment", function() {
     return getCompetitionEndDateMoment(this.competitionId);
+  });
+}
+
+getCompetitionRegistrationOpenMoment = function(competitionId) {
+  var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
+  if(!open) {
+    // default to a future date; we don't want people signing
+    // up before things are ready.
+    return getCompetitionStartDateMoment(competitionId).subtract(2, 'days').hours(23).minutes(59).seconds(59);
+  }
+  return moment(open);
+};
+if(Meteor.isClient) {
+  Template.registerHelper("getCompetitionRegistrationOpenMoment", function() {
+    return getCompetitionRegistrationOpenMoment(this.competitionId);
+  });
+}
+
+getCompetitionRegistrationCloseMoment = function(competitionId) {
+  var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
+  if(!close) {
+    // default to at least a day before the competition.
+    // 11:59 PM is less confusing than 12:00 AM.
+    return getCompetitionStartDateMoment(competitionId).subtract(2, 'days').hours(23).minutes(59).seconds(59);
+  }
+  return moment(close);
+};
+if(Meteor.isClient) {
+  Template.registerHelper("getCompetitionRegistrationCloseMoment", function() {
+    return getCompetitionRegistrationCloseMoment(this.competitionId);
   });
 }
 
