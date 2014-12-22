@@ -164,11 +164,14 @@ var ResultRow = React.createClass({
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
         {(result.solves || []).map(function(solve, i) {
-          var cf = clockFormat(solve);
+          var solveClasses = React.addons.classSet({
+            'results-solve': true,
+            'results-solve-dropped': (i === bestIndex || i === worstIndex),
+
+            'text-right': true,
+          });
           return (
-            <td key={i} className="results-solve text-right">
-              {i == bestIndex || i == worstIndex ? "(" + cf + ")" : cf}
-            </td>
+            <td key={i} className={solveClasses}>{clockFormat(solve)}</td>
           );
         })}
       </tr>
