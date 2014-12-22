@@ -14,8 +14,11 @@ Template.editSchedule.helpers({
   editingRound: function() {
     return editingRoundReact.get();
   },
-  defaultRegistrationEndDate: function() {
-    return getCompetitionStartDateMoment(this.competitionId).subtract(1, 'days').subtract(1, 'second').calendar();
+  registrationOpenDatePlaceholder: function() {
+    return getCompetitionRegistrationOpenMoment(this.competitionId).calendar();
+  },
+  registrationCloseDatePlaceholder: function() {
+    return getCompetitionRegistrationCloseMoment(this.competitionId).calendar();
   },
 });
 

@@ -29,7 +29,9 @@ getCannotRegisterReasons = function(competitionId) {
   if(now.isAfter(close)) {
     reasons.push("Competition registration is now closed!");
   } else if(now.isBefore(open)) {
-    reasons.push("Competition registration is not yet open!");
+    var reasonText = "Competition registration is not yet open!";
+    reasonText += " Registration is set to open " + open.calendar() + ".";
+    reasons.push(reasonText);
   }
 
   // could be closed due to hitting capacity
