@@ -103,17 +103,18 @@ var ResultRow = React.createClass({
       competitorNameNode = competitorName;
     }
 
-    var primarySortField = this.props.primarySortField.toLowerCase();
+    var roundFormat = this.props.roundFormat;
+    var sortByField = roundFormat.sortBy.toLowerCase();
     var averageClasses = React.addons.classSet({
       'results-average': true,
       'text-right': true,
-      'results-primary-sort-field': (primarySortField == 'average'),
+      'results-primary-sort-field': (sortByField == 'average'),
     });
 
     var bestClasses = React.addons.classSet({
       'results-best': true,
       'text-right': true,
-      'results-primary-sort-field': (primarySortField == 'best'),
+      'results-primary-sort-field': (sortByField == 'best'),
     });
 
     var result = this.props.result;
@@ -124,6 +125,37 @@ var ResultRow = React.createClass({
       'last-competitor-to-advance': this.props.drawLine,
     });
 
+    result.solves = result.solves || [];
+    // TODO - i think a lot of this logic will get moved into
+    // the Results collection via autovalues.
+    var bestSolve, bestIndex;
+    var worstSolve, worstIndex;
+    if(roundFormat.code == "a") {
+      var isCombinedAndDidNotDoAverage = false;
+      if(this.props.roundType.combined) {
+        var hasEmptySolve = _.find(result.solves, function(solve) {
+          return solve.millis === 0;
+        });
+        if(hasEmptySolve || result.solves.length != roundFormat.count) {
+          isCombinedAndDidNotDoAverage = true;
+        }
+      }
+
+      // Only compute the dropped solves if the competitor *did* do a full average.
+      if(!isCombinedAndDidNotDoAverage) {
+        result.solves.forEach(function(solve, i) {
+          if(!worstSolve || solve.millis > worstSolve.millis || $.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+            worstIndex = i;
+            worstSolve = solve;
+          }
+          if(!bestSolve || solve.millis < bestSolve.millis) {
+            bestIndex = i;
+            bestSolve = solve;
+          }
+        });
+      }
+    }
+
     var hidePosition = this.props.hidePosition;
     return (
       <tr className={rowClasses} data-result-id={result._id}>
@@ -132,8 +164,11 @@ var ResultRow = React.createClass({
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
         {(result.solves || []).map(function(solve, i) {
+          var cf = clockFormat(solve);
           return (
-            <td key={i} className="results-solve text-right">{clockFormat(solve)}</td>
+            <td key={i} className="results-solve text-right">
+              {i == bestIndex || i == worstIndex ? "(" + cf + ")" : cf}
+            </td>
           );
         })}
       </tr>
@@ -186,11 +221,13 @@ var ResultsList = React.createClass({
     });
 
     var formatCode = getRoundAttribute(roundId, 'formatCode');
+    var roundCode = getRoundAttribute(roundId, 'roundCode');
 
     return {
       results: results,
       userById: userById,
       formatCode: formatCode,
+      roundCode: roundCode,
     }
   },
   componentWillMount: function() {
@@ -207,13 +244,12 @@ var ResultsList = React.createClass({
   },
   render: function() {
     var that = this;
-    var selectCompetitor = false;//<<<
     var roundId = that.props.roundId;
-
     var format = wca.formatByCode[that.state.formatCode];
+    var roundType = wca.roundByCode[that.state.roundCode];
 
     return (
-      <div className={selectCompetitor ? 'col-xs-12 col-sm-7' : ''}>
+      <div>
         <table className="table table-striped table-responsive">
           <thead>
             <tr>
@@ -234,7 +270,8 @@ var ResultsList = React.createClass({
                 <ResultRow key={result._id}
                            competitionUrlId={that.props.competitionUrlId}
                            result={result}
-                           primarySortField={format.sortBy}
+                           roundFormat={format}
+                           roundType={roundType}
                            drawLine={drawLine}
                            hidePosition={prevResult && prevResult.position == result.position}
                            competitorName={that.state.userById[result.userId].profile.name}
