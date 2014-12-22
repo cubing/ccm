@@ -4,6 +4,7 @@ Template.mjChester.rendered = function() {
     var data = Template.currentData();
     template.$("div.jChester").jChester({
       solveTime: data.solveTime,
+      editableSolveTimeFields: data.editableSolveTimeFields,
     });
   });
 };

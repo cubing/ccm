@@ -59,7 +59,7 @@
           <ol class="list-unstyled">
             {{#each selectedSolves}}
               <li>
-                {{> mjChester solveTime=this name="inputSolve"}}
+                {{> mjChester solveTime=this name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
               </li>
             {{/each}}
           </ol>

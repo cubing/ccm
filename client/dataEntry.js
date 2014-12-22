@@ -85,6 +85,21 @@ Template.roundDataEntry.helpers({
     }
     return solves;
   },
+  editableSolveTimeFields: function() {
+    var data = Template.parentData(1);
+    var eventCode = getRoundAttribute(data.roundId, 'eventCode');
+    var fields = wca.eventByCode[eventCode].solveTimeFields;
+    if(!fields) {
+      // jChester will only use its default if the value for
+      // editableSolveTimeFields is undefined, null won't work.
+      return undefined;
+    }
+    var obj = {};
+    _.each(fields, function(field) {
+      obj[field] = true;
+    });
+    return obj;
+  },
 });
 Template.roundDataEntry.events({
   'click #selectableResults tr.result': function(e) {

@@ -331,6 +331,7 @@ wca.events = [
   {
     "code": "333fm",
     "name": "Rubik's Cube: Fewest moves",
+    solveTimeFields: [ 'moveCount' ],
   },
   {
     "code": "333ft",
@@ -367,6 +368,7 @@ wca.events = [
   {
     "code": "333mbf",
     "name": "Rubik's Cube: Multiple Blindfolded",
+    solveTimeFields: [ 'millis', 'puzzlesSolvedCount', 'puzzlesAttemptedCount' ],
   },
 ];
 
