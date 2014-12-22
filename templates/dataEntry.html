@@ -40,9 +40,22 @@
           advanced to the next round.
         </div>
       {{/if}}
+      {{> roundDataEntry roundId=roundId}}
+    {{/if}}
 
-      {{#roundResultsList roundId=roundId selectCompetitor=true selectCompetitorListener=selectCompetitorListener}}
-        {{#if selectedCompetitor}}
+  </div>
+</template>
+
+<template name="roundDataEntry">
+  <div class="row">
+
+    <div class="col-xs-12 col-sm-4">
+      <div class="results-sidebar">
+        {{!--
+        {{> inputAutocomplete settings=autocompleteSettings id="inputCompetitorName" class="form-control" placeholder="Competitor name"}}
+        --}}
+
+        {{#if selectedResultId}}
           <ol class="list-unstyled">
             {{#each selectedSolves}}
               <li>
@@ -51,8 +64,12 @@
             {{/each}}
           </ol>
         {{/if}}
-      {{/roundResultsList}}
-    {{/if}}
+      </div>
+    </div>
+
+    <div id="selectableResults" class="col-xs-12 col-sm-7">
+      {{> roundResultsListReactjs roundId=roundId selectCompetitor=true selectCompetitorListener=selectCompetitorListener}}
+    </div>
 
   </div>
 </template>

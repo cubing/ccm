@@ -119,13 +119,14 @@ var ResultRow = React.createClass({
     var result = this.props.result;
 
     var rowClasses = React.addons.classSet({
+      'result': true,
       'competitor-advanced': result.advanced,
       'last-competitor-to-advance': this.props.drawLine,
     });
 
     var hidePosition = this.props.hidePosition;
     return (
-      <tr className={rowClasses}>
+      <tr className={rowClasses} data-result-id={result._id}>
         <td>{hidePosition ? '' : result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>

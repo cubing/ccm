@@ -1,11 +1,10 @@
-var selectedCompetitor = new ReactiveVar(null);
+var selectedResultIdReact = new ReactiveVar(null);
 Router.onBeforeAction(function() {
-  // Clear selected competitor
-  selectedCompetitor.set(null);
-  $('#inputCompetitorName').val('');
-
+  // Clear selected result
+  selectedResultIdReact.set(null);
   this.next();
 });
+
 Template.dataEntry.helpers({
   isSelectedRoundClosed: function() {
     if(!this.roundId) {
@@ -45,29 +44,39 @@ Template.dataEntry.helpers({
     var selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
   },
-  selectCompetitorListener: function() {
-    return function(user) {
-      // First clear the selectedCompetitor, and give Blaze a chance
-      // to remove all the corresponding DOM nodes. This is needed to
-      // clear all solve inputs because Blaze doesn't handle
-      // case where an input's current value is different than the value
-      // Blaze assigned it.
-      selectedCompetitor.set(null);
-      Meteor.setTimeout(function() {
-        selectedCompetitor.set(user);
-      }, 0);
-    };
-  },
-  selectedCompetitor: function() {
-    return selectedCompetitor.get();
+});
+
+Template.roundDataEntry.rendered = function() {
+  var template = this;
+  template.autorun(function() {
+    // Highlight the currently selected result row.
+    var selectedResultId = selectedResultIdReact.get();
+    var $resultRows = template.$('tr.result');
+    $resultRows.removeClass('selectedResult');
+    if(selectedResultId) {
+      var $selectedRow = $resultRows.filter('[data-result-id="' + selectedResultId + '"]');
+      $selectedRow.addClass('selectedResult');
+    }
+  });
+
+  var $sidebar = template.$('.results-sidebar');
+  $sidebar.affix({
+    offset: {
+      top: function() {
+        var parentTop = $sidebar.parent().offset().top;
+        var affixTopSpacing = 20; // From .results-sidebar.affix in roundResults.css
+        return parentTop - affixTopSpacing;
+      },
+    }
+  });
+};
+Template.roundDataEntry.helpers({
+  selectedResultId: function() {
+    return selectedResultIdReact.get();
   },
   selectedSolves: function() {
-    var competitor = selectedCompetitor.get();
-    var result = Results.findOne({
-      competitionId: this.competitionId,
-      roundId: this.roundId,
-      userId: competitor._id,
-    });
+    var selectedResultId = selectedResultIdReact.get();
+    var result = Results.findOne({ _id: selectedResultId });
     var roundFormatCode = getRoundAttribute(this.roundId, 'formatCode');
     var roundFormat = wca.formatByCode[roundFormatCode];
     var solves = result.solves || [];
@@ -75,5 +84,12 @@ Template.dataEntry.helpers({
       solves.push(null);
     }
     return solves;
+  },
+});
+Template.roundDataEntry.events({
+  'click #selectableResults tr.result': function(e) {
+    var $row = $(e.currentTarget);
+    var resultId = $row.data('result-id');
+    selectedResultIdReact.set(resultId);
   },
 });

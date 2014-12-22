@@ -1,14 +1,16 @@
+@import (reference) url('bs-constants.import.less');
+
 tr.competitor-advanced td:first-child {
   font-weight: bold;
-  background-color: yellow; /* idea shamelessly stolen from cubecomps */
+  background-color: @bsSuccessColor;
 }
 
 tr.last-competitor-to-advance {
-  border-bottom: 2px solid yellow;
+  border-bottom: 10px solid @bsSuccessColor;
 }
 
 .results-best {
-  border-right: 1px solid #ddd; /* color copied from Bootstrap */
+  border-right: 1px solid @bsBorderColor;
 }
 
 .results-primary-sort-field {
