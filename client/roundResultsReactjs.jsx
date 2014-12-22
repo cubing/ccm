@@ -130,7 +130,7 @@ var ResultRow = React.createClass({
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
-        {result.solves.map(function(solve, i) {
+        {(result.solves || []).map(function(solve, i) {
           return (
             <td key={i} className="results-solve text-right">{clockFormat(solve)}</td>
           );
@@ -162,6 +162,14 @@ var ResultsList = React.createClass({
     // it ourselves. So here we go.
     var results = resultsCursor.fetch();
     results.sort(function(a, b) {
+      // position may be undefined if no times have been entered yet.
+      // We intentionally sort so that unentered rows are on the bottom.
+      if(!a.position) {
+        return 1;
+      }
+      if(!b.position) {
+        return -1;
+      }
       return a.position - b.position;
     });
 
