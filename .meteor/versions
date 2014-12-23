@@ -12,12 +12,11 @@ blaze@2.0.4
 blaze-tools@1.0.2
 boilerplate-generator@1.0.2
 callback-hook@1.0.2
-cfs:http-methods@0.0.26
-cfs:http-publish@0.0.12
+cfs:http-methods@0.0.27
+cfs:http-publish@0.0.13
 check@1.0.3
 chuangbo:cookie@1.1.0
 coffeescript@1.0.5
-dandv:caret-position@2.1.0-3
 ddp@1.0.13
 deps@1.0.6
 ejson@1.0.5
@@ -51,7 +50,7 @@ logging@1.0.6
 meteor@1.1.4
 meteor-platform@1.2.1
 meteorhacks:async@1.0.0
-meteorhacks:fast-render@2.1.2
+meteorhacks:fast-render@2.1.5
 meteorhacks:kadira@2.15.2
 meteorhacks:kadira-binary-deps@1.3.1
 meteorhacks:meteorx@1.2.1
@@ -59,9 +58,8 @@ meteorhacks:npm@1.2.2
 meteorhacks:subs-manager@1.2.2
 minifiers@1.1.3
 minimongo@1.0.6
-mizzao:autocomplete@0.4.10
 mobile-status-bar@1.0.2
-mongo@1.0.10
+mongo@1.0.11
 mongo-livedata@1.0.7
 mrt:assert@0.2.5
 mrt:flash-messages@1.0.0
