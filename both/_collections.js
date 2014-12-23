@@ -456,32 +456,3 @@ getUserAttribute = function(userId, attribute) {
 getRoundAttribute = function(roundId, attribute) {
   return getDocumentAttribute(Rounds, roundId, attribute);
 };
-
-// This is a workaround for meteor-autocomplete to get preferential matching.
-// See https://github.com/mizzao/meteor-autocomplete/issues/43#issuecomment-58921769
-MeteorUsersPreferentialMatching = {
-  find: function(selector, options) {
-    var allResults = Meteor.users.find(selector, options).fetch();
-    selector['profile.name'].$regex = "\\b" + selector['profile.name'].$regex;
-    var preferredResults = Meteor.users.find(selector, options).fetch();
-
-    var seenIds = {};
-    var arr = [];
-    var addResult = function(result) {
-      if(seenIds[result._id]) {
-        return;
-      }
-      seenIds[result._id] = true;
-      arr.push(result);
-    };
-    var i;
-    for(i = 0; i < preferredResults.length; i++) {
-      addResult(preferredResults[i]);
-    }
-    for(i = 0; i < allResults.length; i++) {
-      addResult(allResults[i]);
-    }
-    arr.count = function() { return arr.length; };
-    return arr;
-  }
-};

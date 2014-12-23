@@ -51,9 +51,7 @@
 
     <div class="col-xs-12 col-sm-4">
       <div class="results-sidebar">
-        {{!--
-        {{> inputAutocomplete settings=autocompleteSettings id="inputCompetitorName" class="form-control" placeholder="Competitor name"}}
-        --}}
+        <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#if selectedResultId}}
           <ol class="list-unstyled">

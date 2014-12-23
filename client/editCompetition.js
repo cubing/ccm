@@ -638,9 +638,9 @@ Template.editCompetition.helpers({
 });
 
 function getSelectedUser(t) {
+  // TODO https://github.com/jfly/gjcomps/issues/83
   var nameInput = t.find('input[name="name"]');
-  var userId = getNameAndIdFromUserString(nameInput.value)[1];
-  var user = Meteor.users.findOne({ _id: userId });
+  var user = Meteor.users.findOne({ 'profile.name': nameInput.value });
   return user;
 }
 
@@ -694,51 +694,7 @@ Template.editCompetition_users.events({
   },
 });
 
-function getNameAndIdFromUserString(userStr) {
-  var match = userStr.match(/([^(]*)(?:\((.*)\))?/);
-  var name = match[1].trim();
-  var id = match[2];
-  return [ name, id ];
-}
-
 Template.editCompetition_users.rendered = function() {
-  var substringMatcher = function(collection, attributes) {
-    return function findMatches(q, cb) {
-      var name = getNameAndIdFromUserString(q)[0];
-      var seenIds = {};
-      var arr = [];
-      var addResult = function(result) {
-        if(seenIds[result._id]) {
-          return;
-        }
-        seenIds[result._id] = true;
-        arr.push(result);
-      };
-
-      _.each([true, false], function(startOfWordMatch) {
-        _.each(attributes, function(attribute) {
-          var findParams = {};
-          var $regex;
-          if(startOfWordMatch) {
-            $regex = "\\b" + RegExp.escape(name);
-          } else {
-            $regex = RegExp.escape(name);
-          }
-          findParams[attribute] = {
-            $regex: $regex,
-            $options: 'i'
-          };
-          var results = collection.find(findParams).fetch();
-          for(var i = 0; i < results.length; i++) {
-            addResult(results[i]);
-          }
-        });
-      });
-
-      cb(arr);
-    };
-  };
-
   this.$('.typeahead').typeahead({
     hint: true,
     highlight: true,
@@ -746,9 +702,9 @@ Template.editCompetition_users.rendered = function() {
   }, {
     name: 'users',
     displayKey: function(user) {
-      return user.profile.name + " (" + user._id + ")";
+      return user.profile.name;
     },
-    source: substringMatcher(Meteor.users, [ 'profile.name' ]),
+    source: typeaheadSubstringMatcher(Meteor.users, [ 'profile.name' ]),
   });
 
   maybeEnableUserSelectForm(this);
