@@ -90,6 +90,7 @@ Template.roundDataEntry.rendered = function() {
       }
     }).fetch();
 
+    // TODO - https://github.com/jfly/gjcomps/issues/83
     // Urg, minimongo doesn't index, so we build our own.
     var users = Meteor.users.find({
     }, {
@@ -157,6 +158,7 @@ Template.roundDataEntry.helpers({
 function userMaybeSelected(template, roundId) {
   var nameInput = template.$('input[name="name"]');
   var name = nameInput.val();
+  // TODO - https://github.com/jfly/gjcomps/issues/83
   var user = Meteor.users.findOne({
     'profile.name': name,
   }, {
@@ -206,6 +208,7 @@ Template.roundDataEntry.events({
     });
     assert(result);
 
+    // TODO - https://github.com/jfly/gjcomps/issues/83
     var user = Meteor.users.findOne({
       _id: result.userId,
     }, {

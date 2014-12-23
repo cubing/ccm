@@ -30,14 +30,14 @@ function exportWcaResultsObj(competitionId, competitionUrlId) {
   }
   var scrambleProgram = scramblePrograms[0];
 
-  var competitors = Registrations.find({
+  var registrations = Registrations.find({
     competitionId: competitionId,
   }, {
     userId: 1,
   }).fetch();
   var users = Meteor.users.find({
     _id: {
-      $in: _.pluck(competitors, "userId")
+      $in: _.pluck(registrations, "userId")
     }
   }).fetch();
   // TODO - compare this list of people to the people who *actually* competed

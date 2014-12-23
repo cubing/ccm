@@ -212,6 +212,7 @@ var ResultsList = React.createClass({
       return a.position - b.position;
     });
 
+    // TODO - denormalize! https://github.com/jfly/gjcomps/issues/83 (and 89)
     var users = Meteor.users.find({
     }, {
       fields: {

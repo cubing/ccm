@@ -704,6 +704,7 @@ Template.editCompetition_users.rendered = function() {
     displayKey: function(user) {
       return user.profile.name;
     },
+    // TODO - https://github.com/jfly/gjcomps/issues/83
     source: typeaheadSubstringMatcher(Meteor.users, [ 'profile.name' ]),
   });
 
@@ -713,10 +714,17 @@ Template.editCompetition_users.rendered = function() {
 Template.editCompetition_users.helpers({
   users: function() {
     // TODO - sort by name?
-    var comp = Competitions.findOne({ _id: this.competitionId });
+    var fields = [];
+    fields[this.userIdsAtribute] = 1;
+    var comp = Competitions.findOne({
+      _id: this.competitionId
+    }, {
+      fields: fields,
+    });
     if(!comp || !comp[this.userIdsAtribute]) {
       return [];
     }
+    // TODO - https://github.com/jfly/gjcomps/issues/83
     return Meteor.users.find({
       _id: {
         $in: comp[this.userIdsAtribute]
