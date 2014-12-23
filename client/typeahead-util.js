@@ -1,5 +1,5 @@
 // It might make sense to get rid of this in favor of the substringMatcher below.
-typeaheadSubstringMatcher = function(collection, attributes, extraCriteria) {
+typeaheadSubstringMatcher = function(collection, attribute) {
   return function findMatches(q, cb) {
     var seenIds = {};
     var arr = [];
@@ -11,32 +11,26 @@ typeaheadSubstringMatcher = function(collection, attributes, extraCriteria) {
       arr.push(result);
     };
 
-    _.each([true, false], function(startOfWordMatch) {
-      _.each(attributes, function(attribute) {
-        var findParams = {};
-        var $regex;
-        if(startOfWordMatch) {
-          $regex = "\\b" + RegExp.escape(q);
-        } else {
-          $regex = RegExp.escape(q);
-        }
-        findParams[attribute] = {
-          $regex: $regex,
-          $options: 'i'
-        };
-        var criteria = _.extend({}, extraCriteria(), findParams);
-        var results = collection.find(criteria).fetch();
-        for(var i = 0; i < results.length; i++) {
-          addResult(results[i]);
-        }
-      });
+    // First search for strings that start with the query,
+    // then search for strings that have words that start with the query,
+    // then search for strings that have the query in them anywhere.
+    _.each(["^", "\\b", ""], function(rePrefix) {
+      var reStr = rePrefix + RegExp.escape(q);
+      var criteria = {};
+      criteria[attribute] = {
+        $regex: reStr,
+        $options: 'i'
+      };
+      var results = collection.find(criteria).fetch();
+      for(var i = 0; i < results.length; i++) {
+        addResult(results[i]);
+      }
     });
 
     cb(arr);
   };
 };
 
-// From http://twitter.github.io/typeahead.js/examples/
 substringMatcher = function(objects, attribute) {
   return function findMatches(q, cb) {
     var seenIds = {};

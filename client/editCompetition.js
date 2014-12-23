@@ -705,7 +705,7 @@ Template.editCompetition_users.rendered = function() {
       return user.profile.name;
     },
     // TODO - https://github.com/jfly/gjcomps/issues/83
-    source: typeaheadSubstringMatcher(Meteor.users, [ 'profile.name' ]),
+    source: typeaheadSubstringMatcher(Meteor.users, 'profile.name'),
   });
 
   maybeEnableUserSelectForm(this);
@@ -714,7 +714,7 @@ Template.editCompetition_users.rendered = function() {
 Template.editCompetition_users.helpers({
   users: function() {
     // TODO - sort by name?
-    var fields = [];
+    var fields = {};
     fields[this.userIdsAtribute] = 1;
     var comp = Competitions.findOne({
       _id: this.competitionId
