@@ -224,6 +224,16 @@ var ResultsList = React.createClass({
   },
   componentDidMount: function() {
     log.l1("component did mount");
+
+    var $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    $resultsTable.stickyTableHeaders();
+
+    // React freaks out if it finds dom nodes that share a data-reactid.
+    // Since $.stickyTableHeaders copies the <thead> we generated with react,
+    // that copy has a data-reactid. Explicitly removing this attribute seems to
+    // be enough to make react happy.
+    var $floatingHead = $resultsTable.find("thead.tableFloatingHeader");
+    $floatingHead.removeAttr('data-reactid');
   },
   componentWillUpdate(nextProps, nextState) {
     log.l1("component will update");
@@ -239,7 +249,7 @@ var ResultsList = React.createClass({
 
     return (
       <div className="table-responsive">
-        <table className="table table-striped">
+        <table className="table table-striped table-results" ref="resultsTable">
           <thead>
             <tr>
               <th></th>

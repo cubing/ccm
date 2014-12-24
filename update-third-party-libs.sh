@@ -10,4 +10,6 @@
 (cd client/components/; wget -N https://raw.githubusercontent.com/jonthornton/jquery-timepicker/master/jquery.timepicker.js)
 (cd css/; wget -N https://raw.githubusercontent.com/jonthornton/jquery-timepicker/master/jquery.timepicker.css)
 
-(cd common/components/; wget -N http://www.jflei.com/jChester/jChester.js)
+(cd client/components/; wget -N https://raw.githubusercontent.com/jmosbech/StickyTableHeaders/master/js/jquery.stickytableheaders.js)
+
+(cd both/components/; wget -N http://www.jflei.com/jChester/jChester.js)
