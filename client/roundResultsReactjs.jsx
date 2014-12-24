@@ -241,6 +241,13 @@ var ResultsList = React.createClass({
   componentDidUpdate(prevProps, prevState) {
     log.l1("component did update");
   },
+  resultsTableScroll: function(e) {
+    // Workaround for https://github.com/jmosbech/StickyTableHeaders/issues/68.
+    // StickyTableHeaders doesn't handle horizontal scrolling, so we detect it
+    // ourselves and force the table header to reposition itself.
+    var $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    $resultsTable.data('plugin_stickyTableHeaders').toggleHeaders();
+  },
   render: function() {
     var that = this;
     var roundId = that.props.roundId;
@@ -248,7 +255,7 @@ var ResultsList = React.createClass({
     var roundType = wca.roundByCode[that.state.roundCode];
 
     return (
-      <div className="table-responsive">
+      <div className="table-responsive" onScroll={this.resultsTableScroll}>
         <table className="table table-striped table-results" ref="resultsTable">
           <thead>
             <tr>
