@@ -90,7 +90,7 @@ var ResultRow = React.createClass({
     var competitionUrlId = this.props.competitionUrlId;
     var competitorNameNode;
     if(competitionUrlId) {
-      var path = Router.routes['competitorResults'].path({
+      var path = Router.routes.competitorResults.path({
         competitionUrlId: competitionUrlId,
         competitorUniqueName: result.uniqueName,
       });
