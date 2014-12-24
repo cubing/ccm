@@ -69,8 +69,8 @@ function exportWcaResultsObj(competitionId, competitionUrlId) {
           personId: result.userId,
           position: result.position,
           results: wcaValues,
-          best: result.best.wcaValues,
-          average: result.average.wcaValues,
+          best: result.best.wcaValue,
+          average: result.average.wcaValue,
         };
         wcaResults.push(wcaResult);
       });
