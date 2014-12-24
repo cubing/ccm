@@ -6,7 +6,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
     _id: competitionId,
   }, {
     fields: {
-      organizers: 1,
+      _id: 1,
     }
   });
   if(!competition) {
@@ -14,9 +14,22 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   }
 
   var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
-  if(!siteAdmin && competition.organizers.indexOf(userId) == -1) {
-    return new Meteor.Error(403, "Not an organizer for this competition");
+  if(!siteAdmin) {
+    // If the user is not a siteAdmin, then they must be an organizer
+    // in order to organize =)
+    competition = Competitions.findOne({
+      _id: competitionId,
+      organizers: userId,
+    }, {
+      fields: {
+        _id: 1,
+      }
+    });
+    if(!competition) {
+      return new Meteor.Error(403, "Not an organizer for this competition");
+    }
   }
+
   return false;
 };
 
