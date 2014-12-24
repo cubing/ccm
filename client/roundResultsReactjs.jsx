@@ -238,8 +238,8 @@ var ResultsList = React.createClass({
     var roundType = wca.roundByCode[that.state.roundCode];
 
     return (
-      <div>
-        <table className="table table-striped table-responsive">
+      <div className="table-responsive">
+        <table className="table table-striped">
           <thead>
             <tr>
               <th></th>
