@@ -435,7 +435,7 @@
 </template>
 
 <template name="editCompetition_userRow">
-  {{profile.name}} ({{_id}})
+  {{uniqueName}}
   {{#if isMe}}
     <span class="label label-default">Me</span>
   {{/if}}
@@ -453,7 +453,7 @@
     </div>
 
     <ul class="list-group">
-      {{#each users}}
+      {{#each registrations}}
         <li class="list-group-item">
           {{> editCompetition_userRow}}
           {{#unless isCurrentUser}}

@@ -86,21 +86,21 @@ Template.roundResultsReact_namePill.helpers({
 
 var ResultRow = React.createClass({
   render: function() {
+    var result = this.props.result;
     var competitionUrlId = this.props.competitionUrlId;
-    var competitorName = this.props.competitorName;
     var competitorNameNode;
     if(competitionUrlId) {
       var path = Router.routes['competitorResults'].path({
         competitionUrlId: competitionUrlId,
-        competitorName: competitorName,
+        competitorUniqueName: result.uniqueName,
       });
       competitorNameNode = (
         <a href={path}>
-          {competitorName}
+          {result.uniqueName}
         </a>
       );
     } else {
-      competitorNameNode = competitorName;
+      competitorNameNode = result.uniqueName;
     }
 
     var roundFormat = this.props.roundFormat;
@@ -116,8 +116,6 @@ var ResultRow = React.createClass({
       'text-right': true,
       'results-primary-sort-field': (sortByField == 'best'),
     });
-
-    var result = this.props.result;
 
     var rowClasses = React.addons.classSet({
       'result': true,
@@ -212,24 +210,11 @@ var ResultsList = React.createClass({
       return a.position - b.position;
     });
 
-    // TODO - denormalize! https://github.com/jfly/gjcomps/issues/83 (and 89)
-    var users = Meteor.users.find({
-    }, {
-      fields: {
-        "profile.name": 1
-      },
-    }).fetch();
-    var userById = {};
-    _.each(users, function(user) {
-      userById[user._id] = user;
-    });
-
     var formatCode = getRoundAttribute(roundId, 'formatCode');
     var roundCode = getRoundAttribute(roundId, 'roundCode');
 
     return {
       results: results,
-      userById: userById,
       formatCode: formatCode,
       roundCode: roundCode,
     }
@@ -278,7 +263,6 @@ var ResultsList = React.createClass({
                            roundType={roundType}
                            drawLine={drawLine}
                            hidePosition={prevResult && prevResult.position == result.position}
-                           competitorName={that.state.userById[result.userId].profile.name}
                 />
               );
             })}

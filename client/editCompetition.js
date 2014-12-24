@@ -1,3 +1,5 @@
+var log = logging.handle("editCompetition");
+
 var roundPopupReact = new ReactiveVar(null);
 
 setCompetitionAttribute = function(competitionId, attribute, value) {
@@ -47,10 +49,10 @@ Template.editCompetition.events({
       });
     }, 0);
   },
-  'click button[name="buttonAddRound"]': function(e, t) {
+  'click button[name="buttonAddRound"]': function(e, template) {
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
-  'click button[name="buttonRemoveRound"]': function(e, t) {
+  'click button[name="buttonRemoveRound"]': function(e, template) {
     var lastRoundResultsCount = getLastRoundResultsCount(this.competitionId, this.eventCode);
     if(lastRoundResultsCount > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
@@ -59,13 +61,13 @@ Template.editCompetition.events({
       Meteor.call('removeRound', lastRoundId);
     }
   },
-  'click button[name="buttonReallyRemoveRound"]': function(e, t) {
+  'click button[name="buttonReallyRemoveRound"]': function(e, template) {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     assert(lastRoundId);
     $("#modalReallyRemoveRound_" + this.eventCode).modal('hide');
     Meteor.call('removeRound', lastRoundId);
   },
-  'click button[name="buttonOpenRound"]': function(e, t) {
+  'click button[name="buttonOpenRound"]': function(e, template) {
     Rounds.update({
       _id: this._id,
     }, {
@@ -74,7 +76,7 @@ Template.editCompetition.events({
       }
     });
   },
-  'click button[name="buttonCloseRound"]': function(e, t) {
+  'click button[name="buttonCloseRound"]': function(e, template) {
     Rounds.update({
       _id: this._id,
     }, {
@@ -83,7 +85,7 @@ Template.editCompetition.events({
       }
     });
   },
-  'click button[name="buttonAdvanceCompetitors"]': function(e, t) {
+  'click button[name="buttonAdvanceCompetitors"]': function(e, template) {
     roundPopupReact.set({ advanceCompetitors: this });
     $("#modalAdvanceRound").modal('show');
   },
@@ -99,19 +101,19 @@ Template.editCompetition.events({
       }
     });
   },
-  'click button[name="buttonSetRoundSize"]': function(e, t) {
+  'click button[name="buttonSetRoundSize"]': function(e, template) {
     roundPopupReact.set({ setRoundSize: this });
     $("#modalSetRoundSize").modal('show');
   },
-  'click button[name="buttonHardCutoff"]': function(e, t) {
+  'click button[name="buttonHardCutoff"]': function(e, template) {
     roundPopupReact.set({ hardCutoff: this });
     $("#modalHardCutoff").modal('show');
   },
-  'click button[name="buttonSoftCutoff"]': function(e, t) {
+  'click button[name="buttonSoftCutoff"]': function(e, template) {
     roundPopupReact.set({softCutoff: this });
     $("#modalSoftCutoff").modal('show');
   },
-  'hidden.bs.modal .modal': function(e, t) {
+  'hidden.bs.modal .modal': function(e, template) {
     roundPopupReact.set(null);
   }
 });
@@ -161,31 +163,31 @@ Template.modalAdvanceRound.created = function() {
   });
 };
 Template.modalAdvanceRound.events({
-  'shown.bs.modal .modal': function(e, t) {
+  'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
-    t.$('input').filter(':visible:first').focus();
-    t.$('input').filter(':visible:first').select();
+    template.$('input').filter(':visible:first').focus();
+    template.$('input').filter(':visible:first').select();
   },
-  'input input[name="advanceCount"]': function(e, t) {
+  'input input[name="advanceCount"]': function(e, template) {
     var $input = $(e.currentTarget);
     var advanceCountStr = $input.val();
     var isNonNegInt = String.isNonNegInt(advanceCountStr);
     if(isNonNegInt) {
       var advanceCount = parseInt(advanceCountStr);
-      t.advanceCountReact.set(advanceCount);
+      template.advanceCountReact.set(advanceCount);
     } else {
-      t.advanceCountReact.set(null);
+      template.advanceCountReact.set(null);
     }
   },
-  'submit form': function(e, t) {
+  'submit form': function(e, template) {
     e.preventDefault();
 
-    var advanceCount = t.advanceCountReact.get();
+    var advanceCount = template.advanceCountReact.get();
     Meteor.call('advanceCompetitorsFromRound', advanceCount, this._id, function(err, data) {
       if(err) {
         throw err;
       }
-      t.$(".modal").modal('hide');
+      template.$(".modal").modal('hide');
     });
   },
 });
@@ -221,15 +223,15 @@ Template.modalSetRoundSize.helpers({
   },
 });
 Template.modalSetRoundSize.events({
-  'shown.bs.modal .modal': function(e, t) {
+  'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
-    t.$('input').filter(':visible:first').focus();
-    t.$('input').filter(':visible:first').select();
+    template.$('input').filter(':visible:first').focus();
+    template.$('input').filter(':visible:first').select();
   },
-  'input input[name="roundSize"]': function(e, t) {
-    t.isSaveableReact.set(e.currentTarget.validity.valid);
+  'input input[name="roundSize"]': function(e, template) {
+    template.isSaveableReact.set(e.currentTarget.validity.valid);
   },
-  'submit form': function(e, t) {
+  'submit form': function(e, template) {
     e.preventDefault();
 
     var $input = $('input[name="roundSize"]');
@@ -244,7 +246,7 @@ Template.modalSetRoundSize.events({
     Rounds.update({
       _id: this._id,
     }, toSet);
-    t.$(".modal").modal('hide');
+    template.$(".modal").modal('hide');
   },
 });
 
@@ -286,26 +288,26 @@ Template.modalSoftCutoff.helpers({
   },
 });
 Template.modalSoftCutoff.events({
-  'shown.bs.modal .modal': function(e, t) {
+  'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
-    t.$('input').filter(':visible:first').focus();
-    t.$('input').filter(':visible:first').select();
+    template.$('input').filter(':visible:first').focus();
+    template.$('input').filter(':visible:first').select();
   },
-  'change select[name="softCutoffFormatCode"]': function(e, t) {
+  'change select[name="softCutoffFormatCode"]': function(e, template) {
     var select = e.currentTarget;
     var softCutoffFormatCode = select.value;
-    t.showTimeEntryReact.set(!!softCutoffFormatCode);
+    template.showTimeEntryReact.set(!!softCutoffFormatCode);
   },
-  'solveTimeInput [name="inputSoftCutoff"]': function(e, t, solveTime) {
-    t.isSaveableReact.set(!!solveTime);
+  'solveTimeInput [name="inputSoftCutoff"]': function(e, template, solveTime) {
+    template.isSaveableReact.set(!!solveTime);
   },
-  'submit form': function(e, t) {
+  'submit form': function(e, template) {
     e.preventDefault();
 
-    var $selectCutoffFormat = t.$('select[name="softCutoffFormatCode"]');
+    var $selectCutoffFormat = template.$('select[name="softCutoffFormatCode"]');
     var formatCode = $selectCutoffFormat.val();
 
-    var $inputSoftCutoff = t.$('[name="inputSoftCutoff"]');
+    var $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
     var time = $inputSoftCutoff.jChester('getSolveTime');
 
     var toSet = {};
@@ -329,7 +331,7 @@ Template.modalSoftCutoff.events({
     }
 
     Rounds.update({ _id: this._id }, toSet);
-    t.$(".modal").modal('hide');
+    template.$(".modal").modal('hide');
   },
 });
 
@@ -342,18 +344,18 @@ Template.modalHardCutoff.created = function() {
   });
 };
 Template.modalHardCutoff.events({
-  'shown.bs.modal .modal': function(e, t) {
+  'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
-    t.$('input').filter(':visible:first').focus();
-    t.$('input').filter(':visible:first').select();
+    template.$('input').filter(':visible:first').focus();
+    template.$('input').filter(':visible:first').select();
   },
-  'solveTimeInput [name="inputHardCutoff"]': function(e, t, solveTime) {
-    t.isSaveableReact.set(!!solveTime);
+  'solveTimeInput [name="inputHardCutoff"]': function(e, template, solveTime) {
+    template.isSaveableReact.set(!!solveTime);
   },
-  'submit form': function(e, t) {
+  'submit form': function(e, template) {
     e.preventDefault();
 
-    var $inputHardCutoff = t.$('[name="inputHardCutoff"]');
+    var $inputHardCutoff = template.$('[name="inputHardCutoff"]');
     var time = $inputHardCutoff.jChester('getSolveTime');
 
     Rounds.update({
@@ -369,7 +371,7 @@ Template.modalHardCutoff.events({
       }
     });
 
-    t.$(".modal").modal('hide');
+    template.$(".modal").modal('hide');
   },
 });
 Template.modalHardCutoff.helpers({
@@ -637,50 +639,55 @@ Template.editCompetition.helpers({
   },
 });
 
-function getSelectedUser(t) {
-  // TODO https://github.com/jfly/gjcomps/issues/83
-  var nameInput = t.find('input[name="name"]');
-  var user = Meteor.users.findOne({ 'profile.name': nameInput.value });
-  return user;
+function getEnteredUniqueName(template) {
+  var nameInput = template.find('input[name="name"]');
+  return nameInput.value;
 }
 
-function maybeEnableUserSelectForm(t) {
-  var user = getSelectedUser(t);
-  var $submit = t.$('button[name="buttonAddUser"]');
-  $submit.prop("disabled", !user);
+function getSelectedUserRegistration(template) {
+  var uniqueName = getEnteredUniqueName(template);
+  var registration = Registrations.findOne({ uniqueName: uniqueName });
+  return registration;
+}
+
+function maybeEnableUserSelectForm(template) {
+  var registration = getSelectedUserRegistration(template);
+  var $submit = template.$('button[name="buttonAddUser"]');
+  $submit.prop("disabled", !registration);
 }
 
 Template.editCompetition_users.events({
-  'input input[name="name"]': function(e, t) {
-    maybeEnableUserSelectForm(t);
+  'input input[name="name"]': function(e, template) {
+    maybeEnableUserSelectForm(template);
   },
-  'typeahead:selected input[name="name"]': function(e, t) {
-    maybeEnableUserSelectForm(t);
+  'typeahead:selected input[name="name"]': function(e, template) {
+    maybeEnableUserSelectForm(template);
   },
-  'typeahead:autocompleted input[name="name"]': function(e, t) {
-    maybeEnableUserSelectForm(t);
+  'typeahead:autocompleted input[name="name"]': function(e, template) {
+    maybeEnableUserSelectForm(template);
   },
-  'click button[name="buttonRemoveUser"]': function(e, t) {
-    var user = this;
+  'click button[name="buttonRemoveUser"]': function(e, template) {
+    var registration = this;
     var $pull = {};
-    $pull[t.data.userIdsAtribute] = user._id;
+    $pull[template.data.userIdsAtribute] = registration.userId;
     Competitions.update({
-      _id: t.data.competitionId
+      _id: template.data.competitionId
     }, {
       $pull: $pull
     });
   },
-  'submit form': function(e, t) {
+  'submit form': function(e, template) {
     e.preventDefault();
 
-    var user = getSelectedUser(t);
-    if(!user) {
+    var registration = getSelectedUserRegistration(template);
+    if(!registration) {
       // This should never happen, because we only enable
-      // submission when the input is valid (ie: the input maps to a user).
+      // submission when the input is valid (ie: the input maps to a registration).
+      log.l0("Could not find registration for:", getEnteredUniqueName(template));
       return;
     }
     var $addToSet = {};
-    $addToSet[this.userIdsAtribute] = user._id;
+    $addToSet[this.userIdsAtribute] = registration.userId;
     Competitions.update({
       _id: this.competitionId
     }, {
@@ -688,56 +695,68 @@ Template.editCompetition_users.events({
     });
 
     // Clear name input and close typeahead dialog
-    var $nameInput = t.$('input[name="name"]');
+    var $nameInput = template.$('input[name="name"]');
     $nameInput.typeahead('val', '');
-    maybeEnableUserSelectForm(t);
+    maybeEnableUserSelectForm(template);
   },
 });
 
 Template.editCompetition_users.rendered = function() {
-  this.$('.typeahead').typeahead({
+  var template = this;
+
+  var registrations = [];
+  template.autorun(function() {
+    var competitionId = Template.currentData().competitionId;
+    registrations = Registrations.find({
+      competitionId: competitionId,
+    }, {
+      fields: {
+        uniqueName: 1,
+      }
+    }).fetch();
+    maybeEnableUserSelectForm(template);
+  });
+
+  template.$('.typeahead').typeahead({
     hint: true,
     highlight: true,
     minLength: 1
   }, {
-    name: 'users',
-    displayKey: function(user) {
-      return user.profile.name;
+    name: 'registrations',
+    displayKey: function(registration) {
+      return registration.uniqueName;
     },
-    // TODO - https://github.com/jfly/gjcomps/issues/83
-    source: typeaheadSubstringMatcher(Meteor.users, 'profile.name'),
+    source: substringMatcher(function() { return registrations; }, 'uniqueName'),
   });
-
-  maybeEnableUserSelectForm(this);
 };
 
 Template.editCompetition_users.helpers({
-  users: function() {
+  registrations: function() {
     // TODO - sort by name?
     var fields = {};
     fields[this.userIdsAtribute] = 1;
-    var comp = Competitions.findOne({
+    var competition = Competitions.findOne({
       _id: this.competitionId
     }, {
       fields: fields,
     });
-    if(!comp || !comp[this.userIdsAtribute]) {
+    if(!competition || !competition[this.userIdsAtribute]) {
       return [];
     }
-    // TODO - https://github.com/jfly/gjcomps/issues/83
-    return Meteor.users.find({
-      _id: {
-        $in: comp[this.userIdsAtribute]
+    return Registrations.find({
+      competitionId: this.competitionId,
+      userId: {
+        $in: competition[this.userIdsAtribute]
       }
     });
   },
   isCurrentUser: function() {
-    return Meteor.userId() == this._id;
+    return Meteor.userId() == this.userId;
   }
 });
 
 Template.editCompetition_userRow.helpers({
   isMe: function() {
-    return this._id == Meteor.userId();
+    return this.userId == Meteor.userId();
   },
 });

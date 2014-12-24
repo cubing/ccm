@@ -1,5 +1,5 @@
 // It might make sense to get rid of this in favor of the substringMatcher below.
-typeaheadSubstringMatcher = function(collection, attribute) {
+typeaheadSubstringMatcher = function(collection, attribute, extraCriteria) {
   return function findMatches(q, cb) {
     var seenIds = {};
     var arr = [];
@@ -21,6 +21,7 @@ typeaheadSubstringMatcher = function(collection, attribute) {
         $regex: reStr,
         $options: 'i'
       };
+      criteria = _.extend({}, extraCriteria, criteria);
       var results = collection.find(criteria).fetch();
       for(var i = 0; i < results.length; i++) {
         addResult(results[i]);
@@ -31,8 +32,8 @@ typeaheadSubstringMatcher = function(collection, attribute) {
   };
 };
 
-substringMatcher = function(objects, attribute) {
-  return function findMatches(q, cb) {
+substringMatcher = function(getObjects, attribute) {
+  return function(q, cb) {
     var seenIds = {};
     var arr = [];
     var addResult = function(object) {
@@ -43,6 +44,7 @@ substringMatcher = function(objects, attribute) {
       arr.push(object);
     };
 
+    var objects = getObjects();
     // First search for strings that start with the query,
     // then search for strings that have words that start with the query,
     // then search for strings that have the query in them anywhere.

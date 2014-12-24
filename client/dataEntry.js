@@ -79,36 +79,17 @@ Template.roundDataEntry.rendered = function() {
   // of userIds we're interested in.
   // Note that we are careful to never redefine the usernames array
   // (only mutate it), because we passed it into our typeahead's source.
-  var usernames = [];
+  var results = [];
   template.autorun(function() {
     var data = Template.currentData();
-    var results = Results.find({
+    results = Results.find({
       roundId: data.roundId,
     }, {
       fields: {
-        userId: 1,
+        _id: 1,
+        uniqueName: 1,
       }
     }).fetch();
-
-    // TODO - https://github.com/jfly/gjcomps/issues/83
-    // Urg, minimongo doesn't index, so we build our own.
-    var users = Meteor.users.find({
-    }, {
-      fields: {
-        "profile.name": 1
-      },
-    }).fetch();
-    var userById = {};
-    _.each(users, function(user) {
-      userById[user._id] = user;
-    });
-
-    usernames.length = 0;
-    _.each(results, function(result) {
-      var user = userById[result.userId];
-      // TODO - https://github.com/jfly/gjcomps/issues/83
-      usernames.push({ _id: user._id, name: user.profile.name });
-    });
   });
 
   this.$('.typeahead').typeahead({
@@ -116,11 +97,11 @@ Template.roundDataEntry.rendered = function() {
     highlight: true,
     minLength: 1
   }, {
-    name: 'users',
-    displayKey: function(obj) {
-      return obj.name;
+    name: 'results',
+    displayKey: function(result) {
+      return result.uniqueName;
     },
-    source: substringMatcher(usernames, 'name'),
+    source: substringMatcher(function() { return results; }, 'uniqueName'),
   });
 };
 Template.roundDataEntry.helpers({
@@ -155,34 +136,18 @@ Template.roundDataEntry.helpers({
   },
 });
 
-function userMaybeSelected(template, roundId) {
-  var nameInput = template.$('input[name="name"]');
-  var name = nameInput.val();
-  // TODO - https://github.com/jfly/gjcomps/issues/83
-  var user = Meteor.users.findOne({
-    'profile.name': name,
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
-  if(!user) {
-    selectedResultIdReact.set(null);
-    return;
-  }
-
+function userResultMaybeSelected(template, roundId) {
+  var $nameInput = template.$('input[name="name"]');
+  var uniqueName = $nameInput.val();
   var result = Results.findOne({
     roundId: roundId,
-    userId: user._id,
+    uniqueName: uniqueName,
   }, {
     fields: {
       _id: 1,
     }
   });
-  assert(result);
   if(!result) {
-    log.l0("Unexpectedly failed to find result in round id:", roundId,
-           "for user id:", user._id);
     selectedResultIdReact.set(null);
     return;
   }
@@ -203,37 +168,25 @@ Template.roundDataEntry.events({
       _id: resultId,
     }, {
       fields: {
-        userId: 1,
+        uniqueName: 1,
       }
     });
     assert(result);
 
-    // TODO - https://github.com/jfly/gjcomps/issues/83
-    var user = Meteor.users.findOne({
-      _id: result.userId,
-    }, {
-      fields: {
-        // TODO - https://github.com/jfly/gjcomps/issues/83#issuecomment-67926066
-        'profile.name': 1,
-      }
-    });
-    assert(user);
+    var $nameInput = template.$('input[name="name"]');
+    $nameInput.val(result.uniqueName);
 
-    var nameInput = template.$('input[name="name"]');
-    // TODO - https://github.com/jfly/gjcomps/issues/83#issuecomment-67926066
-    nameInput.val(user.profile.name);
-
-    userMaybeSelected(template, this.roundId);
+    userResultMaybeSelected(template, this.roundId);
   },
   'typeahead:selected .typeahead': function(e, template, suggestion, datasetName) {
-    userMaybeSelected(template, this.roundId);
+    userResultMaybeSelected(template, this.roundId);
   },
   'typeahead:autocompleted .typeahead': function(e, template, suggestion, datasetName) {
-    userMaybeSelected(template, this.roundId);
+    userResultMaybeSelected(template, this.roundId);
   },
   'keydown .typeahead': function(e, template) {
     if(e.which == 13) {
-      userMaybeSelected(template, this.roundId);
+      userResultMaybeSelected(template, this.roundId);
     }
   },
   'input .typeahead': function(e, template) {

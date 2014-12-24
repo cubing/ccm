@@ -1,3 +1,5 @@
+var log = logging.handle("methods");
+
 var throwIfNotVerifiedUser = function(userId) {
   if(!userId) {
     throw new Meteor.Error(401, "Must log in");
@@ -33,6 +35,7 @@ Meteor.methods({
     Rounds.remove({ competitionId: competitionId });
     Results.remove({ competitionId: competitionId });
     Groups.remove({ competitionId: competitionId });
+    Registrations.remove({ competitionId: competitionId });
   },
   addRound: function(competitionId, eventCode) {
     if(!canAddRound(this.userId, competitionId, eventCode)) {
@@ -152,8 +155,7 @@ Meteor.methods({
       group: newGroup.group,
     });
     if(existingGroup) {
-      console.warn("Clobbering existing group");
-      console.warn(existingGroup);
+      log.l0("Clobbering existing group", existingGroup);
       Groups.update({
         _id: existingGroup._id,
       }, {
@@ -172,7 +174,11 @@ Meteor.methods({
     }, {
       sort: {
         position: 1,
-      }
+      },
+      fields: {
+        userId: 1,
+        uniqueName: 1,
+      },
     }).fetch();
     if(competitorCount < 0) {
       throw new Meteor.Error(400,
@@ -199,13 +205,19 @@ Meteor.methods({
     }
 
     var desiredUserIds = [];
+    var uniqueNameByUserId = {};
     for(var i = 0; i < competitorCount; i++) {
       var result = results[i];
       desiredUserIds.push(result.userId);
+      uniqueNameByUserId[result.userId] = result.uniqueName;
     }
 
     var actualUserIds = _.pluck(Results.find({
       roundId: nextRound._id,
+    }, {
+      fields: {
+        userId: 1,
+      }
     }).fetch(), 'userId');
 
     var userIdsToRemove = _.difference(actualUserIds, desiredUserIds);
@@ -217,7 +229,7 @@ Meteor.methods({
     // shouldn't be.
     _.each(userIdsToRemove, function(userId) {
       Results.remove({
-        competitionId: result.competitionId,
+        competitionId: competitionId,
         roundId: nextRound._id,
         userId: userId,
       });
@@ -227,9 +239,10 @@ Meteor.methods({
     // round.
     _.each(userIdsToAdd, function(userId) {
       Results.insert({
-        competitionId: result.competitionId,
+        competitionId: competitionId,
         roundId: nextRound._id,
         userId: userId,
+        uniqueName: uniqueNameByUserId[userId],
       });
     });
     Meteor.call('recomputeWhoAdvanced', roundId);
@@ -317,6 +330,7 @@ if(Meteor.isServer) {
       assert(competition);
 
       var userInfoByJsonId = {};
+      var userInfoByUniqueName = {};
       wcaCompetition.persons.forEach(function(wcaPerson, i) {
         var dobMoment = moment.utc(wcaPerson.dob);
         var userProfile = {
@@ -356,10 +370,30 @@ if(Meteor.isServer) {
             assert(user);
           }
         }
-        userInfoByJsonId[wcaPerson.id] = {
+
+        // Pick a uniqueName for this competitor
+        var suffix = 0;
+        var uniqueName;
+        var uniqueNameTaken; // grrr...jshint
+        do {
+          suffix++;
+          uniqueName = user.profile.name;
+          if(suffix > 1) {
+            uniqueName += " " + suffix;
+          }
+          uniqueNameTaken = !!userInfoByUniqueName[uniqueName];
+        } while(uniqueNameTaken);
+
+        var userInfo = {
+          jsonId: wcaPerson.id,
           userId: user._id,
+          uniqueName: uniqueName,
           events: {},
         };
+        assert(!userInfoByJsonId[userInfo.jsonId]);
+        userInfoByJsonId[userInfo.jsonId] = userInfo;
+        assert(!userInfoByUniqueName[userInfo.uniqueName]);
+        userInfoByUniqueName[userInfo.uniqueName] = userInfo;
       });
 
       // Add all the rounds, results, and registrations for this competition.
@@ -371,7 +405,7 @@ if(Meteor.isServer) {
 
       // Add data for rounds, results, and groups
       wcaCompetition.events.forEach(function(wcaEvent) {
-        console.log(Date.now() + " adding data for " + wcaEvent.eventId);
+        log.l0("adding data for " + wcaEvent.eventId);
         // Sort rounds according to the order in which they must have occurred.
         wcaEvent.rounds.sort(function(r1, r2) {
           return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
@@ -402,6 +436,7 @@ if(Meteor.isServer) {
               competitionId: competition._id,
               roundId: roundId,
               userId: userInfo.userId,
+              uniqueName: userInfo.uniqueName,
               position: wcaResult.position,
               solves: solves,
               best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),
@@ -434,7 +469,7 @@ if(Meteor.isServer) {
           Meteor.call('recomputeWhoAdvanced', roundId);
         });
 
-        console.log(Date.now() + " finished adding data for " + wcaEvent.eventId);
+        log.l0("finished adding data for " + wcaEvent.eventId);
       });
 
       // Add registrations for people as documents in the registrations collection.
@@ -447,6 +482,7 @@ if(Meteor.isServer) {
           Registrations.insert({
             competitionId: competition._id,
             userId: userInfo.userId,
+            uniqueName: userInfo.uniqueName,
             events: _.keys(userInfo.events),
           });
         }

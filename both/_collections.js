@@ -81,6 +81,9 @@ Registrations.attachSchema({
       type: "hidden"
     },
   },
+  uniqueName: {
+    type: String,
+  },
   events: {
     type: [String],
     allowedValues: _.keys(wca.eventByCode),
@@ -105,14 +108,21 @@ Registrations.attachSchema({
       }
     },
   },
-
 });
 if(Meteor.isServer) {
+  // Don't let someone register for a competition twice.
   Registrations._ensureIndex({
     competitionId: 1,
-    userId: 1
+    userId: 1,
   }, {
-    unique: 1
+    unique: 1,
+  });
+  // The (competitionId, uniqueName) pair should always be unique.
+  Registrations._ensureIndex({
+    competitionId: 1,
+    uniqueName: 1,
+  }, {
+    unique: 1,
   });
 }
 
@@ -313,6 +323,9 @@ Results.attachSchema({
   userId: {
     type: String,
   },
+  uniqueName: {
+    type: String,
+  },
   position: {
     type: Number,
     min: 0,
@@ -344,6 +357,21 @@ if(Meteor.isServer) {
     'average.wcaValue': 1,
     'best.wcaValue': 1,
     userId: 1, // As a last resort to break ties, sort by userId
+  });
+
+  // One person should not appear twice in a round,
+  // and unique names should be, well, unique =)
+  Results._ensureIndex({
+    roundId: 1,
+    userId: 1,
+  }, {
+    unique: true,
+  });
+  Results._ensureIndex({
+    roundId: 1,
+    uniqueName: 1,
+  }, {
+    unique: true,
   });
 }
 

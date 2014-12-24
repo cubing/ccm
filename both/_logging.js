@@ -28,6 +28,15 @@ var wildcardMatch = function(wildcard, toMatch) {
   return wildcardPrefix == toMatchPrefix;
 };
 
+if(Meteor.isServer) {
+  var performance = {
+    now: function() {
+      var hrtime = process.hrtime();
+      return hrtime[0] * 1e9 + hrtime[1];
+    },
+  };
+}
+
 logging = {
   LEVELS: [ 0, 1, 2, 3 ],
   handles_: {},

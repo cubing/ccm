@@ -41,20 +41,6 @@ Meteor.publish('competition', function(competitionUrlId) {
   ];
 });
 
-function findUsers(criteria) {
-  return Meteor.users.find({
-    // https://github.com/jfly/gjcomps/issues/71
-    //_id: {
-    //  $in: _.pluck(registrations, "userId")
-    //}
-  }, {
-    fields: {
-      _id: 1,
-      "profile.name": 1,
-    }
-  });
-}
-
 Meteor.publish('competitionUsers', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
@@ -63,7 +49,6 @@ Meteor.publish('competitionUsers', function(competitionUrlId) {
   }
   return [
     Registrations.find({ competitionId: competitionId }),
-    findUsers({}),
   ];
 });
 
@@ -87,39 +72,36 @@ Meteor.publish('competitionResults', function(competitionUrlId) {
   }
   return [
     Results.find({ competitionId: competitionId }),
-    // TODO - perhaps we should denormalize our data so everything we
-    // need is in Results?
-    //  https://github.com/jfly/gjcomps/issues/71#issuecomment-67763004
-    findUsers({}),
   ];
 });
 
-Meteor.publish('competitorResults', function(competitionUrlId, competitorName) {
+Meteor.publish('competitorResults', function(competitionUrlId, competitorUniqueName) {
   check(competitionUrlId, String);
-  check(competitorName, String);
+  check(competitorUniqueName, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
-
-  // TODO - what about multiple users with the same name?
-  //  https://github.com/jfly/gjcomps/issues/83
-  var user = Meteor.users.findOne({
-    'profile.name': competitorName,
-  }, {
-    fields: {
-      _id: 1,
-    }
+  var registration = Registrations.findOne({
+    competitionId: competitionId,
+    uniqueName: competitorUniqueName,
   });
-  if(!user) {
+  if(!registration) {
     return [];
   }
   return [
-    Results.find({ competitionId: competitionId, userId: user._id, }),
-    // TODO - perhaps we should denormalize our data so everything we
-    // need is in Results?
-    //  https://github.com/jfly/gjcomps/issues/71#issuecomment-67763004
-    findUsers({ _id: user._id, }),
+    Registrations.find({competitionId: competitionId, uniqueName: competitorUniqueName, }),
+    Meteor.users.find({
+      _id: registration.userId,
+    }, {
+      fields: {
+        _id: 1,
+        'profile.name': 1,
+      }
+    }),
+
+    // TODO - does this need a db index?
+    Results.find({ competitionId: competitionId, userId: registration.userId, }),
   ];
 });
 
@@ -142,9 +124,6 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
   });
   return [
     Results.find({ roundId: round._id, }),
-    // TODO - ideally we'd denormalize our data so that we wouldn't
-    // need to publish the Users collection as well.
-    findUsers({}),
   ];
 });
 

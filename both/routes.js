@@ -313,36 +313,47 @@ Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
   controller: 'ViewRoundController',
 });
 
-Router.route('/:competitionUrlId/results/:competitorName', {
-  name: 'competitorResults',
-  controller: 'ViewCompetitionController',
+
+// TODO - fast-render breaks if we don't define a controller for this route.
+// It's seems to call waitOn with the wrong "this".
+ViewCompetitorController = ViewCompetitionController.extend({
   waitOn: function() {
-    var waitOn = this.constructor.prototype.waitOn.call(this);
+    var waitOn = this.constructor.__super__.waitOn.call(this);
     waitOn.push(subs.subscribe('competitorResults',
                                this.params.competitionUrlId,
-                               this.params.competitorName,
+                               this.params.competitorUniqueName,
                                subscriptionError(this)));
     return waitOn;
   },
   data: function() {
-    var userName = this.params.competitorName;
-
-    // Hack to call our controller's data function
-    var data = this.constructor.prototype.data.call(this);
-    if(!data) {
+    var parentData = this.constructor.__super__.data.call(this);
+    if(!parentData) {
       return null;
     }
 
-    // TODO - what about multiple users with the same name?
-    // https://github.com/jfly/gjcomps/issues/83
+    var uniqueName = this.params.competitorUniqueName;
+    var registration = Registrations.findOne({
+      competitionId: parentData.competitionId,
+      uniqueName: uniqueName,
+    }, {
+      userId: 1,
+    });
+    if(!registration) {
+      this.render('competitorNotFound');
+      return;
+    }
     var user = Meteor.users.findOne({
-      "profile.name": userName,
+      _id: registration.userId,
     });
     if(!user) {
       this.render('competitorNotFound');
       return;
     }
-    data.user = user;
-    return data;
-  }
+    parentData.user = user;
+    return parentData;
+  },
+});
+Router.route('/:competitionUrlId/results/:competitorUniqueName', {
+  name: 'competitorResults',
+  controller: 'ViewCompetitorController',
 });
