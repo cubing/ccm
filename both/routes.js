@@ -300,16 +300,9 @@ Router.route('/:competitionUrlId/results', {
   titlePrefix: 'Results',
 });
 
-// TODO - this route exists only to compare with reactjs. Eventually we should
-// delete it: https://github.com/jfly/gjcomps/issues/78.
-Router.route('/:competitionUrlId/results-blaze/:eventCode/:nthRound', {
-  name: 'roundResultsBlaze',
-  template: 'roundResults',
-  controller: 'ViewRoundController',
-});
 Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
   name: 'roundResults',
-  template: 'roundResultsReactjs',
+  template: 'roundResults',
   controller: 'ViewRoundController',
 });
 

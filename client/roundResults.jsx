@@ -1,6 +1,6 @@
-var log = logging.handle("roundResultsReact");
+var log = logging.handle("roundResults");
 
-Template.roundResultsListReactjs.rendered = function() {
+Template.roundResultsList.rendered = function() {
   var template = this;
 
   // To give the illusion of loading quickly, first render
@@ -38,7 +38,7 @@ Template.roundResultsListReactjs.rendered = function() {
   });
 };
 
-Template.roundResultsListReactjs.destroyed = function() {
+Template.roundResultsList.destroyed = function() {
   var template = this;
   React.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
@@ -47,40 +47,12 @@ Template.roundResultsListReactjs.destroyed = function() {
 
 var autocompleteEnteredReact = new ReactiveVar(null);
 
-Template.roundResultsListReactjs.events({
+Template.roundResultsList.events({
   'input #inputCompetitorName': function(e) {
     autocompleteEnteredReact.set(e.currentTarget.value);
   },
   'focus #inputCompetitorName': function(e) {
     e.currentTarget.select();
-  },
-});
-
-Template.roundResultsReact_namePill.helpers({
-  highlightedName: function() {
-    var substring = autocompleteEnteredReact.get();
-    var string = this.profile.name;
-
-    if(substring.length === 0) {
-      return _.escape(string);
-    }
-
-    var prettyFormat = "";
-    var index = 0;
-    while(index < string.length) {
-      var substringStartIndex = string.toLowerCase().indexOf(substring.toLowerCase(), index);
-      if(substringStartIndex < 0) {
-        prettyFormat += _.escape(string.substring(index));
-        break;
-      }
-      prettyFormat += _.escape(string.substring(index, substringStartIndex));
-      var substringEndIndex = substringStartIndex + substring.length;
-      assert(substringEndIndex <= string.length);
-      prettyFormat += "<strong>" + _.escape(string.substring(substringStartIndex, substringEndIndex)) + "</strong>";
-      index = substringEndIndex;
-    }
-
-    return prettyFormat;
   },
 });
 

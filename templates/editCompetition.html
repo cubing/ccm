@@ -317,7 +317,7 @@
             <div class="modal-body">
               <div class="form-group">
                 <div id="roundResultsListWrapper">
-                  {{> roundResultsListReactjs roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
+                  {{> roundResultsList roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
                 </div>
                 <input type="number" min="1" max="{{competitorsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
               </div>
