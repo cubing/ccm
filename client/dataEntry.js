@@ -220,7 +220,7 @@ Template.roundDataEntry.events({
     }
 
     var $jChester = $(e.currentTarget);
-    var $jChesterNext = $jChester.parent().next("li").find(".jChester")
+    var $jChesterNext = $jChester.parent().next("li").find(".jChester");
 
     // TODO <<< add focus to jChester api >>>
     $jChesterNext.first().triggerHandler('focus');
