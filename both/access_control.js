@@ -181,6 +181,31 @@ if(Meteor.isServer) {
     fetch: [ 'competitionId' ],
   });
 
+  Results.allow({
+    update: function(userId, result, fields, modifier) {
+      var competition = Competitions.findOne({
+        _id: result.competitionId,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      });
+      if(getCannotManageCompetitionReason(userId, competition._id)) {
+        return false;
+      }
+
+      var allowedFields = [
+        'solves',
+      ];
+
+      if(_.difference(fields, allowedFields).length > 0) {
+        return false;
+      }
+      return true;
+    },
+    fetch: [ 'competitionId' ],
+  });
+
   Registrations.allow({
     insert: function(userId, registration) {
       if(getCannotRegisterReasons(registration.competitionId)) {

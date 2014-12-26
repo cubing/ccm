@@ -101,18 +101,18 @@ var ResultRow = React.createClass({
     var bestSolve, bestIndex;
     var worstSolve, worstIndex;
     if(roundFormat.code == "a") {
-      var isCombinedAndDidNotDoAverage = false;
+      var completedAverage = true;
       if(this.props.roundType.combined) {
         var hasEmptySolve = _.find(result.solves, function(solve) {
-          return solve.millis === 0;
+          return !solve || solve.millis === 0;
         });
         if(hasEmptySolve || result.solves.length != roundFormat.count) {
-          isCombinedAndDidNotDoAverage = true;
+          completedAverage = false;
         }
       }
 
       // Only compute the dropped solves if the competitor *did* do a full average.
-      if(!isCombinedAndDidNotDoAverage) {
+      if(completedAverage) {
         result.solves.forEach(function(solve, i) {
           if(!worstSolve || solve.millis > worstSolve.millis || $.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
             worstIndex = i;

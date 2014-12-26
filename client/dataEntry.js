@@ -117,7 +117,12 @@ Template.roundDataEntry.helpers({
     while(solves.length < roundFormat.count) {
       solves.push(null);
     }
-    return solves;
+    return solves.map(function(solve, i) {
+      return {
+        solveTime: solve,
+        index: i,
+      };
+    });
   },
   editableSolveTimeFields: function() {
     var data = Template.parentData(1);
@@ -195,5 +200,29 @@ Template.roundDataEntry.events({
     // force the user to start entering times for "Jay" when they were really just
     // typing the first 3 letters of "Jayman".
     selectedResultIdReact.set(null);
+  },
+  'solveTimeInput .jChester[name="inputSolve"]': function(e, template, solveTime) {
+    if(!solveTime) {
+      return;
+    }
+    var $set = {};
+    $set['solves.' + this.index] = solveTime;
+    var resultId = selectedResultIdReact.get();
+    Results.update({
+      _id: resultId,
+    }, {
+      $set: $set,
+    });
+  },
+  'solveTimeChange .jChester[name="inputSolve"]': function(e, template, solveTime) {
+    if(!solveTime) {
+      return;
+    }
+
+    var $jChester = $(e.currentTarget);
+    var $jChesterNext = $jChester.parent().next("li").find(".jChester")
+
+    // TODO <<< add focus to jChester api >>>
+    $jChesterNext.first().triggerHandler('focus');
   },
 });
