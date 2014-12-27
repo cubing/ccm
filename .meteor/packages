@@ -30,3 +30,5 @@ meteorhacks:fast-render
 meteorhacks:subs-manager
 
 mrt:flash-messages
+aldeed:autoform-bs-datetimepicker
+tsega:bootstrap3-datetimepicker

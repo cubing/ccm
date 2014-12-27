@@ -16,6 +16,14 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
   Competitions.update({ _id: competitionId }, update);
 };
 
+function getCompetitionData(competitionId) {
+  var hasCompetitionData = Competitions.findOne({
+    _id: competitionId
+  });
+
+  return hasCompetitionData;
+}
+
 Template.editCompetition.events({
   'input #competitionAttributes input[type="text"]': function(e) {
     if($(e.currentTarget).hasClass("typeahead")) {
@@ -461,6 +469,29 @@ var eventCountPerRowByDeviceSize = {
   lg: 3,
 };
 Template.editCompetition.helpers({
+
+  defaultCompetitionDataDocument: function() {
+    var competitionId = this.competitionId;
+    var competition = getCompetitionData(competitionId);
+
+    // set default registration open/close dates
+    // is _i the right thing to use here?
+    if(!competition.registrationOpenDate) {
+      competition.registrationOpenDate = getCompetitionRegistrationOpenMoment(competitionId)._i;
+    }
+    if(!competition.registrationCloseDate) {
+      competition.registrationCloseDate = getCompetitionRegistrationCloseMoment(competitionId)._i;
+    }
+
+    if(competition) {
+      return competition;
+    } else {
+      return {
+        // any default values
+      };
+    }
+  },
+
   events: function() {
     var that = this;
     var events = _.map(wca.events, function(e, i) {

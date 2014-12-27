@@ -43,10 +43,20 @@ Competitions.attachSchema({
   registrationOpenDate: {
     type: Date,
     optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datetimepicker"
+      }
+    },
   },
   registrationCloseDate: {
     type: Date,
     optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datetimepicker"
+      }
+    },
   },
 
   // Should these be moved to isStaff and isOrganizer fields in Registrations?

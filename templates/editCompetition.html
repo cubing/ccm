@@ -2,60 +2,134 @@
 
   <div class="container-fluid">
 
-    <form class="form-horizontal" id="competitionAttributes" role="form">
-      <div class="form-group">
-        <label for="inputCompetitionName" class="col-sm-3 col-lg-2 control-label">Competition Name</label>
-        <div class="col-sm-9 col-lg-10">
-          <input type="text" class="form-control" id="inputCompetitionName" name="competitionName" value="{{competition 'competitionName'}}" />
-        </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title text-capitalize">
+          Administrative Competition Settings
+        </h3>
       </div>
-      <div class="form-group">
-        <label for="inputWcaCompetitionId" class="col-sm-3 col-lg-2 control-label">WCA Competition ID</label>
-        <div class="col-sm-9 col-lg-10">
-          <input type="text" class="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value="{{competition 'wcaCompetitionId'}}" disabled="{{#unless isSiteAdmin}}disabled{{/unless}}" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-3 col-lg-2 control-label">Visibility</label>
-        <div class="col-sm-9 col-lg-10">
-          {{#if isSiteAdmin}}
-            <div id="toggleCompetitionListed" class="btn-group">
-              <button type="button" class="btn btn-default {{#if competition 'listed'}}active{{/if}}">
-                Listed
-              </button>
-              <button type="button" class="btn btn-default {{#unless competition 'listed'}}active{{/unless}}">
-                Hidden
-              </button>
+      <div class="panel-body">
+        <form class="form-horizontal" id="competitionAttributes" role="form">
+          <div class="form-group">
+            <label for="inputWcaCompetitionId" class="col-sm-3 col-lg-2 control-label">WCA Competition ID</label>
+            <div class="col-sm-9 col-lg-10">
+              <input type="text" class="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value="{{competition 'wcaCompetitionId'}}" disabled="{{#unless isSiteAdmin}}disabled{{/unless}}" />
             </div>
-          {{else}}
-            <p class="form-control-static">
-              {{#if competition "listed"}}
-                Listed
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 col-lg-2 control-label">Visibility</label>
+            <div class="col-sm-9 col-lg-10">
+              {{#if isSiteAdmin}}
+                <div id="toggleCompetitionListed" class="btn-group">
+                  <button type="button" class="btn btn-default {{#if competition 'listed'}}active{{/if}}">
+                    Listed
+                  </button>
+                  <button type="button" class="btn btn-default {{#unless competition 'listed'}}active{{/unless}}">
+                    Hidden
+                  </button>
+                </div>
               {{else}}
-                Hidden
+                <p class="form-control-static">
+                  {{#if competition "listed"}}
+                    Listed
+                  {{else}}
+                    Hidden
+                  {{/if}}
+                </p>
               {{/if}}
-            </p>
-          {{/if}}
-        </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title text-capitalize">
+          General settings for competition: {{competition "competitionName"}} 
+        </h3>
       </div>
 
-      <div class="form-group">
-        <label for="inputCompetitionStart" class="col-sm-3 col-lg-2 control-label">When</label>
-        <div class="col-sm-9 col-lg-10">
-          <p class="form-control-static">
-            <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">
-              {{#unless competitionStartDateMoment}}
-                Unscheduled
-              {{else}}
-                {{competitionStartDateMoment.fromNow}}
-                ({{formatMomentDateRange competitionStartDateMoment competitionEndDateMoment}})
-              {{/unless}}
-            </a>
-          </p>
-        </div>
+      <div class="panel-body">
+        <p>
+          This competition is scheduled for:
+          {{#unless competitionStartDateMoment}}
+            Unscheduled
+          {{else}}
+            {{competitionStartDateMoment.fromNow}}
+            ({{formatMomentDateRange competitionStartDateMoment competitionEndDateMoment}})
+          {{/unless}}
+          (<a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>)
+        </p>
+
+        {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+            {{> afQuickField name="competitionName" }}
+
+            <button type="submit" class="btn btn-default" id="changeCompetitionDataButton">
+              <span class="glyphicon glyphicon-floppy-save"></span>
+                Submit Changes
+            </button>
+            <button type="reset" class="btn btn-default" id="revertFormButton">Reset Changes</button>
+        {{/autoForm}}
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div id="competitionRegistrationSettings" class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title text-capitalize">
+              Registration settings
+            </h3>
+          </div>
+          <div class="panel-body">
+            {{#autoForm id="competitionRegistrationSettingsForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+
+              {{> afQuickField name="registrationOpenDate" }}
+              {{> afQuickField name="registrationCloseDate" }}
+
+              <button type="submit" class="btn btn-default" id="changeCompetitionDataButton">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                  Submit Changes
+              </button>
+              <button type="reset" class="btn btn-default" id="revertFormButton">Reset Changes</button>
+            {{/autoForm}}
+          </div>
+        </div><!-- /.panel -->
+      </div><!-- /#competitionRegistrationSettings -->
+
+      <div id="competitionPaymentSettings" class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title text-capitalize">
+              Payment settings
+            </h3>
+          </div>
+          <div class="panel-body">
+            A form.
+          </div>
+        </div><!-- /.panel -->
+      </div><!-- /#competitionPaymentSettings -->
+
+    </div>
+
+    <div class="row">
+      <div id="organizersList" class="col-sm-6">
+        {{#editCompetition_users competitionId=competitionId userIdsAtribute="organizers"}}
+          Have complete control over a competition.
+        {{/editCompetition_users}}
       </div>
 
-    </form>
+      <div id="staffList" class="col-sm-6">
+        {{#editCompetition_users competitionId=competitionId userIdsAtribute="staff"}}
+          Can only enter times and view scrambles for ongoing rounds.
+        {{/editCompetition_users}}
+      </div>
+
+    </div>
+
     <p>
       <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmDeleteCompetition">
         <span class="glyphicon glyphicon-trash"></span> Delete competition
@@ -82,20 +156,6 @@
     </div><!-- /.modal -->
 
 
-    <div class="row">
-      <div id="organizersList" class="col-sm-6">
-        {{#editCompetition_users competitionId=competitionId userIdsAtribute="organizers"}}
-          Have complete control over a competition.
-        {{/editCompetition_users}}
-      </div>
-
-      <div id="staffList" class="col-sm-6">
-        {{#editCompetition_users competitionId=competitionId userIdsAtribute="staff"}}
-          Can only enter times and view scrambles for ongoing rounds.
-        {{/editCompetition_users}}
-      </div>
-
-    </div>
 
     <div id="editEventsList">
       <h2>

@@ -14,12 +14,6 @@ Template.editSchedule.helpers({
   editingRound: function() {
     return editingRoundReact.get();
   },
-  registrationOpenDatePlaceholder: function() {
-    return getCompetitionRegistrationOpenMoment(this.competitionId).calendar();
-  },
-  registrationCloseDatePlaceholder: function() {
-    return getCompetitionRegistrationCloseMoment(this.competitionId).calendar();
-  },
 });
 
 Template.editSchedule.events({
