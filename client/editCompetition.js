@@ -474,15 +474,6 @@ Template.editCompetition.helpers({
     var competitionId = this.competitionId;
     var competition = getCompetitionData(competitionId);
 
-    // set default registration open/close dates
-    // is _i the right thing to use here?
-    if(!competition.registrationOpenDate) {
-      competition.registrationOpenDate = getCompetitionRegistrationOpenMoment(competitionId)._i;
-    }
-    if(!competition.registrationCloseDate) {
-      competition.registrationCloseDate = getCompetitionRegistrationCloseMoment(competitionId)._i;
-    }
-
     if(competition) {
       return competition;
     } else {

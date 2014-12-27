@@ -5,6 +5,13 @@ SimpleSchema.prototype.clean = function(doc, options) {
   return oldClean.call(this, doc, options);
 };
 
+SimpleSchema.messages({
+  "missingCompetitionStartDate": "Please set a competition start date before setting registration open/close dates.",
+  "registrationCloseDateAfterRegistrationOpenDate": "Registration close date should be after the registration open date.",
+  "missingRegistrationCloseDate": "Please enter a registration close date.",
+  "registrationCloseDateAfterCompetitionStartDate": "Please specify a close date before the competition start date."
+});
+
 Competitions = new Meteor.Collection("competitions");
 Competitions.attachSchema({
   competitionName: {
@@ -34,6 +41,11 @@ Competitions.attachSchema({
   },
   startDate: {
     type: Date,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datepicker"
+      }
+    },
   },
   numberOfDays: {
     type: Number,
@@ -48,6 +60,31 @@ Competitions.attachSchema({
         type: "bootstrap-datetimepicker"
       }
     },
+    custom: function() {
+      // Require registration open date to be before the close date.
+
+      var registrationCloseDate = this.field("registrationCloseDate").value;
+      var registrationOpenDate = this.value;
+
+      if(!registrationCloseDate && !registrationOpenDate) {
+        // OK to have neither filled (esp. for competition creation)
+        return null;
+      }
+
+      if(!registrationCloseDate) {
+        return "missingRegistrationCloseDate";
+      }
+
+      if(!registrationOpenDate) {
+        return "missingRegistrationOpenDate";
+      }
+
+      if(registrationOpenDate.getTime() < registrationCloseDate.getTime()) {
+        return null;
+      } else {
+        return "registrationCloseDateAfterRegistrationOpenDate";
+      }
+    },
   },
   registrationCloseDate: {
     type: Date,
@@ -55,6 +92,32 @@ Competitions.attachSchema({
     autoform: {
       afFieldInput: {
         type: "bootstrap-datetimepicker"
+      }
+    },
+    custom: function() {
+      // require the registration close date to be before the competition starts.
+
+      var competitionStartDate = this.field("startDate").value;
+      var registrationCloseDate = this.value;
+      var registrationOpenDate = this.field("registrationOpenDate").value;
+
+      if(!registrationCloseDate && !registrationOpenDate) {
+        // OK to have neither filled (esp. for competition creation)
+        return null;
+      }
+      
+      if(!registrationCloseDate) {
+        return "missingRegistrationCloseDate";
+      }
+
+      if(!registrationOpenDate) {
+        return "missingRegistrationOpenDate";
+      }
+
+      if(registrationCloseDate.getTime() < competitionStartDate.getTime()) {
+        return null;
+      } else {
+        return "registrationCloseDateAfterCompetitionStartDate";
       }
     },
   },

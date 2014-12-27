@@ -52,20 +52,23 @@
       </div>
 
       <div class="panel-body">
-        <p>
-          This competition is scheduled for:
-          {{#unless competitionStartDateMoment}}
-            Unscheduled
-          {{else}}
-            {{competitionStartDateMoment.fromNow}}
-            ({{formatMomentDateRange competitionStartDateMoment competitionEndDateMoment}})
-          {{/unless}}
-          (<a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>)
-        </p>
-
         {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
 
-            {{> afQuickField name="competitionName" }}
+          <div class="row">
+            <div class="col-sm-6">
+              {{> afQuickField name="startDate" }}
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label class="control-label">&nbsp;</label>
+                <p class="form-control-static">
+                  <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {{> afQuickField name="competitionName" }}
 
         {{/autoForm}}
       </div>
@@ -83,6 +86,7 @@
           <div class="panel-body">
             {{#autoForm id="competitionRegistrationSettingsForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
 
+              {{> afFieldInput type="hidden" name="startDate" }}
               {{> afQuickField name="registrationOpenDate" }}
               {{> afQuickField name="registrationCloseDate" }}
 

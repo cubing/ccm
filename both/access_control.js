@@ -38,13 +38,19 @@ getCannotRegisterReasons = function(competitionId) {
 
   var open = getCompetitionRegistrationOpenMoment(competitionId);
   var close = getCompetitionRegistrationCloseMoment(competitionId);
-  var now = moment();
-  if(now.isAfter(close)) {
-    reasons.push("Competition registration is now closed!");
-  } else if(now.isBefore(open)) {
-    var reasonText = "Competition registration is not yet open!";
-    reasonText += " Registration is set to open " + open.calendar() + ".";
-    reasons.push(reasonText);
+
+  if(!open || !close) {
+    // open / close dates not yet set
+    reasons.push("Competition registration is not open.");
+  } else {
+    var now = moment();
+    if(now.isAfter(close)) {
+      reasons.push("Competition registration is now closed!");
+    } else if(now.isBefore(open)) {
+      var reasonText = "Competition registration is not yet open!";
+      reasonText += " Registration is set to open " + open.calendar() + ".";
+      reasons.push(reasonText);
+    }
   }
 
   // could be closed due to hitting capacity
