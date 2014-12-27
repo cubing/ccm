@@ -63,14 +63,10 @@
           (<a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>)
         </p>
 
-        {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+        {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+
             {{> afQuickField name="competitionName" }}
 
-            <button type="submit" class="btn btn-default" id="changeCompetitionDataButton">
-              <span class="glyphicon glyphicon-floppy-save"></span>
-                Submit Changes
-            </button>
-            <button type="reset" class="btn btn-default" id="revertFormButton">Reset Changes</button>
         {{/autoForm}}
       </div>
     </div>
@@ -85,16 +81,11 @@
             </h3>
           </div>
           <div class="panel-body">
-            {{#autoForm id="competitionRegistrationSettingsForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+            {{#autoForm id="competitionRegistrationSettingsForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
 
               {{> afQuickField name="registrationOpenDate" }}
               {{> afQuickField name="registrationCloseDate" }}
 
-              <button type="submit" class="btn btn-default" id="changeCompetitionDataButton">
-                <span class="glyphicon glyphicon-floppy-save"></span>
-                  Submit Changes
-              </button>
-              <button type="reset" class="btn btn-default" id="revertFormButton">Reset Changes</button>
             {{/autoForm}}
           </div>
         </div><!-- /.panel -->
