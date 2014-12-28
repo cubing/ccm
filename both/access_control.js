@@ -140,7 +140,7 @@ if(Meteor.isServer) {
         'registrationCloseDate',
       ];
 
-      var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+      var siteAdmin = getUserAttribute(userId, 'siteAdmin');
       if(siteAdmin) {
         allowedFields.push("listed");
         allowedFields.push('wcaCompetitionId');
