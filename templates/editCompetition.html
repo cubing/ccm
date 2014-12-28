@@ -44,15 +44,15 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title text-capitalize">
-          General settings for competition: {{competition "competitionName"}} 
-        </h3>
-      </div>
+    {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=false template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title text-capitalize">
+            General settings for competition: {{competition "competitionName"}} 
+          </h3>
+        </div>
 
-      <div class="panel-body">
-        {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+        <div class="panel-body">
 
           <div class="row">
             <div class="col-sm-6">
@@ -70,45 +70,54 @@
 
           {{> afQuickField name="competitionName" }}
 
-        {{/autoForm}}
+          <button type="submit" class="btn btn-default">
+            <span class="glyphicon glyphicon-floppy-save"></span>
+            Save
+          </button>
+          <button type="reset" class="btn btn-default">Reset</button>
+
+        </div>
       </div>
-    </div>
 
-    <div class="row">
+      <div class="row">
 
-      <div id="competitionRegistrationSettings" class="col-sm-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title text-capitalize">
-              Registration settings
-            </h3>
-          </div>
-          <div class="panel-body">
-            {{#autoForm id="competitionRegistrationSettingsForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+        <div id="competitionRegistrationSettings" class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title text-capitalize">
+                Registration settings
+              </h3>
+            </div>
+            <div class="panel-body">
 
-              {{> afFieldInput type="hidden" name="startDate" }}
               {{> afQuickField name="registrationOpenDate" }}
               {{> afQuickField name="registrationCloseDate" }}
 
-            {{/autoForm}}
-          </div>
-        </div><!-- /.panel -->
-      </div><!-- /#competitionRegistrationSettings -->
+              <button type="submit" class="btn btn-default">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+                Save
+              </button>
+              <button type="reset" class="btn btn-default">Reset</button>
 
-      <div id="competitionPaymentSettings" class="col-sm-6">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title text-capitalize">
-              Payment settings
-            </h3>
-          </div>
-          <div class="panel-body">
-            A form.
-          </div>
-        </div><!-- /.panel -->
-      </div><!-- /#competitionPaymentSettings -->
+            </div>
+          </div><!-- /.panel -->
+        </div><!-- /#competitionRegistrationSettings -->
 
-    </div>
+        <div id="competitionPaymentSettings" class="col-sm-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title text-capitalize">
+                Payment settings
+              </h3>
+            </div>
+            <div class="panel-body">
+              A form.
+            </div>
+          </div><!-- /.panel -->
+        </div><!-- /#competitionPaymentSettings -->
+
+      </div>
+    {{/autoForm}}
 
     <div class="row">
       <div id="organizersList" class="col-sm-6">

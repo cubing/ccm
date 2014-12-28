@@ -105,7 +105,7 @@ Competitions.attachSchema({
         // OK to have neither filled (esp. for competition creation)
         return null;
       }
-      
+
       if(!registrationCloseDate) {
         return "missingRegistrationCloseDate";
       }
