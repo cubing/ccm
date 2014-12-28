@@ -11,9 +11,9 @@ if(Meteor.isServer) {
       var develUserId = Accounts.createUser({
         password: DEVEL_ACCOUNT_PASSWORD,
         email: DEVEL_ACCOUNT_EMAIL,
+        siteAdmin: true,
         profile: {
           name: "gjcomps devel account",
-          siteAdmin: true,
           countryId: "US",
           gender: "o",
           dob: new Date(),

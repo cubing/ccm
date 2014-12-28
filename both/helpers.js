@@ -44,7 +44,7 @@ if(Meteor.isClient) {
   });
 
   Template.registerHelper("isSiteAdmin", function() {
-    return Meteor.user().profile.siteAdmin;
+    return Meteor.user().siteAdmin;
   });
 
   Template.registerHelper("toAtMostFixed", function(n, fixed) {

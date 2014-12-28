@@ -484,6 +484,11 @@ Meteor.users.attachSchema(new SimpleSchema({
   createdAt: {
     type: Date,
   },
+  siteAdmin: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
+  },
   profile: {
     type: new SimpleSchema({
       name: {
@@ -525,12 +530,6 @@ Meteor.users.attachSchema(new SimpleSchema({
             type: "bootstrap-datepicker"
           }
         },
-      },
-
-      siteAdmin: {
-        type: Boolean,
-        defaultValue: false,
-        optional: true,
       },
     }),
     optional: true,

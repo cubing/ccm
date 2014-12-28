@@ -13,7 +13,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
     return new Meteor.Error(404, "Competition does not exist");
   }
 
-  var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+  var siteAdmin = getUserAttribute(userId, 'siteAdmin');
   if(!siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
     // in order to organize =)
