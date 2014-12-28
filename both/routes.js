@@ -81,9 +81,6 @@ ManageCompetitionController = RouteController.extend({
     return [
       subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
       subs.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
-      subs.subscribe('competitionResults', this.params.competitionUrlId, subscriptionError(this)),
-      // TODO - we only need scrambles on the uploadScrambles route
-      subs.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
@@ -160,6 +157,26 @@ ViewCompetitionController = RouteController.extend({
 ViewRoundController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
+    var nthRound = parseInt(this.params.nthRound);
+    waitOn.push(subs.subscribe('roundResults',
+                               this.params.competitionUrlId,
+                               this.params.eventCode,
+                               nthRound,
+                               subscriptionError(this)));
+    return waitOn;
+  },
+  data: function() {
+    var parentData = this.constructor.__super__.data.call(this);
+    return getRoundData.call(this, parentData);
+  },
+});
+
+RoundDataEntryController = ManageCompetitionController.extend({
+  waitOn: function() {
+    var waitOn = this.constructor.__super__.waitOn.call(this);
+    if(!this.params.eventCode || !this.params.nthRound) {
+      return waitOn;
+    }
     var nthRound = parseInt(this.params.nthRound);
     waitOn.push(subs.subscribe('roundResults',
                                this.params.competitionUrlId,
@@ -251,6 +268,13 @@ Router.route('/:competitionUrlId/manage/uploadScrambles', {
   name: 'uploadScrambles',
   controller: 'ManageCompetitionController',
   titlePrefix: "Upload scrambles",
+  waitOn: function() {
+    var waitOn = this.constructor.prototype.waitOn.call(this);
+    waitOn.push(subs.subscribe('competitionScrambles',
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
+    return waitOn;
+  },
 });
 Router.route('/:competitionUrlId/manage/exportResults', {
   name: 'exportResults',
@@ -264,12 +288,8 @@ Router.route('/:competitionUrlId/manage/schedule', {
 });
 Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
-  controller: 'ManageCompetitionController',
+  controller: 'RoundDataEntryController',
   titlePrefix: "Data entry",
-  data: function() {
-    var data = this.constructor.prototype.data.call(this);
-    return getRoundData.call(this, data);
-  },
 });
 
 Router.route('/:competitionUrlId', {
