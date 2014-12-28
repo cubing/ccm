@@ -237,6 +237,11 @@ Router.route('/:competitionUrlId/manage', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
 });
+Router.route('/:competitionUrlId/manage/events', {
+  name: 'editEvents',
+  controller: 'ManageCompetitionController',
+  titlePrefix: "Edit events",
+});
 Router.route('/:competitionUrlId/manage/check-in', {
   name: 'manageCheckin',
   controller: 'ManageCompetitionController',
