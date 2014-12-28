@@ -508,7 +508,7 @@ Meteor.users.attachSchema(new SimpleSchema({
         optional: true,
         autoform: {
           type: "select",
-          options: function () {
+          options: function() {
             return [
               {label: "Male",   value: 'm'},
               {label: "Female", value: 'f'},
