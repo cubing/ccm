@@ -1,0 +1,20 @@
+<template name="advanceCompetitors">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6">
+        <h4>
+          Advance competitors from {{eventName roundEventCode}}: {{roundName roundRoundCode}}
+        </h4>
+      </div>
+      <div class="col-xs-6">
+        <form class="form-inline advance-competitors-form">
+          <input type="number" min="1" max="{{competitorsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
+          <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
+            Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
+          </button>
+        </form>
+      </div>
+    </div>
+    {{> roundResultsList roundId=roundId advanceCount=advanceCount configurableAdvanceCount=true}}
+  </div>
+</template>

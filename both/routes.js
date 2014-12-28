@@ -171,7 +171,7 @@ ViewRoundController = ViewCompetitionController.extend({
   },
 });
 
-RoundDataEntryController = ManageCompetitionController.extend({
+ManageRoundResultsController = ManageCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
     if(!this.params.eventCode || !this.params.nthRound) {
@@ -286,9 +286,14 @@ Router.route('/:competitionUrlId/manage/schedule', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
+Router.route('/:competitionUrlId/manage/advance-competitors/:eventCode?/:nthRound?', {
+  name: 'advanceCompetitors',
+  controller: 'ManageRoundResultsController',
+  titlePrefix: "Advance competitors",
+});
 Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
-  controller: 'RoundDataEntryController',
+  controller: 'ManageRoundResultsController',
   titlePrefix: "Data entry",
 });
 

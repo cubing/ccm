@@ -126,11 +126,12 @@
                                 </button>
                               {{/if}}
                               {{#if canAdvanceRound}}
-                                <button type="button" name="buttonAdvanceCompetitors"
-                                        class="btn btn-default btn-xs"
-                                        data-toggle="tooltip" data-placement="left" data-original-title="Click to advance competitors to next round" data-container="body">
+                                <a
+                                  href="{{pathFor 'advanceCompetitors' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                                  data-toggle="tooltip" data-placement="left" data-original-title="Advance competitors to next round" data-container="body"
+                                >
                                   <i class="fa fa-step-forward"></i>
-                                </button>
+                                </a>
                               {{/if}}
                             </td>
 
@@ -202,7 +203,6 @@
   {{> modalSoftCutoff roundPopup.softCutoff}}
   {{> modalHardCutoff roundPopup.hardCutoff}}
   {{> modalSetRoundSize roundPopup.setRoundSize}}
-  {{> modalAdvanceRound roundPopup.advanceCompetitors}}
 </template>
 
 <template name="modalAdvanceRound">

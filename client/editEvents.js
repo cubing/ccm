@@ -37,10 +37,6 @@ Template.editEvents.events({
       }
     });
   },
-  'click button[name="buttonAdvanceCompetitors"]': function(e, template) {
-    roundPopupReact.set({ advanceCompetitors: this });
-    $("#modalAdvanceRound").modal('show');
-  },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
     var formatCode = select.value;
@@ -327,96 +323,6 @@ Template.editEvents.helpers({
   },
   roundPopup: function() {
     return roundPopupReact.get();
-  },
-});
-
-Template.modalAdvanceRound.created = function() {
-  var template = this;
-
-  template.advanceCountReact = new ReactiveVar(null);
-  template.autorun(function() {
-    var data = Template.currentData();
-    if(!data) {
-      template.advanceCountReact.set(null);
-      return;
-    }
-
-    var nextRound = Rounds.findOne({
-      competitionId: data.competitionId,
-      eventCode: data.eventCode,
-      nthRound: data.nthRound + 1,
-    }, {
-      fields: {
-        size: 1,
-      }
-    });
-    if(nextRound) {
-      var competitorsInRound = Results.find({
-        roundId: nextRound._id,
-      }, {
-        fields: {
-          _id: 1,
-        }
-      }).count();
-      template.advanceCountReact.set(nextRound.size || competitorsInRound || null);
-    } else {
-      template.advanceCountReact.set(null);
-    }
-  });
-
-  template.isSaveableReact = new ReactiveVar(false);
-  template.autorun(function() {
-    var data = Template.currentData();
-    if(!data) {
-      template.isSaveableReact.set(null);
-      return;
-    }
-    template.isSaveableReact.set(template.advanceCountReact.get());
-  });
-};
-Template.modalAdvanceRound.events({
-  'shown.bs.modal .modal': function(e, template) {
-    // Focus first input when we become visible
-    template.$('input').filter(':visible:first').focus();
-    template.$('input').filter(':visible:first').select();
-  },
-  'input input[name="advanceCount"]': function(e, template) {
-    var $input = $(e.currentTarget);
-    var advanceCountStr = $input.val();
-    var isNonNegInt = String.isNonNegInt(advanceCountStr);
-    if(isNonNegInt) {
-      var advanceCount = parseInt(advanceCountStr);
-      template.advanceCountReact.set(advanceCount);
-    } else {
-      template.advanceCountReact.set(null);
-    }
-  },
-  'submit form': function(e, template) {
-    e.preventDefault();
-
-    var advanceCount = template.advanceCountReact.get();
-    Meteor.call('advanceCompetitorsFromRound', advanceCount, this._id, function(err, data) {
-      if(err) {
-        throw err;
-      }
-      template.$(".modal").modal('hide');
-    });
-  },
-});
-Template.modalAdvanceRound.helpers({
-  isSaveable: function() {
-    var template = Template.instance();
-    return template.isSaveableReact.get();
-  },
-  competitorsInRound: function() {
-    var competitorCount = Results.find({
-      roundId: this._id,
-    }).count();
-    return competitorCount;
-  },
-  advanceCount: function() {
-    var template = Template.instance();
-    return template.advanceCountReact.get();
   },
 });
 
