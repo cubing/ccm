@@ -9,7 +9,6 @@ SimpleSchema.messages({
   "missingCompetitionStartDate": "Please set a competition start date before setting registration open/close dates.",
   "registrationCloseDateAfterRegistrationOpenDate": "Registration close date should be after the registration open date.",
   "missingRegistrationCloseDate": "Please enter a registration close date.",
-  "registrationCloseDateAfterCompetitionStartDate": "Please specify a close date before the competition start date."
 });
 
 Competitions = new Meteor.Collection("competitions");
@@ -114,11 +113,7 @@ Competitions.attachSchema({
         return "missingRegistrationOpenDate";
       }
 
-      if(registrationCloseDate.getTime() < competitionStartDate.getTime()) {
-        return null;
-      } else {
-        return "registrationCloseDateAfterCompetitionStartDate";
-      }
+      return null;
     },
   },
 
