@@ -506,10 +506,25 @@ Meteor.users.attachSchema(new SimpleSchema({
         type: String,
         allowedValues: ['m', 'f', 'o'],
         optional: true,
+        autoform: {
+          type: "select",
+          options: function () {
+            return [
+              {label: "Male",   value: 'm'},
+              {label: "Female", value: 'f'},
+              {label: "Other",  value: 'o'}
+            ];
+          }
+        },
       },
       dob: {
         type: Date,
         optional: true,
+        autoform: {
+          afFieldInput: {
+            type: "bootstrap-datepicker"
+          }
+        },
       },
 
       siteAdmin: {
