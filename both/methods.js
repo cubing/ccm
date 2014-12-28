@@ -339,7 +339,6 @@ if(Meteor.isServer) {
           countryId: wcaPerson.countryId,
           gender: wcaPerson.gender,
           dob: dobMoment.toDate(),
-          siteAdmin: false,
         };
 
         var user, email, userId;
