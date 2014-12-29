@@ -34,6 +34,7 @@ Template.competitionRegistration.helpers({
   defaultRegistrationData: function() {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
+    var defaultUniqueName = Meteor.user().profile.name;
     var registration = getUserRegistration(userId, competitionId);
     if(registration) {
       return registration;
@@ -42,6 +43,7 @@ Template.competitionRegistration.helpers({
       return {
         userId: userId,
         competitionId: competitionId,
+        uniqueName: defaultUniqueName,
       };
     }
   },
@@ -66,7 +68,6 @@ Template.competitionRegistration.helpers({
 
   cannotRegisterReasons: function() {
     var competitionId = this.competitionId;
-
     return getCannotRegisterReasons(competitionId);
   },
 
@@ -76,6 +77,11 @@ Template.competitionRegistration.helpers({
     return closeMoment;
   },
 
+  needsUniqueName: function() {
+    var userName = Meteor.user().profile.name;
+    // See if someone already has this name?
+    return Registrations.findOne({uniqueName: userName});
+  },
 });
 
 Template.competitionRegistration.events({

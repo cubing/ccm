@@ -25,7 +25,14 @@
 
           {{> afFieldInput name="userId" }}
           {{> afFieldInput name="competitionId" }}
-          {{> afFieldInput name="uniqueName" }}
+          {{#if needsUniqueName}}
+            Well!  It looks like someone else at this competition has your name.
+            Please provide an alternate (or full) name we can use to determine who
+            you are at the competition.
+            {{> afQuickField name="uniqueName" }}
+          {{else}}
+            {{> afFieldInput name="uniqueName" type="hidden" }}
+          {{/if}}
           {{> afQuickField name="events" options=eventOptions }}
           {{> afQuickField name="comments" }}
 

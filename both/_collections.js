@@ -506,6 +506,13 @@ Meteor.users.attachSchema(new SimpleSchema({
         type: String,
         regEx: /^[A-Z]{2}$/,
         optional: true,
+        autoform: {
+          type: "selectize",
+          options: [
+            {label: "United States of America", value: "US"},
+            {label: "Smerbia",                  value: "SM"},
+          ],
+        },
       },
       gender: {
         type: String,

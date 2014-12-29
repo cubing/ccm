@@ -35,22 +35,45 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
 
 getCannotRegisterReasons = function(competitionId) {
   var reasons = [];
+  var reasonText; // re-usable
 
+  // Check to make sure registration is open
+  // We don't really need to specify any more reasons after this, so
+  // we can immediately return.
   var open = getCompetitionRegistrationOpenMoment(competitionId);
   var close = getCompetitionRegistrationCloseMoment(competitionId);
-
   if(!open || !close) {
     // open / close dates not yet set
     reasons.push("Competition registration is not open.");
+    return reasons;
   } else {
     var now = moment();
     if(now.isAfter(close)) {
       reasons.push("Competition registration is now closed!");
+      return reasons;
     } else if(now.isBefore(open)) {
-      var reasonText = "Competition registration is not yet open!";
+      reasonText = "Competition registration is not yet open!";
       reasonText += " Registration is set to open " + open.calendar() + ".";
       reasons.push(reasonText);
+      return reasons;
     }
+  }
+
+  // Check to make sure profile has appropriate data
+  var userProfile = Meteor.user().profile;
+  reasonText = "You need to complete your user profile to register! ";
+  // var hasEmail = ??;
+  if(!userProfile.name) {
+    reasons.push(reasonText + "Please add your name to your profile.");
+  }
+  if(!userProfile.dob) {
+    reasons.push(reasonText + "Please provide a birthdate in your profile.");
+  }
+  if(!userProfile.countryId) {
+    reasons.push(reasonText + "Please specify a country in your profile.");
+  }
+  if(!userProfile.gender) {
+    reasons.push(reasonText + "Please specify your gender in your profile.");
   }
 
   // could be closed due to hitting capacity
