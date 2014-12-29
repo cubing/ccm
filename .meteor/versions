@@ -17,6 +17,7 @@ callback-hook@1.0.2
 cfs:http-methods@0.0.27
 cfs:http-publish@0.0.13
 check@1.0.3
+chhib:selectize-bootstrap-3@0.0.1
 chuangbo:cookie@1.1.0
 coffeescript@1.0.5
 comerc:autoform-selectize@2.0.2
