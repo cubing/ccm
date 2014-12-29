@@ -67,3 +67,20 @@ Template._loginButtonsLoggedInDropdown.events({
     });
   },
 });
+
+// Adopted from http://stackoverflow.com/a/21778615
+$.fn.scrollToCenter = function(speed) {
+  speed = speed || 200;
+  var el = this;
+  var elOffset = el.offset().top;
+  var elHeight = el.height();
+  var windowHeight = $(window).height();
+  var offset;
+
+  if(elHeight < windowHeight) {
+    offset = elOffset - ((windowHeight / 2) - (elHeight / 2));
+  } else {
+    offset = elOffset;
+  }
+  $('html, body').animate({ scrollTop: offset }, speed);
+};

@@ -59,6 +59,7 @@ Template.roundDataEntry.rendered = function() {
     if(selectedResultId) {
       var $selectedRow = $resultRows.filter('[data-result-id="' + selectedResultId + '"]');
       $selectedRow.addClass('selectedResult');
+      $selectedRow.scrollToCenter();
     }
   });
 
