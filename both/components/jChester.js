@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.4.4
+ *  jChester - v0.4.5
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -44,7 +44,7 @@
       data.$form.append($('<div class="form-group"><input name="millis" type="text" class="form-control"></input></div>'));
 
       // Create moveCount field
-      data.$form.append($('<div class="form-group"><input name="moveCount" min="0" type="number" class="form-control"></input></div>'));
+      data.$form.append($('<div class="form-group"><input name="moveCount" type="text" class="form-control"></input></div>'));
 
       data.$form.append(document.createTextNode(' '));
 
@@ -52,7 +52,8 @@
       data.$form.append($('<div class="form-group"><input name="puzzlesSolvedCount" min="0" type="number" class="form-control"></input></div>'));
 
       // Create puzzlesAttemptedCount field
-      data.$form.append($('<div class="form-group">&nbsp;/&nbsp;<input name="puzzlesAttemptedCount" min="0" type="number" class="form-control"></input></div>'));
+      data.$form.append($('<span name="puzzlesAttemptedCount">&nbsp;/&nbsp;</span>'));
+      data.$form.append($('<div class="form-group"><input name="puzzlesAttemptedCount" min="0" type="number" class="form-control"></input></div>'));
 
       data.$form.append($('<span class="help-block">'));
 
@@ -65,55 +66,78 @@
 
       data.inputChanged = function() {
         var errorByField = {};
-        var solveTime;
+        var solveTime = {};
 
-        var millisStr = data.$form.find('input[name="millis"]').val();
-        try {
-          solveTime = $.stopwatchFormatToSolveTime(millisStr);
-        } catch(e) {
-          solveTime = {};
-          if(millisStr.length === 0) {
-            errorByField.millis = "Please enter a time";
-          } else {
-            errorByField.millis = e;
+        if(data.editableSolveTimeFields.millis) {
+          var millisStr = data.$form.find('input[name="millis"]').val();
+          try {
+            $.extend(solveTime, $.stopwatchFormatToSolveTime(millisStr));
+          } catch(e) {
+            if(millisStr.length === 0) {
+              errorByField.millis = "Please enter a time.";
+            } else {
+              errorByField.millis = e;
+            }
           }
         }
 
-        var moveCountStr = data.$form.find('input[name="moveCount"]').val();
-        if(isInt(moveCountStr)) {
-          var moveCount = parseInt(moveCountStr);
-          solveTime.moveCount = moveCount;
-        } else {
-          errorByField.moveCount = 'Invalid move count';
+        if(data.editableSolveTimeFields.moveCount) {
+          var moveCountStr = data.$form.find('input[name="moveCount"]').val();
+          try {
+            $.extend(solveTime, $.stopwatchFormatToSolveTime(moveCountStr));
+          } catch(e) {
+            if(moveCountStr.length === 0) {
+              errorByField.moveCount = "Please enter a number of moves.";
+            } else {
+              errorByField.moveCount = e;
+            }
+          }
         }
 
-        var puzzlesSolvedCountStr = data.$form.find('input[name="puzzlesSolvedCount"]').val();
+        var puzzlesSolvedCountStr;
+        var puzzlesAttemptedCountStr;
+        data.hideField = {};
+        if($.solveTimeIsDNF(solveTime)) {
+          puzzlesSolvedCountStr = "0";
+          puzzlesAttemptedCountStr = "1";
+          data.hideField.puzzlesSolvedCount = true;
+          data.hideField.puzzlesAttemptedCount = true;
+        } else if($.solveTimeIsDNS(solveTime)) {
+          puzzlesSolvedCountStr = "0";
+          puzzlesAttemptedCountStr = "0";
+          data.hideField.puzzlesSolvedCount = true;
+          data.hideField.puzzlesAttemptedCount = true;
+        } else if(data.editableSolveTimeFields.puzzlesSolvedCount || data.editableSolveTimeFields.puzzlesAttemptedCount) {
+          var $inputPuzzlesSolvedCount = data.$form.find('input[name="puzzlesSolvedCount"]');
+          puzzlesSolvedCountStr = $inputPuzzlesSolvedCount.val();
+          var $inputPuzzlesAttemptedCount = data.$form.find('input[name="puzzlesAttemptedCount"]');
+          puzzlesAttemptedCountStr = $inputPuzzlesAttemptedCount.val();
+        } else {
+          puzzlesSolvedCountStr = "1";
+          puzzlesAttemptedCountStr = "1";
+        }
+
         if(isInt(puzzlesSolvedCountStr)) {
           var puzzlesSolvedCount = parseInt(puzzlesSolvedCountStr);
           solveTime.puzzlesSolvedCount = puzzlesSolvedCount;
         } else {
-          errorByField.puzzlesSolvedCount = 'Invalid number of puzzles solved';
+          errorByField.puzzlesSolvedCount = 'Invalid number of puzzles solved.';
         }
 
-        var puzzlesAttemptedCountStr = data.$form.find('input[name="puzzlesAttemptedCount"]').val();
         if(isInt(puzzlesAttemptedCountStr)) {
           var puzzlesAttemptedCount = parseInt(puzzlesAttemptedCountStr);
           solveTime.puzzlesAttemptedCount = puzzlesAttemptedCount;
           if(!errorByField.puzzlesSolvedCount && solveTime.puzzlesSolvedCount > solveTime.puzzlesAttemptedCount) {
-            errorByField.puzzlesAttemptedCount = 'Cannot have more puzzles solved than attemped';
+            errorByField.puzzlesAttemptedCount = 'Cannot have more puzzles solved than attemped.';
           }
         } else {
-          errorByField.puzzlesAttemptedCount = 'Invalid number of puzzles attempted';
+          errorByField.puzzlesAttemptedCount = 'Invalid number of puzzles attempted.';
         }
 
         var getErrorForField = function(field) {
-          if(!data.editableSolveTimeFields[field]) {
-            return null;
-          }
           return errorByField[field];
         };
         var errors = editableSolveTimeFieldOptions.filter(getErrorForField).map(getErrorForField);
-
         if(errors.length > 0) {
           solveTime = null;
         }
@@ -121,13 +145,20 @@
 
         // TODO - it would be nice if the errors lined up with the appropriate
         // inputs somehow. Perhaps we could have tooltips/popovers on each field?
-        data.$form.find('.help-block').text(errors.join(". "));
+        data.$form.find('.help-block').text(errors.join(" "));
         data.$form.find('.input-group').removeClass('has-error');
         editableSolveTimeFieldOptions.forEach(function(field) {
           var $inputForField = data.$form.find('input[name="' + field + '"]');
           var $formGroupForField = $inputForField.parent('.form-group');
           var hasError = !!errorByField[field];
           $formGroupForField.toggleClass('has-error', hasError);
+        });
+
+        editableSolveTimeFieldOptions.forEach(function(field) {
+          var fieldVisible = data.editableSolveTimeFields[field] && !data.hideField[field];
+          fieldVisible = !!fieldVisible; // $.toggle requires a real boolean
+          data.$form.find('input[name="' + field + '"]').parent().toggle(fieldVisible);
+          data.$form.find('span[name="' + field + '"]').toggle(fieldVisible);
         });
       };
 
@@ -137,7 +168,21 @@
       });
 
       data.$form.find("input").on('keydown', function(e) {
-        if(e.which === 13) {
+        var $target = $(e.currentTarget);
+        if(($target.attr('name') === 'millis' || $target.attr('name') === 'moveCount') && !e.altKey && !e.ctrlKey & !e.metaKey) {
+          if(e.which === 106 || e.which === 68) { // asterisk or "d" key
+            $target.val("DNF");
+            data.inputChanged();
+            that.trigger("solveTimeInput", [data.solveTime]);
+            e.preventDefault();
+          } else if(e.which === 111 || e.which === 83) { // forward slash or "s" key
+            $target.val("DNS");
+            data.inputChanged();
+            that.trigger("solveTimeInput", [data.solveTime]);
+            e.preventDefault();
+          }
+        }
+        if(e.which === 13) { // return
           data.inputChanged();
           that.trigger("solveTimeChange", [data.solveTime]);
         }
@@ -180,10 +225,7 @@
     }
 
     data.editableSolveTimeFields = settings.editableSolveTimeFields;
-    editableSolveTimeFieldOptions.forEach(function(field) {
-      var fieldVisible = !!data.editableSolveTimeFields[field];
-      data.$form.find('input[name="' + field + '"]').parent().toggle(fieldVisible);
-    });
+    data.inputChanged();
 
     setSolveTime(settings.solveTime);
     return that;
@@ -199,7 +241,7 @@
   var MILLIS_PER_SECOND = 1000;
   var MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
   $.extend({
-    stopwatchFormatToSolveTime: function(stopwatchFormat) {
+    stopwatchFormatToSolveTime: function(stopwatchFormat, isMoveCount) {
       if(stopwatchFormat.toUpperCase() === 'DNF') {
         return {
           puzzlesSolvedCount: 0,
@@ -212,6 +254,20 @@
           puzzlesAttemptedCount: 0,
         };
       }
+
+      if(isMoveCount) {
+        if(!isInt(stopwatchFormat)) {
+          throw "Invalid move count";
+        }
+        var moveCount = parseInt(stopwatchFormat);
+        if(moveCount <= 0) {
+          throw "Move count must be greater than zero";
+        }
+        return {
+          moveCount: moveCount,
+        };
+      }
+
       var m = stopwatchFormat.match(/^(?:(\d*):)?(\d+)(?:[.,](\d*))?$/);
       if(!m) {
         throw "Invalid stopwatch format";

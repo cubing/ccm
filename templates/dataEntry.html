@@ -55,7 +55,7 @@
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#if selectedResultId}}
-          <ol class="list-unstyled">
+          <ol class="jChesterList">
             {{#each selectedSolves}}
               <li>
                 {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}

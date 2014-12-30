@@ -190,6 +190,28 @@ function userResultMaybeSelected(template, roundId) {
   }, 0);
 }
 
+function jChesterSave($jChester) {
+  var $li = $jChester.closest('li');
+  if(!$li.hasClass("unsaved")) {
+    // Don't bother saving unless something has actually changed.
+    return;
+  }
+  var solveTime = $jChester.jChester('getSolveTime');
+  if(!solveTime) {
+    return false;
+  }
+  $li.removeClass('unsaved');
+  var $set = {};
+  $set['solves.' + this.index] = solveTime;
+  var resultId = selectedResultIdReact.get();
+  Results.update({
+    _id: resultId,
+  }, {
+    $set: $set,
+  });
+  return true;
+}
+
 Template.roundDataEntry.events({
   'click #selectableResults tr.result': function(e, template) {
     var $row = $(e.currentTarget);
@@ -228,29 +250,26 @@ Template.roundDataEntry.events({
     selectedResultIdReact.set(null);
   },
   'solveTimeInput .jChester[name="inputSolve"]': function(e, template, solveTime) {
-    if(!solveTime) {
-      return;
-    }
-    var $set = {};
-    $set['solves.' + this.index] = solveTime;
-    var resultId = selectedResultIdReact.get();
-    Results.update({
-      _id: resultId,
-    }, {
-      $set: $set,
-    });
+    var $target = $(e.currentTarget);
+    $target.closest('li').addClass('unsaved');
+  },
+  'blur .jChester[name="inputSolve"]': function(e) {
+    var $jChester = $(e.currentTarget);
+    jChesterSave.call(this, $jChester);
   },
   'solveTimeChange .jChester[name="inputSolve"]': function(e, template, solveTime) {
-    if(!solveTime) {
+    var $jChester = $(e.currentTarget);
+
+    var saved = jChesterSave.call(this, $jChester);
+    if(!saved) {
       return;
     }
 
-    var $target = $(e.currentTarget);
-    var $jChesterNext = $target.parent().next("li").find(".jChester");
+    var $jChesterNext = $jChester.parent().next("li").find(".jChester");
     if($jChesterNext.length > 0) {
       $jChesterNext.focus();
     } else {
-      var $sidebar = $target.closest(".results-sidebar");
+      var $sidebar = $jChester.closest(".results-sidebar");
       var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
       $focusables.first().focus();
     }
