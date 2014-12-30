@@ -49,6 +49,34 @@ Template.dataEntry.helpers({
   },
 });
 
+function keydown(e) {
+  // The escape key does a few things for data entry.
+  // When a jChester is focused, deselect the current result and focus the
+  // name input.
+  // If the name input is selected, blur it. This lets the user escape from the
+  // focus loop created by the name input and the time inputs.
+  // If nothing is selected, focus the name input. This way you don't have to
+  // use the mouse to do data entry.
+  if(e.which == 27) { // escape
+    var $focused = $(document.activeElement);
+    var $jChester = $focused.closest('.jChester');
+    var $inputCompetitorName = $('#inputCompetitorName');
+    if($jChester.length) {
+      selectedResultIdReact.set(null);
+      $inputCompetitorName.focus();
+    } else if($focused[0] == $inputCompetitorName[0]) {
+      $inputCompetitorName.blur();
+    } else {
+      $inputCompetitorName.focus();
+    }
+  }
+}
+Template.roundDataEntry.created = function() {
+  $(document).on('keydown', keydown);
+};
+Template.roundDataEntry.destroyed = function() {
+  $(document).off('keydown', keydown);
+};
 Template.roundDataEntry.rendered = function() {
   var template = this;
   template.autorun(function() {
@@ -78,8 +106,6 @@ Template.roundDataEntry.rendered = function() {
   // As the selected round changes (or less likely, but still possible:
   // competitors are added/removed from the round), we want to recompute the set
   // of userIds we're interested in.
-  // Note that we are careful to never redefine the usernames array
-  // (only mutate it), because we passed it into our typeahead's source.
   var results = [];
   template.autorun(function() {
     var data = Template.currentData();
@@ -160,8 +186,7 @@ function userResultMaybeSelected(template, roundId) {
 
   selectedResultIdReact.set(result._id);
   setTimeout(function() {
-    // TODO <<< add focus to jChester api >>>
-    template.$('.jChester').first().triggerHandler('focus');
+    template.$('.jChester').first().focus();
   }, 0);
 }
 
@@ -220,10 +245,29 @@ Template.roundDataEntry.events({
       return;
     }
 
-    var $jChester = $(e.currentTarget);
-    var $jChesterNext = $jChester.parent().next("li").find(".jChester");
-
-    // TODO <<< add focus to jChester api >>>
-    $jChesterNext.first().triggerHandler('focus');
+    var $target = $(e.currentTarget);
+    var $jChesterNext = $target.parent().next("li").find(".jChester");
+    if($jChesterNext.length > 0) {
+      $jChesterNext.focus();
+    } else {
+      var $sidebar = $target.closest(".results-sidebar");
+      var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+      $focusables.first().focus();
+    }
+  },
+  'focus #inputCompetitorName': function(e) {
+    e.currentTarget.select();
+  },
+  'focus #focusguard-1': function(e) {
+    var $target = $(e.currentTarget);
+    var $sidebar = $target.closest(".results-sidebar");
+    var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+    $focusables.last().focus();
+  },
+  'focus #focusguard-2': function(e) {
+    var $target = $(e.currentTarget);
+    var $sidebar = $target.closest(".results-sidebar");
+    var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+    $focusables.first().focus();
   },
 });
