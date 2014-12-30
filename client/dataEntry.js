@@ -4,7 +4,7 @@ var selectedResultIdReact = new ReactiveVar(null);
 Router.onBeforeAction(function() {
   // Clear selected result
   selectedResultIdReact.set(null);
-  $('#inputCompetitorName').val('');
+  $('#inputCompetitorName').typeahead('val', '');
   this.next();
 });
 
@@ -169,8 +169,8 @@ Template.roundDataEntry.helpers({
 });
 
 function userResultMaybeSelected(template, roundId) {
-  var $nameInput = template.$('input[name="name"]');
-  var uniqueName = $nameInput.val();
+  var $inputCompetitorName = template.$('#inputCompetitorName');
+  var uniqueName = $inputCompetitorName.typeahead('val');
   var result = Results.findOne({
     roundId: roundId,
     uniqueName: uniqueName,
@@ -204,8 +204,8 @@ Template.roundDataEntry.events({
     });
     assert(result);
 
-    var $nameInput = template.$('input[name="name"]');
-    $nameInput.val(result.uniqueName);
+    var $inputCompetitorName = template.$('#inputCompetitorName');
+    $inputCompetitorName.typeahead('val', result.uniqueName);
 
     userResultMaybeSelected(template, this.roundId);
   },
