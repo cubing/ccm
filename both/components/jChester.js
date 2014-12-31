@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.5.0
+ *  jChester - v0.5.1
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -246,7 +246,7 @@
 
       this.attr("tabindex", "-1");
       this.focus(function(e) {
-        var $input = $(this).find('input:visible').first();
+        var $input = $(this).find('input:visible:not([readonly])').first();
         $input.focus();
         $input.select();
       });
