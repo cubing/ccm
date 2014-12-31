@@ -51,7 +51,10 @@ Template.dataEntry.helpers({
 
 function keydown(e) {
   // The escape key does a few things for data entry.
-  // When a jChester is focused, focus the name input.
+  // When a jChester is focused, there are two possiblities:
+  //  1. If the jChester has unsaved changes, clear those changes,
+  //     and select everything in the current text field.
+  //  2. If the jChester has no unsaved changes, focus the name input.
   // If the name input is selected, blur it and remove the visible jChesters.
   // This lets the user escape from the focus loop created by the name input
   // and the time inputs.
@@ -62,7 +65,27 @@ function keydown(e) {
     var $jChester = $focused.closest('.jChester');
     var $inputCompetitorName = $('#inputCompetitorName');
     if($jChester.length) {
-      $inputCompetitorName.focus();
+      var $li = $jChester.closest('li');
+
+      var wasUnsaved = $li.hasClass("unsaved");
+      if(wasUnsaved) {
+        // When the blur is handled, we won't save the current value,
+        // because the unsaved class is not present.
+        $li.removeClass("unsaved");
+      }
+
+      var resultId = selectedResultIdReact.get();
+      selectedResultIdReact.set(null);
+      Meteor.defer(function() {
+        selectedResultIdReact.set(resultId);
+        if(!wasUnsaved) {
+          $inputCompetitorName.focus();
+        } else {
+          Meteor.defer(function() {
+            $focused.select();
+          });
+        }
+      });
     } else if($focused[0] == $inputCompetitorName[0]) {
       selectedResultIdReact.set(null);
       $inputCompetitorName.blur();
