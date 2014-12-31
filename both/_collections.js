@@ -116,6 +116,29 @@ Competitions.attachSchema({
       return null;
     },
   },
+  registrationAskAboutGuests: {
+    type: Boolean,
+    label: "Ask competitors if they are bringing guests",
+    min: 0,
+    optional: true,
+  },
+  registrationEnforceAttendanceLimit: {
+    type: Boolean,
+    label: "Enforce an attendance limit",
+    optional: true,
+  },
+  registrationCompetitorLimitCount: {
+    type: Number, // empty = no limit
+    label: "Maximum number of competitors (0 is unlimited)",
+    min: 1,
+    optional: true,
+  },
+  registrationAttendeeLimitCount: {
+    type: Number, // empty = no limit
+    label: "Maximum number of attendees (guests plus competitors, 0 is unlimited)",
+    min: 1,
+    optional: true,
+  },
 
   // Should these be moved to isStaff and isOrganizer fields in Registrations?
   staff: {
@@ -532,6 +555,7 @@ Meteor.users.attachSchema(new SimpleSchema({
       dob: {
         type: Date,
         optional: true,
+        label: "Birthdate",
         autoform: {
           afFieldInput: {
             type: "bootstrap-datepicker"

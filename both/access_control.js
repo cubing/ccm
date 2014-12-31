@@ -76,10 +76,17 @@ getCannotRegisterReasons = function(competitionId) {
     reasons.push(reasonText + "Please specify your gender in your profile.");
   }
 
-  // could be closed due to hitting capacity
-  // if()...
-  // reasons.push("Hit Total (guests + competitors) Capacity");
-  // reasons.push("Hit Competitor Capacity");
+  // Registration should close upon hitting capacity
+  var competition = Competitions.findOne({
+    _id: competitionId
+  }, {
+    registrationEnforceAttendanceLimit: 1,
+    registrationCompetitorLimitCount: 1,
+    registrationAttendeeLimitCount: 1,
+  });
+  if(competition.registrationEnforceAttendanceLimit) {
+    // TODO
+  }
 
   if(reasons.length > 0) {
     return reasons;
@@ -161,6 +168,10 @@ if(Meteor.isServer) {
         'calendarEndMinutes',
         'registrationOpenDate',
         'registrationCloseDate',
+        'registrationAskAboutGuests',
+        'registrationEnforceAttendanceLimit',
+        'registrationCompetitorLimitCount',
+        'registrationAttendeeLimitCount',
       ];
 
       var siteAdmin = getUserAttribute(userId, 'siteAdmin');
