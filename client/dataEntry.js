@@ -194,7 +194,7 @@ function jChesterSave($jChester) {
   var $li = $jChester.closest('li');
   if(!$li.hasClass("unsaved")) {
     // Don't bother saving unless something has actually changed.
-    return;
+    return true;
   }
   var solveTime = $jChester.jChester('getSolveTime');
   if(!solveTime) {
