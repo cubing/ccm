@@ -51,10 +51,10 @@ Template.dataEntry.helpers({
 
 function keydown(e) {
   // The escape key does a few things for data entry.
-  // When a jChester is focused, deselect the current result and focus the
-  // name input.
-  // If the name input is selected, blur it. This lets the user escape from the
-  // focus loop created by the name input and the time inputs.
+  // When a jChester is focused, focus the name input.
+  // If the name input is selected, blur it and remove the visible jChesters.
+  // This lets the user escape from the focus loop created by the name input
+  // and the time inputs.
   // If nothing is selected, focus the name input. This way you don't have to
   // use the mouse to do data entry.
   if(e.which == 27) { // escape
@@ -62,9 +62,9 @@ function keydown(e) {
     var $jChester = $focused.closest('.jChester');
     var $inputCompetitorName = $('#inputCompetitorName');
     if($jChester.length) {
-      selectedResultIdReact.set(null);
       $inputCompetitorName.focus();
     } else if($focused[0] == $inputCompetitorName[0]) {
+      selectedResultIdReact.set(null);
       $inputCompetitorName.blur();
     } else {
       $inputCompetitorName.focus();
