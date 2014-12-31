@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.5.1
+ *  jChester - v0.5.2
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -45,12 +45,15 @@
       data.$form.find('input[name="millis-mask"]').css({
         position: 'absolute',
         backgroundColor: 'white',
+        fontFamily: 'monospace',
+        textAlign: 'right',
       });
       data.$form.find('input[name="millis"]').css({
         position: 'relative',
         backgroundColor: 'transparent',
+        fontFamily: 'monospace',
+        textAlign: 'right',
       });
-
 
       // Create moveCount field
       data.$form.append($('<div class="form-group"><input name="moveCount" type="text" class="form-control"></input></div>'));
@@ -101,20 +104,25 @@
             var minutesStr = millisStr.substring(0, len - 4);
 
             var newClockFormat = "";
-            if(minutesStr.length > 0) {
-              newClockFormat += minutesStr + ":";
-            }
-            if(secondsStr.length > 0) {
-              newClockFormat += secondsStr;
-            }
-            if(decimalsStr.length > 0) {
-              newClockFormat += "." + decimalsStr;
-            }
+            var mask = "";
+            var append = function(str, padding) {
+              for(var i = 0; i < padding - str.length; i++) {
+                newClockFormat += " ";
+                mask += "0";
+              }
+              newClockFormat += str;
+              mask += str;
+            };
+            append(minutesStr, 2);
+            append(":", 0);
+            append(secondsStr, 2);
+            append(".", 0);
+            append(decimalsStr, 2);
             // Make space for the colon and period. Note that we don't
             // actually make them part of the input, we just leave space
             // for them to be shown in the $inputMillisMask.
             $inputMillis.val(newClockFormat.replace(/[.:]/g, " "));
-            $inputMillisMask.val(newClockFormat);
+            $inputMillisMask.val(mask);
 
             millisStr = newClockFormat;
           } else {
@@ -319,6 +327,7 @@
   var MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
   $.extend({
     stopwatchFormatToSolveTime: function(stopwatchFormat, isMoveCount) {
+      stopwatchFormat = stopwatchFormat.replace(/ /g, "");
       if(stopwatchFormat.length === 0) {
         throw "Input must be nonempty.";
       }
