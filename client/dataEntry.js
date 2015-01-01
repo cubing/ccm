@@ -65,13 +65,13 @@ function keydown(e) {
     var $jChester = $focused.closest('.jChester');
     var $inputCompetitorName = $('#inputCompetitorName');
     if($jChester.length) {
-      var $li = $jChester.closest('li');
+      var $tr = $jChester.closest('tr');
 
-      var wasUnsaved = $li.hasClass("unsaved");
+      var wasUnsaved = $tr.hasClass("unsaved");
       if(wasUnsaved) {
         // When the blur is handled, we won't save the current value,
         // because the unsaved class is not present.
-        $li.removeClass("unsaved");
+        $tr.removeClass("unsaved");
       }
 
       var resultId = selectedResultIdReact.get();
@@ -219,8 +219,8 @@ function userResultMaybeSelected(template, roundId, shiftKeyDown) {
 }
 
 function jChesterSave($jChester) {
-  var $li = $jChester.closest('li');
-  if(!$li.hasClass("unsaved")) {
+  var $tr = $jChester.closest('tr');
+  if(!$tr.hasClass("unsaved")) {
     // Don't bother saving unless something has actually changed.
     return true;
   }
@@ -230,7 +230,8 @@ function jChesterSave($jChester) {
   }
   // For now, we unconditionally force everything to be 2 decimal places.
   solveTime.decimals = 2;
-  $li.removeClass('unsaved');
+  $tr.removeClass('unsaved');
+  $tr.addClass('saving');
   var $set = {};
   $set['solves.' + this.index] = solveTime;
   var resultId = selectedResultIdReact.get();
@@ -238,6 +239,11 @@ function jChesterSave($jChester) {
     _id: resultId,
   }, {
     $set: $set,
+  }, function(err, res) {
+    if(err) {
+      throw err;
+    }
+    $tr.removeClass('saving');
   });
   return true;
 }
@@ -281,7 +287,7 @@ Template.roundDataEntry.events({
   },
   'solveTimeInput .jChester[name="inputSolve"]': function(e, template, solveTime) {
     var $target = $(e.currentTarget);
-    $target.closest('li').addClass('unsaved');
+    $target.closest('tr').addClass('unsaved');
   },
   'blur .jChester[name="inputSolve"]': function(e) {
     var $jChester = $(e.currentTarget);
@@ -306,11 +312,11 @@ Template.roundDataEntry.events({
 
       var $sidebar = $jChester.closest(".results-sidebar");
       var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
-      var $next = $jChester.parent().next("li").find(".jChester");
+      var $next = $jChester.closest("tr").next("tr").find(".jChester");
       if($next.length === 0) {
         $next = $focusables.first();
       }
-      var $prev = $jChester.parent().prev("li").find(".jChester");
+      var $prev = $jChester.closest("tr").prev("tr").find(".jChester");
       if($prev.length === 0) {
         $prev = $focusables.first();
       }

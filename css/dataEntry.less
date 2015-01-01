@@ -17,7 +17,7 @@
 }
 
 .results-sidebar.affix {
-  top: 20px;
+  top: 50px;
 }
 
 @media(max-width: 768px) {
@@ -29,21 +29,29 @@
   }
 }
 
-.jChesterList {
-  margin-top: 10px;
-  padding-left: 20px;
+.jChesterTable tr td i.fa {
+  position: relative;
+  top: 7px;
+  left: 7px;
 }
 
-.jChesterList li {
-  list-style: disc;;
+.jChesterTable tr td:first-child i.fa {
+}
+.jChesterTable tr td:first-child i.fa::before {
+  content: "\f111"; /* fa-circle */
 }
 
-@unsavedColor: #ff0000;
-.jChesterList li.unsaved {
-  list-style: circle;
-  color: @unsavedColor;
+.jChesterTable tr.unsaved td:first-child i.fa {
+}
+.jChesterTable tr.unsaved td:first-child i.fa::before {
+  content: "\f10c"; /* fa-circle-o */
 }
 
-.jChester input {
-  text-align: right;
+.jChesterTable tr.saving td:first-child i.fa {
+  /* .fa-spin */
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.jChesterTable tr.saving td:first-child i.fa::before {
+  content: "\f1ce"; /* fa-circle-o-notch */
 }

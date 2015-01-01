@@ -55,13 +55,20 @@
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#if selectedResultId}}
-          <ol class="jChesterList">
-            {{#each selectedSolves}}
-              <li>
-                {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
-              </li>
-            {{/each}}
-          </ol>
+          <table class="table jChesterTable">
+            <tbody>
+              {{#each selectedSolves}}
+                <tr>
+                  <td>
+                    <i class="fa fa-fw"></i>
+                  </td>
+                  <td>
+                    {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
           <div class="focusguard" id="focusguard-2" tabindex="0"></div>
         {{/if}}
       </div>
