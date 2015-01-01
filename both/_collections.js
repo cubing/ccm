@@ -527,14 +527,11 @@ Meteor.users.attachSchema(new SimpleSchema({
       },
       countryId: {
         type: String,
-        regEx: /^[A-Z]{2}$/,
+        allowedValues: wca.countryISO2Codes,
         optional: true,
         autoform: {
           type: "selectize",
-          options: [
-            {label: "United States of America", value: "US"},
-            {label: "Smerbia",                  value: "SM"},
-          ],
+          options: wca.countryISO2AutoformOptions,
         },
       },
       gender: {
