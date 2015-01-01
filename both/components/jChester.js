@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.5.3
+ *  jChester - v0.5.4
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -236,11 +236,13 @@
         if(($target.attr('name') === 'millis' || $target.attr('name') === 'moveCount') && !e.altKey && !e.ctrlKey & !e.metaKey) {
           if(e.which === 106 || e.which === 68) { // asterisk or "d" key
             $target.val("DNF");
+            $target.select(); // select all to make it easier to change
             data.inputChanged();
             that.trigger("solveTimeInput", [data.solveTime]);
             e.preventDefault();
           } else if(e.which === 111 || e.which === 83) { // forward slash or "s" key
             $target.val("DNS");
+            $target.select(); // select all to make it easier to change
             data.inputChanged();
             that.trigger("solveTimeInput", [data.solveTime]);
             e.preventDefault();
