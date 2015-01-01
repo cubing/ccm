@@ -191,7 +191,7 @@ Template.roundDataEntry.helpers({
   },
 });
 
-function userResultMaybeSelected(template, roundId) {
+function userResultMaybeSelected(template, roundId, shiftKeyDown) {
   var $inputCompetitorName = template.$('#inputCompetitorName');
   var uniqueName = $inputCompetitorName.typeahead('val');
   var result = Results.findOne({
@@ -209,7 +209,12 @@ function userResultMaybeSelected(template, roundId) {
 
   selectedResultIdReact.set(result._id);
   setTimeout(function() {
-    template.$('.jChester').first().focus();
+    // If the user was holding down shift as they pressed return, cycle backwards
+    if(shiftKeyDown) {
+      template.$('.jChester').last().focus();
+    } else {
+      template.$('.jChester').first().focus();
+    }
   }, 0);
 }
 
@@ -223,6 +228,8 @@ function jChesterSave($jChester) {
   if(!solveTime) {
     return false;
   }
+  // For now, we unconditionally force everything to be 2 decimal places.
+  solveTime.decimals = 2;
   $li.removeClass('unsaved');
   var $set = {};
   $set['solves.' + this.index] = solveTime;
@@ -262,7 +269,7 @@ Template.roundDataEntry.events({
   },
   'keydown .typeahead': function(e, template) {
     if(e.which == 13) {
-      userResultMaybeSelected(template, this.roundId);
+      userResultMaybeSelected(template, this.roundId, e.shiftKey);
     }
   },
   'input .typeahead': function(e, template) {
@@ -279,22 +286,39 @@ Template.roundDataEntry.events({
   'blur .jChester[name="inputSolve"]': function(e) {
     var $jChester = $(e.currentTarget);
     jChesterSave.call(this, $jChester);
+    // The impending DOM update will deselect the selected text in the next
+    // jChester's focused input, so explicitly select it here.
+    Tracker.afterFlush(function() {
+      var $jChesterNew = $(document.activeElement).closest('.jChester');
+      if($jChesterNew[0] !== $jChester[0]) {
+        $jChesterNew.focus();
+      }
+    });
   },
-  'solveTimeChange .jChester[name="inputSolve"]': function(e, template, solveTime) {
-    var $jChester = $(e.currentTarget);
+  'keydown .jChester[name="inputSolve"]': function(e, template, solveTime) {
+    if(e.which == 13) {
+      var $jChester = $(e.currentTarget);
 
-    var saved = jChesterSave.call(this, $jChester);
-    if(!saved) {
-      return;
-    }
+      var saved = jChesterSave.call(this, $jChester);
+      if(!saved) {
+        return;
+      }
 
-    var $jChesterNext = $jChester.parent().next("li").find(".jChester");
-    if($jChesterNext.length > 0) {
-      $jChesterNext.focus();
-    } else {
       var $sidebar = $jChester.closest(".results-sidebar");
       var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
-      $focusables.first().focus();
+      var $next = $jChester.parent().next("li").find(".jChester");
+      if($next.length === 0) {
+        $next = $focusables.first();
+      }
+      var $prev = $jChester.parent().prev("li").find(".jChester");
+      if($prev.length === 0) {
+        $prev = $focusables.first();
+      }
+      if(e.shiftKey) {
+        $prev.focus();
+      } else {
+        $next.focus();
+      }
     }
   },
   'focus #inputCompetitorName': function(e) {

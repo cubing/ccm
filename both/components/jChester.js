@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.5.1
+ *  jChester - v0.5.4
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -45,12 +45,15 @@
       data.$form.find('input[name="millis-mask"]').css({
         position: 'absolute',
         backgroundColor: 'white',
+        fontFamily: 'monospace',
+        textAlign: 'right',
       });
       data.$form.find('input[name="millis"]').css({
         position: 'relative',
         backgroundColor: 'transparent',
+        fontFamily: 'monospace',
+        textAlign: 'right',
       });
-
 
       // Create moveCount field
       data.$form.append($('<div class="form-group"><input name="moveCount" type="text" class="form-control"></input></div>'));
@@ -101,22 +104,27 @@
             var minutesStr = millisStr.substring(0, len - 4);
 
             var newClockFormat = "";
-            if(minutesStr.length > 0) {
-              newClockFormat += minutesStr + ":";
-            }
-            if(secondsStr.length > 0) {
-              newClockFormat += secondsStr;
-            }
-            if(decimalsStr.length > 0) {
-              newClockFormat += "." + decimalsStr;
-            }
+            var mask = "";
+            var append = function(str, padding) {
+              for(var i = 0; i < padding - str.length; i++) {
+                newClockFormat += " ";
+                mask += "0";
+              }
+              newClockFormat += str;
+              mask += str;
+            };
+            append(minutesStr, 2);
+            append(":", 0);
+            append(secondsStr, 2);
+            append(".", 0);
+            append(decimalsStr, 2);
             // Make space for the colon and period. Note that we don't
             // actually make them part of the input, we just leave space
             // for them to be shown in the $inputMillisMask.
             $inputMillis.val(newClockFormat.replace(/[.:]/g, " "));
-            $inputMillisMask.val(newClockFormat);
+            $inputMillisMask.val(mask);
 
-            millisStr = newClockFormat;
+            millisStr = newClockFormat.replace(/ /g, "0");
           } else {
             // Only bother setting the value if it's really neccessary.
             // This way we don't screw up a user who has moved back to edit
@@ -228,19 +236,17 @@
         if(($target.attr('name') === 'millis' || $target.attr('name') === 'moveCount') && !e.altKey && !e.ctrlKey & !e.metaKey) {
           if(e.which === 106 || e.which === 68) { // asterisk or "d" key
             $target.val("DNF");
+            $target.select(); // select all to make it easier to change
             data.inputChanged();
             that.trigger("solveTimeInput", [data.solveTime]);
             e.preventDefault();
           } else if(e.which === 111 || e.which === 83) { // forward slash or "s" key
             $target.val("DNS");
+            $target.select(); // select all to make it easier to change
             data.inputChanged();
             that.trigger("solveTimeInput", [data.solveTime]);
             e.preventDefault();
           }
-        }
-        if(e.which === 13) { // return
-          data.inputChanged();
-          that.trigger("solveTimeChange", [data.solveTime]);
         }
       });
 
@@ -357,7 +363,7 @@
       var seconds = parseInt(m[2] || "0");
       var decimalStr = m[3] || "";
       var decimal = parseInt(decimalStr || "0");
-      var denominator = Math.pow(10, decimal.toString().length - 3); /* subtract 3 to get millis instead of seconds */
+      var denominator = Math.pow(10, decimalStr.length - 3); /* subtract 3 to get millis instead of seconds */
       var decimalValueInMillis = !decimal ? 0 : Math.round(decimal / denominator);
 
       var millis = minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
