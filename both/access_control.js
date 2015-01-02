@@ -84,13 +84,13 @@ getCannotRegisterReasons = function(competitionId) {
     registrationAttendeeLimitCount: 1,
   });
   // Users already registered should still be able to edit registrations
-  if(!Registrations.findOne({userId: Meteor.userId()})) {
+  if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
     // competitor capacity limit
     var numCompetitors = 0;
     if(competition.registrationCompetitorLimitCount) {
       numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
       if(numCompetitors >= competition.registrationCompetitorLimitCount) {
-        reasons.push("Registration is currently full!");
+        reasons.push("Registration has reached the maximum number of allowed competitors.");
       }
     }
     // total venue capacity limit
@@ -100,7 +100,7 @@ getCannotRegisterReasons = function(competitionId) {
       var guestTotalCount = 0;
       guestData.map(function(obj) { guestTotalCount += obj.guestCount; });
       if(numCompetitors + guestTotalCount >= competition.registrationAttendeeLimitCount) {
-        reasons.push("Registration is currently full!");
+        reasons.push("Registration has reached the maximum number of allowed competitors and guests.");
       }
     }
   }

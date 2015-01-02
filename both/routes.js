@@ -311,6 +311,11 @@ Router.route('/:competitionUrlId/registration', {
     waitOn.push(subs.subscribe('myCompetitionRegistration',
                                this.params.competitionUrlId,
                                subscriptionError(this)));
+    // we need information about guests and # competitors to tell
+    // if registration is full.
+    waitOn.push(subs.subscribe('competitionRegistrationGuestCounts',
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
     return waitOn;
   },
 });

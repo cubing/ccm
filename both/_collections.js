@@ -130,7 +130,7 @@ Competitions.attachSchema({
   },
   registrationAttendeeLimitCount: {
     type: Number, // empty = no limit
-    label: "Maximum number of attendees (leave empty for no limit)",
+    label: "Maximum number of attendees (guests + competitors; leave empty for no limit)",
     min: 1,
     optional: true,
   },
