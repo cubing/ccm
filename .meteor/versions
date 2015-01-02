@@ -68,6 +68,7 @@ mongo@1.0.11
 mongo-livedata@1.0.7
 mrt:assert@0.2.5
 mrt:flash-messages@1.0.0
+mrt:googlemaps@0.0.2
 mrt:moment@2.8.1
 multiply:iron-router-progress@1.0.1
 natestrauser:connection-banner@0.4.3
@@ -100,3 +101,4 @@ url@1.0.3
 webapp@1.1.5
 webapp-hashing@1.0.2
 wylio:mandrill@0.2.1
+yogiben:autoform-map@0.0.1

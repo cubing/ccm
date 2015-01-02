@@ -160,8 +160,22 @@ Competitions.attachSchema({
     denyInsert: true,
     optional: true
   },
+  location: {
+    type: String,
+    optional: true,
+    autoform: {
+      afFieldInput: {
+        type: 'map',
+        mapType: 'terrain',
+        zoom: 2,
+        geolocation: true,
+        height: "500px",
+        autolocate: true,
+        searchBox: true,
+      }
+    },
+  },
 
-  // Should these be moved to isStaff and isOrganizer fields in Registrations?
   staff: {
     type: [String],
     defaultValue: [],

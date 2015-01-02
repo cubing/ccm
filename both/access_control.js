@@ -193,6 +193,9 @@ if(Meteor.isServer) {
         'registrationEnforceAttendanceLimit',
         'registrationCompetitorLimitCount',
         'registrationAttendeeLimitCount',
+        'updatedAt',
+        'createdAt',
+        'location',
       ];
 
       var siteAdmin = getUserAttribute(userId, 'siteAdmin');
