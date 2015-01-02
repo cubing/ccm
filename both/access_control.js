@@ -60,20 +60,22 @@ getCannotRegisterReasons = function(competitionId) {
   }
 
   // Check to make sure profile has appropriate data
-  var userProfile = Meteor.user().profile;
+  var user = Meteor.user();
   reasonText = "You need to complete your user profile to register! ";
-  // var hasEmail = ??;
-  if(!userProfile.name) {
+  if(!user.profile.name) {
     reasons.push(reasonText + "Please add your name to your profile.");
   }
-  if(!userProfile.dob) {
+  if(!user.profile.dob) {
     reasons.push(reasonText + "Please provide a birthdate in your profile.");
   }
-  if(!userProfile.countryId) {
+  if(!user.profile.countryId) {
     reasons.push(reasonText + "Please specify a country in your profile.");
   }
-  if(!userProfile.gender) {
+  if(!user.profile.gender) {
     reasons.push(reasonText + "Please specify your gender in your profile.");
+  }
+  if(!user.emails[0].verified) {
+    reasons.push(reasonText + "Please confirm your email address.");
   }
 
   // Registration should close upon hitting capacity;
@@ -86,7 +88,7 @@ getCannotRegisterReasons = function(competitionId) {
   // Users already registered should still be able to edit registrations
   if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
     // competitor capacity limit
-    var numCompetitors = 0;
+    var numCompetitors;
     if(competition.registrationCompetitorLimitCount) {
       numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
       if(numCompetitors >= competition.registrationCompetitorLimitCount) {
@@ -95,10 +97,12 @@ getCannotRegisterReasons = function(competitionId) {
     }
     // total venue capacity limit
     if(competition.registrationAttendeeLimitCount) {
-      numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
-      var guestData = Registrations.find({competitionId: competitionId}, {guestCount: 1}).fetch();
+      var registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
+      numCompetitors = registrationGuestData.count();
       var guestTotalCount = 0;
-      guestData.map(function(obj) { guestTotalCount += obj.guestCount; });
+      registrationGuestData.fetch().forEach(function(obj) {
+        guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
+      });
       if(numCompetitors + guestTotalCount >= competition.registrationAttendeeLimitCount) {
         reasons.push("Registration has reached the maximum number of allowed competitors and guests.");
       }
