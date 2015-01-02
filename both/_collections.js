@@ -134,6 +134,32 @@ Competitions.attachSchema({
     min: 1,
     optional: true,
   },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
+  },
 
   // Should these be moved to isStaff and isOrganizer fields in Registrations?
   staff: {
@@ -193,6 +219,32 @@ Registrations.attachSchema({
         type: "textarea"
       }
     },
+  },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
   },
 });
 if(Meteor.isServer) {
@@ -499,9 +551,6 @@ Meteor.users.attachSchema(new SimpleSchema({
   "emails.$.verified": {
     type: Boolean,
   },
-  createdAt: {
-    type: Date,
-  },
   siteAdmin: {
     type: Boolean,
     defaultValue: false,
@@ -561,6 +610,32 @@ Meteor.users.attachSchema(new SimpleSchema({
     type: Object,
     optional: true,
     blackbox: true,
+  },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
   },
 }));
 
