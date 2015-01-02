@@ -91,13 +91,9 @@
               {{> afQuickField name="registrationOpenDate" }}
               {{> afQuickField name="registrationCloseDate" }}
               {{> afQuickField name="registrationAskAboutGuests" }}
-              {{> afQuickField name="registrationEnforceAttendanceLimit" }}
-              {{#if afFieldValueIs name="registrationEnforceAttendanceLimit" value=true}}
-                <div class="">
-                  {{> afQuickField name="registrationCompetitorLimitCount" }}
-                  {{> afQuickField name="registrationAttendeeLimitCount" }}
-                </div>
-              {{/if}}
+
+              {{> afQuickField name="registrationCompetitorLimitCount" }}
+              {{> afQuickField name="registrationAttendeeLimitCount" }}
 
               <button type="submit" class="btn btn-default">
                 <span class="glyphicon glyphicon-floppy-save"></span>

@@ -34,12 +34,12 @@ Template.competitionRegistration.helpers({
   defaultRegistrationData: function() {
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
-    var defaultUniqueName = Meteor.user().profile.name;
     var registration = getUserRegistration(userId, competitionId);
     if(registration) {
       return registration;
     } else {
       // populate user / competition data if there is no registration for this person yet
+      var defaultUniqueName = Meteor.user().profile.name;
       return {
         userId: userId,
         competitionId: competitionId,

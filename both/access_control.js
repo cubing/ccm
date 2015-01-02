@@ -76,16 +76,33 @@ getCannotRegisterReasons = function(competitionId) {
     reasons.push(reasonText + "Please specify your gender in your profile.");
   }
 
-  // Registration should close upon hitting capacity
+  // Registration should close upon hitting capacity;
   var competition = Competitions.findOne({
     _id: competitionId
   }, {
-    registrationEnforceAttendanceLimit: 1,
     registrationCompetitorLimitCount: 1,
     registrationAttendeeLimitCount: 1,
   });
-  if(competition.registrationEnforceAttendanceLimit) {
-    // TODO
+  // Users already registered should still be able to edit registrations
+  if(!Registrations.findOne({userId: Meteor.userId()})) {
+    // competitor capacity limit
+    var numCompetitors = 0;
+    if(competition.registrationCompetitorLimitCount) {
+      numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
+      if(numCompetitors >= competition.registrationCompetitorLimitCount) {
+        reasons.push("Registration is currently full!");
+      }
+    }
+    // total venue capacity limit
+    if(competition.registrationAttendeeLimitCount) {
+      numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
+      var guestData = Registrations.find({competitionId: competitionId}, {guestCount: 1}).fetch();
+      var guestTotalCount = 0;
+      guestData.map(function(obj) { guestTotalCount += obj.guestCount; });
+      if(numCompetitors + guestTotalCount >= competition.registrationAttendeeLimitCount) {
+        reasons.push("Registration is currently full!");
+      }
+    }
   }
 
   if(reasons.length > 0) {

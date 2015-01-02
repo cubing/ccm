@@ -122,20 +122,15 @@ Competitions.attachSchema({
     min: 0,
     optional: true,
   },
-  registrationEnforceAttendanceLimit: {
-    type: Boolean,
-    label: "Enforce an attendance limit",
-    optional: true,
-  },
   registrationCompetitorLimitCount: {
     type: Number, // empty = no limit
-    label: "Maximum number of competitors (0 is unlimited)",
+    label: "Maximum number of competitors (leave empty for no limit)",
     min: 1,
     optional: true,
   },
   registrationAttendeeLimitCount: {
     type: Number, // empty = no limit
-    label: "Maximum number of attendees (guests plus competitors, 0 is unlimited)",
+    label: "Maximum number of attendees (leave empty for no limit)",
     min: 1,
     optional: true,
   },
