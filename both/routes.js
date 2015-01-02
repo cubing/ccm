@@ -302,12 +302,12 @@ Router.route('/:competitionUrlId', {
   controller: 'ViewCompetitionController',
   titlePrefix: null,
 });
-Router.route('/:competitionUrlId/registration', {
-  name: 'competitionRegistration',
-  controller: 'ViewCompetitionController',
-  titlePrefix: 'Registration',
+
+// TODO - fast-render breaks if we don't define a controller for this route.
+// It's seems to call waitOn with the wrong "this".
+RegistrationController = ViewCompetitionController.extend({
   waitOn: function() {
-    var waitOn = this.constructor.prototype.waitOn.call(this);
+    var waitOn = this.constructor.__super__.waitOn.call(this);
     waitOn.push(subs.subscribe('myCompetitionRegistration',
                                this.params.competitionUrlId,
                                subscriptionError(this)));
@@ -318,6 +318,11 @@ Router.route('/:competitionUrlId/registration', {
                                subscriptionError(this)));
     return waitOn;
   },
+});
+Router.route('/:competitionUrlId/registration', {
+  name: 'competitionRegistration',
+  controller: 'RegistrationController',
+  titlePrefix: 'Registration',
 });
 Router.route('/:competitionUrlId/events', {
   name: 'competitionEvents',
