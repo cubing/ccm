@@ -271,7 +271,7 @@ Template.roundDataEntry.events({
     userResultMaybeSelected(template, this.roundId);
   },
   'typeahead:autocompleted .typeahead': function(e, template, suggestion, datasetName) {
-    userResultMaybeSelected(template, this.roundId);
+    // Do nothing here. Wait for the user to actually select a result.
   },
   'keydown .typeahead': function(e, template) {
     if(e.which == 13) {
