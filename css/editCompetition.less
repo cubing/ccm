@@ -85,3 +85,28 @@ table th.tight-cell, table td.tight-cell {
 a[data-toggle="popover"] {
   cursor: help;
 }
+
+/*
+ * Google maps input is tiny! Use styling from:
+ * https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
+ */
+#competitionLocationMapInput {
+  background-color: #fff;
+  padding: 2px 11px 2px 13px;
+  width: 400px;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  text-overflow: ellipsis;
+  margin-top: 20px;
+}
+#competitionLocationMapInput:focus {
+  border-color: #4d90fe;
+  margin-left: -1px;
+  padding-left: 14px;  /* Regular padding-left + 1. */
+  width: 401px;
+}
+#competitionLocationMap {
+  height: 400px;
+  width: 100%;
+}
