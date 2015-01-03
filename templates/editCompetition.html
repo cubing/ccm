@@ -67,7 +67,12 @@
           </div>
 
           {{> afQuickField name="competitionName" }}
-          {{> afQuickField name="location" }}
+          
+          <div id="competitionLocationMap" style="height: 400px; width: 100%;"></div>
+          <input type="text" id="competitionLocationMapInput" />
+          {{> afFieldInput name="location.lng" type="hidden" }}
+          {{> afFieldInput name="location.lat" type="hidden" }}
+          {{> afFieldInput name="location.addressText" type="hidden" }}
 
           <button type="submit" class="btn btn-default">
             <span class="glyphicon glyphicon-floppy-save"></span>

@@ -170,3 +170,79 @@ Template.editCompetition_userRow.helpers({
     return this.userId == Meteor.userId();
   },
 });
+
+Template.editCompetition.rendered = function() {
+  GoogleMaps.init({
+    'libraries': 'places',
+    'sensor': true,
+  }, function() {
+    // google maps components
+    var mapDiv = $('#competitionLocationMap');
+    var locationInput = $('#competitionLocationMapInput');
+    // autoform inputs
+    var addressInput = $('input[name="location.addressText"]');
+    locationInput.val(addressInput.val());
+    var latInput = $('input[name="location.lat"]');
+    var lngInput = $('input[name="location.lng"]');
+
+    var coords = {
+      lat: latInput.val()*1 || 0,
+      lng: lngInput.val()*1 || 0
+    };
+
+    var mapOptions = {
+      zoom: 2,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(mapDiv[0], mapOptions);
+    map.setCenter(new google.maps.LatLng( coords.lat, coords.lng ));
+
+    // Create the search box and link it to the UI element.
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(locationInput[0]);
+    var searchBox = new google.maps.places.SearchBox(locationInput[0]);
+
+    var geocoder = new google.maps.Geocoder();
+    var marker = new google.maps.Marker({
+      map: map,
+      draggable: true,
+      position: coords
+    });
+    var defaultBounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(-60, -90),
+      new google.maps.LatLng(60, 90)
+    );
+    map.fitBounds(defaultBounds);
+
+    google.maps.event.addListener(marker, 'dragend', function() {
+      latInput.val(this.getPosition().lat());
+      lngInput.val(this.getPosition().lng());
+      var latLng = new google.maps.LatLng(this.getPosition().lat(), this.getPosition().lng());
+      geocoder.geocode( {
+        'latLng': latLng
+      }, function(results, status) {
+        if(status == google.maps.GeocoderStatus.OK) {
+          var competitionLocation = results[0];
+          addressInput.val(competitionLocation.formatted_address);
+          locationInput.val(competitionLocation.formatted_address);
+        } else {
+          alert('Geocode was not successful for the following reason: ' + status);
+        }
+      });
+
+    });
+
+    google.maps.event.addListener(searchBox, 'places_changed', function() {
+      // Only use the first place - get the icon, place name, and location.
+      var places = searchBox.getPlaces();
+      var place = places[0];
+
+      marker.setPosition(place.geometry.location);
+      map.panTo(place.geometry.location);
+      map.setZoom(12);
+      latInput.val(place.geometry.location.lat());
+      lngInput.val(place.geometry.location.lng());
+      addressInput.val(place.formatted_address);
+    });
+
+  });
+};

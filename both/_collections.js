@@ -160,20 +160,68 @@ Competitions.attachSchema({
     denyInsert: true,
     optional: true
   },
+  // information about competition location
   location: {
-    type: String,
+    type: new SimpleSchema({
+      addressText: {
+        type: String,
+        optional: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      lat: {
+        type: Number,
+        optional: true,
+        decimal: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      lng: {
+        type: Number,
+        optional: true,
+        decimal: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      // city: {
+      //   type: String,
+      //   optional: true,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+      // stateOrProvince: {
+      //   type: String,
+      //   optional: true,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+      // countryId: {
+      //   type: String,
+      //   optional: true,
+      //   allowedValues: wca.countryISO2Codes,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+    }),
     optional: true,
-    autoform: {
-      afFieldInput: {
-        type: 'map',
-        mapType: 'terrain',
-        zoom: 2,
-        geolocation: true,
-        height: "500px",
-        autolocate: true,
-        searchBox: true,
-      }
-    },
   },
 
   staff: {
