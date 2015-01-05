@@ -29,11 +29,12 @@ setCompetitionLocationMap = function() {
     var lngInput = $('input[name="location.lng"]');
 
     var coords = {
-      lat: latInput.val()*1 || 0,
-      lng: lngInput.val()*1 || 0
+      lat: parseFloat(latInput.val()) || 0,
+      lng: parseFloat(lngInput.val()) || 0
     };
 
     var mapOptions = {
+      scrollwheel: false,
       zoom: addressInput.val() ? 12 : 2,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
@@ -263,10 +264,13 @@ Template.editCompetition_userRow.helpers({
 });
 
 Template.editCompetition.rendered = function() {
-  setCompetitionLocationMap();
+  var template = this;
+  template.autorun(function() {
+    setCompetitionLocationMap();
+  });
 };
 
 AutoForm.addHooks('competitionDataForm', {
-  // map disappears after submit... need to add it back!
+  // map disappears after submitting the form... need to add it back!
   endSubmit: setCompetitionLocationMap,
 });
