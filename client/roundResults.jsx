@@ -118,7 +118,7 @@ var ResultRow = React.createClass({
             worstIndex = i;
             worstSolve = solve;
           }
-          if(!bestSolve || solve.millis < bestSolve.millis) {
+          if(!bestSolve || solve.millis < bestSolve.millis || $.solveTimeIsDNF(bestSolve) || $.solveTimeIsDNS(bestSolve)) {
             bestIndex = i;
             bestSolve = solve;
           }
