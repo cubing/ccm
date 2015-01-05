@@ -11,7 +11,6 @@ if(Meteor.isServer) {
       var develUserId = Accounts.createUser({
         password: DEVEL_ACCOUNT_PASSWORD,
         email: DEVEL_ACCOUNT_EMAIL,
-        siteAdmin: true,
         profile: {
           name: "gjcomps devel account",
           countryId: "US",
@@ -21,12 +20,13 @@ if(Meteor.isServer) {
       });
       var develUser = Meteor.users.findOne({ _id: develUserId });
       assert(develUser);
-      // Mark email as verified.
+      // Mark email as verified, and user as a site admin
       Meteor.users.update({
         _id: develUser._id,
       }, {
         $set: {
           "emails.0.verified": true,
+          siteAdmin: true,
         }
       });
     }
