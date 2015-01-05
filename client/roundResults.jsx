@@ -141,7 +141,7 @@ var ResultRow = React.createClass({
             'text-right': true,
           });
           return (
-            <td key={i} className={solveClasses}>{clockFormat(solve)}</td>
+            <td key={i} data-solve-index={i} className={solveClasses}>{clockFormat(solve)}</td>
           );
         })}
       </tr>

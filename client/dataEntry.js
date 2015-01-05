@@ -191,7 +191,9 @@ Template.roundDataEntry.helpers({
   },
 });
 
-function userResultMaybeSelected(template, roundId, shiftKeyDown) {
+function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
+  jChesterToFocusIndex = jChesterToFocusIndex || 0;
+
   var $inputCompetitorName = template.$('#inputCompetitorName');
   var uniqueName = $inputCompetitorName.typeahead('val');
   var result = Results.findOne({
@@ -209,12 +211,11 @@ function userResultMaybeSelected(template, roundId, shiftKeyDown) {
 
   selectedResultIdReact.set(result._id);
   setTimeout(function() {
-    // If the user was holding down shift as they pressed return, cycle backwards
-    if(shiftKeyDown) {
-      template.$('.jChester').last().focus();
-    } else {
-      template.$('.jChester').first().focus();
+    var $jChesters = template.$('.jChester');
+    if(jChesterToFocusIndex < 0) {
+      jChesterToFocusIndex = $jChesters.length + jChesterToFocusIndex;
     }
+    $jChesters.eq(jChesterToFocusIndex).focus();
   }, 0);
 }
 
@@ -265,7 +266,16 @@ Template.roundDataEntry.events({
     var $inputCompetitorName = template.$('#inputCompetitorName');
     $inputCompetitorName.typeahead('val', result.uniqueName);
 
-    userResultMaybeSelected(template, this.roundId);
+    var jChesterToFocusIndex = 0;
+
+    // If the user actually clicked on an individual solve, focus that solve's jChester
+    var $cell = $(e.target);
+    if($cell.is('td.results-solve')) {
+      var solveIndex = parseInt($cell.data('solve-index'));
+      jChesterToFocusIndex = solveIndex;
+    }
+
+    userResultMaybeSelected(template, this.roundId, jChesterToFocusIndex);
   },
   'typeahead:selected .typeahead': function(e, template, suggestion, datasetName) {
     userResultMaybeSelected(template, this.roundId);
@@ -275,7 +285,7 @@ Template.roundDataEntry.events({
   },
   'keydown .typeahead': function(e, template) {
     if(e.which == 13) {
-      userResultMaybeSelected(template, this.roundId, e.shiftKey);
+      userResultMaybeSelected(template, this.roundId, -1);
     }
   },
   'input .typeahead': function(e, template) {
