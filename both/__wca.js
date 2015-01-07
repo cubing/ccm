@@ -363,7 +363,7 @@ wca.events = [
   },
   {
     "code": "555bf",
-    "name": "4x4 Cube: Blindfolded",
+    "name": "5x5 Cube: Blindfolded",
   },
   {
     "code": "333mbf",
