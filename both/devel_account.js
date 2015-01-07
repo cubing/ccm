@@ -13,7 +13,6 @@ if(Meteor.isServer) {
         email: DEVEL_ACCOUNT_EMAIL,
         profile: {
           name: "gjcomps devel account",
-          siteAdmin: true,
           countryId: "US",
           gender: "o",
           dob: new Date(),
@@ -21,12 +20,13 @@ if(Meteor.isServer) {
       });
       var develUser = Meteor.users.findOne({ _id: develUserId });
       assert(develUser);
-      // Mark email as verified.
+      // Mark email as verified, and user as a site admin
       Meteor.users.update({
         _id: develUser._id,
       }, {
         $set: {
           "emails.0.verified": true,
+          siteAdmin: true,
         }
       });
     }

@@ -85,3 +85,10 @@ a[rel="external"]:after {
   padding: 10px;
 }
 
+/*
+ * Workaround for https://github.com/twitter/typeahead.js/issues/1017
+ */
+.input-group span.twitter-typeahead .typeahead-inverted ~ .tt-dropdown-menu {
+  top: auto !important;
+  bottom: 0px;
+}

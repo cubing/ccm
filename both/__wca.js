@@ -475,3 +475,8 @@ _.each(_.keys(wca.formatsByEventCode), function(eventCode) {
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['444bf'] = 60*60;
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['555bf'] = 60*60;
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['333mbf'] = 60*60;
+
+// Country codes
+// Grabbing these from: https://github.com/OpenBookPrices/country-data
+wca.countryISO2Codes = _.map(countries, function(data, key) { return data.alpha2; });
+wca.countryISO2AutoformOptions = _.map(countries, function(data, key) { return {label: data.name, value: data.alpha2 }; });

@@ -1,6 +1,8 @@
 accounts-base@1.1.3
 accounts-password@1.0.5
 aldeed:autoform@4.2.1
+aldeed:autoform-bs-datepicker@1.0.5
+aldeed:autoform-bs-datetimepicker@1.0.4
 aldeed:collection2@2.3.0
 aldeed:simple-schema@1.1.0
 anti:i18n@0.4.3
@@ -15,8 +17,10 @@ callback-hook@1.0.2
 cfs:http-methods@0.0.27
 cfs:http-publish@0.0.13
 check@1.0.3
+chhib:selectize-bootstrap-3@0.0.1
 chuangbo:cookie@1.1.0
 coffeescript@1.0.5
+comerc:autoform-selectize@2.0.2
 ddp@1.0.13
 deps@1.0.6
 ejson@1.0.5
@@ -59,10 +63,12 @@ meteorhacks:subs-manager@1.2.2
 minifiers@1.1.3
 minimongo@1.0.6
 mobile-status-bar@1.0.2
+momentjs:moment@2.8.4
 mongo@1.0.11
 mongo-livedata@1.0.7
 mrt:assert@0.2.5
 mrt:flash-messages@1.0.0
+mrt:googlemaps@0.0.2
 mrt:moment@2.8.1
 multiply:iron-router-progress@1.0.1
 natestrauser:connection-banner@0.4.3
@@ -88,6 +94,7 @@ srp@1.0.2
 stylus@1.0.6
 templating@1.0.10
 tracker@1.0.4
+tsega:bootstrap3-datetimepicker@3.1.3_3
 ui@1.0.5
 underscore@1.0.2
 url@1.0.3

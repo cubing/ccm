@@ -24,7 +24,7 @@
 <template name="layout">
   {{refreshTitle}}
 
-  {{>connectionBanner}}
+  {{> connectionBanner}}
 
   <nav class="navbar navbar-default" role="navigation">
     <div class="modal fade" id="modal-verificationsent">
@@ -55,7 +55,7 @@
         </button>
         <a class="navbar-brand" href="/">live.cubing.net</a>
         {{#if competitionId}}
-          <a class="navbar-brand" href="{{pathFor 'competition' competitionUrlId=competitionUrlId}}">{{competition 'competitionName'}}</a>
+          <a class="navbar-brand" href="{{pathFor 'competition'}}">{{competition 'competitionName'}}</a>
         {{/if}}
       </div>
 
@@ -64,7 +64,7 @@
         {{#if competitionId}}
         <ul class="nav navbar-nav navbar-left">
           <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}}">
-            <a href="{{pathFor 'competitionResults' competitionUrlId=competitionUrlId}}"
+            <a href="{{pathFor 'competitionResults'}}"
                data-toggle="tooltip" data-placement="bottom" data-container="body"
                title="Live results">
               <span class="glyphicon glyphicon-dashboard"></span>
@@ -77,7 +77,7 @@
             <a href="{{pathFor 'competitionEvents'}}">Events</a>
           </li>
           <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}}">
-            <a href="{{pathFor 'competitionSchedule' competitionUrlId=competitionUrlId}}"
+            <a href="{{pathFor 'competitionSchedule'}}"
                data-toggle="tooltip" data-placement="bottom" data-container="body"
                title="View schedule">
               <span class="glyphicon glyphicon-calendar"></span>
@@ -92,32 +92,35 @@
                 <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}">Manage</a>
                 </li>
+                <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}}">
+                  <a href="{{pathFor 'editEvents'}}">Events</a>
+                </li>
                 <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}}">
                   <a href="{{pathFor 'manageCheckin'}}">Check-in</a>
                 </li>
                 <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}}">
-                  <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}"
+                  <a href="{{pathFor 'editSchedule'}}"
                      data-toggle="tooltip" data-placement="bottom" data-container="body"
                      title="Manage schedule">
                     <span class="glyphicon glyphicon-calendar"></span>
                   </a>
                 </li>
                 <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}}">
-                  <a href="{{pathFor 'dataEntry' competitionUrlId=competitionUrlId}}"
+                  <a href="{{pathFor 'dataEntry'}}"
                      data-toggle="tooltip" data-placement="bottom" data-container="body"
                      title="Data entry">
                     <span class="glyphicon glyphicon-edit"></span>
                   </a>
                 </li>
                 <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
-                  <a class="brand" href="{{pathFor 'uploadScrambles' competitionUrlId=competitionUrlId}}"
+                  <a class="brand" href="{{pathFor 'uploadScrambles'}}"
                      data-toggle="tooltip" data-placement="bottom" data-container="body"
                      title="Upload scrambles">
                     <img src="/img/tnoodle_logo.svg" />
                   </a>
                 </li>
                 <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}}">
-                  <a class="brand" href="{{pathFor 'exportResults' competitionUrlId=competitionUrlId}}"
+                  <a class="brand" href="{{pathFor 'exportResults'}}"
                      data-toggle="tooltip" data-placement="bottom" data-container="body"
                      title="Export results">
                     <img src="/img/WCAlogo_notext.svg" />

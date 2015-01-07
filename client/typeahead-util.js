@@ -79,3 +79,28 @@ substringMatcher = function(getObjects, attribute) {
     cb(arr);
   };
 };
+
+// Monkeypatching the typeahead plugin to automatically
+// highlight the first suggestion. This way the user can press enter
+// to select it.
+oldTypeahead = $.fn.typeahead;
+$.fn.typeahead = function(method) {
+  if(!method || typeof(method) === "object" || method === "initialize") {
+    var $typeahead = $(this);
+    var ttTypeahead = $typeahead.data('ttTypeahead');
+    if(!ttTypeahead) {
+      $typeahead.keydown(function() {
+        setTimeout(function() {
+          var ttTypeahead = $typeahead.data('ttTypeahead');
+          var dropdown = ttTypeahead.dropdown;
+          if(dropdown._getCursor().length > 0) {
+            return;
+          }
+          var silent = true; // prevent updating the text field
+          dropdown._setCursor(dropdown._getSuggestions().first(), silent);
+        }, 0);
+      });
+    }
+  }
+  return oldTypeahead.apply(this, arguments);
+};

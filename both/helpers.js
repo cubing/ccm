@@ -44,7 +44,7 @@ if(Meteor.isClient) {
   });
 
   Template.registerHelper("isSiteAdmin", function() {
-    return Meteor.user().profile.siteAdmin;
+    return Meteor.user().siteAdmin;
   });
 
   Template.registerHelper("toAtMostFixed", function(n, fixed) {
@@ -125,9 +125,7 @@ if(Meteor.isClient) {
 getCompetitionRegistrationOpenMoment = function(competitionId) {
   var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
   if(!open) {
-    // default to a future date; we don't want people signing
-    // up before things are ready.
-    return getCompetitionStartDateMoment(competitionId).subtract(2, 'days').hours(23).minutes(59).seconds(59);
+    return null;
   }
   return moment(open);
 };
@@ -140,9 +138,7 @@ if(Meteor.isClient) {
 getCompetitionRegistrationCloseMoment = function(competitionId) {
   var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
   if(!close) {
-    // default to at least a day before the competition.
-    // 11:59 PM is less confusing than 12:00 AM.
-    return getCompetitionStartDateMoment(competitionId).subtract(2, 'days').hours(23).minutes(59).seconds(59);
+    return null;
   }
   return moment(close);
 };

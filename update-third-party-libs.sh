@@ -13,3 +13,5 @@
 (cd client/components/; wget -N https://raw.githubusercontent.com/jmosbech/StickyTableHeaders/master/js/jquery.stickytableheaders.js)
 
 (cd both/components/; wget -N http://www.jflei.com/jChester/jChester.js)
+
+(cd both/components/; curl -s https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json | sed -e '1s/^/countries = /' -e '$a\;' > countries.js)

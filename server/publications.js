@@ -1,3 +1,18 @@
+Meteor.publish(null, function() {
+  if(!this.userId) {
+    return [];
+  }
+  return Meteor.users.find({
+    _id: this.userId,
+  }, {
+    fields: {
+      emails: 1,
+      profile: 1,
+      siteAdmin: 1,
+    }
+  });
+});
+
 var getCompetitions = function() {
   return Competitions.find(
     {},
@@ -64,14 +79,14 @@ Meteor.publish('myCompetitionRegistration', function(competitionUrlId) {
   ];
 });
 
-Meteor.publish('competitionResults', function(competitionUrlId) {
+Meteor.publish('competitionRegistrationGuestCounts', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
   return [
-    Results.find({ competitionId: competitionId }),
+    Registrations.find({competitionId: competitionId}, {guestCount: 1})
   ];
 });
 

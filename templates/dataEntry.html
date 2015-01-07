@@ -51,16 +51,25 @@
 
     <div class="col-xs-12 col-sm-4">
       <div class="results-sidebar">
+        <div class="focusguard" id="focusguard-1" tabindex="0"></div>
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#if selectedResultId}}
-          <ol class="list-unstyled">
-            {{#each selectedSolves}}
-              <li>
-                {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
-              </li>
-            {{/each}}
-          </ol>
+          <table class="table jChesterTable">
+            <tbody>
+              {{#each selectedSolves}}
+                <tr>
+                  <td>
+                    <i class="fa fa-fw"></i>
+                  </td>
+                  <td>
+                    {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+          <div class="focusguard" id="focusguard-2" tabindex="0"></div>
         {{/if}}
       </div>
     </div>

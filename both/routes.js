@@ -81,9 +81,6 @@ ManageCompetitionController = RouteController.extend({
     return [
       subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
       subs.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
-      subs.subscribe('competitionResults', this.params.competitionUrlId, subscriptionError(this)),
-      // TODO - we only need scrambles on the uploadScrambles route
-      subs.subscribe('competitionScrambles', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
@@ -174,6 +171,26 @@ ViewRoundController = ViewCompetitionController.extend({
   },
 });
 
+ManageRoundResultsController = ManageCompetitionController.extend({
+  waitOn: function() {
+    var waitOn = this.constructor.__super__.waitOn.call(this);
+    if(!this.params.eventCode || !this.params.nthRound) {
+      return waitOn;
+    }
+    var nthRound = parseInt(this.params.nthRound);
+    waitOn.push(subs.subscribe('roundResults',
+                               this.params.competitionUrlId,
+                               this.params.eventCode,
+                               nthRound,
+                               subscriptionError(this)));
+    return waitOn;
+  },
+  data: function() {
+    var parentData = this.constructor.__super__.data.call(this);
+    return getRoundData.call(this, parentData);
+  },
+});
+
 function getRoundData(data) {
   if(!data) {
     return null;
@@ -237,6 +254,11 @@ Router.route('/:competitionUrlId/manage', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
 });
+Router.route('/:competitionUrlId/manage/events', {
+  name: 'editEvents',
+  controller: 'ManageCompetitionController',
+  titlePrefix: "Edit events",
+});
 Router.route('/:competitionUrlId/manage/check-in', {
   name: 'manageCheckin',
   controller: 'ManageCompetitionController',
@@ -246,6 +268,13 @@ Router.route('/:competitionUrlId/manage/uploadScrambles', {
   name: 'uploadScrambles',
   controller: 'ManageCompetitionController',
   titlePrefix: "Upload scrambles",
+  waitOn: function() {
+    var waitOn = this.constructor.prototype.waitOn.call(this);
+    waitOn.push(subs.subscribe('competitionScrambles',
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
+    return waitOn;
+  },
 });
 Router.route('/:competitionUrlId/manage/exportResults', {
   name: 'exportResults',
@@ -257,14 +286,15 @@ Router.route('/:competitionUrlId/manage/schedule', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
+Router.route('/:competitionUrlId/manage/advance-competitors/:eventCode?/:nthRound?', {
+  name: 'advanceCompetitors',
+  controller: 'ManageRoundResultsController',
+  titlePrefix: "Advance competitors",
+});
 Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
-  controller: 'ManageCompetitionController',
+  controller: 'ManageRoundResultsController',
   titlePrefix: "Data entry",
-  data: function() {
-    var data = this.constructor.prototype.data.call(this);
-    return getRoundData.call(this, data);
-  },
 });
 
 Router.route('/:competitionUrlId', {
@@ -272,17 +302,27 @@ Router.route('/:competitionUrlId', {
   controller: 'ViewCompetitionController',
   titlePrefix: null,
 });
-Router.route('/:competitionUrlId/registration', {
-  name: 'competitionRegistration',
-  controller: 'ViewCompetitionController',
-  titlePrefix: 'Registration',
+
+// TODO - fast-render breaks if we don't define a controller for this route.
+// It's seems to call waitOn with the wrong "this".
+RegistrationController = ViewCompetitionController.extend({
   waitOn: function() {
-    var waitOn = this.constructor.prototype.waitOn.call(this);
+    var waitOn = this.constructor.__super__.waitOn.call(this);
     waitOn.push(subs.subscribe('myCompetitionRegistration',
+                               this.params.competitionUrlId,
+                               subscriptionError(this)));
+    // we need information about guests and # competitors to tell
+    // if registration is full.
+    waitOn.push(subs.subscribe('competitionRegistrationGuestCounts',
                                this.params.competitionUrlId,
                                subscriptionError(this)));
     return waitOn;
   },
+});
+Router.route('/:competitionUrlId/registration', {
+  name: 'competitionRegistration',
+  controller: 'RegistrationController',
+  titlePrefix: 'Registration',
 });
 Router.route('/:competitionUrlId/events', {
   name: 'competitionEvents',

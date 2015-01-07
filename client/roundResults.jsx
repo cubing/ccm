@@ -118,7 +118,7 @@ var ResultRow = React.createClass({
             worstIndex = i;
             worstSolve = solve;
           }
-          if(!bestSolve || solve.millis < bestSolve.millis) {
+          if(!bestSolve || solve.millis < bestSolve.millis || $.solveTimeIsDNF(bestSolve) || $.solveTimeIsDNS(bestSolve)) {
             bestIndex = i;
             bestSolve = solve;
           }
@@ -141,7 +141,7 @@ var ResultRow = React.createClass({
             'text-right': true,
           });
           return (
-            <td key={i} className={solveClasses}>{clockFormat(solve)}</td>
+            <td key={i} data-solve-index={i} className={solveClasses}>{clockFormat(solve)}</td>
           );
         })}
       </tr>

@@ -5,6 +5,12 @@ SimpleSchema.prototype.clean = function(doc, options) {
   return oldClean.call(this, doc, options);
 };
 
+SimpleSchema.messages({
+  "missingCompetitionStartDate": "Please set a competition start date before setting registration open/close dates.",
+  "registrationCloseDateAfterRegistrationOpenDate": "Registration close date should be after the registration open date.",
+  "missingRegistrationCloseDate": "Please enter a registration close date.",
+});
+
 Competitions = new Meteor.Collection("competitions");
 Competitions.attachSchema({
   competitionName: {
@@ -34,6 +40,11 @@ Competitions.attachSchema({
   },
   startDate: {
     type: Date,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datepicker"
+      }
+    },
   },
   numberOfDays: {
     type: Number,
@@ -43,13 +54,176 @@ Competitions.attachSchema({
   registrationOpenDate: {
     type: Date,
     optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datetimepicker"
+      }
+    },
+    custom: function() {
+      // Require registration open date to be before the close date.
+
+      var registrationCloseDate = this.field("registrationCloseDate").value;
+      var registrationOpenDate = this.value;
+
+      if(!registrationCloseDate && !registrationOpenDate) {
+        // OK to have neither filled (esp. for competition creation)
+        return null;
+      }
+
+      if(!registrationCloseDate) {
+        return "missingRegistrationCloseDate";
+      }
+
+      if(!registrationOpenDate) {
+        return "missingRegistrationOpenDate";
+      }
+
+      if(registrationOpenDate.getTime() < registrationCloseDate.getTime()) {
+        return null;
+      } else {
+        return "registrationCloseDateAfterRegistrationOpenDate";
+      }
+    },
   },
   registrationCloseDate: {
     type: Date,
     optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "bootstrap-datetimepicker"
+      }
+    },
+    custom: function() {
+      // require the registration close date to be before the competition starts.
+
+      var competitionStartDate = this.field("startDate").value;
+      var registrationCloseDate = this.value;
+      var registrationOpenDate = this.field("registrationOpenDate").value;
+
+      if(!registrationCloseDate && !registrationOpenDate) {
+        // OK to have neither filled (esp. for competition creation)
+        return null;
+      }
+
+      if(!registrationCloseDate) {
+        return "missingRegistrationCloseDate";
+      }
+
+      if(!registrationOpenDate) {
+        return "missingRegistrationOpenDate";
+      }
+
+      return null;
+    },
+  },
+  registrationAskAboutGuests: {
+    type: Boolean,
+    label: "Ask competitors if they are bringing guests",
+    min: 0,
+    optional: true,
+  },
+  registrationCompetitorLimitCount: {
+    type: Number, // empty = no limit
+    label: "Maximum number of competitors (leave empty for no limit)",
+    min: 1,
+    optional: true,
+  },
+  registrationAttendeeLimitCount: {
+    type: Number, // empty = no limit
+    label: "Maximum number of attendees (guests + competitors; leave empty for no limit)",
+    min: 1,
+    optional: true,
+  },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
+  },
+  // information about competition location
+  location: {
+    type: new SimpleSchema({
+      addressText: {
+        type: String,
+        optional: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      lat: {
+        type: Number,
+        optional: true,
+        decimal: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      lng: {
+        type: Number,
+        optional: true,
+        decimal: true,
+        autoform: {
+          afFieldInput: {
+            type: "hidden",
+          }
+        },
+      },
+      // city: {
+      //   type: String,
+      //   optional: true,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+      // stateOrProvince: {
+      //   type: String,
+      //   optional: true,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+      // countryId: {
+      //   type: String,
+      //   optional: true,
+      //   allowedValues: wca.countryISO2Codes,
+      //   autoform: {
+      //     afFieldInput: {
+      //       type: "hidden",
+      //     }
+      //   },
+      // },
+    }),
+    optional: true,
   },
 
-  // Should these be moved to isStaff and isOrganizer fields in Registrations?
   staff: {
     type: [String],
     defaultValue: [],
@@ -107,6 +281,32 @@ Registrations.attachSchema({
         type: "textarea"
       }
     },
+  },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
   },
 });
 if(Meteor.isServer) {
@@ -413,8 +613,10 @@ Meteor.users.attachSchema(new SimpleSchema({
   "emails.$.verified": {
     type: Boolean,
   },
-  createdAt: {
-    type: Date,
+  siteAdmin: {
+    type: Boolean,
+    defaultValue: false,
+    optional: true,
   },
   profile: {
     type: new SimpleSchema({
@@ -431,23 +633,37 @@ Meteor.users.attachSchema(new SimpleSchema({
       },
       countryId: {
         type: String,
-        regEx: /^[A-Z]{2}$/,
+        allowedValues: wca.countryISO2Codes,
         optional: true,
+        autoform: {
+          type: "selectize",
+          options: wca.countryISO2AutoformOptions,
+        },
       },
       gender: {
         type: String,
         allowedValues: ['m', 'f', 'o'],
         optional: true,
+        autoform: {
+          type: "select",
+          options: function() {
+            return [
+              {label: "Male",   value: 'm'},
+              {label: "Female", value: 'f'},
+              {label: "Other",  value: 'o'}
+            ];
+          }
+        },
       },
       dob: {
         type: Date,
         optional: true,
-      },
-
-      siteAdmin: {
-        type: Boolean,
-        defaultValue: false,
-        optional: true,
+        label: "Birthdate",
+        autoform: {
+          afFieldInput: {
+            type: "bootstrap-datepicker"
+          }
+        },
       },
     }),
     optional: true,
@@ -456,6 +672,32 @@ Meteor.users.attachSchema(new SimpleSchema({
     type: Object,
     optional: true,
     blackbox: true,
+  },
+  // Force value to be current date (on server) upon insert
+  // and prevent updates thereafter.
+  createdAt: {
+    type: Date,
+      autoValue: function() {
+        if(this.isInsert) {
+          return new Date();
+        } else if(this.isUpsert) {
+          return {$setOnInsert: new Date()};
+        } else {
+          this.unset();
+        }
+      }
+  },
+  // Force value to be current date (on server) upon update
+  // and don't allow it to be set upon insert.
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if(this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
   },
 }));
 

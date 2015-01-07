@@ -13,7 +13,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
     return new Meteor.Error(404, "Competition does not exist");
   }
 
-  var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+  var siteAdmin = getUserAttribute(userId, 'siteAdmin');
   if(!siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
     // in order to organize =)
@@ -35,22 +35,79 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
 
 getCannotRegisterReasons = function(competitionId) {
   var reasons = [];
+  var reasonText; // re-usable
 
+  // Check to make sure registration is open
+  // We don't really need to specify any more reasons after this, so
+  // we can immediately return.
   var open = getCompetitionRegistrationOpenMoment(competitionId);
   var close = getCompetitionRegistrationCloseMoment(competitionId);
-  var now = moment();
-  if(now.isAfter(close)) {
-    reasons.push("Competition registration is now closed!");
-  } else if(now.isBefore(open)) {
-    var reasonText = "Competition registration is not yet open!";
-    reasonText += " Registration is set to open " + open.calendar() + ".";
-    reasons.push(reasonText);
+  if(!open || !close) {
+    // open / close dates not yet set
+    reasons.push("Competition registration is not open.");
+    return reasons;
+  } else {
+    var now = moment();
+    if(now.isAfter(close)) {
+      reasons.push("Competition registration is now closed!");
+      return reasons;
+    } else if(now.isBefore(open)) {
+      reasonText = "Competition registration is not yet open!";
+      reasonText += " Registration is set to open " + open.calendar() + ".";
+      reasons.push(reasonText);
+      return reasons;
+    }
   }
 
-  // could be closed due to hitting capacity
-  // if()...
-  // reasons.push("Hit Total (guests + competitors) Capacity");
-  // reasons.push("Hit Competitor Capacity");
+  // Check to make sure profile has appropriate data
+  var user = Meteor.user();
+  reasonText = "You need to complete your user profile to register! ";
+  if(!user.profile.name) {
+    reasons.push(reasonText + "Please add your name to your profile.");
+  }
+  if(!user.profile.dob) {
+    reasons.push(reasonText + "Please provide a birthdate in your profile.");
+  }
+  if(!user.profile.countryId) {
+    reasons.push(reasonText + "Please specify a country in your profile.");
+  }
+  if(!user.profile.gender) {
+    reasons.push(reasonText + "Please specify your gender in your profile.");
+  }
+  if(!user.emails[0].verified) {
+    reasons.push(reasonText + "Please confirm your email address.");
+  }
+
+  // Registration should close upon hitting capacity;
+  var competition = Competitions.findOne({
+    _id: competitionId
+  }, {
+    registrationCompetitorLimitCount: 1,
+    registrationAttendeeLimitCount: 1,
+  });
+  // Users already registered should still be able to edit registrations
+  if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
+    // competitor capacity limit
+    var numCompetitors;
+    if(competition.registrationCompetitorLimitCount) {
+      numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
+      if(numCompetitors >= competition.registrationCompetitorLimitCount) {
+        reasons.push("Registration has reached the maximum number of allowed competitors.");
+      }
+    }
+    // total venue capacity limit
+    if(competition.registrationAttendeeLimitCount) {
+      var registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
+      numCompetitors = registrationGuestData.count();
+      var guestTotalCount = 0;
+      registrationGuestData.fetch().forEach(function(obj) {
+        guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
+      });
+      if(numCompetitors + guestTotalCount >= competition.registrationAttendeeLimitCount) {
+        reasons.push("Registration has reached the maximum number of allowed competitors and guests.");
+      }
+    }
+  }
 
   if(reasons.length > 0) {
     return reasons;
@@ -132,9 +189,16 @@ if(Meteor.isServer) {
         'calendarEndMinutes',
         'registrationOpenDate',
         'registrationCloseDate',
+        'registrationAskAboutGuests',
+        'registrationEnforceAttendanceLimit',
+        'registrationCompetitorLimitCount',
+        'registrationAttendeeLimitCount',
+        'updatedAt',
+        'createdAt',
+        'location',
       ];
 
-      var siteAdmin = getUserAttribute(userId, 'profile.siteAdmin');
+      var siteAdmin = getUserAttribute(userId, 'siteAdmin');
       if(siteAdmin) {
         allowedFields.push("listed");
         allowedFields.push('wcaCompetitionId');

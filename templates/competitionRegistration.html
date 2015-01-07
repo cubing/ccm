@@ -25,14 +25,24 @@
 
           {{> afFieldInput name="userId" }}
           {{> afFieldInput name="competitionId" }}
-          {{> afFieldInput name="uniqueName" }}
+          {{#if needsUniqueName}}
+            Well!  It looks like someone else at this competition has your name.
+            Please provide an alternate (or full) name we can use to determine who
+            you are at the competition.
+            {{> afQuickField name="uniqueName" }}
+          {{else}}
+            {{> afFieldInput name="uniqueName" type="hidden" }}
+          {{/if}}
           {{> afQuickField name="events" options=eventOptions }}
+          {{#if registrationAskAboutGuests}}
+            {{> afQuickField name="guestCount" }}
+          {{/if}}
           {{> afQuickField name="comments" }}
 
           {{#if userIsRegistered}}
             <button type="submit" class="btn btn-default" disabled="disabled" id="changeRegistrationButton">
               <span class="glyphicon glyphicon-floppy-save"></span>
-                  Change Registration
+              Change Registration
             </button>
             <button type="reset" class="btn btn-default" disabled="disabled" id="revertFormButton">Reset Form</button>
 
@@ -42,7 +52,7 @@
           {{else}}
             <button type="submit" class="btn btn-primary" id="registerButton">
               <span class="glyphicon glyphicon-floppy-save"></span>
-                  Register
+              Register
             </button>
           {{/if}}
 

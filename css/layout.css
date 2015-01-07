@@ -12,14 +12,15 @@
 }
 
 /*
- * Move navbar down when the connection status is visible
- * by making the conneciton banner fixed to the page, rather than the
- * window.
+ * Move navbar down when the connection status is visible.
  */
-#connection-lost-banner,
-#connection-try-reconnect {
-  position: relative;
-  margin-bottom: 0px;
+#connection-lost-banner + .navbar {
+  top: 42px;
+  margin-bottom: 62px;
+}
+#connection-try-reconnect + .navbar {
+  top: 42px;
+  margin-bottom: 62px;
 }
 
 /*

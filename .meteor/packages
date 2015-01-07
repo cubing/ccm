@@ -30,3 +30,9 @@ meteorhacks:fast-render
 meteorhacks:subs-manager
 
 mrt:flash-messages
+aldeed:autoform-bs-datetimepicker
+tsega:bootstrap3-datetimepicker
+aldeed:autoform-bs-datepicker
+comerc:autoform-selectize
+chhib:selectize-bootstrap-3
+mrt:googlemaps

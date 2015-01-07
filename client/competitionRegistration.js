@@ -39,9 +39,11 @@ Template.competitionRegistration.helpers({
       return registration;
     } else {
       // populate user / competition data if there is no registration for this person yet
+      var defaultUniqueName = Meteor.user().profile.name;
       return {
         userId: userId,
         competitionId: competitionId,
+        uniqueName: defaultUniqueName,
       };
     }
   },
@@ -66,16 +68,35 @@ Template.competitionRegistration.helpers({
 
   cannotRegisterReasons: function() {
     var competitionId = this.competitionId;
-
     return getCannotRegisterReasons(competitionId);
   },
 
   registrationCloseMoment: function() {
     var competitionId = this.competitionId;
-    var closeMoment = getCompetitionRegistrationCloseMoment(competitionId);
-    return closeMoment;
+    return getCompetitionRegistrationCloseMoment(competitionId);
   },
 
+  needsUniqueName: function() {
+    var competitionId = this.competitionId;
+    var userName = Meteor.user().profile.name;
+    // See if someone already has this name?
+    return Registrations.findOne({
+      uniqueName: userName,
+      competitionId: competitionId
+    }, {
+      _id: 1,
+    });
+  },
+
+  registrationAskAboutGuests: function() {
+    var competitionId = this.competitionId;
+    competition = Competitions.findOne({
+      _id: competitionId,
+    }, {
+      registrationAskAboutGuests: 1,
+    });
+    return competition.registrationAskAboutGuests;
+  }
 });
 
 Template.competitionRegistration.events({

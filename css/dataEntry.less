@@ -17,14 +17,41 @@
 }
 
 .results-sidebar.affix {
-  top: 20px;
+  top: 50px;
 }
 
 @media(max-width: 768px) {
   .results-sidebar.affix {
-    top: 0px;
+    top: 40px; /* avoid fixed table header */
     background-color: white;
     z-index: 1;
     width: 90%;
   }
+}
+
+.jChesterTable tr td i.fa {
+  position: relative;
+  top: 7px;
+  left: 7px;
+}
+
+.jChesterTable tr td:first-child i.fa {
+}
+.jChesterTable tr td:first-child i.fa::before {
+  content: "\f111"; /* fa-circle */
+}
+
+.jChesterTable tr.unsaved td:first-child i.fa {
+}
+.jChesterTable tr.unsaved td:first-child i.fa::before {
+  content: "\f10c"; /* fa-circle-o */
+}
+
+.jChesterTable tr.saving td:first-child i.fa {
+  /* .fa-spin */
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.jChesterTable tr.saving td:first-child i.fa::before {
+  content: "\f1ce"; /* fa-circle-o-notch */
 }
