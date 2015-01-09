@@ -126,10 +126,10 @@ var ResultRow = React.createClass({
       }
     }
 
-    var hidePosition = this.props.hidePosition;
+    var tiedPrevious = this.props.tiedPrevious;
     return (
       <tr className={rowClasses} data-result-id={result._id}>
-        <td>{hidePosition ? '' : result.position}</td>
+        <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
         <td className={bestClasses}>{clockFormat(result.best)}</td>
@@ -251,7 +251,7 @@ var ResultsList = React.createClass({
                            roundFormat={format}
                            roundType={roundType}
                            drawLine={drawLine}
-                           hidePosition={prevResult && prevResult.position == result.position}
+                           tiedPrevious={prevResult && prevResult.position == result.position}
                 />
               );
             })}
