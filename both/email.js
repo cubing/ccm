@@ -18,7 +18,7 @@ if(Meteor.isServer) {
       });
 
       // nasty hack to set port 2525 because wylio/meteor-mandrill is silly
-      Meteor.Mandrill.port = "2525"; // grr google compute engine - http://stackoverflow.com/a/26392279
+      Meteor.Mandrill.options.port = "2525"; // grr google compute engine - http://stackoverflow.com/a/26392279
       process.env.MAIL_URL = "smtp://" + Meteor.Mandrill.options.username + ":" + Meteor.Mandrill.options.key + "@" + Meteor.Mandrill.options.host + ":" + Meteor.Mandrill.options.port + "/";
 
     });
