@@ -15,6 +15,7 @@ if(Meteor.isServer) {
       Meteor.Mandrill.config({
         username: MANDRILL_USERNAME,
         key: MANDRILL_APIKEY,
+        port: "2525", // grr google compute engine - http://stackoverflow.com/a/26392279
       });
     });
   }
