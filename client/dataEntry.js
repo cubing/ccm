@@ -285,7 +285,7 @@ Template.roundDataEntry.events({
   },
   'keydown .typeahead': function(e, template) {
     if(e.which == 13) {
-      userResultMaybeSelected(template, this.roundId, -1);
+      userResultMaybeSelected(template, this.roundId, e.shiftKey ? -1 : 0);
     }
   },
   'input .typeahead': function(e, template) {
