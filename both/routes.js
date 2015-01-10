@@ -13,16 +13,15 @@ Router.configure({
 if(Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
 
-  Template.registerHelper("isActiveRoute", function(routeName) {
-    /* The following code might come in useful when we finally improve
-     * our links for browsing results. I think we'll want something more heirarchical.
+  Template.registerHelper("isActiveOrAncestorRoute", function(routeName) {
     var currentParams = Router.current().params;
     var route = Router.routes[routeName];
     var routePath = route.path(currentParams);
     // Check if our current path begins with the given route
-    var currentPath = Router.current().url;
+    var currentPath = Iron.Location.get().path;
     return currentPath.indexOf(routePath) === 0;
-    */
+  });
+  Template.registerHelper("isActiveRoute", function(routeName) {
     return Router.current().route.getName() == routeName;
   });
 

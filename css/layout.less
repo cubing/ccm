@@ -1,0 +1,85 @@
+@import (reference) url('bs-constants.import.less');
+
+.navbar a.brand {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.navbar a.brand > img {
+  height: 30px;
+}
+
+.navbar-plain-rectangle {
+  border: initial;
+  border-radius: initial;
+}
+
+@subNavbarColor: @bsNavbarActiveColor;
+@subNavbarActiveColor: darken(@bsNavbarActiveColor, 10%);
+@subSubNavbarColor: @subNavbarActiveColor;
+@subSubNavbarActiveColor: darken(@subNavbarActiveColor, 10%);
+
+.navbar > .container-fluid .navbar-brand {
+  /* Make space between the .nvarbar-brand's so we can color their backgrounds */
+  margin-left: initial;
+}
+.navbar-default .navbar-brand.active {
+  background-color: @bsNavbarActiveColor;
+}
+.navbar-default .navbar-brand.active:hover,
+.navbar-default .navbar-brand.active:focus {
+  background-color: @bsNavbarActiveColor;
+}
+
+.navbar + .navbar {
+  background-color: @subNavbarColor;
+}
+.navbar + .navbar-default .navbar-nav > .active > a,
+.navbar + .navbar-default .navbar-nav > .active > a:hover,
+.navbar + .navbar-default .navbar-nav > .active > a:focus {
+  background-color: @subNavbarActiveColor;
+}
+
+.navbar + .navbar + .navbar {
+  background-color: @subSubNavbarColor;
+}
+.navbar + .navbar + .navbar-default .navbar-nav > .active > a,
+.navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
+.navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
+  background-color: @subSubNavbarActiveColor;
+}
+
+
+/* Get rid of the whitespace between the navbars */
+.navbar + .navbar {
+  margin-top: -20px;
+}
+
+/* Get rid of the whitespace between the navbar and the jumbotron */
+.navbar ~ .jumbotron {
+  margin-top: -20px;
+}
+
+/*
+ * Move navbar down when the connection status is visible.
+ */
+#connection-lost-banner + .navbar {
+  top: 42px;
+  margin-bottom: 62px;
+}
+#connection-try-reconnect + .navbar {
+  top: 42px;
+  margin-bottom: 62px;
+}
+
+/*
+ * https://github.com/Multiply/iron-router-progress#customization
+ */
+#iron-router-progress {
+  background-color: #337ab7; /* color copied from bootstrap */
+}
+
+/* Speed up progress bar transition */
+#iron-router-progress.loading {
+  transition: 0.5s width, 0.1s opacity;
+  transition-delay: 0s, 0.5s;
+}

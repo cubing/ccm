@@ -49,7 +49,7 @@ var verificationSendSuccessReact = new ReactiveVar(null);
 Template.layout.helpers({
   verificationSendSuccess: function() {
     return verificationSendSuccessReact.get();
-  }
+  },
 });
 
 Template._loginButtonsLoggedInDropdown.events({
