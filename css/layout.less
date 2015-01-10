@@ -22,6 +22,7 @@
   /* Make space between the .nvarbar-brand's so we can color their backgrounds */
   margin-left: initial;
 }
+
 .navbar-default .navbar-brand.active {
   background-color: @bsNavbarActiveColor;
 }
@@ -29,7 +30,29 @@
 .navbar-default .navbar-brand.active:focus {
   background-color: @bsNavbarActiveColor;
 }
+.navbar-default .navbar-brand.active.leaf {
+  background-color: #FFF;
+}
+.navbar-default .navbar-brand.active.leaf:hover,
+.navbar-default .navbar-brand.active.leaf:focus {
+  background-color: #FFF;
+}
 
+/* navbar colors */
+.navbar-default .navbar-nav > .active.leaf > a,
+.navbar-default .navbar-nav > .active.leaf > a:hover,
+.navbar-default .navbar-nav > .active.leaf > a:focus {
+  background-color: #FFF;
+}
+
+/* match jumbotron */
+.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a,
+.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:hover,
+.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:focus {
+  background-color: #EEE !important;
+}
+
+/* sub navbar colors */
 .navbar + .navbar {
   background-color: @subNavbarColor;
 }
@@ -38,7 +61,13 @@
 .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subNavbarActiveColor;
 }
+.navbar + .navbar-default .navbar-nav > .active.leaf > a,
+.navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
+.navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
+  background-color: #FFF;
+}
 
+/* sub sub navbar colors */
 .navbar + .navbar + .navbar {
   background-color: @subSubNavbarColor;
 }
@@ -46,6 +75,11 @@
 .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
 .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subSubNavbarActiveColor;
+}
+.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
+.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
+.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
+  background-color: #FFF;
 }
 
 

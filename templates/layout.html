@@ -53,7 +53,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand {{#if isActiveRoute 'home'}}active{{/if}}" href="{{pathFor 'home'}}">live.cubing.net</a>
+        <a class="navbar-brand {{#if isActiveRoute 'home'}}active{{/if}} leaf" href="{{pathFor 'home'}}">live.cubing.net</a>
         {{#if competitionId}}
           <a class="navbar-brand {{#if isActiveOrAncestorRoute 'competition'}}active{{/if}}"
              href="{{pathFor 'competition'}}">
@@ -66,7 +66,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
           {{#if currentUser}}
-            <li class="{{#if isActiveRoute 'newCompetition'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'newCompetition'}}active{{/if}} leaf">
               <a href="{{pathFor 'newCompetition'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="New competition">
@@ -81,48 +81,51 @@
   </nav>
 
   {{#if isActiveOrAncestorRoute 'competition'}}
-    {{#if competitionId}}
-      <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
-        <div class="container-fluid">
-          <div class="navbar-collapse collapse-buttons">
-            <ul class="nav navbar-nav navbar-left">
-              <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}}">
-                <a href="{{pathFor 'competitionResults'}}">
-                  Live results
-                </a>
-              </li>
-              <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}}">
-                <a href="{{pathFor 'competitionRegistration'}}">Registration</a>
-              </li>
-              <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}}">
-                <a href="{{pathFor 'competitionEvents'}}">Events</a>
-              </li>
-              <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}}">
-                <a href="{{pathFor 'competitionSchedule'}}"
-                   data-toggle="tooltip" data-placement="bottom" data-container="body"
-                   title="View schedule">
-                  <span class="glyphicon glyphicon-calendar"></span>
-                </a>
-              </li>
-            </ul>
+    <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-collapse collapse-buttons">
+          <ul class="nav navbar-nav navbar-left">
+            <li class="{{#if isActiveRoute 'competition'}}active{{/if}} match-jumbotron leaf">
+              <a href="{{pathFor 'competition'}}">
+                <span class="glyphicon glyphicon-home"></span>
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionResults'}}">
+                Live results
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionRegistration'}}">Registration</a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionEvents'}}">Events</a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionSchedule'}}"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="View schedule">
+                <span class="glyphicon glyphicon-calendar"></span>
+              </a>
+            </li>
+          </ul>
 
-            <ul class="nav navbar-nav navbar-right">
-              {{#if currentUser}}
-                {{#if competitionId}}
-                  {{#if canManageCompetition currentUser._id}}
-                    <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
-                      <a href="{{pathFor 'manageCompetition'}}">
-                        <span class="glyphicon glyphicon-cog"></span> Manage competition
-                      </a>
-                    </li>
-                  {{/if}}
+          <ul class="nav navbar-nav navbar-right">
+            {{#if currentUser}}
+              {{#if competitionId}}
+                {{#if canManageCompetition currentUser._id}}
+                  <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
+                    <a href="{{pathFor 'manageCompetition'}}">
+                      <span class="glyphicon glyphicon-cog"></span> Manage competition
+                    </a>
+                  </li>
                 {{/if}}
               {{/if}}
-            </ul>
-          </div>
+            {{/if}}
+          </ul>
         </div>
-      </nav>
-    {{/if}}
+      </div>
+    </nav>
   {{/if}}
 
   {{#if isActiveOrAncestorRoute 'manageCompetition'}}
@@ -130,37 +133,37 @@
       <div class="container-fluid">
         <div class="navbar-collapse collapse-buttons">
           <ul class="nav navbar-nav navbar-right">
-            <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}} leaf">
               <a href="{{pathFor 'manageCompetition'}}">Manage</a>
             </li>
-            <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}} leaf">
               <a href="{{pathFor 'editEvents'}}">Events</a>
             </li>
-            <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
               <a href="{{pathFor 'manageCheckin'}}">Check-in</a>
             </li>
-            <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}} leaf">
               <a href="{{pathFor 'editSchedule'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Manage schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}} leaf">
               <a href="{{pathFor 'dataEntry'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Data entry">
                 <span class="glyphicon glyphicon-edit"></span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}} leaf">
               <a class="brand" href="{{pathFor 'uploadScrambles'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Upload scrambles">
                 <img src="/img/tnoodle_logo.svg" />
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}} leaf">
               <a class="brand" href="{{pathFor 'exportResults'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Export results">
