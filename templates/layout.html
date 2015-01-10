@@ -92,20 +92,28 @@
             </li>
             <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionResults'}}">
+                <i class="fa fa-trophy"></i>
                 Results
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionRegistration'}}">Registration</a>
+              <a href="{{pathFor 'competitionRegistration'}}">
+                <i class="fa fa-list"></i>
+                Registration
+              </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionEvents'}}">Events</a>
+              <a href="{{pathFor 'competitionEvents'}}">
+                <i class="fa fa-cube"></i>
+                Events
+              </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionSchedule'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="View schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
+                Schedule
               </a>
             </li>
           </ul>
@@ -116,7 +124,8 @@
                 {{#if canManageCompetition currentUser._id}}
                   <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
                     <a href="{{pathFor 'manageCompetition'}}">
-                      <span class="glyphicon glyphicon-cog"></span> Manage competition
+                      <i class="fa fa-cogs"></i>
+                      Manage competition
                     </a>
                   </li>
                 {{/if}}
@@ -134,19 +143,29 @@
         <div class="navbar-collapse collapse-buttons">
           <ul class="nav navbar-nav navbar-right">
             <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}} leaf">
-              <a href="{{pathFor 'manageCompetition'}}">Manage</a>
+              <a href="{{pathFor 'manageCompetition'}}">
+                <i class="fa fa-cog"></i>
+                Manage
+              </a>
             </li>
             <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}} leaf">
-              <a href="{{pathFor 'editEvents'}}">Events</a>
+              <a href="{{pathFor 'editEvents'}}">
+                <i class="fa fa-cube"></i>
+                Events
+              </a>
             </li>
             <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
-              <a href="{{pathFor 'manageCheckin'}}">Check-in</a>
+              <a href="{{pathFor 'manageCheckin'}}">
+                <i class="fa fa-check-square-o"></i>
+                Check-in
+              </a>
             </li>
             <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}} leaf">
               <a href="{{pathFor 'editSchedule'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Manage schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
+                Schedule
               </a>
             </li>
             <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}} leaf">
@@ -154,6 +173,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Data entry">
                 <span class="glyphicon glyphicon-edit"></span>
+                Data entry
               </a>
             </li>
             <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}} leaf">
