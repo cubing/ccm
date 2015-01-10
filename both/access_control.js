@@ -235,6 +235,9 @@ if(Meteor.isServer) {
         'durationMinutes',
         'title',
         'status',
+
+        'updatedAt',
+        'createdAt',
       ];
 
       if(_.difference(fields, allowedFields).length > 0) {
@@ -260,6 +263,9 @@ if(Meteor.isServer) {
 
       var allowedFields = [
         'solves',
+
+        'updatedAt',
+        'createdAt',
       ];
 
       if(_.difference(fields, allowedFields).length > 0) {
