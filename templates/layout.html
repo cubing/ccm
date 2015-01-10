@@ -88,6 +88,7 @@
             <li class="{{#if isActiveRoute 'competition'}}active{{/if}} match-jumbotron leaf">
               <a href="{{pathFor 'competition'}}">
                 <span class="glyphicon glyphicon-home"></span>
+                Home
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
@@ -179,15 +180,17 @@
             <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}} leaf">
               <a class="brand" href="{{pathFor 'uploadScrambles'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="Upload scrambles">
+                 title="Generate and upload scrambles from TNoodle">
                 <img src="/img/tnoodle_logo.svg" />
+                Scrambles
               </a>
             </li>
             <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}} leaf">
               <a class="brand" href="{{pathFor 'exportResults'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="Export results">
+                 title="Export results to WCA JSON">
                 <img src="/img/WCAlogo_notext.svg" />
+                Export
               </a>
             </li>
           </ul>
