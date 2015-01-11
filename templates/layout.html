@@ -91,18 +91,6 @@
                 <span class="hidden-xs">Home</span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionResults'}}">
-                <i class="fa fa-trophy"></i>
-                <span class="hidden-xs">Results</span>
-              </a>
-            </li>
-            <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionRegistration'}}">
-                <i class="fa fa-list"></i>
-                <span class="hidden-xs">Registration</span>
-              </a>
-            </li>
             <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionEvents'}}">
                 <i class="fa fa-cube"></i>
@@ -115,6 +103,18 @@
                  title="View schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
                 <span class="hidden-xs">Schedule</span>
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionRegistration'}}">
+                <i class="fa fa-list"></i>
+                <span class="hidden-xs">Registration</span>
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
+              <a href="{{pathFor 'competitionResults'}}">
+                <i class="fa fa-trophy"></i>
+                <span class="hidden-xs">Results</span>
               </a>
             </li>
           </ul>
@@ -155,12 +155,6 @@
                 <span class="hidden-xs">Events</span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
-              <a href="{{pathFor 'manageCheckin'}}">
-                <i class="fa fa-check-square-o"></i>
-                <span class="hidden-xs">Check-in</span>
-              </a>
-            </li>
             <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}} leaf">
               <a href="{{pathFor 'editSchedule'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
@@ -169,20 +163,26 @@
                 <span class="hidden-xs">Schedule</span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}} leaf">
-              <a href="{{pathFor 'dataEntry'}}"
-                 data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="Data entry">
-                <span class="glyphicon glyphicon-edit"></span>
-                <span class="hidden-xs">Data entry</span>
-              </a>
-            </li>
             <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}} leaf">
               <a class="brand" href="{{pathFor 'uploadScrambles'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Generate and upload scrambles from TNoodle">
                 <img src="/img/tnoodle_logo.svg" />
                 <span class="hidden-xs">Scrambles</span>
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
+              <a href="{{pathFor 'manageCheckin'}}">
+                <i class="fa fa-check-square-o"></i>
+                <span class="hidden-xs">Check-in</span>
+              </a>
+            </li>
+            <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}} leaf">
+              <a href="{{pathFor 'dataEntry'}}"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="Data entry">
+                <span class="glyphicon glyphicon-edit"></span>
+                <span class="hidden-xs">Data entry</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}} leaf">
