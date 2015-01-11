@@ -1,11 +1,7 @@
 @import (reference) url('bs-constants.import.less');
 
-.navbar a.brand {
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
 .navbar a.brand > img {
-  height: 30px;
+  height: 20px;
 }
 
 .navbar-plain-rectangle {
@@ -116,4 +112,28 @@
 #iron-router-progress.loading {
   transition: 0.5s width, 0.1s opacity;
   transition-delay: 0s, 0.5s;
+}
+
+/* Prevent navbar collapse entirely */
+@media (max-width: 768px) {
+  .navbar-nav {
+    float: left;
+    margin: 0;
+  }
+
+  .navbar-nav > li {
+    float: left;
+  }
+
+  .navbar-nav > li > a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  /* hacking to remove extra pixels that we don't want when tiny */
+  .navbar-collapse {
+    border: initial;
+    -webkit-box-shadow: initial;
+    box-shadow: initial;
+  }
 }

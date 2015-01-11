@@ -88,25 +88,25 @@
             <li class="{{#if isActiveRoute 'competition'}}active{{/if}} match-jumbotron leaf">
               <a href="{{pathFor 'competition'}}">
                 <span class="glyphicon glyphicon-home"></span>
-                Home
+                <span class="hidden-xs">Home</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionResults'}}">
                 <i class="fa fa-trophy"></i>
-                Results
+                <span class="hidden-xs">Results</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionRegistration'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionRegistration'}}">
                 <i class="fa fa-list"></i>
-                Registration
+                <span class="hidden-xs">Registration</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionEvents'}}active{{/if}} leaf">
               <a href="{{pathFor 'competitionEvents'}}">
                 <i class="fa fa-cube"></i>
-                Events
+                <span class="hidden-xs">Events</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}} leaf">
@@ -114,7 +114,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="View schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
-                Schedule
+                <span class="hidden-xs">Schedule</span>
               </a>
             </li>
           </ul>
@@ -126,7 +126,7 @@
                   <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
                     <a href="{{pathFor 'manageCompetition'}}">
                       <i class="fa fa-cogs"></i>
-                      Manage competition
+                      <span class="hidden-xs">Manage competition</span>
                     </a>
                   </li>
                 {{/if}}
@@ -146,19 +146,19 @@
             <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}} leaf">
               <a href="{{pathFor 'manageCompetition'}}">
                 <i class="fa fa-cog"></i>
-                Manage
+                <span class="hidden-xs">Manage</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}} leaf">
               <a href="{{pathFor 'editEvents'}}">
                 <i class="fa fa-cube"></i>
-                Events
+                <span class="hidden-xs">Events</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
               <a href="{{pathFor 'manageCheckin'}}">
                 <i class="fa fa-check-square-o"></i>
-                Check-in
+                <span class="hidden-xs">Check-in</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}} leaf">
@@ -166,7 +166,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Manage schedule">
                 <span class="glyphicon glyphicon-calendar"></span>
-                Schedule
+                <span class="hidden-xs">Schedule</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}} leaf">
@@ -174,7 +174,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Data entry">
                 <span class="glyphicon glyphicon-edit"></span>
-                Data entry
+                <span class="hidden-xs">Data entry</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'uploadScrambles'}}active{{/if}} leaf">
@@ -182,7 +182,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Generate and upload scrambles from TNoodle">
                 <img src="/img/tnoodle_logo.svg" />
-                Scrambles
+                <span class="hidden-xs">Scrambles</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'exportResults'}}active{{/if}} leaf">
@@ -190,7 +190,7 @@
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="Export results to WCA JSON">
                 <img src="/img/WCAlogo_notext.svg" />
-                Export
+                <span class="hidden-xs">Export</span>
               </a>
             </li>
           </ul>
