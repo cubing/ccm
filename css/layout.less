@@ -19,8 +19,23 @@
 @subSubSubSubNavbarActiveColor: darken(@subSubSubNavbarActiveColor, 15%);
 
 .navbar > .container-fluid .navbar-brand {
-  /* Make space between the .nvarbar-brand's so we can color their backgrounds */
+  /* Make space between the .navbar-brand's so we can color their backgrounds */
   margin-left: initial;
+}
+
+@activeTabSpace: 5px;
+.navbar-default li.active a {
+  padding-top: 15px - @activeTabSpace;
+  margin-top: @activeTabSpace;
+  box-shadow: 0px -6px 6px -5px #000;
+}
+
+@navbarHeight: 50px;
+.navbar-default a.navbar-brand.active {
+  padding-top: 15px - @activeTabSpace;
+  margin-top: @activeTabSpace;
+  height: @navbarHeight - @activeTabSpace;
+  box-shadow: 0px -6px 6px -5px #000;
 }
 
 .navbar-default .navbar-brand.active {
