@@ -1,5 +1,7 @@
 <template name="editProfile">
   <div class="container">
+    {{> flashMessages}}
+
     <h4>Edit profile</h4>
     <hr />
     {{#autoForm id="profileForm" type="update" doc=defaultProfileData collection="Meteor.users"}}

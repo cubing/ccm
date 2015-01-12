@@ -156,6 +156,9 @@ ViewCompetitionController = RouteController.extend({
 ViewRoundController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
+    if(!this.params.eventCode || !this.params.nthRound) {
+      return waitOn;//<<<
+    }
     var nthRound = parseInt(this.params.nthRound);
     waitOn.push(subs.subscribe('roundResults',
                                this.params.competitionUrlId,
@@ -333,13 +336,8 @@ Router.route('/:competitionUrlId/schedule', {
   controller: 'ViewCompetitionController',
   titlePrefix: 'Schedule',
 });
-Router.route('/:competitionUrlId/results', {
-  name: 'competitionResults',
-  controller: 'ViewCompetitionController',
-  titlePrefix: 'Results',
-});
 
-Router.route('/:competitionUrlId/results/:eventCode/:nthRound', {
+Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
   controller: 'ViewRoundController',

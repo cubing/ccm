@@ -1,5 +1,7 @@
 <template name="competitionRegistration">
   <div class="container">
+    {{> flashMessages}}
+
     {{#unless currentUser}}
       {{! TODO - link to sign up, don't make them hunt for it}}
       Log in to register for {{competition 'competitionName'}}.

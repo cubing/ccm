@@ -1,5 +1,66 @@
 var log = logging.handle("roundResults");
 
+Template.roundResults.created = function() {
+  var template = this;
+  template.selectedEventCodeReact = new ReactiveVar(null);
+  template.autorun(function() {
+    var data = Template.currentData();
+    var currentRoundId = data.roundId;
+    var eventCode = getRoundAttribute(currentRoundId, 'eventCode');
+    template.selectedEventCodeReact.set(eventCode);
+  });
+};
+
+Template.roundResults.events({
+  'click a.eventLink': function(e, template) {
+    template.selectedEventCodeReact.set(this.eventCode);
+  },
+});
+
+Template.roundResults.helpers({
+  isCurrentEvent: function() {
+    var template = Template.instance();
+    return this.eventCode == template.selectedEventCodeReact.get();
+  },
+
+  selectedEventCode: function() {
+    var template = Template.instance();
+    return template.selectedEventCodeReact.get();
+  },
+  roundsForEvent: function() {
+    var template = Template.instance();
+    var rounds = Rounds.find({
+      competitionId: this.competitionId,
+      eventCode: template.selectedEventCodeReact.get(),
+    }, {
+      fields: {
+        roundCode: 1,
+        eventCode: 1,
+        nthRound: 1,
+      },
+      sort: {
+        nthRound: 1,
+      }
+    });
+    return rounds;
+  },
+  isCurrentRound: function() {
+    var data = Template.parentData(1);
+    var currentRoundId = data.roundId;
+    var currentEventCode = getRoundAttribute(currentRoundId, 'eventCode');
+    var template = Template.instance();
+    var selectedEventCode = template.selectedEventCodeReact.get();
+    if(selectedEventCode != currentEventCode) {
+      return false;
+    }
+
+    var roundData = Template.parentData(1);
+    var currentRoundId = roundData.roundId;
+    var currentNthRound = getRoundAttribute(currentRoundId, 'nthRound');
+    return this.nthRound == currentNthRound;
+  },
+});
+
 Template.roundResultsList.rendered = function() {
   var template = this;
 

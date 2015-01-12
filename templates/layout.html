@@ -111,8 +111,8 @@
                 <span class="hidden-xs">Registration</span>
               </a>
             </li>
-            <li class="{{#if isActiveRoute 'competitionResults'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionResults'}}">
+            <li class="{{#if isActiveOrAncestorRoute 'roundResults'}}active{{/if}}">
+              <a href="{{pathFor 'roundResults'}}">
                 <i class="fa fa-trophy"></i>
                 <span class="hidden-xs">Results</span>
               </a>
@@ -198,10 +198,6 @@
       </div>
     </nav>
   {{/if}}
-
-  <div class="container">
-    {{> flashMessages}}
-  </div>
 
   {{> yield}}
 </template>
