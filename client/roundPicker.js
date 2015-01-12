@@ -7,6 +7,8 @@ Template.roundPicker.created = function() {
     if(currentRoundId) {
       var eventCode = getRoundAttribute(currentRoundId, 'eventCode');
       template.selectedEventCodeReact.set(eventCode);
+    } else if(data.eventCode) {
+      template.selectedEventCodeReact.set(data.eventCode);
     } else {
       template.selectedEventCodeReact.set(null);
     }

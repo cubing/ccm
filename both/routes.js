@@ -153,11 +153,49 @@ ViewCompetitionController = RouteController.extend({
   }
 });
 
+ViewCompetitorController = ViewCompetitionController.extend({
+  waitOn: function() {
+    var waitOn = this.constructor.__super__.waitOn.call(this);
+    waitOn.push(subs.subscribe('competitorResults',
+                               this.params.competitionUrlId,
+                               this.params.competitorUniqueName,
+                               subscriptionError(this)));
+    return waitOn;
+  },
+  data: function() {
+    var parentData = this.constructor.__super__.data.call(this);
+    if(!parentData) {
+      return null;
+    }
+
+    var uniqueName = this.params.competitorUniqueName;
+    var registration = Registrations.findOne({
+      competitionId: parentData.competitionId,
+      uniqueName: uniqueName,
+    }, {
+      userId: 1,
+    });
+    if(!registration) {
+      this.render('competitorNotFound');
+      return;
+    }
+    var user = Meteor.users.findOne({
+      _id: registration.userId,
+    });
+    if(!user) {
+      this.render('competitorNotFound');
+      return;
+    }
+    parentData.user = user;
+    return parentData;
+  },
+});
+
 ViewRoundController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
     if(!this.params.eventCode || !this.params.nthRound) {
-      return waitOn;//<<<
+      return waitOn;
     }
     var nthRound = parseInt(this.params.nthRound);
     waitOn.push(subs.subscribe('roundResults',
@@ -337,53 +375,12 @@ Router.route('/:competitionUrlId/schedule', {
   titlePrefix: 'Schedule',
 });
 
+Router.route('/:competitionUrlId/results/byname/:competitorUniqueName', {
+  name: 'competitorResults',
+  controller: 'ViewCompetitorController',
+});
 Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
   controller: 'ViewRoundController',
-});
-
-
-// TODO - fast-render breaks if we don't define a controller for this route.
-// It's seems to call waitOn with the wrong "this".
-ViewCompetitorController = ViewCompetitionController.extend({
-  waitOn: function() {
-    var waitOn = this.constructor.__super__.waitOn.call(this);
-    waitOn.push(subs.subscribe('competitorResults',
-                               this.params.competitionUrlId,
-                               this.params.competitorUniqueName,
-                               subscriptionError(this)));
-    return waitOn;
-  },
-  data: function() {
-    var parentData = this.constructor.__super__.data.call(this);
-    if(!parentData) {
-      return null;
-    }
-
-    var uniqueName = this.params.competitorUniqueName;
-    var registration = Registrations.findOne({
-      competitionId: parentData.competitionId,
-      uniqueName: uniqueName,
-    }, {
-      userId: 1,
-    });
-    if(!registration) {
-      this.render('competitorNotFound');
-      return;
-    }
-    var user = Meteor.users.findOne({
-      _id: registration.userId,
-    });
-    if(!user) {
-      this.render('competitorNotFound');
-      return;
-    }
-    parentData.user = user;
-    return parentData;
-  },
-});
-Router.route('/:competitionUrlId/results/:competitorUniqueName', {
-  name: 'competitorResults',
-  controller: 'ViewCompetitorController',
 });
