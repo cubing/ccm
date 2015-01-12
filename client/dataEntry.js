@@ -23,6 +23,11 @@ Template.dataEntry.helpers({
       }
     }
 
+    if(this.eventCode) {
+      // If they've only selected an eventCode, we want to show all rounds.
+      return true;
+    }
+
     var template = Template.instance();
     return template.showAllRoundsReact.get();
   },
