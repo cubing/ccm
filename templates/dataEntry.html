@@ -1,37 +1,43 @@
 <template name="dataEntry">
-  <div class="container-fluid">
-    <ul class="nav nav-pills nav-justified">
-      {{#each openRounds}}
-        <li role="presentation" class="{{#if isSelectedRound}}active{{/if}}">
-          <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-            <img class="img-thumbnail icon" src="{{eventIcon eventCode}}" alt="{{eventCode}}">
-            {{eventName eventCode}}: {{roundName roundCode}}
-          </a>
-        </li>
-      {{/each}}
-      <li role="presentation" class="dropdown {{#if isSelectedRoundClosed}}active{{/if}}">
-        <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-          {{#if isSelectedRoundClosed}}
-            <img class="img-thumbnail icon" src="{{eventIcon roundEventCode}}" alt="{{roundEventCode}}">
-            {{eventName roundEventCode}}: {{roundName roundRoundCode}}
-          {{else}}
-            Closed rounds
-          {{/if}}
-          <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu" role="menu">
-          {{#each closedRounds}}
-            <li class="{{#if isSelectedRound}}active{{/if}}">
-              <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-                <img class="img-thumbnail icon" src="{{eventIcon eventCode}}" alt="{{eventCode}}">
+  <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-collapse collapse-buttons">
+        <ul class="nav navbar-nav">
+          {{#each openRounds}}
+            <li class="{{#if isSelectedRound}}active{{/if}} leaf">
+              <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                 class="brand">
+                <img src="{{eventIcon eventCode}}" alt="{{eventCode}}">
                 {{eventName eventCode}}: {{roundName roundCode}}
               </a>
             </li>
+          {{else}}
+            <p class="navbar-text">
+              No rounds currently open
+            </p>
           {{/each}}
+          <li class="{{#if showAllRounds}}active{{/if}}">
+            <a href="#" class="brand" id="showAllRoundsLink"
+               data-toggle="tooltip" data-placement="bottom" data-container="body"
+               title="If you really need to edit a round that isn't open, click here.">
+              All rounds
+              {{#if showAllRounds}}
+                <span class="glyphicon glyphicon-chevron-down"></span>
+              {{else}}
+                <span class="glyphicon glyphicon-chevron-right"></span>
+              {{/if}}
+            </a>
+          </li>
         </ul>
-      </li>
-    </ul>
+      </div>
+    </div>
+  </nav>
 
+  {{#if showAllRounds}}
+    {{> roundPicker competitionId=competitionId competitionUrlId=competitionUrlId roundId=roundId roundTemplate='dataEntry'}}
+  {{/if}}
+
+  <div class="container-fluid">
     {{#if roundId}}
       {{#if isSelectedRoundClosed}}
         <div class="alert alert-warning" role="alert">
@@ -42,7 +48,6 @@
       {{/if}}
       {{> roundDataEntry roundId=roundId}}
     {{/if}}
-
   </div>
 </template>
 

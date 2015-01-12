@@ -8,7 +8,25 @@ Router.onBeforeAction(function() {
   this.next();
 });
 
+Template.dataEntry.created = function() {
+  var template = this;
+  template.showAllRoundsReact = new ReactiveVar(false);
+};
+
 Template.dataEntry.helpers({
+  showAllRounds: function() {
+    if(this.roundId) {
+      var status = getRoundAttribute(this.roundId, 'status');
+      if(status === wca.roundStatuses.closed) {
+        // If the selected round is closed, we need to show all rounds so we can see the selected round.
+        return true;
+      }
+    }
+
+    var template = Template.instance();
+    return template.showAllRoundsReact.get();
+  },
+
   isSelectedRoundClosed: function() {
     if(!this.roundId) {
       // If there's no round selected, then the selected round is definitely
@@ -30,22 +48,17 @@ Template.dataEntry.helpers({
     });
     return openRounds;
   },
-  closedRounds: function() {
-    var closedRounds = Rounds.find({
-      competitionId: this.competitionId,
-      status: wca.roundStatuses.closed,
-    }, {
-      sort: {
-        eventCode: 1,
-        nthRound: 1,
-      }
-    });
-    return closedRounds;
-  },
   isSelectedRound: function() {
     var data = Template.parentData(1);
     var selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
+  },
+});
+
+Template.dataEntry.events({
+  'click #showAllRoundsLink': function(e, template) {
+    e.preventDefault();
+    template.showAllRoundsReact.set(!template.showAllRoundsReact.get());
   },
 });
 

@@ -1,47 +1,6 @@
 <template name="roundResults">
 
-  <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-collapse collapse-buttons">
-        <ul class="nav navbar-nav">
-          {{#each competitionEvents}}
-            <li class="{{#if isCurrentEvent}}active{{/if}}">
-              <a href="#"
-                 class="brand eventLink"
-                 data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="{{eventName eventCode}}">
-                <img src="{{eventIcon eventCode}}" />
-                <span class="hidden-xs">{{eventCode}}</span>
-              </a>
-            </li>
-          {{/each}}
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  {{#if selectedEventCode}}
-    <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-collapse collapse-buttons">
-          <ul class="nav navbar-nav">
-            <li class="{{#if isCurrentRound}}active{{/if}} leaf">
-              <p class="navbar-text navbar-brand">
-                <img src="{{eventIcon selectedEventCode}}" /> {{eventName selectedEventCode}}
-              </p>
-            </li>
-            {{#each roundsForEvent}}
-              <li class="{{#if isCurrentRound}}active{{/if}} leaf">
-                <a href="{{pathFor 'roundResults' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-                  {{roundName roundCode}}
-                </a>
-              </li>
-            {{/each}}
-          </ul>
-        </div>
-      </div>
-    </nav>
-  {{/if}}
+  {{> roundPicker competitionId=competitionId competitionUrlId=competitionUrlId roundId=roundId roundTemplate='roundResults'}}
 
   <div class="container">
     {{#unless roundId}}
