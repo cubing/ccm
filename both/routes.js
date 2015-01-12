@@ -250,23 +250,23 @@ Router.route('/new/import', {
   titlePrefix: 'Import competition',
 });
 
-Router.route('/:competitionUrlId/manage', {
+Router.route('/manage/:competitionUrlId', {
   name: 'manageCompetition',
   template: 'editCompetition',
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
 });
-Router.route('/:competitionUrlId/manage/events', {
+Router.route('/manage/:competitionUrlId/events', {
   name: 'editEvents',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit events",
 });
-Router.route('/:competitionUrlId/manage/check-in', {
+Router.route('/manage/:competitionUrlId/check-in', {
   name: 'manageCheckin',
   controller: 'ManageCompetitionController',
   titlePrefix: "Check-in",
 });
-Router.route('/:competitionUrlId/manage/uploadScrambles', {
+Router.route('/manage/:competitionUrlId/uploadScrambles', {
   name: 'uploadScrambles',
   controller: 'ManageCompetitionController',
   titlePrefix: "Upload scrambles",
@@ -278,22 +278,22 @@ Router.route('/:competitionUrlId/manage/uploadScrambles', {
     return waitOn;
   },
 });
-Router.route('/:competitionUrlId/manage/exportResults', {
+Router.route('/manage/:competitionUrlId/exportResults', {
   name: 'exportResults',
   controller: 'ManageCompetitionController',
   titlePrefix: "Export results",
 });
-Router.route('/:competitionUrlId/manage/schedule', {
+Router.route('/manage/:competitionUrlId/schedule', {
   name: 'editSchedule',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
-Router.route('/:competitionUrlId/manage/advance-competitors/:eventCode?/:nthRound?', {
+Router.route('/manage/:competitionUrlId/advance-competitors/:eventCode?/:nthRound?', {
   name: 'advanceCompetitors',
   controller: 'ManageRoundResultsController',
   titlePrefix: "Advance competitors",
 });
-Router.route('/:competitionUrlId/manage/data-entry/:eventCode?/:nthRound?', {
+Router.route('/manage/:competitionUrlId/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
   controller: 'ManageRoundResultsController',
   titlePrefix: "Data entry",

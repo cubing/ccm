@@ -59,6 +59,15 @@
              href="{{pathFor 'competition'}}">
             {{competition 'competitionName'}}
           </a>
+          {{#if currentUser}}
+            {{#if canManageCompetition currentUser._id}}
+              <a href="{{pathFor 'manageCompetition'}}"
+                 class="navbar-brand {{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
+                <i class="fa fa-cogs"></i>
+                <span class="hidden-xs">Manage competition</span>
+              </a>
+            {{/if}}
+          {{/if}}
         {{/if}}
       </div>
 
@@ -117,21 +126,6 @@
                 <span class="hidden-xs">Results</span>
               </a>
             </li>
-          </ul>
-
-          <ul class="nav navbar-nav navbar-right">
-            {{#if currentUser}}
-              {{#if competitionId}}
-                {{#if canManageCompetition currentUser._id}}
-                  <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
-                    <a href="{{pathFor 'manageCompetition'}}">
-                      <i class="fa fa-cogs"></i>
-                      <span class="hidden-xs">Manage competition</span>
-                    </a>
-                  </li>
-                {{/if}}
-              {{/if}}
-            {{/if}}
           </ul>
         </div>
       </div>
