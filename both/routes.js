@@ -107,7 +107,7 @@ ManageCompetitionController = RouteController.extend({
     }
     if(getCannotManageCompetitionReason(Meteor.userId(), competition._id)) {
       this.render('cannotManageCompetition');
-      return;
+      return null;
     }
     return {
       competitionUrlId: competitionUrlId,
@@ -177,14 +177,14 @@ ViewCompetitorController = ViewCompetitionController.extend({
     });
     if(!registration) {
       this.render('competitorNotFound');
-      return;
+      return parentData;
     }
     var user = Meteor.users.findOne({
       _id: registration.userId,
     });
     if(!user) {
       this.render('competitorNotFound');
-      return;
+      return parentData;
     }
     parentData.user = user;
     return parentData;
@@ -238,6 +238,7 @@ function getRoundData(data) {
 
   if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
     this.render('eventNotFound');
+    return data;
   }
   data.eventCode = this.params.eventCode;
   if(!this.params.nthRound) {
@@ -245,7 +246,7 @@ function getRoundData(data) {
   }
   if(!String.isNonNegInt(this.params.nthRound)) {
     this.render('roundNotFound');
-    return;
+    return data;
   }
   var nthRound = parseInt(this.params.nthRound);
   var eventCode = this.params.eventCode;
@@ -261,7 +262,7 @@ function getRoundData(data) {
   });
   if(!round) {
     this.render('roundNotFound');
-    return;
+    return data;
   }
   data.roundId = round._id;
   return data;
