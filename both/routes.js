@@ -236,8 +236,11 @@ function getRoundData(data) {
     return null;
   }
 
+  if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
+    this.render('eventNotFound');
+  }
+  data.eventCode = this.params.eventCode;
   if(!this.params.nthRound) {
-    data.eventCode = this.params.eventCode;
     return data;
   }
   if(!String.isNonNegInt(this.params.nthRound)) {
