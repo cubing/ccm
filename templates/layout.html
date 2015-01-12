@@ -107,9 +107,7 @@
               </a>
             </li>
             <li class="{{#if isActiveRoute 'competitionSchedule'}}active{{/if}} leaf">
-              <a href="{{pathFor 'competitionSchedule'}}"
-                 data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="View schedule">
+              <a href="{{pathFor 'competitionSchedule'}}">
                 <span class="glyphicon glyphicon-calendar"></span>
                 <span class="hidden-xs">Schedule</span>
               </a>
@@ -136,7 +134,7 @@
     <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
       <div class="container-fluid">
         <div class="navbar-collapse collapse-buttons">
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav">
             <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}} leaf">
               <a href="{{pathFor 'manageCompetition'}}">
                 <i class="fa fa-cog"></i>
