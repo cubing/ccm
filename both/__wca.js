@@ -263,7 +263,8 @@ wca.roundByCode = {
   },
 
   "f": {
-    "name": "Final",
+    //"name": "Final",
+    "name": "Final round",
     "code": "f",
     "combined": false,
 

@@ -6,8 +6,12 @@ Template.roundResults.created = function() {
   template.autorun(function() {
     var data = Template.currentData();
     var currentRoundId = data.roundId;
-    var eventCode = getRoundAttribute(currentRoundId, 'eventCode');
-    template.selectedEventCodeReact.set(eventCode);
+    if(currentRoundId) {
+      var eventCode = getRoundAttribute(currentRoundId, 'eventCode');
+      template.selectedEventCodeReact.set(eventCode);
+    } else {
+      template.selectedEventCodeReact.set(null);
+    }
   });
 };
 
@@ -47,6 +51,9 @@ Template.roundResults.helpers({
   isCurrentRound: function() {
     var data = Template.parentData(1);
     var currentRoundId = data.roundId;
+    if(!currentRoundId) {
+      return false;
+    }
     var currentEventCode = getRoundAttribute(currentRoundId, 'eventCode');
     var template = Template.instance();
     var selectedEventCode = template.selectedEventCodeReact.get();

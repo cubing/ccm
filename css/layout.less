@@ -10,11 +10,11 @@
 }
 
 @subNavbarColor: @bsNavbarActiveColor;
-@subNavbarActiveColor: darken(@bsNavbarActiveColor, 10%);
+@subNavbarActiveColor: darken(@bsNavbarActiveColor, 15%);
 @subSubNavbarColor: @subNavbarActiveColor;
-@subSubNavbarActiveColor: darken(@subNavbarActiveColor, 10%);
+@subSubNavbarActiveColor: darken(@subNavbarActiveColor, 15%);
 @subSubSubNavbarColor: @subSubNavbarActiveColor;
-@subSubSubNavbarActiveColor: darken(@subSubNavbarActiveColor, 10%);
+@subSubSubNavbarActiveColor: darken(@subSubNavbarActiveColor, 15%);
 
 .navbar > .container-fluid .navbar-brand {
   /* Make space between the .nvarbar-brand's so we can color their backgrounds */
@@ -94,7 +94,33 @@
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
 }
+@bsSubSubSubNavbarTextColor: #FFF;
+@bsSubSubSubNavbarTextColorActive: #000;
+.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > a {
+  color: @bsSubSubSubNavbarTextColor;
+}
+.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > p {
+  color: @bsSubSubSubNavbarTextColor;
+}
+.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > a:hover,
+.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li.active > a {
+  color: @bsSubSubSubNavbarTextColorActive;
+}
+.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > p:hover {
+  color: @bsSubSubSubNavbarTextColor;
+}
 
+/* futzing around to make nth round subsubsub nav look nice */
+.navbar-text.navbar-brand {
+  margin: 0;
+}
+p.navbar-brand > img {
+  display: initial;
+}
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  color: @bsNavbarTextColor;
+}
 
 /* Get rid of the whitespace between the navbars */
 .navbar + .navbar {

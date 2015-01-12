@@ -20,36 +20,39 @@
     </div>
   </nav>
 
-  <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
-    <div class="container-fluid">
-      <div class="navbar-collapse collapse-buttons">
-        <ul class="nav navbar-nav">
-          <li class="{{#if isCurrentRound}}active{{/if}} leaf">
-            <p class="navbar-text">
-              <img src="{{eventIcon selectedEventCode}}" />
-              {{eventName selectedEventCode}}
-            </p>
-          </li>
-          {{#each roundsForEvent}}
+  {{#if selectedEventCode}}
+    <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-collapse collapse-buttons">
+          <ul class="nav navbar-nav">
             <li class="{{#if isCurrentRound}}active{{/if}} leaf">
-              <a href="{{pathFor 'roundResults' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
-                {{roundName roundCode}}
-              </a>
+              <p class="navbar-text navbar-brand">
+                <img src="{{eventIcon selectedEventCode}}" /> {{eventName selectedEventCode}}
+              </p>
             </li>
-          {{/each}}
-        </ul>
+            {{#each roundsForEvent}}
+              <li class="{{#if isCurrentRound}}active{{/if}} leaf">
+                <a href="{{pathFor 'roundResults' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                  {{roundName roundCode}}
+                </a>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+  {{/if}}
 
   <div class="container">
-    <p>
-      {{eventName roundEventCode}}: {{roundName roundRoundCode}}
-      {{formatName roundFormatCode}}
-    </p>
+    {{#unless roundId}}
+    {{else}}
+      <p>
+        {{eventName roundEventCode}}: {{roundName roundRoundCode}}
+        {{formatName roundFormatCode}}
+      </p>
 
-    {{> roundResultsList roundId=roundId competitionUrlId=competitionUrlId}}
-
+      {{> roundResultsList roundId=roundId competitionUrlId=competitionUrlId}}
+    {{/unless}}
   </div>
 </template>
 
