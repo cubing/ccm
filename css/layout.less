@@ -9,15 +9,32 @@
   border-radius: initial;
 }
 
+@navbarColorDarkenPercent: 12%;
+
 @subNavbarColor: @bsNavbarActiveColor;
-@subNavbarActiveColor: darken(@bsNavbarActiveColor, 15%);
+@subNavbarActiveColor: darken(@bsNavbarActiveColor, @navbarColorDarkenPercent);
 @subSubNavbarColor: @subNavbarActiveColor;
-@subSubNavbarActiveColor: darken(@subNavbarActiveColor, 15%);
+@subSubNavbarActiveColor: darken(@subNavbarActiveColor, @navbarColorDarkenPercent);
 @subSubSubNavbarColor: @subSubNavbarActiveColor;
-@subSubSubNavbarActiveColor: darken(@subSubNavbarActiveColor, 15%);
+@subSubSubNavbarActiveColor: darken(@subSubNavbarActiveColor, @navbarColorDarkenPercent);
 @subSubSubSubNavbarColor: @subSubSubNavbarActiveColor;
-@subSubSubSubNavbarActiveColor: darken(@subSubSubNavbarActiveColor, 15%);
-@navbarBoxShadow: 0px -6px 6px -5px #444;
+@subSubSubSubNavbarActiveColor: darken(@subSubSubNavbarActiveColor, @navbarColorDarkenPercent);
+
+@navbarBoxShadowColor: #999;
+@navbarBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
+@navbarTabBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
+@subNavbarBoxShadowColor: darken(@navbarBoxShadowColor, @navbarColorDarkenPercent);
+@subNavbarBoxShadow: 0px -4px 4px -3px @subNavbarBoxShadowColor;
+@subNavbarTabBoxShadow: 0px -4px 4px -3px @subNavbarBoxShadowColor;
+@subSubNavbarBoxShadowColor: darken(@subNavbarBoxShadowColor, @navbarColorDarkenPercent);
+@subSubNavbarBoxShadow: 0px -4px 4px -3px @subSubNavbarBoxShadowColor;
+@subSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubNavbarBoxShadowColor;
+@subSubSubNavbarBoxShadowColor: darken(@subSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
+@subSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubNavbarBoxShadowColor;
+@subSubSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubSubNavbarBoxShadowColor;
+@subSubSubSubNavbarBoxShadowColor: darken(@subSubSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
+@subSubSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
+@subSubSubSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
 
 .navbar > .container-fluid .navbar-brand {
   /* Make space between the .navbar-brand's so we can color their backgrounds */
@@ -26,22 +43,17 @@
 
 @activeTabSpace: 5px;
 .navbar-default li.active a {
-  z-index: 1; /* appear on top of the shadow from the next navbar */
-
   padding-top: 15px - @activeTabSpace;
   margin-top: @activeTabSpace;
-  box-shadow: @navbarBoxShadow;
+  box-shadow: @navbarTabBoxShadow;
 }
 
 @navbarHeight: 50px;
 .navbar-default a.navbar-brand.active {
-  z-index: 1; /* appear on top of the shadow from the next navbar */
-  position: relative; /* need a non default position for z-index to be honored */
-
   padding-top: 15px - @activeTabSpace;
   margin-top: @activeTabSpace;
   height: @navbarHeight - @activeTabSpace;
-  box-shadow: @navbarBoxShadow;
+  box-shadow: @navbarTabBoxShadow;
 }
 
 .navbar-default {
@@ -68,6 +80,7 @@
 .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
+  box-shadow: @navbarTabBoxShadow;
 }
 
 /* match jumbotron */
@@ -75,51 +88,61 @@
 .navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:hover,
 .navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:focus {
   background-color: #EEE !important;
+  box-shadow: @navbarTabBoxShadow;
 }
 
 /* sub navbar colors */
 .navbar + .navbar {
   background-color: @subNavbarColor;
+  box-shadow: inset @subNavbarBoxShadow;
 }
 .navbar + .navbar-default .navbar-nav > .active > a,
 .navbar + .navbar-default .navbar-nav > .active > a:hover,
 .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subNavbarActiveColor;
+  box-shadow: @subNavbarTabBoxShadow;
 }
 .navbar + .navbar-default .navbar-nav > .active.leaf > a,
 .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
+  box-shadow: @subNavbarTabBoxShadow;
 }
 
 /* sub sub navbar colors */
 .navbar + .navbar + .navbar {
   background-color: @subSubNavbarColor;
+  box-shadow: inset @subSubNavbarBoxShadow;
 }
 .navbar + .navbar + .navbar-default .navbar-nav > .active > a,
 .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
 .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subSubNavbarActiveColor;
+  box-shadow: @subSubNavbarTabBoxShadow;
 }
 .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
 .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
+  box-shadow: @subSubNavbarTabBoxShadow;
 }
 
 /* sub sub sub navbar colors */
 .navbar + .navbar + .navbar + .navbar {
   background-color: @subSubSubNavbarColor;
+  box-shadow: inset @subSubSubNavbarBoxShadow;
 }
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a,
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subSubSubNavbarActiveColor;
+  box-shadow: @subSubSubNavbarTabBoxShadow;
 }
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
+  box-shadow: @subSubSubNavbarTabBoxShadow;
 }
 @bsSubSubSubNavbarTextColor: #FFF;
 @bsSubSubSubNavbarTextColorActive: #000;
@@ -140,16 +163,19 @@
 /* sub sub sub sub navbar colors */
 .navbar + .navbar + .navbar + .navbar + .navbar {
   background-color: @subSubSubSubNavbarColor;
+  box-shadow: inset @subSubSubNavbarBoxShadow;
 }
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a,
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
   background-color: @subSubSubSubNavbarActiveColor;
+  box-shadow: @subSubSubSubNavbarTabBoxShadow;
 }
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
+  box-shadow: @subSubSubSubNavbarTabBoxShadow;
 }
 
 /* futzing around to make nth round subsubsub nav look nice */
