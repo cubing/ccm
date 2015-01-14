@@ -114,6 +114,46 @@ wca.valueToSolveTime = function(wcaValue, eventId) {
   }
 };
 
+wca.solveTimeSorter = function(s1, s2) {
+  if(s1 && !s1.wcaValue) {
+    s1 = null;
+  }
+  if(s2 && !s2.wcaValue) {
+    s2 = null;
+  }
+
+  // Note that we sort so that missing/empty data are last.
+  if(!s1 && !s2) {
+    return 0;
+  } else if(!s1) {
+    return 1;
+  } else if(!s2) {
+    return -1;
+  }
+
+  var dns1 = $.solveTimeIsDNS(s1);
+  var dns2 = $.solveTimeIsDNS(s2);
+  if(dns1 && dns2) {
+    return 0;
+  } else if(dns1) {
+    return 1;
+  } else if(dns2) {
+    return -1;
+  }
+
+  var dnf1 = $.solveTimeIsDNF(s1);
+  var dnf2 = $.solveTimeIsDNF(s2);
+  if(dnf1 && dnf2) {
+    return 0;
+  } else if(dnf1) {
+    return 1;
+  } else if(dnf2) {
+    return -1;
+  }
+
+  return s1.wcaValue - s2.wcaValue;
+};
+
 wca.penalties = {};
 _.each([
   'DNF',

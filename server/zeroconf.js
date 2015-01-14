@@ -12,7 +12,7 @@ Meteor.startup(function() {
     mdns.tcp('_http'),
     "" + port,
     {
-      name: 'gjcomps',
+      name: 'ccm',
       txt: {
         txtvers: '1'
       }

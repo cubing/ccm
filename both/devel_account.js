@@ -1,5 +1,5 @@
-DEVEL_ACCOUNT_EMAIL = 'gjcomps@gjcomps.com';
-DEVEL_ACCOUNT_PASSWORD = 'gjcomps';
+DEVEL_ACCOUNT_EMAIL = 'ccm@ccm.com';
+DEVEL_ACCOUNT_PASSWORD = 'ccm';
 
 if(Meteor.isServer) {
   Meteor.startup(function() {
@@ -12,7 +12,7 @@ if(Meteor.isServer) {
         password: DEVEL_ACCOUNT_PASSWORD,
         email: DEVEL_ACCOUNT_EMAIL,
         profile: {
-          name: "gjcomps devel account",
+          name: "ccm devel account",
           countryId: "US",
           gender: "o",
           dob: new Date(),

@@ -344,7 +344,7 @@ if(Meteor.isServer) {
         var user, email, userId;
         if(wcaPerson.wcaId) {
           // Check for user with WCA id and if user doesn't exist we create one
-          email = userProfile.wcaId + "@gjcomps.com";
+          email = userProfile.wcaId + "@ccm.com";
           user = Meteor.users.findOne({ "emails.address": email });
           if(!user) {
             userId = Accounts.createUser({
@@ -357,7 +357,7 @@ if(Meteor.isServer) {
           }
         } else {
           // Create user if user doesn't exist and wcaId doesn't exist or look for one first
-          email = (userProfile.name.replace(/\s/g, "_") + i) + "@gjcomps.com";
+          email = (userProfile.name.replace(/\s/g, "_") + i) + "@ccm.com";
           user = Meteor.users.findOne({ "emails.address": email });
           if(!user) {
             userId = Accounts.createUser({

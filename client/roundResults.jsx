@@ -157,7 +157,7 @@ var ResultsList = React.createClass({
     var resultsCursor = Results.find({
       roundId: roundId,
     }, {
-      limit: this.props.limit, // https://github.com/jfly/gjcomps/issues/75
+      limit: this.props.limit, // https://github.com/jfly/ccm/issues/75
       sort: {
         // Note that limiting without sorting will result in an
         // essentially random set of people being displayed, but
@@ -166,7 +166,7 @@ var ResultsList = React.createClass({
         //'position': 1,
       },
     });
-    // This is *insane*, but asking meteor to sort is
+    // Asking meteor to sort is
     // *significantly* slower than just fetching and doing
     // it ourselves. So here we go.
     var results = resultsCursor.fetch();

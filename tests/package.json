@@ -1,7 +1,7 @@
 {
-  "name": "gjcomps",
+  "name": "ccm",
   "version": "0.0.0",
-  "description": "gjcomps",
+  "description": "A cubing competition manager",
   "author": "",
   "license": "MIT",
   "main": "",

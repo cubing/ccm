@@ -24,7 +24,7 @@ Template.editSchedule.events({
     var value = $input.val();
     if(value.length === 0) {
       // bootstrap-datepicker doesn't fire changeDate when someone deletes all
-      // the text from the input (https://github.com/jfly/gjcomps/issues/46).
+      // the text from the input (https://github.com/jfly/ccm/issues/46).
       // This is a workaround for that.
       setCompetitionAttribute(this.competitionId, attribute, null);
     }

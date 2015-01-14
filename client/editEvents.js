@@ -74,7 +74,7 @@ var eventCountPerRowByDeviceSize = {
 };
 
 function getCompetitorsDoneAndTotal(roundId) {
-  // Neutered until https://github.com/jfly/gjcomps/issues/81
+  // Neutered until https://github.com/jfly/ccm/issues/81
   if(true) {
     return [ 5, 10 ];
   }
@@ -110,7 +110,7 @@ function getCompetitorsDoneAndTotal(roundId) {
 }
 
 function getLastRoundResultsCount(competitionId, eventCode) {
-  // Neutered until https://github.com/jfly/gjcomps/issues/81
+  // Neutered until https://github.com/jfly/ccm/issues/81
   if(true) {
     return 1;
   }
