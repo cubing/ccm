@@ -1,4 +1,4 @@
-# Passing -N to wget ensures that it clobbers existing files
+# We pass -N to wget to ensure that it clobbers existing files.
 #  http://serverfault.com/a/379060
 
 (cd client/components/; wget -N http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js)
