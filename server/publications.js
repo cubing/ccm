@@ -137,6 +137,9 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
       _id: 1,
     }
   });
+  if(!round) {
+    return [];
+  }
   return [
     Results.find({ roundId: round._id, }),
   ];

@@ -207,6 +207,51 @@ ViewRoundController = ViewCompetitionController.extend({
   },
   data: function() {
     var parentData = this.constructor.__super__.data.call(this);
+    if(!parentData) {
+      return null;
+    }
+
+    if(!this.params.eventCode) {
+      // TODO - https://github.com/jfly/ccm/issues/119
+    } else if(!this.params.nthRound) {
+      var newParams = _.extend({}, this.params);
+      // If the user didn't specify a specific round for the given event,
+      // try to be useful and redirect them a round they're likely to be interested in.
+      // Lets go with an open round, or if none are open, the latest round for this event.
+
+      var round;
+
+      var openRound = Rounds.findOne({
+        competitionId: parentData.competitionId,
+        eventCode: this.params.eventCode,
+        status: wca.roundStatuses.open,
+      }, {
+        fields: {
+          nthRound: 1,
+        },
+      });
+      if(openRound) {
+        round = openRound;
+      } else {
+        var latestRound = Rounds.findOne({
+          competitionId: parentData.competitionId,
+          eventCode: this.params.eventCode,
+        }, {
+          fields: {
+            nthRound: 1,
+          },
+          sort: {
+            nthRound: -1,
+          },
+        });
+        round = latestRound;
+      }
+      newParams.nthRound = round.nthRound;
+
+      // { replaceState: true } to avoid breaking the back button
+      //  http://stackoverflow.com/a/26490250
+      Router.go('roundResults', newParams, { replaceState: true });
+    }
     return getRoundData.call(this, parentData);
   },
 });
@@ -227,15 +272,14 @@ ManageRoundResultsController = ManageCompetitionController.extend({
   },
   data: function() {
     var parentData = this.constructor.__super__.data.call(this);
+    if(!parentData) {
+      return null;
+    }
     return getRoundData.call(this, parentData);
   },
 });
 
 function getRoundData(data) {
-  if(!data) {
-    return null;
-  }
-
   if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
     this.render('eventNotFound');
     return data;
