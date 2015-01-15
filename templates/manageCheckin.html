@@ -1,5 +1,44 @@
 <template name="manageCheckin">
-  <div class="container">
-    Manage some check-in, yo.
+  <div class="container-fluid">
+    <table id="checkinTable" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Gender</th>
+          <th>Birthday</th>
+          {{#each competitionEvents}}
+            <th class="text-center">
+              <img src="{{eventIcon eventCode}}" />
+              <span>{{eventCode}}</span>
+            </th>
+          {{/each}}
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each registrations}}
+          <tr>
+            <td>{{uniqueName}}</td>
+            {{! TODO further denormalize the database so we can show gender/dob? }}
+            <td>{{gender}}</td>
+            <td>{{dob}}</td>
+            {{#each competitionEvents}}
+              <td class="text-center">
+                <input type="checkbox" checked="{{#if registeredForEvent}}true{{/if}}" />
+              </td>
+            {{/each}}
+            <td class="text-nowrap">
+              {{#if uncheckedIn}}
+                Check-in
+              {{else}}
+                {{#if checkinNeedsUpdate}}
+                  Update check-in
+                {{/if}}
+              {{/if}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 </template>

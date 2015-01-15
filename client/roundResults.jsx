@@ -213,6 +213,12 @@ var ResultsList = React.createClass({
   componentDidUpdate(prevProps, prevState) {
     log.l1("component did update");
   },
+  componentWillUnmount: function() {
+    log.l1("component will unmount");
+
+    var $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    $resultsTable.stickyTableHeaders('destroy');
+  },
   resultsTableScroll: function(e) {
     // Workaround for https://github.com/jmosbech/StickyTableHeaders/issues/68.
     // StickyTableHeaders doesn't handle horizontal scrolling, so we detect it
