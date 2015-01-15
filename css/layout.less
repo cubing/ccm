@@ -22,19 +22,19 @@
 
 @navbarBoxShadowColor: #999;
 @navbarBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
-@navbarTabBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
+@navbarTabBoxShadow: 0px 0px 4px 1px @navbarBoxShadowColor;
 @subNavbarBoxShadowColor: darken(@navbarBoxShadowColor, @navbarColorDarkenPercent);
 @subNavbarBoxShadow: 0px -4px 4px -3px @subNavbarBoxShadowColor;
-@subNavbarTabBoxShadow: 0px -4px 4px -3px @subNavbarBoxShadowColor;
+@subNavbarTabBoxShadow: 0px 0px 4px 1px @subNavbarBoxShadowColor;
 @subSubNavbarBoxShadowColor: darken(@subNavbarBoxShadowColor, @navbarColorDarkenPercent);
 @subSubNavbarBoxShadow: 0px -4px 4px -3px @subSubNavbarBoxShadowColor;
-@subSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubNavbarBoxShadowColor;
+@subSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubNavbarBoxShadowColor;
 @subSubSubNavbarBoxShadowColor: darken(@subSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
 @subSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubNavbarBoxShadowColor;
-@subSubSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubSubNavbarBoxShadowColor;
+@subSubSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubSubNavbarBoxShadowColor;
 @subSubSubSubNavbarBoxShadowColor: darken(@subSubSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
 @subSubSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
-@subSubSubSubNavbarTabBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
+@subSubSubSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubSubSubNavbarBoxShadowColor;
 
 .navbar > .container-fluid .navbar-brand {
   /* Make space between the .navbar-brand's so we can color their backgrounds */
@@ -74,6 +74,14 @@
 .navbar-default .navbar-brand.active.leaf:focus {
   background-color: #FFF;
 }
+.navbar-default .active.leaf {
+  padding: 0px 4px 0px 4px;
+  overflow: hidden;
+}
+.navbar-default .active.leaf a {
+  padding: 10px 11px 15px 11px;
+}
+
 
 /* navbar colors */
 .navbar-default .navbar-nav > .active.leaf > a,
