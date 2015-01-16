@@ -36,59 +36,37 @@
 @subSubSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
 @subSubSubSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubSubSubNavbarBoxShadowColor;
 
-.navbar > .container-fluid .navbar-brand {
-  /* Make space between the .navbar-brand's so we can color their backgrounds */
-  margin-left: 0px;
-}
-
 @activeTabSpace: 5px;
 .navbar-default li.active a {
   padding-top: 15px - @activeTabSpace;
   margin-top: @activeTabSpace;
   box-shadow: @navbarTabBoxShadow;
 }
-
-@navbarHeight: 50px;
-.navbar-default a.navbar-brand.active {
-  padding-top: 15px - @activeTabSpace;
-  margin-top: @activeTabSpace;
-  height: @navbarHeight - @activeTabSpace;
-  box-shadow: @navbarTabBoxShadow;
-}
-
 .navbar-default {
   box-shadow: inset @navbarBoxShadow;
 }
-
-.navbar-default .navbar-brand.active {
-  background-color: @bsNavbarActiveColor;
-}
-.navbar-default .navbar-brand.active:hover,
-.navbar-default .navbar-brand.active:focus {
-  background-color: @bsNavbarActiveColor;
-}
-.navbar-default .navbar-brand.active.leaf {
-  background-color: #FFF;
-}
-.navbar-default .navbar-brand.active.leaf:hover,
-.navbar-default .navbar-brand.active.leaf:focus {
-  background-color: #FFF;
-}
-.navbar-default .active.leaf {
+.navbar-default .active {
   padding: 0px 4px 0px 4px;
   overflow: hidden;
 }
-.navbar-default .active.leaf a {
+.navbar-default .active a {
   padding: 10px 11px 15px 11px;
 }
 
 
 /* navbar colors */
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: #FFF;
+  box-shadow: @navbarTabBoxShadow;
+}
+
 .navbar-default .navbar-nav > .active.leaf > a,
 .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
-  box-shadow: @navbarTabBoxShadow;
+  background-color: @subNavbarColor;
 }
 
 /* match jumbotron */
