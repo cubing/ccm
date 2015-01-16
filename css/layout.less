@@ -45,11 +45,11 @@
 .navbar-default {
   box-shadow: inset @navbarBoxShadow;
 }
-.navbar-default .active {
+.navbar-default .active.leaf {
   padding: 0px 4px 0px 4px;
   overflow: hidden;
 }
-.navbar-default .active a {
+.navbar-default .active.leaf a {
   padding: 10px 11px 15px 11px;
 }
 
@@ -59,14 +59,14 @@
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-  background-color: #FFF;
+  background-color: @subNavbarColor;
   box-shadow: @navbarTabBoxShadow;
 }
 
 .navbar-default .navbar-nav > .active.leaf > a,
 .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: @subNavbarColor;
+  background-color: #FFF;
 }
 
 /* match jumbotron */
@@ -92,7 +92,6 @@
 .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
-  box-shadow: @subNavbarTabBoxShadow;
 }
 
 /* sub sub navbar colors */
@@ -110,7 +109,6 @@
 .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
-  box-shadow: @subSubNavbarTabBoxShadow;
 }
 
 /* sub sub sub navbar colors */
@@ -128,7 +126,6 @@
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
-  box-shadow: @subSubSubNavbarTabBoxShadow;
 }
 @bsSubSubSubNavbarTextColor: #FFF;
 @bsSubSubSubNavbarTextColorActive: #000;
@@ -161,7 +158,6 @@
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
 .navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
   background-color: #FFF;
-  box-shadow: @subSubSubSubNavbarTabBoxShadow;
 }
 
 /* futzing around to make nth round subsubsub nav look nice */

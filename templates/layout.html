@@ -55,17 +55,17 @@
         </button>
         
         <ul class="nav navbar-nav navbar-left">
-          <li class="{{#if isActiveRoute 'home'}}active{{/if}}">
+          <li class="{{#if isActiveRoute 'home'}}active{{/if}} leaf">
             <a href="{{pathFor 'home'}}">live.cubing.net</a>
           </li>
         
           {{#if competitionId}}
-            <li class="leaf {{#if isActiveOrAncestorRoute 'competition'}}active{{/if}}">
+            <li class="{{#if isActiveOrAncestorRoute 'competition'}}active{{/if}}">
               <a href="{{pathFor 'competition'}}">{{competition 'competitionName'}}</a>
             </li>
             {{#if currentUser}}
               {{#if canManageCompetition currentUser._id}}
-                <li class="leaf {{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
+                <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}"><i class="fa fa-cogs"></i></a>
                 </li>
               {{/if}}
@@ -78,7 +78,7 @@
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
           {{#if currentUser}}
-            <li class="{{#if isActiveRoute 'newCompetition'}}active{{/if}}">
+            <li class="{{#if isActiveRoute 'newCompetition'}}active{{/if}} leaf">
               <a href="{{pathFor 'newCompetition'}}"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="New competition">
