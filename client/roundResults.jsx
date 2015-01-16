@@ -189,7 +189,7 @@ var ResultsList = React.createClass({
       results: results,
       formatCode: formatCode,
       roundCode: roundCode,
-    }
+    };
   },
   componentWillMount: function() {
     log.l1("component will mount");

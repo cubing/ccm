@@ -5,8 +5,11 @@ if(Meteor.isClient) {
   Template.registerHelper("eventName", function(eventCode) {
     return wca.eventByCode[eventCode].name;
   });
-  Template.registerHelper("eventIcon", function(eventCode) {
+  getEventIcon = function(eventCode) {
     return "/img/" + eventCode + ".svg";
+  };
+  Template.registerHelper("eventIcon", function(eventCode) {
+    return getEventIcon(eventCode);
   });
   Template.registerHelper("formatName", function(formatCode) {
     return wca.formatByCode[formatCode].name;
