@@ -4,6 +4,7 @@
       <thead>
         <tr>
           <th>Name</th>
+          <th class="text-nowrap">WCA Id</th>
           <th>Gender</th>
           <th>Birthday</th>
           {{#each competitionEvents}}
@@ -19,7 +20,8 @@
         {{#each registrations}}
           <tr>
             <td>{{uniqueName}}</td>
-            {{! TODO further denormalize the database so we can show gender/dob? }}
+            {{! TODO further denormalize the database so we can show wca id/gender/dob? }}
+            <td>{{wcaId}}</td>
             <td>{{gender}}</td>
             <td>{{dob}}</td>
             {{#each competitionEvents}}
