@@ -542,7 +542,7 @@ Results.attachSchema({
   },
   solves: {
     type: [SolveTime],
-    optional: true,
+    defaultValue: [],
   },
   best: {
     type: SolveTime,

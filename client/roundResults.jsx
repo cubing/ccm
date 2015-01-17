@@ -95,7 +95,6 @@ var ResultRow = React.createClass({
       'last-competitor-to-advance': this.props.drawLine,
     });
 
-    result.solves = result.solves || [];
     // TODO - i think a lot of this logic will get moved into
     // the Results collection via autovalues.
     var bestSolve, bestIndex;

@@ -34,8 +34,6 @@ var CheckinList = React.createClass({
       fields: {
         competitionId: 1,
         uniqueName: 1,
-        gender: 1,//<<<
-        dob: 1,//<<<
         events: 1,
         registeredEvents: 1,
         checkedInEvents: 1,
@@ -175,6 +173,7 @@ var CheckinList = React.createClass({
                 </button>
               );
             }
+            // TODO https://github.com/jfly/ccm/issues/125
             return (
               <tr key={registration._id}>
                 <td>{registration.uniqueName}</td>
