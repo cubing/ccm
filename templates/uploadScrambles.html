@@ -46,8 +46,7 @@
       </div>
 
       <p>
-        <button class="btn btn-default btn-block btn-file">
-          Select TNoodle scrambles...
+        <label class="btn btn-default btn-block">
           <!--
             We don't let the user upload multiple files. This way, we
             don't have to worry about the user uploading multiple
@@ -57,10 +56,11 @@
             support uploading multiple files, but we'd need to invent
             some way to inform the user of conflicts amongst their various
             scramble sets.
-          <input type="file" multiple>
+          <input type="file" multiple style="display: none;">
           -->
-          <input type="file">
-        </button>
+          <input type="file" style="display: none;">
+          Select TNoodle scrambles...
+        </label>
       </p>
       {{#each uploadedScrambleSets}}
 
