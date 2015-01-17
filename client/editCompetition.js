@@ -16,7 +16,8 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
 
 var setCompetitionLocationMap = function() {
   var data = Template.currentData();
-  var coords = data.location || { lat: 0, lng: 0 };
+  data.location = { lat: 0, lng: 0, addressText: '' };
+  var coords = data.location;
 
   // Dirty hacks to deal with reactivity. We wouldn't have to do this
   // if we let blaze update these fields, but we write to them ourselves
