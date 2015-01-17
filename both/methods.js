@@ -247,6 +247,65 @@ Meteor.methods({
     });
     Meteor.call('recomputeWhoAdvanced', roundId);
   },
+  checkInRegistration: function(registrationId) {
+    // This method is called to either check-in a competitor for the first time,
+    // or to update their check-in because the set of events they are registered for
+    // changed. The latter may involve deleting results with data entered, so
+    // be sure before you call this method =).
+    var registration = Registrations.findOne({
+      _id: registrationId,
+    }, {
+      fields: {
+        competitionId: 1,
+        userId: 1,
+        uniqueName: 1,
+        registeredEvents: 1,
+        checkedInEvents: 1,
+      }
+    });
+    throwIfCannotManageCompetition(this.userId, registration.competitionId);
+
+    function getFirstRoundForEvent(eventCode) {
+      var round = Rounds.findOne({
+        competitionId: registration.competitionId,
+        eventCode: eventCode,
+        nthRound: 1,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      });
+      return round;
+    }
+    var toUnCheckInTo = _.difference(registration.checkedInEvents, registration.registeredEvents);
+    toUnCheckInTo.forEach(function(eventCode) {
+      var round = getFirstRoundForEvent(eventCode);
+      assert(round);
+      Results.remove({
+        roundId: round._id,
+        userId: registration.userId,
+      });
+    });
+
+    var toCheckInTo = _.difference(registration.registeredEvents, registration.checkedInEvents);
+    toCheckInTo.forEach(function(eventCode) {
+      var round = getFirstRoundForEvent(eventCode);
+      assert(round);
+      Results.insert({
+        competitionId: registration.competitionId,
+        roundId: round._id,
+        userId: registration.userId,
+        uniqueName: registration.uniqueName,
+      });
+    });
+    Registrations.update({
+      _id: registration._id,
+    }, {
+      $set: {
+        checkedInEvents: registration.registeredEvents,
+      }
+    });
+  },
 });
 
 if(Meteor.isServer) {
@@ -387,7 +446,8 @@ if(Meteor.isServer) {
           jsonId: wcaPerson.id,
           userId: user._id,
           uniqueName: uniqueName,
-          events: {},
+          registeredEvents: {},
+          checkedInEvents: {},
         };
         assert(!userInfoByJsonId[userInfo.jsonId]);
         userInfoByJsonId[userInfo.jsonId] = userInfo;
@@ -426,7 +486,8 @@ if(Meteor.isServer) {
           wcaRound.results.forEach(function(wcaResult) {
             // wcaResult.personId refers to the personId in the wca json
             var userInfo = userInfoByJsonId[wcaResult.personId];
-            userInfo.events[wcaEvent.eventId] = true;
+            userInfo.registeredEvents[wcaEvent.eventId] = true;
+            userInfo.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
@@ -482,7 +543,8 @@ if(Meteor.isServer) {
             competitionId: competition._id,
             userId: userInfo.userId,
             uniqueName: userInfo.uniqueName,
-            events: _.keys(userInfo.events),
+            registeredEvents: _.keys(userInfo.registeredEvents),
+            checkedInEvents: _.keys(userInfo.checkedInEvents),
           });
         }
       }

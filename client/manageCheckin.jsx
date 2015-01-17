@@ -13,6 +13,13 @@ Template.manageCheckin.rendered = function() {
   });
 };
 
+Template.manageCheckin.destroyed = function() {
+  var template = this;
+  React.unmountComponentAtNode(
+    template.$(".reactRenderArea")[0]
+  );
+};
+
 var CheckinList = React.createClass({
   mixins: [ReactMeteor.Mixin],
 
@@ -30,6 +37,8 @@ var CheckinList = React.createClass({
         gender: 1,//<<<
         dob: 1,//<<<
         events: 1,
+        registeredEvents: 1,
+        checkedInEvents: 1,
       },
     });
 
@@ -68,21 +77,62 @@ var CheckinList = React.createClass({
     var $resultsTable = $(this.refs.resultsTable.getDOMNode());
     $resultsTable.stickyTableHeaders('destroy');
   },
+  registeredCheckboxToggled: function(registration, event, e) {
+    var registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
+    var update;
+    if(registeredForEvent) {
+      // if registered, then unregister
+      update = {
+        $pull: {
+          registeredEvents: event.eventCode
+        }
+      };
+    } else {
+      // if not registered, then register
+      update = {
+        $addToSet: {
+          registeredEvents: event.eventCode
+        }
+      };
+    }
+    Registrations.update({
+      _id: registration._id,
+    }, update);
+  },
+  checkInClicked: function(registration, e) {
+    var eventsToUncheckinFor = _.difference(registration.checkedInEvents, registration.registeredEvents);
+    if(eventsToUncheckinFor.length) {
+      var eventsStr = eventsToUncheckinFor.join(",");
+      var confirmStr = "";
+      confirmStr += "You are about to uncheck-in " + registration.uniqueName +
+                    " from " + eventsStr + ", which may involve deleting " +
+                    " results if they have already competed. Are you sure" +
+                    " you want to procede?";
+      bootbox.confirm(confirmStr, function(confirm) {
+        if(confirm) {
+          Meteor.call('checkInRegistration', registration._id);
+        }
+      });
+    } else {
+      // no need for a prompt, just check 'em in!
+      Meteor.call('checkInRegistration', registration._id);
+    }
+  },
   render: function() {
     var that = this;
 
-    var checkinText = "Check-in";
     return (
       <table id="checkinTable" className="table table-striped" ref="checkinTable">
         <thead>
           <tr>
             <th>Name</th>
+            <th className="text-nowrap">WCA Id</th>
             <th>Gender</th>
             <th>Birthday</th>
             {that.state.competitionEvents.map(function(event) {
               return (
                 <th key={event.eventCode} className="text-center">
-                  <img src={getEventIcon(event.eventCode)} />
+                  <img src={getEventIcon(event.eventCode)} /><br />
                   <span>{event.eventCode}</span>
                 </th>
               );
@@ -92,22 +142,48 @@ var CheckinList = React.createClass({
         </thead>
         <tbody>
           {that.state.registrations.map(function(registration) {
+            var needsCheckinButton = false;
+            var eventTds = [];
+            that.state.competitionEvents.forEach(function(event) {
+              var registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
+              var checkedInForEvent = _.contains(registration.checkedInEvents, event.eventCode);
+              if(registeredForEvent != checkedInForEvent) {
+                needsCheckinButton = true;
+              }
+
+              var classes = React.addons.classSet({
+                'text-center': true,
+                'registered-for-event': registeredForEvent,
+                'checkedin-for-event': checkedInForEvent,
+              });
+              var onChange = that.registeredCheckboxToggled.bind(null, registration, event);
+              eventTds.push(
+                <td key={event.eventCode} className={classes} onClick={onChange}>
+                  <input type="checkbox" checked={registeredForEvent} onChange={onChange} />
+                </td>
+              );
+            });
+            var checkinButton = null;
+            if(needsCheckinButton) {
+              var checkinButtonText = registration.checkedInEvents.length ? "Update check-in" : "Check-in";
+              var onClick = that.checkInClicked.bind(null, registration);
+              checkinButton = (
+                <button type="button"
+                        className="btn btn-default btn-xs"
+                        onClick={onClick}>
+                  {checkinButtonText}
+                </button>
+              );
+            }
             return (
               <tr key={registration._id}>
                 <td>{registration.uniqueName}</td>
+                <td>{registration.wcaId}</td>
                 <td>{registration.gender}</td>
                 <td>{registration.dob}</td>
-                {that.state.competitionEvents.map(function(event) {
-                  var registeredForEvent = _.contains(registration.events, event.eventCode);
-
-                  return (
-                    <td key={event.eventCode} className="text-center">
-                      <input type="checkbox" checked={registeredForEvent} readOnly="true" />
-                    </td>
-                  );
-                })}
+                {eventTds}
                 <td className="text-nowrap">
-                  {checkinText}
+                  {checkinButton}
                 </td>
               </tr>
             );

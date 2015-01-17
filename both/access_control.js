@@ -276,20 +276,55 @@ if(Meteor.isServer) {
     fetch: [ 'competitionId' ],
   });
 
+  var allowedOwnRegistrationFields = [
+    'userId',
+    'competitionId',
+    'uniqueName',
+    'registeredEvents',
+    'guestCount',
+    'comments',
+
+    'updatedAt',
+    'createdAt',
+  ];
   Registrations.allow({
     insert: function(userId, registration) {
+      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
+        // If you're allowed to manage the competition, then you can
+        // add any registration.
+        return true;
+      }
       if(getCannotRegisterReasons(registration.competitionId)) {
         return false;
       }
       // can only edit entries with their user id
-      return registration.userId == userId;
+      if(registration.userId != userId) {
+        return false;
+      }
+
+      if(_.difference(fields, allowedOwnRegistrationFields).length > 0) {
+        return false;
+      }
+      return true;
     },
     update: function(userId, registration, fields, modifier) {
+      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
+        // If you're allowed to manage the competition, then you can
+        // change anyone's registration.
+        return true;
+      }
       if(getCannotRegisterReasons(registration.competitionId)) {
         return false;
       }
       // can only edit entries with their user id
-      return registration.userId == userId;
+      if(registration.userId != userId) {
+        return false;
+      }
+
+      if(_.difference(fields, allowedOwnRegistrationFields).length > 0) {
+        return false;
+      }
+      return true;
     },
   });
 

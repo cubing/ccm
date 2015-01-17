@@ -1,0 +1,11 @@
+@import (reference) url('bs-constants.import.less');
+
+/* registered, but not checked in */
+td.registered-for-event:not(.checkedin-for-event) {
+  background-color: @bsInfoColor;
+}
+
+/* checked in, but not registered */
+td.checkedin-for-event:not(.registered-for-event) {
+  background-color: @bsDangerColor;
+}

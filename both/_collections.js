@@ -258,12 +258,17 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
   },
-  events: {
+  registeredEvents: {
     type: [String],
     allowedValues: _.keys(wca.eventByCode),
     autoform: {
       type: "select-checkbox",
     },
+  },
+  checkedInEvents: {
+    type: [String],
+    defaultValue: [],
+    allowedValues: _.keys(wca.eventByCode),
   },
   guestCount: {
     // Number of guests a competitor is bringing
