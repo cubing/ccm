@@ -70,8 +70,7 @@
           
           <div class="form-group">
             <label class="control-label">Location</label>
-            <div id="competitionLocationMap"></div>
-            <input type="text" id="competitionLocationMapInput" />
+            {{> competitionLocationMap location=defaultCompetitionDataDocument.location}}
             {{> afFieldInput name="location.lng" type="hidden" }}
             {{> afFieldInput name="location.lat" type="hidden" }}
             {{> afFieldInput name="location.addressText" type="hidden" }}
@@ -223,4 +222,8 @@
     </ul>
   </div>
 
+</template>
+
+<template name="competitionLocationMap">
+  <div id="competitionLocationMap"></div>
 </template>

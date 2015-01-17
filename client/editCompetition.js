@@ -14,36 +14,48 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
   Competitions.update({ _id: competitionId }, update);
 };
 
-setCompetitionLocationMap = function() {
+var setCompetitionLocationMap = function() {
+  var data = Template.currentData();
+  var coords = data.location || { lat: 0, lng: 0 };
+
+  // Dirty hacks to deal with reactivity. We wouldn't have to do this
+  // if we let blaze update these fields, but we write to them ourselves
+  // (with calls to .val(...)) below.
+  var $addressInput = $('input[name="location.addressText"]');
+  $addressInput.val(data.location.addressText);
+  var $latInput = $('input[name="location.lat"]');
+  $latInput.val(data.location.lat);
+  var $lngInput = $('input[name="location.lng"]');
+  $lngInput.val(data.location.lng);
+
   GoogleMaps.init({
     'libraries': 'places',
     'sensor': true,
   }, function() {
     // google maps components
-    var mapDiv = $('#competitionLocationMap');
-    var locationInput = $('#competitionLocationMapInput');
+    var $mapDiv = $('#competitionLocationMap');
+    var $locationInput = $('<input type="text" id="competitionLocationMapInput">');
+    $locationInput.keypress(function(e) {
+      // don't submit meteor form; we want the google maps behavior here.
+      if(e.which === 13) {
+        e.preventDefault();
+      }
+    });
     // autoform inputs
-    var addressInput = $('input[name="location.addressText"]');
-    locationInput.val(addressInput.val());
-    var latInput = $('input[name="location.lat"]');
-    var lngInput = $('input[name="location.lng"]');
+    $locationInput.val($addressInput.val());
 
-    var coords = {
-      lat: parseFloat(latInput.val()) || 0,
-      lng: parseFloat(lngInput.val()) || 0
-    };
 
     var mapOptions = {
       scrollwheel: false,
-      zoom: addressInput.val() ? 12 : 2,
+      zoom: $addressInput.val() ? 12 : 2,
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
-    map = new google.maps.Map(mapDiv[0], mapOptions);
-    map.setCenter(new google.maps.LatLng( coords.lat, coords.lng ));
+    var map = new google.maps.Map($mapDiv[0], mapOptions);
+    map.setCenter(new google.maps.LatLng(coords.lat, coords.lng));
 
     // Create the search box and link it to the UI element.
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(locationInput[0]);
-    var searchBox = new google.maps.places.SearchBox(locationInput[0]);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push($locationInput[0]);
+    var searchBox = new google.maps.places.SearchBox($locationInput[0]);
 
     var geocoder = new google.maps.Geocoder();
     var marker = new google.maps.Marker({
@@ -53,7 +65,7 @@ setCompetitionLocationMap = function() {
     });
     var defaultBounds;
     if(coords.lat && coords.lng) {
-      defaultBounds= new google.maps.LatLngBounds(
+      defaultBounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(coords.lat - 0.1, coords.lng - 0.1),
         new google.maps.LatLng(coords.lat + 0.1, coords.lng + 0.1)
       );
@@ -67,16 +79,16 @@ setCompetitionLocationMap = function() {
     map.fitBounds(defaultBounds);
 
     google.maps.event.addListener(marker, 'dragend', function() {
-      latInput.val(this.getPosition().lat());
-      lngInput.val(this.getPosition().lng());
+      $latInput.val(this.getPosition().lat());
+      $lngInput.val(this.getPosition().lng());
       var latLng = new google.maps.LatLng(this.getPosition().lat(), this.getPosition().lng());
-      geocoder.geocode( {
+      geocoder.geocode({
         'latLng': latLng
       }, function(results, status) {
         if(status == google.maps.GeocoderStatus.OK) {
           var competitionLocation = results[0];
-          addressInput.val(competitionLocation.formatted_address);
-          locationInput.val(competitionLocation.formatted_address);
+          $addressInput.val(competitionLocation.formatted_address);
+          $locationInput.val(competitionLocation.formatted_address);
         } else {
           alert('Geocode was not successful for the following reason: ' + status);
         }
@@ -92,21 +104,30 @@ setCompetitionLocationMap = function() {
       marker.setPosition(place.geometry.location);
       map.panTo(place.geometry.location);
       map.setZoom(12);
-      latInput.val(place.geometry.location.lat());
-      lngInput.val(place.geometry.location.lng());
-      addressInput.val(place.formatted_address);
+      $latInput.val(place.geometry.location.lat());
+      $lngInput.val(place.geometry.location.lng());
+      $addressInput.val(place.formatted_address);
     });
 
   });
 };
 
-Template.editCompetition.events({
-  'keypress #competitionLocationMapInput': function(e, template) {
-    // don't submit meteor form; we want the google maps behavior here.
-    if(e.which === 13) {
-      e.preventDefault();
+Template.editCompetition.helpers({
+  defaultCompetitionDataDocument: function() {
+    var competitionId = this.competitionId;
+    var competition = Competitions.findOne({ _id: competitionId });
+
+    if(competition) {
+      return competition;
+    } else {
+      return {
+        // any default values
+      };
     }
   },
+});
+
+Template.editCompetition.events({
   'input #competitionAttributes input[type="text"]': function(e) {
     if($(e.currentTarget).hasClass("typeahead")) {
       return;
@@ -263,14 +284,9 @@ Template.editCompetition_userRow.helpers({
   },
 });
 
-Template.editCompetition.rendered = function() {
+Template.competitionLocationMap.rendered = function() {
   var template = this;
   template.autorun(function() {
     setCompetitionLocationMap();
   });
 };
-
-AutoForm.addHooks('competitionDataForm', {
-  // map disappears after submitting the form... need to add it back!
-  endSubmit: setCompetitionLocationMap,
-});

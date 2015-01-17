@@ -498,19 +498,3 @@ Template.modalHardCutoff.helpers({
     return template.isSaveableReact.get();
   }
 });
-
-Template.editCompetition.helpers({
-  defaultCompetitionDataDocument: function() {
-    var competitionId = this.competitionId;
-    var competition = Competitions.findOne({ _id: competitionId });
-
-    if(competition) {
-      return competition;
-    } else {
-      return {
-        // any default values
-      };
-    }
-  },
-});
-
