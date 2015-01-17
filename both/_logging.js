@@ -28,13 +28,13 @@ var wildcardMatch = function(wildcard, toMatch) {
   return wildcardPrefix == toMatchPrefix;
 };
 
-if(Meteor.isServer) {
-  var performance = {
-    now: function() {
-      var hrtime = process.hrtime();
-      return hrtime[0] * 1e9 + hrtime[1];
-    },
-  };
+function now() {
+  if(Meteor.isServer) {
+    var hrtime = process.hrtime();
+    return hrtime[0] * 1e9 + hrtime[1];
+  } else {
+    return performance.now();
+  }
 }
 
 logging = {
@@ -91,7 +91,7 @@ logging = {
         }
         var args = Array.prototype.slice.call(arguments, 0);
         var timeStr = new Date().toISOString();
-        args.unshift(performance.now() + " " + timeStr + " " + handleName + "/" + level);
+        args.unshift(now() + " " + timeStr + " " + handleName + "/" + level);
         console.log.apply(console, args);
       };
       log.enabled = false;

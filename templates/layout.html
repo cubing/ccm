@@ -53,21 +53,25 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand {{#if isActiveRoute 'home'}}active{{/if}} leaf" href="{{pathFor 'home'}}">live.cubing.net</a>
-        {{#if competitionId}}
-          <a class="navbar-brand {{#if isActiveOrAncestorRoute 'competition'}}active{{/if}}"
-             href="{{pathFor 'competition'}}">
-            {{competition 'competitionName'}}
-          </a>
-          {{#if currentUser}}
-            {{#if canManageCompetition currentUser._id}}
-              <a href="{{pathFor 'manageCompetition'}}"
-                 class="navbar-brand {{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
-                <i class="fa fa-cogs"></i>
-              </a>
+
+        <ul class="nav navbar-nav navbar-brand">
+          <li class="{{#if isActiveRoute 'home'}}active{{/if}} leaf">
+            <a href="{{pathFor 'home'}}">live.cubing.net</a>
+          </li>
+
+          {{#if competitionId}}
+            <li class="{{#if isActiveOrAncestorRoute 'competition'}}active{{/if}}">
+              <a href="{{pathFor 'competition'}}">{{competition 'competitionName'}}</a>
+            </li>
+            {{#if currentUser}}
+              {{#if canManageCompetition currentUser._id}}
+                <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
+                  <a href="{{pathFor 'manageCompetition'}}"><i class="fa fa-cogs"></i></a>
+                </li>
+              {{/if}}
             {{/if}}
           {{/if}}
-        {{/if}}
+        </ul>
       </div>
 
       <!-- Collect the nav links, forms, and other content for toggling -->
