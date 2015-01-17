@@ -26,10 +26,10 @@
         <div class="tab-content">
           <form id="formImportCompetition" class="form-horizontal" role="form">
             <p>
-              <button class="btn btn-default btn-block btn-file">
+              <label class="btn btn-default btn-block">
+                <input type="file" style="display:none;">
                 Upload competition JSON...
-                <input type="file">
-              </button>
+              </label>
             </p>
             <button type="submit" class="btn btn-primary form-control" disabled="{{#unless uploadedCompetition}}active{{/unless}}">
               Import

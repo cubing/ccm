@@ -44,29 +44,6 @@ a[rel="external"]:after {
 }
 
 /*
- * http://stackoverflow.com/a/18164555
- */
-.btn-file {
-  position: relative;
-  overflow: hidden;
-}
-.btn-file input[type=file] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  font-size: 100px;
-  text-align: right;
-  filter: alpha(opacity=0);
-  opacity: 0;
-  outline: none;
-  background: white;
-  cursor: inherit;
-  display: block;
-}
-
-/*
  * http://stackoverflow.com/a/20692495
  */
 .input-xs, select.input-xs {
@@ -91,4 +68,11 @@ a[rel="external"]:after {
 .input-group span.twitter-typeahead .typeahead-inverted ~ .tt-dropdown-menu {
   top: auto !important;
   bottom: 0px;
+}
+
+/*
+ * For stickyTableHeaders, we don't want the floating table header to be transparent
+ */
+thead.tableFloatingHeaderOriginal {
+  background-color: white;
 }
