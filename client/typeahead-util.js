@@ -83,13 +83,19 @@ substringMatcher = function(getObjects, attribute) {
 // Monkeypatching the typeahead plugin to automatically
 // highlight the first suggestion. This way the user can press enter
 // to select it.
-oldTypeahead = $.fn.typeahead;
+var oldTypeahead = $.fn.typeahead;
 $.fn.typeahead = function(method) {
   if(!method || typeof(method) === "object" || method === "initialize") {
     var $typeahead = $(this);
     var ttTypeahead = $typeahead.data('ttTypeahead');
     if(!ttTypeahead) {
-      $typeahead.keydown(function() {
+      $typeahead.keydown(function(e) {
+        if(e.which >= 37 && e.which <= 40) {
+          // For arrow keys, don't get in the way of typeahead.js,
+          // it wants to highlight rows.
+          // This fixes https://github.com/jfly/ccm/issues/112.
+          return;
+        }
         setTimeout(function() {
           var ttTypeahead = $typeahead.data('ttTypeahead');
           var dropdown = ttTypeahead.dropdown;
