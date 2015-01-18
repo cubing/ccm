@@ -66,7 +66,7 @@ Meteor.publish('competition', function(competitionUrlId) {
   return cursors;
 });
 
-Meteor.publish('competitionUsers', function(competitionUrlId) {
+Meteor.publish('competitionRegistrations', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
@@ -74,17 +74,6 @@ Meteor.publish('competitionUsers', function(competitionUrlId) {
   }
   return [
     Registrations.find({ competitionId: competitionId }),
-  ];
-});
-
-Meteor.publish('competitionRegistrationGuestCounts', function(competitionUrlId) {
-  check(competitionUrlId, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
-  if(!competitionId) {
-    return [];
-  }
-  return [
-    Registrations.find({competitionId: competitionId}, {fields: { guestCount: 1 }})
   ];
 });
 

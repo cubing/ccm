@@ -33,7 +33,11 @@
             you are at the competition.
             {{> afQuickField name="uniqueName" }}
           {{else}}
-            {{> afFieldInput name="uniqueName" type="hidden" }}
+            {{#if hasUniqueName}}
+              {{> afQuickField name="uniqueName" readonly="true" }}
+            {{else}}
+              {{> afFieldInput name="uniqueName" type="hidden" }}
+            {{/if}}
           {{/if}}
           {{> afQuickField name="registeredEvents" options=eventOptions }}
           {{#if registrationAskAboutGuests}}

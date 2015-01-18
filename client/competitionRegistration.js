@@ -78,14 +78,34 @@ Template.competitionRegistration.helpers({
 
   needsUniqueName: function() {
     var competitionId = this.competitionId;
+    if(getUserRegistration(Meteor.userId(), competitionId)) {
+      // If we're already registered, then we don't need a unique name
+      return false;
+    }
     var userName = Meteor.user().profile.name;
     // See if someone already has this name?
-    return Registrations.findOne({
+    var registrationWithUniqueName = Registrations.findOne({
       uniqueName: userName,
       competitionId: competitionId
     }, {
-      _id: 1,
+      fields: {
+        _id: 1,
+        userId: 1,
+      }
     });
+    if(!registrationWithUniqueName) {
+      return false;
+    }
+    // If the person with this name is ourselves, then we don't need a uniqueName
+    if(registrationWithUniqueName.userId == Meteor.userId()) {
+      return false;
+    }
+    return true;
+  },
+
+  hasUniqueName: function() {
+    var registration = getUserRegistration(Meteor.userId(), this.competitionId);
+    return registration.uniqueName != Meteor.user().profile.name;
   },
 
   registrationAskAboutGuests: function() {
@@ -93,7 +113,9 @@ Template.competitionRegistration.helpers({
     competition = Competitions.findOne({
       _id: competitionId,
     }, {
-      registrationAskAboutGuests: 1,
+      fields: {
+        registrationAskAboutGuests: 1,
+      }
     });
     return competition.registrationAskAboutGuests;
   }

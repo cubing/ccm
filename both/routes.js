@@ -79,7 +79,7 @@ ManageCompetitionController = RouteController.extend({
   waitOn: function() {
     return [
       subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
-      subs.subscribe('competitionUsers', this.params.competitionUrlId, subscriptionError(this)),
+      subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this)),
     ];
   },
   data: function() {
@@ -406,9 +406,10 @@ Router.route('/:competitionUrlId', {
 RegistrationController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
-    // we need information about guests and # competitors to tell
+    // We need information about guests and # competitors to tell
     // if registration is full.
-    waitOn.push(subs.subscribe('competitionRegistrationGuestCounts',
+    // We also need all the registrations to know if a uniqueName is required.
+    waitOn.push(subs.subscribe('competitionRegistrations',
                                this.params.competitionUrlId,
                                subscriptionError(this)));
     return waitOn;
