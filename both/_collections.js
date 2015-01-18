@@ -223,14 +223,6 @@ Competitions.attachSchema({
     }),
     optional: true,
   },
-
-  staff: {
-    type: [String],
-    defaultValue: [],
-  },
-  organizers: {
-    type: [String],
-  },
 });
 if(Meteor.isServer) {
   Competitions._ensureIndex({
@@ -257,6 +249,14 @@ Registrations.attachSchema({
   },
   uniqueName: {
     type: String,
+  },
+  staff: {
+    type: Boolean,
+    optional: true,
+  },
+  organizer: {
+    type: Boolean,
+    optional: true,
   },
   registeredEvents: {
     type: [String],

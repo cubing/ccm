@@ -131,17 +131,16 @@
 
     <div class="row">
       <div id="organizersList" class="col-sm-6">
-        {{#editCompetition_users competitionId=competitionId userIdsAtribute="organizers"}}
+        {{#expandableListWithAutocomplete title="Organizers" settings=organizersPickerSettings}}
           Have complete control over a competition.
-        {{/editCompetition_users}}
+        {{/expandableListWithAutocomplete}}
       </div>
 
       <div id="staffList" class="col-sm-6">
-        {{#editCompetition_users competitionId=competitionId userIdsAtribute="staff"}}
+        {{#expandableListWithAutocomplete title="Staff" settings=staffPickerSettings}}
           Can only enter times and view scrambles for ongoing rounds.
-        {{/editCompetition_users}}
+        {{/expandableListWithAutocomplete}}
       </div>
-
     </div>
 
     <p>
@@ -218,8 +217,8 @@
           </div>
         </form>
       </div>
-
     </ul>
+
   </div>
 
 </template>

@@ -16,16 +16,16 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   var siteAdmin = getUserAttribute(userId, 'siteAdmin');
   if(!siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
-    // in order to organize =)
-    competition = Competitions.findOne({
-      _id: competitionId,
-      organizers: userId,
+    // in order to manage =)
+    var registration = Registrations.findOne({
+      competitionId: competitionId,
+      userId: userId,
     }, {
       fields: {
-        _id: 1,
+        organizer: 1,
       }
     });
-    if(!competition) {
+    if(!registration.organizer) {
       return new Meteor.Error(403, "Not an organizer for this competition");
     }
   }

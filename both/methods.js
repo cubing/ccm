@@ -11,6 +11,17 @@ var throwIfNotVerifiedUser = function(userId) {
   }
 };
 
+var throwIfNotSiteAdmin = function(userId) {
+  if(!userId) {
+    throw new Meteor.Error(401, "Must log in");
+  }
+
+  var user = Meteor.users.findOne({ _id: userId });
+  if(!user.siteAdmin) {
+    throw new Meteor.Error(401, "Must be a site admin");
+  }
+};
+
 Meteor.methods({
   createCompetition: function(competitionName) {
     check(competitionName, String);
@@ -21,9 +32,20 @@ Meteor.methods({
 
     var competitionId = Competitions.insert({
       competitionName: competitionName,
-      organizers: [ this.userId ],
       listed: false,
       startDate: new Date(),
+    });
+
+    var uniqueName = getUserAttribute(this.userId, 'profile.name');
+    if(!uniqueName) {
+      throw new Meteor.Error(400, "Users name must be nonempty");
+    }
+    Registrations.insert({
+      competitionId: competitionId,
+      userId: this.userId,
+      uniqueName: uniqueName,
+      registeredEvents: [],
+      organizer: true,
     });
     return competitionId;
   },
@@ -306,6 +328,39 @@ Meteor.methods({
       }
     });
   },
+  addSiteAdmin: function(newSiteAdminUserId) {
+    var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
+    if(!siteAdmin) {
+      throw new Meteor.Error(403, "Must be a site admin");
+    }
+
+    Meteor.users.update({
+      _id: newSiteAdminUserId,
+    }, {
+      $set: {
+        siteAdmin: true,
+      }
+    });
+  },
+  removeSiteAdmin: function(siteAdminToRemoveUserId) {
+    var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
+    if(!siteAdmin) {
+      throw new Meteor.Error(403, "Must be a site admin");
+    }
+
+    // Prevent a user from accidentally depromoting themselves.
+    if(this.userId == siteAdminToRemoveUserId) {
+      throw new Meteor.Error(403, "Site admins may not unresign themselves!");
+    }
+
+    Meteor.users.update({
+      _id: siteAdminToRemoveUserId,
+    }, {
+      $set: {
+        siteAdmin: false,
+      }
+    });
+  },
 });
 
 if(Meteor.isServer) {
@@ -374,14 +429,19 @@ if(Meteor.isServer) {
       }
     },
     uploadCompetition: function(wcaCompetition) {
-      throwIfNotVerifiedUser(this.userId);
+      throwIfNotSiteAdmin(this.userId);
 
+      var competitionName = wcaCompetition.competitionId;
+      var wcaCompetitionId = wcaCompetition.competitionId;
+      var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+      if(competition) {
+        // Don't set a wca competition id if a competition already exists
+        // with this wca competition id.
+        wcaCompetitionId = null;
+      }
       var competitionId = Competitions.insert({
-        competitionName: wcaCompetition.competitionId,
-        // We do not let people set the WCA id for a competition,
-        // only site admins can do that.
-        //wcaCompetitionId: wcaCompetition.competitionId,
-        organizers: [ this.userId ],
+        competitionName: competitionName,
+        wcaCompetitionId: wcaCompetitionId,
         listed: false,
         startDate: new Date(),
       });
@@ -549,7 +609,7 @@ if(Meteor.isServer) {
         }
       }
 
-      return competition._id;
+      return competition.wcaCompetitionId || competition._id;
     },
     recomputeWhoAdvanced: function(roundId) {
       check(roundId, String);

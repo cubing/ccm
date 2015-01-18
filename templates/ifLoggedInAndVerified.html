@@ -5,7 +5,11 @@
     {{#unless currentUser.emails.[0].verified}}
       Please verify your email address.
     {{else}}
-      {{> UI.contentBlock}}
+      {{#unless currentUser.profile.name}}
+        Please enter a name in your <a href="{{pathFor 'editProfile'}}">profile</a>.
+      {{else}}
+        {{> UI.contentBlock}}
+      {{/unless}}
     {{/unless}}
   {{/unless}}
 </template>

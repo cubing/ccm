@@ -113,6 +113,42 @@ var setCompetitionLocationMap = function() {
   });
 };
 
+
+function getExpandableListSettings(competitionId, registrationAttribute) {
+  var criteria = {};
+  criteria[registrationAttribute] = true;
+  return {
+    collectionName: 'Registrations',
+    field: 'uniqueName',
+    pillTemplateName: 'registrationPill',
+    filter: {
+      competitionId: competitionId,
+    },
+    addDoc: function(registrationId) {
+      var $toSet = {};
+      $toSet[registrationAttribute] = true;
+      Registrations.update({
+        _id: registrationId,
+      }, {
+        $set: $toSet
+      });
+    },
+    removeDoc: function(registrationId) {
+      var $toSet = {};
+      $toSet[registrationAttribute] = false;
+      Registrations.update({
+        _id: registrationId,
+      }, {
+        $set: $toSet
+      });
+    },
+    docCriteria: criteria,
+    isDeletable: function(registration) {
+      return registration.userId != Meteor.userId();
+    },
+  };
+}
+
 Template.editCompetition.helpers({
   defaultCompetitionDataDocument: function() {
     var competitionId = this.competitionId;
@@ -125,6 +161,13 @@ Template.editCompetition.helpers({
         // any default values
       };
     }
+  },
+
+  staffPickerSettings: function() {
+    return getExpandableListSettings(this.competitionId, 'staff');
+  },
+  organizersPickerSettings: function() {
+    return getExpandableListSettings(this.competitionId, 'organizer');
   },
 });
 
@@ -163,42 +206,8 @@ Template.editCompetition.events({
   },
 });
 
-function getEnteredUniqueName(template) {
-  var nameInput = template.find('input[name="name"]');
-  return nameInput.value;
-}
-
-function getSelectedUserRegistration(template) {
-  var uniqueName = getEnteredUniqueName(template);
-  var registration = Registrations.findOne({ uniqueName: uniqueName });
-  return registration;
-}
-
-function maybeEnableUserSelectForm(template) {
-  var registration = getSelectedUserRegistration(template);
-  var $submit = template.$('button[name="buttonAddUser"]');
-  $submit.prop("disabled", !registration);
-}
-
 Template.editCompetition_users.events({
-  'input input[name="name"]': function(e, template) {
-    maybeEnableUserSelectForm(template);
-  },
-  'typeahead:selected input[name="name"]': function(e, template) {
-    maybeEnableUserSelectForm(template);
-  },
-  'typeahead:autocompleted input[name="name"]': function(e, template) {
-    maybeEnableUserSelectForm(template);
-  },
   'click button[name="buttonRemoveUser"]': function(e, template) {
-    var registration = this;
-    var $pull = {};
-    $pull[template.data.userIdsAtribute] = registration.userId;
-    Competitions.update({
-      _id: template.data.competitionId
-    }, {
-      $pull: $pull
-    });
   },
   'submit form': function(e, template) {
     e.preventDefault();
@@ -210,78 +219,11 @@ Template.editCompetition_users.events({
       log.l0("Could not find registration for:", getEnteredUniqueName(template));
       return;
     }
-    var $addToSet = {};
-    $addToSet[this.userIdsAtribute] = registration.userId;
-    Competitions.update({
-      _id: this.competitionId
-    }, {
-      $addToSet: $addToSet
-    });
 
     // Clear name input and close typeahead dialog
     var $nameInput = template.$('input[name="name"]');
     $nameInput.typeahead('val', '');
     maybeEnableUserSelectForm(template);
-  },
-});
-
-Template.editCompetition_users.rendered = function() {
-  var template = this;
-
-  var registrations = [];
-  template.autorun(function() {
-    var competitionId = Template.currentData().competitionId;
-    registrations = Registrations.find({
-      competitionId: competitionId,
-    }, {
-      fields: {
-        uniqueName: 1,
-      }
-    }).fetch();
-    maybeEnableUserSelectForm(template);
-  });
-
-  template.$('.typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  }, {
-    name: 'registrations',
-    displayKey: function(registration) {
-      return registration.uniqueName;
-    },
-    source: substringMatcher(function() { return registrations; }, 'uniqueName'),
-  });
-};
-
-Template.editCompetition_users.helpers({
-  registrations: function() {
-    // TODO - sort by name?
-    var fields = {};
-    fields[this.userIdsAtribute] = 1;
-    var competition = Competitions.findOne({
-      _id: this.competitionId
-    }, {
-      fields: fields,
-    });
-    if(!competition || !competition[this.userIdsAtribute]) {
-      return [];
-    }
-    return Registrations.find({
-      competitionId: this.competitionId,
-      userId: {
-        $in: competition[this.userIdsAtribute]
-      }
-    });
-  },
-  isCurrentUser: function() {
-    return Meteor.userId() == this.userId;
-  }
-});
-
-Template.editCompetition_userRow.helpers({
-  isMe: function() {
-    return this.userId == Meteor.userId();
   },
 });
 

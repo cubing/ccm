@@ -47,6 +47,9 @@ if(Meteor.isClient) {
   });
 
   Template.registerHelper("isSiteAdmin", function() {
+    if(!Meteor.user()) {
+      return false;
+    }
     return Meteor.user().siteAdmin;
   });
 

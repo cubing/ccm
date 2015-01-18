@@ -1,0 +1,39 @@
+<template name="expandableListWithAutocomplete">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title text-capitalize">
+        {{title}}
+      </h3>
+      {{> UI.contentBlock}}
+    </div>
+    <ul class="list-group">
+      {{#each matchingDocs}}
+        <li class="list-group-item">
+          {{> Template.dynamic template=../settings.pillTemplateName}}
+          {{#if isDeletable}}
+            <button type="button" name="buttonRemoveDoc" class="btn btn-default btn-xs pull-right">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          {{/if}}
+        </li>
+      {{else}}
+        <li class="list-group-item">
+          No one yet! Add people below.
+        </li>
+      {{/each}}
+
+      <div class="panel-footer">
+        <form class="form-horizontal" role="form" name="newDocForm">
+          <div class="input-group">
+            {{> inputAutocomplete name="name" settings=autocompleteSettings class="form-control input-xlarge" placeholder="Enter name..."}}
+            <span class="input-group-btn">
+              <button type="submit" name="buttonAddDoc" class="btn btn-default" disabled="{{#unless newDocSelected}}disabled{{/unless}}">
+                <span class="glyphicon glyphicon-plus"></span>
+              </button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </ul>
+  </div>
+</template>

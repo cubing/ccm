@@ -199,8 +199,13 @@
 
 <template name="_loginButtonsAdditionalLoggedInDropdownActions">
   <p class="text-center">
-    <a id="login-buttons-edit-profile">Edit profile</a>
+    <a href="{{pathFor 'editProfile'}}">Edit profile</a>
   </p>
+  {{#if currentUser.siteAdmin}}
+    <p class="text-center">
+      <a href="{{pathFor 'administerSite'}}">Administer site</a>
+    </p>
+  {{/if}}
 
   {{#if currentUser}}
     {{#unless currentUser.emails.[0].verified}}

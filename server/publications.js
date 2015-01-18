@@ -1,3 +1,8 @@
+var userFieldsToPublish = {
+  emails: 1,
+  profile: 1,
+  siteAdmin: 1,
+};
 Meteor.publish(null, function() {
   if(!this.userId) {
     return [];
@@ -5,18 +10,14 @@ Meteor.publish(null, function() {
   return Meteor.users.find({
     _id: this.userId,
   }, {
-    fields: {
-      emails: 1,
-      profile: 1,
-      siteAdmin: 1,
-    }
+    fields: userFieldsToPublish,
   });
 });
 
 var getCompetitions = function() {
   return Competitions.find(
     {},
-    { fields: { wcaCompetitionId: 1, competitionName: 1, organizers: 1, listed: 1 } }
+    { fields: { wcaCompetitionId: 1, competitionName: 1, listed: 1 } }
   );
 };
 Meteor.publish('competitions', function() {
@@ -50,10 +51,19 @@ Meteor.publish('competition', function(competitionUrlId) {
   if(!competitionId) {
     return [];
   }
-  return [
+
+  var cursors = [
     Competitions.find({ _id: competitionId }),
     Rounds.find({ competitionId: competitionId }),
   ];
+  if(this.userId) {
+    // Always publish the users registration, as that lets us know if they are
+    // staff and/or an organizer.
+    cursors.push(
+      Registrations.find({ competitionId: competitionId, userId: this.userId })
+    );
+  }
+  return cursors;
 });
 
 Meteor.publish('competitionUsers', function(competitionUrlId) {
@@ -67,18 +77,6 @@ Meteor.publish('competitionUsers', function(competitionUrlId) {
   ];
 });
 
-Meteor.publish('myCompetitionRegistration', function(competitionUrlId) {
-  check(competitionUrlId, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
-  var userId = this.userId;
-  if(!competitionId || !userId) {
-    return [];
-  }
-  return [
-    Registrations.find({ competitionId: competitionId, userId: userId })
-  ];
-});
-
 Meteor.publish('competitionRegistrationGuestCounts', function(competitionUrlId) {
   check(competitionUrlId, String);
   var competitionId = competitionUrlIdToId(competitionUrlId);
@@ -86,7 +84,7 @@ Meteor.publish('competitionRegistrationGuestCounts', function(competitionUrlId) 
     return [];
   }
   return [
-    Registrations.find({competitionId: competitionId}, {guestCount: 1})
+    Registrations.find({competitionId: competitionId}, {fields: { guestCount: 1 }})
   ];
 });
 
@@ -158,4 +156,34 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
   return [
     Groups.find({ competitionId: competitionId })
   ];
+});
+
+Meteor.publish('allSiteAdmins', function() {
+  if(!this.userId) {
+    return new Meteor.Error(403, "Must sign in");
+  }
+  var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
+  if(!siteAdmin) {
+    return new Meteor.Error(403, "Must be a site admin");
+  }
+  return [
+    Meteor.users.find({ siteAdmin: true }, { fields: userFieldsToPublish }),
+  ];
+});
+
+// Copied and modified from https://github.com/mizzao/meteor-autocomplete/blob/master/autocomplete-server.coffee
+Meteor.publish('autocompleteSubscription', function(selector, options, collName) {
+  var collection = global;
+  collName.split(".").forEach(function(part) {
+    collection = collection[part];
+  });
+  // guard against client-side DOS: hard limit to 50
+  options.limit = Math.min(50, Math.abs(options.limit || 0));
+
+  // Push this into our own collection on the client so they don't interfere with other publications of the named collection.
+  // This also stops the observer automatically when the subscription is stopped.
+  Autocomplete.publishCursor(collection.find(selector, options), this);
+
+  // Mark the subscription ready after the initial addition of documents.
+  this.ready();
 });

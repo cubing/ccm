@@ -325,6 +325,16 @@ Router.route('/settings/profile', {
   titlePrefix: 'Edit profile',
 });
 
+Router.route('/settings/administration', {
+  name: 'administerSite',
+  titlePrefix: 'Administer site',
+  waitOn: function() {
+    return [
+      subs.subscribe('allSiteAdmins', subscriptionError(this)),
+    ];
+  },
+});
+
 Router.route('/new', {
   name: 'newCompetition',
   titlePrefix: 'Create competition',
@@ -396,9 +406,6 @@ Router.route('/:competitionUrlId', {
 RegistrationController = ViewCompetitionController.extend({
   waitOn: function() {
     var waitOn = this.constructor.__super__.waitOn.call(this);
-    waitOn.push(subs.subscribe('myCompetitionRegistration',
-                               this.params.competitionUrlId,
-                               subscriptionError(this)));
     // we need information about guests and # competitors to tell
     // if registration is full.
     waitOn.push(subs.subscribe('competitionRegistrationGuestCounts',

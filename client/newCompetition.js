@@ -23,12 +23,12 @@ Template.newCompetition.events({
 
     var form = e.currentTarget;
     var competitionName = form.inputCompetitionName.value;
-    Meteor.call("createCompetition", competitionName, function(err, competitionId) {
+    Meteor.call("createCompetition", competitionName, function(err, competitionUrlId) {
       if(err) {
         throw err;
       }
       Router.go('manageCompetition', {
-        competitionUrlId: competitionId
+        competitionUrlId: competitionUrlId
       });
     });
   },
@@ -54,14 +54,14 @@ Template.newCompetition.events({
 
     $form.css('cursor', 'wait');
     $form.find('button').addClass('disabled');
-    Meteor.call('uploadCompetition', wcaCompetition, function(err, competitionId) {
+    Meteor.call('uploadCompetition', wcaCompetition, function(err, competitionUrlId) {
       $form.css('cursor', '');
       $form.find('button').removeClass('disabled');
       if(err) {
         throw err;
       }
       Router.go('manageCompetition', {
-        competitionUrlId: competitionId
+        competitionUrlId: competitionUrlId
       });
     });
   },

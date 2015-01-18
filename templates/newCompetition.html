@@ -4,7 +4,9 @@
 
       <ul class="nav nav-tabs">
         <li role="presentation" class="{{#if isActiveRoute 'newCompetition'}}active{{/if}}"><a href="{{pathFor 'newCompetition'}}">New competition</a></li>
-        <li role="presentation" class="{{#if isActiveRoute 'importCompetition'}}active{{/if}}"><a href="{{pathFor 'importCompetition'}}">Import competition</a></li>
+        {{#if isSiteAdmin}}
+          <li role="presentation" class="{{#if isActiveRoute 'importCompetition'}}active{{/if}}"><a href="{{pathFor 'importCompetition'}}">Import competition</a></li>
+        {{/if}}
       </ul>
 
       {{#if isActiveRoute 'newCompetition'}}
