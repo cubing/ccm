@@ -11,7 +11,7 @@ SimpleSchema.messages({
   "missingRegistrationCloseDate": "Please enter a registration close date.",
 });
 
-Competitions = new Meteor.Collection("competitions");
+Competitions = new Mongo.Collection("competitions");
 Competitions.attachSchema({
   competitionName: {
     type: String,
@@ -233,7 +233,7 @@ if(Meteor.isServer) {
   });
 }
 
-Registrations = new Meteor.Collection("registrations");
+Registrations = new Mongo.Collection("registrations");
 Registrations.attachSchema({
   competitionId: {
     type: String,
@@ -399,7 +399,7 @@ SolveTime = new SimpleSchema({
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.
-Rounds = new Meteor.Collection("rounds");
+Rounds = new Mongo.Collection("rounds");
 Rounds.attachSchema({
   competitionId: {
     type: String,
@@ -517,7 +517,7 @@ if(Meteor.isServer) {
   });
 }
 
-Results = new Meteor.Collection("results");
+Results = new Mongo.Collection("results");
 Results.attachSchema({
   competitionId: {
     type: String,
@@ -606,7 +606,7 @@ if(Meteor.isServer) {
   });
 }
 
-Groups = new Meteor.Collection("groups");
+Groups = new Mongo.Collection("groups");
 Groups.attachSchema({
   competitionId: {
     type: String,
@@ -657,7 +657,6 @@ Meteor.users.attachSchema(new SimpleSchema({
       name: {
         label: "Name",
         type: String,
-        optional: true,
       },
       wcaId: {
         label: "WCA id",
@@ -698,18 +697,6 @@ Meteor.users.attachSchema(new SimpleSchema({
             type: "bootstrap-datepicker"
           }
         },
-      },
-      // Force value to be current date (on server) upon update
-      // and don't allow it to be set upon insert.
-      updatedAt: {
-        type: Date,
-        autoValue: function() {
-          if(this.isUpdate) {
-            return new Date();
-          }
-        },
-        denyInsert: true,
-        optional: true
       },
     }),
     optional: true,
