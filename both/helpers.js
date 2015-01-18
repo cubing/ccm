@@ -276,12 +276,28 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
 };
 
 if(Meteor.isClient) {
-  Template.registerHelper("formatMomentDateRange", function(startMoment, endMoment) {
-    var formatStr = "MMMM D, YYYY";
-    var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, formatStr);
-    return rangeStr;
+  var DATE_FORMAT = "MMMM D, YYYY";
+  var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
+
+  formatMomentDate = function(m) {
+    return m.format(DATE_FORMAT);
+  };
+  Template.registerHelper("formatMomentDate", function(m) {
+    return formatMomentDate(m);
   });
-  Template.registerHelper("formatMomentTime", function(m) {
-    return m.format("dddd, MMMM Do YYYY, h:mm:ss a");
+
+  formatMomentDateRange = function(startMoment, endMoment) {
+    var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, DATE_FORMAT);
+    return rangeStr;
+  };
+  Template.registerHelper("formatMomentDateRange", function(startMoment, endMoment) {
+    return formatMomentDateRange(startMoment, endMoment);
+  });
+
+  formatMomentDateTime = function(m) {
+    return m.format(DATETIME_FORMAT);
+  };
+  Template.registerHelper("formatMomentDateTime", function(m) {
+    return formatMomentDateTime(m);
   });
 }

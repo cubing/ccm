@@ -17,7 +17,7 @@
           {{#if registrationCloseMoment}}
             Please note that registration closes
             <strong>{{registrationCloseMoment.fromNow}}</strong> on
-            {{formatMomentTime registrationCloseMoment}}.
+            {{formatMomentDateTime registrationCloseMoment}}.
           {{else}}
             Registration is currently open.
           {{/if}}
@@ -26,6 +26,10 @@
         {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
 
           {{> afFieldInput name="userId" }}
+          {{> afFieldInput name="wcaId" type="hidden" }}
+          {{> afFieldInput name="countryId" type="hidden" }}
+          {{> afFieldInput name="gender" type="hidden" }}
+          {{> afFieldInput name="dob" type="hidden" }}
           {{> afFieldInput name="competitionId" }}
           {{#if needsUniqueName}}
             Well!  It looks like someone else at this competition has your name.

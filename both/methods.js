@@ -36,9 +36,21 @@ Meteor.methods({
       startDate: new Date(),
     });
 
-    var uniqueName = getUserAttribute(this.userId, 'profile.name');
-    if(!uniqueName) {
-      throw new Meteor.Error(400, "Users name must be nonempty");
+    var user = Meteor.users.find({ _id: this.userId });
+    if(!user.profile) {
+      throw new Meteor.Error(400, "Must set up user profile");
+    }
+    if(!user.profile.name) {
+      throw new Meteor.Error(400, "Name must be nonempty");
+    }
+    if(!user.profile.dob) {
+      throw new Meteor.Error(400, "DOB must be nonemtpy");
+    }
+    if(!user.profile.countryId) {
+      throw new Meteor.Error(400, "Country must be nonemtpy");
+    }
+    if(!user.profile.gender) {
+      throw new Meteor.Error(400, "Gender must be nonemtpy");
     }
     Registrations.insert({
       competitionId: competitionId,
@@ -46,6 +58,10 @@ Meteor.methods({
       uniqueName: uniqueName,
       registeredEvents: [],
       organizer: true,
+      wcaId: user.profile.wcaId,
+      countryId: user.profile.countryId,
+      gender: user.profile.gender,
+      dob: user.profile.dob,
     });
     return competitionId;
   },
@@ -508,6 +524,7 @@ if(Meteor.isServer) {
           uniqueName: uniqueName,
           registeredEvents: {},
           checkedInEvents: {},
+          profile: userProfile,
         };
         assert(!userInfoByJsonId[userInfo.jsonId]);
         userInfoByJsonId[userInfo.jsonId] = userInfo;
@@ -605,6 +622,10 @@ if(Meteor.isServer) {
             uniqueName: userInfo.uniqueName,
             registeredEvents: _.keys(userInfo.registeredEvents),
             checkedInEvents: _.keys(userInfo.checkedInEvents),
+            wcaId: userInfo.profile.wcaId,
+            countryId: userInfo.profile.countryId,
+            gender: userInfo.profile.gender,
+            dob: userInfo.profile.dob,
           });
         }
       }

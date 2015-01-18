@@ -23,23 +23,17 @@ Meteor.methods({
 
     var registrations = Registrations.find({
       competitionId: competitionId,
-    }, {
-      userId: 1,
-    }).fetch();
-    var users = Meteor.users.find({
-      _id: {
-        $in: _.pluck(registrations, "userId")
-      }
     }).fetch();
     // TODO - compare this list of people to the people who *actually* competed
-    var wcaPersons = _.map(users, function(user) {
+    var wcaPersons = _.map(registrations, function(registration) {
+      var iso8601Date = moment(registration.dob).format("YYYY-MM-DD");
       var wcaPerson = {
-        "id": user._id,
-        "name": user.profile.name,
-        "wcaId": user.profile.wcaId,
-        "countryId": user.profile.countryId,
-        "gender": user.profile.gender,
-        "dob": user.profile.dob
+        "id": registration._id,
+        "name": registration.uniqueName,
+        "wcaId": registration.wcaId,
+        "countryId": registration.countryId,
+        "gender": registration.gender,
+        "dob": iso8601Date,
       };
       return wcaPerson;
     });

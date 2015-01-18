@@ -521,3 +521,23 @@ wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['333mbf'] = 60*60;
 // Grabbing these from: https://github.com/OpenBookPrices/country-data
 wca.countryISO2Codes = _.map(countries, function(data, key) { return data.alpha2; });
 wca.countryISO2AutoformOptions = _.map(countries, function(data, key) { return {label: data.name, value: data.alpha2 }; });
+
+wca.genders = [
+  {
+    value: 'm',
+    label: 'Male',
+  },
+  {
+    value: 'f',
+    label: 'Female',
+  },
+  {
+    value: 'o',
+    label: 'Other',
+  },
+];
+
+wca.genderByValue = {};
+wca.genders.forEach(function(gender) {
+  wca.genderByValue[gender.value] = gender;
+});

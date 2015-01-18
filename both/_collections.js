@@ -233,6 +233,46 @@ if(Meteor.isServer) {
   });
 }
 
+var GenderType = {
+  type: String,
+  allowedValues: _.keys(wca.genderByValue),
+  optional: true,
+  autoform: {
+    type: "select",
+    options: function() {
+      return wca.genders;
+    }
+  },
+};
+
+var DobType = {
+  type: Date,
+  optional: true,
+  label: "Birthdate",
+  autoform: {
+    afFieldInput: {
+      type: "bootstrap-datepicker"
+    }
+  },
+};
+
+var CountryIdType = {
+  type: String,
+  allowedValues: wca.countryISO2Codes,
+  optional: true,
+  autoform: {
+    type: "selectize",
+    options: wca.countryISO2AutoformOptions,
+  },
+};
+
+var WcaIdType = {
+  label: "WCA id",
+  type: String,
+  regEx: /(19|20)\d{2}[A-Z]{4}\d{2}/,
+  optional: true,
+};
+
 Registrations = new Mongo.Collection("registrations");
 Registrations.attachSchema({
   competitionId: {
@@ -250,6 +290,10 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
   },
+  wcaId: WcaIdType,
+  countryId: CountryIdType,
+  gender: GenderType,
+  dob: DobType,
   staff: {
     type: Boolean,
     optional: true,
@@ -658,46 +702,10 @@ Meteor.users.attachSchema(new SimpleSchema({
         label: "Name",
         type: String,
       },
-      wcaId: {
-        label: "WCA id",
-        type: String,
-        regEx: /(19|20)\d{2}[A-Z]{4}\d{2}/,
-        optional: true,
-      },
-      countryId: {
-        type: String,
-        allowedValues: wca.countryISO2Codes,
-        optional: true,
-        autoform: {
-          type: "selectize",
-          options: wca.countryISO2AutoformOptions,
-        },
-      },
-      gender: {
-        type: String,
-        allowedValues: ['m', 'f', 'o'],
-        optional: true,
-        autoform: {
-          type: "select",
-          options: function() {
-            return [
-              {label: "Male",   value: 'm'},
-              {label: "Female", value: 'f'},
-              {label: "Other",  value: 'o'}
-            ];
-          }
-        },
-      },
-      dob: {
-        type: Date,
-        optional: true,
-        label: "Birthdate",
-        autoform: {
-          afFieldInput: {
-            type: "bootstrap-datepicker"
-          }
-        },
-      },
+      wcaId: WcaIdType,
+      countryId: CountryIdType,
+      gender: GenderType,
+      dob: DobType,
     }),
     optional: true,
   },

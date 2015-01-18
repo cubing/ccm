@@ -37,6 +37,10 @@ var CheckinList = React.createClass({
         events: 1,
         registeredEvents: 1,
         checkedInEvents: 1,
+
+        wcaId: 1,
+        gender: 1,
+        dob: 1,
       },
     });
 
@@ -173,13 +177,15 @@ var CheckinList = React.createClass({
                 </button>
               );
             }
-            // TODO https://github.com/jfly/ccm/issues/125
+            var gender = registration.gender ? wca.genderByValue[registration.gender].label : '';
             return (
               <tr key={registration._id}>
                 <td>{registration.uniqueName}</td>
                 <td>{registration.wcaId}</td>
-                <td>{registration.gender}</td>
-                <td>{registration.dob}</td>
+                <td>{gender}</td>
+                <td className="text-nowrap">
+                  {formatMomentDate(moment(registration.dob))}
+                </td>
                 {eventTds}
                 <td className="text-nowrap">
                   {checkinButton}
