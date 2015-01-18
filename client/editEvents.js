@@ -64,6 +64,12 @@ Template.editEvents.events({
   'hidden.bs.modal .modal': function(e, template) {
     roundPopupReact.set(null);
   },
+  'show.bs.collapse .collapse': function(e) {
+    localStorage[this.eventCode + "visible"] = true;
+  },
+  'hide.bs.collapse .collapse': function(e) {
+    delete localStorage[this.eventCode + "visible"];
+  },
 });
 
 var eventCountPerRowByDeviceSize = {
@@ -323,6 +329,9 @@ Template.editEvents.helpers({
   },
   roundPopup: function() {
     return roundPopupReact.get();
+  },
+  showEvent: function() {
+    return !!localStorage[this.eventCode + "visible"];
   },
 });
 

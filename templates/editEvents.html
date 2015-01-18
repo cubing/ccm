@@ -15,12 +15,12 @@
 
               <div class="panel-heading">
                 <h3 class="panel-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{eventCode}}" class="collapsed">
+                  <a data-toggle="collapse" href="#collapse{{eventCode}}" class="{{#unless showEvent}}collapsed{{/unless}}">
                     <img class="img-thumbnail icon" src="{{eventIcon eventCode}}" alt="{{eventCode}}"><span>{{eventName eventCode}}</span>
                   </a>
                 </h3>
               </div>
-              <div id="collapse{{eventCode}}" class="panel-collapse collapse">
+              <div id="collapse{{eventCode}}" class="panel-collapse {{#unless showEvent}}collapse{{/unless}}">
                 <div class="panel-body">
                   <div class="table-responsive">
                     <table class="table table-condensed">
