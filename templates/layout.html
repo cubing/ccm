@@ -139,21 +139,23 @@
         <div class="navbar-collapse collapse-buttons">
           <ul class="nav navbar-nav">
             <li class="{{#if isActiveRoute 'manageCompetition'}}active{{/if}} leaf">
-              <a href="{{pathFor 'manageCompetition'}}">
+              <a href="{{pathFor 'manageCompetition'}}"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="Change competition registration window, competition name, location, organizers, and staff">
                 <i class="fa fa-cog"></i>
                 <span class="hidden-xs">Manage</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'editEvents'}}active{{/if}} leaf">
-              <a href="{{pathFor 'editEvents'}}">
+              <a href="{{pathFor 'editEvents'}}"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="Add and remove rounds, change cutoffs, open and close rounds">
                 <i class="fa fa-cube"></i>
                 <span class="hidden-xs">Events</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'editSchedule'}}active{{/if}} leaf">
-              <a href="{{pathFor 'editSchedule'}}"
-                 data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="Manage schedule">
+              <a href="{{pathFor 'editSchedule'}}">
                 <span class="glyphicon glyphicon-calendar"></span>
                 <span class="hidden-xs">Schedule</span>
               </a>
@@ -167,15 +169,15 @@
               </a>
             </li>
             <li class="{{#if isActiveRoute 'manageCheckin'}}active{{/if}} leaf">
-              <a href="{{pathFor 'manageCheckin'}}">
+              <a href="{{pathFor 'manageCheckin'}}"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)">
                 <i class="fa fa-check-square-o"></i>
                 <span class="hidden-xs">Check-in</span>
               </a>
             </li>
             <li class="{{#if isActiveRoute 'dataEntry'}}active{{/if}}">
-              <a href="{{pathFor 'dataEntry'}}"
-                 data-toggle="tooltip" data-placement="bottom" data-container="body"
-                 title="Data entry">
+              <a href="{{pathFor 'dataEntry'}}">
                 <span class="glyphicon glyphicon-edit"></span>
                 <span class="hidden-xs">Data entry</span>
               </a>
