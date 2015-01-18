@@ -109,7 +109,11 @@ Template.competitionRegistration.events({
 
   'click #unregisterButton': function(e, t) {
     e.preventDefault();
-    // Need to re-implement unregister functionality.
+
+    var competitionId = this.competitionId;
+    var userId = Meteor.userId();
+    var registration = getUserRegistration(userId, competitionId);
+    Registrations.remove({ _id: registration._id });
 
     $('#modalConfirmDeregistration').modal('hide');
   },

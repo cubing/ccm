@@ -61,21 +61,25 @@ getCannotRegisterReasons = function(competitionId) {
 
   // Check to make sure profile has appropriate data
   var user = Meteor.user();
-  reasonText = "You need to complete your user profile to register! ";
-  if(!user.profile.name) {
-    reasons.push(reasonText + "Please add your name to your profile.");
-  }
-  if(!user.profile.dob) {
-    reasons.push(reasonText + "Please provide a birthdate in your profile.");
-  }
-  if(!user.profile.countryId) {
-    reasons.push(reasonText + "Please specify a country in your profile.");
-  }
-  if(!user.profile.gender) {
-    reasons.push(reasonText + "Please specify your gender in your profile.");
+  reasonText = "You need to complete your user profile to register!";
+  if(!user.profile) {
+    reasons.push(reasonText);
+  } else {
+    if(!user.profile.name) {
+      reasons.push(reasonText + " Please add your name to your profile.");
+    }
+    if(!user.profile.dob) {
+      reasons.push(reasonText + " Please provide a birthdate in your profile.");
+    }
+    if(!user.profile.countryId) {
+      reasons.push(reasonText + " Please specify a country in your profile.");
+    }
+    if(!user.profile.gender) {
+      reasons.push(reasonText + " Please specify your gender in your profile.");
+    }
   }
   if(!user.emails[0].verified) {
-    reasons.push(reasonText + "Please confirm your email address.");
+    reasons.push("Please confirm your email address.");
   }
 
   // Registration should close upon hitting capacity;
@@ -322,6 +326,21 @@ if(Meteor.isServer) {
       }
 
       if(_.difference(fields, allowedOwnRegistrationFields).length > 0) {
+        return false;
+      }
+      return true;
+    },
+    remove: function(userId, registration) {
+      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
+        // If you're allowed to manage the competition, then you can
+        // change anyone's registration.
+        return true;
+      }
+      if(getCannotRegisterReasons(registration.competitionId)) {
+        return false;
+      }
+      // can only edit entries with their user id
+      if(registration.userId != userId) {
         return false;
       }
       return true;
