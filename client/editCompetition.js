@@ -123,6 +123,9 @@ function getExpandableListSettings(competitionId, registrationAttribute) {
     pillTemplateName: 'registrationPill',
     filter: {
       competitionId: competitionId,
+      userId: {
+        $exists: true,
+      },
     },
     addDoc: function(registrationId) {
       var $toSet = {};

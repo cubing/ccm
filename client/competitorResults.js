@@ -2,7 +2,7 @@ Template.competitorResults.helpers({
   results: function() {
     var results = Results.find({
       competitionId: this.competitionId,
-      userId: this.user._id
+      registrationId: this.registration._id,
     });
     return results;
   }

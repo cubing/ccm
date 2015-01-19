@@ -109,7 +109,7 @@ Template.competitionRegistration.helpers({
 
   hasUniqueName: function() {
     var registration = getUserRegistration(Meteor.userId(), this.competitionId);
-    return registration.uniqueName != Meteor.user().profile.name;
+    return registration && registration.uniqueName != Meteor.user().profile.name;
   },
 
   registrationAskAboutGuests: function() {

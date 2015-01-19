@@ -448,96 +448,57 @@ if(Meteor.isServer) {
       throwIfNotSiteAdmin(this.userId);
 
       var competitionName = wcaCompetition.competitionId;
-      var wcaCompetitionId = wcaCompetition.competitionId;
-      var competition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
-      if(competition) {
-        // Don't set a wca competition id if a competition already exists
-        // with this wca competition id.
-        wcaCompetitionId = null;
-      }
-      var competitionId = Competitions.insert({
+      var newCompetition = {
         competitionName: competitionName,
-        wcaCompetitionId: wcaCompetitionId,
         listed: false,
         startDate: new Date(),
-      });
-      competition = Competitions.findOne({ _id: competitionId });
+      };
+
+      var wcaCompetitionId = wcaCompetition.competitionId;
+      var existingCompetition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+      // Only set a wca competition id if a competition does not yet exist
+      // with this wca competition id.
+      if(!existingCompetition) {
+        newCompetition.wcaCompetitionId = wcaCompetitionId;
+      }
+      var competitionId = Competitions.insert(newCompetition);
+      var competition = Competitions.findOne({ _id: competitionId });
       assert(competition);
 
-      var userInfoByJsonId = {};
-      var userInfoByUniqueName = {};
+      var registrationByWcaJsonId = {};
+      var uniqueNames = {};
       wcaCompetition.persons.forEach(function(wcaPerson, i) {
-        var dobMoment = moment.utc(wcaPerson.dob);
-        var userProfile = {
-          name: wcaPerson.name,
-          wcaId: wcaPerson.wcaId,
-          countryId: wcaPerson.countryId,
-          gender: wcaPerson.gender,
-          dob: dobMoment.toDate(),
-        };
-
-        var user, email, userId;
-        if(wcaPerson.wcaId) {
-          // Check for user with WCA id and if user doesn't exist we create one
-          email = userProfile.wcaId + "@ccm.com";
-          user = Meteor.users.findOne({ "emails.address": email });
-          if(!user) {
-            userId = Accounts.createUser({
-              email: email,
-              password: '',
-              profile: userProfile
-            });
-            user = Meteor.users.findOne({ _id: userId });
-            assert(user);
-          }
-        } else {
-          // Create user if user doesn't exist and wcaId doesn't exist or look for one first
-          email = (userProfile.name.replace(/\s/g, "_") + i) + "@ccm.com";
-          user = Meteor.users.findOne({ "emails.address": email });
-          if(!user) {
-            userId = Accounts.createUser({
-              email: email,
-              password: '',
-              profile: userProfile
-            });
-            user = Meteor.users.findOne({ _id: userId });
-            assert(user);
-          }
-        }
-
         // Pick a uniqueName for this competitor
         var suffix = 0;
         var uniqueName;
         var uniqueNameTaken; // grrr...jshint
         do {
           suffix++;
-          uniqueName = user.profile.name;
+          uniqueName = wcaPerson.name;
           if(suffix > 1) {
             uniqueName += " " + suffix;
           }
-          uniqueNameTaken = !!userInfoByUniqueName[uniqueName];
+          uniqueNameTaken = !!uniqueNames[uniqueName];
         } while(uniqueNameTaken);
+        assert(!uniqueNames[uniqueName]);
+        uniqueNames[uniqueName] = true;
 
-        var userInfo = {
-          jsonId: wcaPerson.id,
-          userId: user._id,
+        var dobMoment = moment.utc(wcaPerson.dob);
+        var registrationId = Registrations.insert({
+          competitionId: competition._id,
           uniqueName: uniqueName,
-          registeredEvents: {},
-          checkedInEvents: {},
-          profile: userProfile,
-        };
-        assert(!userInfoByJsonId[userInfo.jsonId]);
-        userInfoByJsonId[userInfo.jsonId] = userInfo;
-        assert(!userInfoByUniqueName[userInfo.uniqueName]);
-        userInfoByUniqueName[userInfo.uniqueName] = userInfo;
-      });
+          wcaId: wcaPerson.wcaId,
+          countryId: wcaPerson.countryId,
+          gender: wcaPerson.gender,
+          dob: dobMoment.toDate(),
+          registeredEvents: [],
+          checkedInEvents: [],
+        });
+        var registration = Registrations.findOne({ _id: registrationId });
 
-      // Add all the rounds, results, and registrations for this competition.
-      // First remove any old rounds, results, registrations, and groups for this competition.
-      Rounds.remove({ competitionId: competition._id });
-      Results.remove({ competitionId: competition._id });
-      Groups.remove({ competitionId: competition._id });
-      Registrations.remove({ competitionId: competition._id });
+        assert(!registrationByWcaJsonId[wcaPerson.id]);
+        registrationByWcaJsonId[wcaPerson.id] = registration;
+      });
 
       // Add data for rounds, results, and groups
       wcaCompetition.events.forEach(function(wcaEvent) {
@@ -562,9 +523,9 @@ if(Meteor.isServer) {
 
           wcaRound.results.forEach(function(wcaResult) {
             // wcaResult.personId refers to the personId in the wca json
-            var userInfo = userInfoByJsonId[wcaResult.personId];
-            userInfo.registeredEvents[wcaEvent.eventId] = true;
-            userInfo.checkedInEvents[wcaEvent.eventId] = true;
+            var registration = registrationByWcaJsonId[wcaResult.personId];
+            registration.registeredEvents[wcaEvent.eventId] = true;
+            registration.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
@@ -572,8 +533,8 @@ if(Meteor.isServer) {
             var id = Results.insert({
               competitionId: competition._id,
               roundId: roundId,
-              userId: userInfo.userId,
-              uniqueName: userInfo.uniqueName,
+              registrationId: registration._id,
+              uniqueName: registration.uniqueName,
               position: wcaResult.position,
               solves: solves,
               best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),
@@ -609,23 +570,18 @@ if(Meteor.isServer) {
         log.l0("finished adding data for " + wcaEvent.eventId);
       });
 
-      // Add registrations for people as documents in the registrations collection.
-      // Each document in registrations contains a competitionId and userId field
-      // whose values are the _id values of documents in the Competitions and Users
-      // collections.
-      for(var jsonId in userInfoByJsonId) {
-        if(userInfoByJsonId.hasOwnProperty(jsonId)) {
-          var userInfo = userInfoByJsonId[jsonId];
-          Registrations.insert({
-            competitionId: competition._id,
-            userId: userInfo.userId,
-            uniqueName: userInfo.uniqueName,
-            registeredEvents: _.keys(userInfo.registeredEvents),
-            checkedInEvents: _.keys(userInfo.checkedInEvents),
-            wcaId: userInfo.profile.wcaId,
-            countryId: userInfo.profile.countryId,
-            gender: userInfo.profile.gender,
-            dob: userInfo.profile.dob,
+      // Update the registrations to reflect the events they signed up for
+      // and checked in for.
+      for(var jsonId in registrationByWcaJsonId) {
+        if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
+          var registration = registrationByWcaJsonId[jsonId];
+          var registrationId = Registrations.update({
+            _id: registration._id,
+          }, {
+            $set: {
+              registeredEvents: _.keys(registration.registeredEvents),
+              checkedInEvents: _.keys(registration.checkedInEvents),
+            }
           });
         }
       }

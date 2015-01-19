@@ -172,20 +172,16 @@ ViewCompetitorController = ViewCompetitionController.extend({
     var registration = Registrations.findOne({
       competitionId: parentData.competitionId,
       uniqueName: uniqueName,
-    }, {
-      userId: 1,
     });
+    parentData.registration = registration;
     if(!registration) {
       this.render('competitorNotFound');
       return parentData;
     }
+
     var user = Meteor.users.findOne({
       _id: registration.userId,
     });
-    if(!user) {
-      this.render('competitorNotFound');
-      return parentData;
-    }
     parentData.user = user;
     return parentData;
   },
