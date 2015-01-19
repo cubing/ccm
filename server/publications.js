@@ -3,6 +3,19 @@ var userFieldsToPublish = {
   profile: 1,
   siteAdmin: 1,
 };
+
+var registrationFieldsToPublish = {
+  competitionId: 1,
+  userId: 1,
+  uniqueName: 1,
+  wcaId: 1,
+  countryId: 1,
+  gender: 1,
+  guestCount: 1,
+  registeredEvents: 1,
+  checkedInEvents: 1,
+};
+
 Meteor.publish(null, function() {
   if(!this.userId) {
     return [];
@@ -72,8 +85,13 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
   if(!competitionId) {
     return [];
   }
+  var fields = _.extend({}, registrationFieldsToPublish);
+  if(!getCannotManageCompetitionReason(this.userId, competitionId)) {
+    fields.dob = 1;
+    fields.comments = 1;
+  }
   return [
-    Registrations.find({ competitionId: competitionId }),
+    Registrations.find({ competitionId: competitionId }, { fields: fields }),
   ];
 });
 
@@ -92,7 +110,7 @@ Meteor.publish('competitorResults', function(competitionUrlId, competitorUniqueN
     return [];
   }
   return [
-    Registrations.find({competitionId: competitionId, uniqueName: competitorUniqueName, }),
+    Registrations.find({competitionId: competitionId, uniqueName: competitorUniqueName, }, { fields: registrationFieldsToPublish }),
     Meteor.users.find({
       _id: registration.userId,
     }, {
@@ -128,7 +146,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
     return [];
   }
   return [
-    Registrations.find({ competitionId: competitionId, checkedInEvents: eventCode }),
+    Registrations.find({ competitionId: competitionId, checkedInEvents: eventCode }, { fields: registrationFieldsToPublish }),
     Results.find({ roundId: round._id, }),
   ];
 });
