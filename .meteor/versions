@@ -73,6 +73,7 @@ mrt:assert@0.2.5
 mrt:flash-messages@1.0.0
 mrt:googlemaps@0.0.2
 mrt:moment@2.8.1
+mrt:moment-timezone@0.2.1
 multiply:iron-router-progress@1.0.1
 natestrauser:connection-banner@0.4.3
 npm-bcrypt@0.7.7

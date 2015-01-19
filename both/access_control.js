@@ -53,7 +53,10 @@ getCannotRegisterReasons = function(competitionId) {
       return reasons;
     } else if(now.isBefore(open)) {
       reasonText = "Competition registration is not yet open!";
-      reasonText += " Registration is set to open " + open.calendar() + ".";
+      var openStr = formatMomentDateTime(open);
+      reasonText += " Registration is set to open" +
+                    " <strong>" + open.fromNow() + "</strong>" +
+                    " on " + openStr + ".";
       reasons.push(reasonText);
       return reasons;
     }

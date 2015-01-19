@@ -275,9 +275,11 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
   return lastRoundForEvent._id;
 };
 
+var LOCAL_TIMEZONE = jstz.determine().name();
+
 var DATE_FORMAT = "MMMM D, YYYY";
 var ISO_DATE_FORMAT = "YYYY-MM-DD";
-var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
+var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a z";
 
 formatMomentDate = function(m) {
   return m.format(DATE_FORMAT);
@@ -294,7 +296,7 @@ formatMomentDateRange = function(startMoment, endMoment) {
 };
 
 formatMomentDateTime = function(m) {
-  return m.format(DATETIME_FORMAT);
+  return m.tz(LOCAL_TIMEZONE).format(DATETIME_FORMAT);
 };
 
 if(Meteor.isClient) {
