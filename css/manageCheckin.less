@@ -10,14 +10,20 @@ td.checkedin-for-event:not(.registered-for-event) {
   background-color: @bsDangerColor;
 }
 
-@addCompetitorButtonSize: 50px;
-
-#checkinTable {
-  margin-bottom: @addCompetitorButtonSize;
+@eventColumnWidth: 55px;
+#checkinTable thead th {
+  min-width: @eventColumnWidth;
+  max-width: @eventColumnWidth;
 }
 
 #checkinTable button {
   margin-right: 3px;
+}
+
+@addCompetitorButtonSize: 50px;
+
+#checkinTable {
+  margin-bottom: @addCompetitorButtonSize;
 }
 
 span.addCompetitor {
