@@ -214,8 +214,7 @@ Meteor.methods({
         position: 1,
       },
       fields: {
-        userId: 1,
-        uniqueName: 1,
+        registrationId: 1,
       },
     }).fetch();
     if(competitorCount < 0) {
@@ -242,45 +241,42 @@ Meteor.methods({
             'No next round found for roundId ' + roundId);
     }
 
-    var desiredUserIds = [];
-    var uniqueNameByUserId = {};
+    var desiredRegistrationIds = [];
     for(var i = 0; i < competitorCount; i++) {
       var result = results[i];
-      desiredUserIds.push(result.userId);
-      uniqueNameByUserId[result.userId] = result.uniqueName;
+      desiredRegistrationIds.push(result.registrationId);
     }
 
-    var actualUserIds = _.pluck(Results.find({
+    var actualRegistrationIds = _.pluck(Results.find({
       roundId: nextRound._id,
     }, {
       fields: {
-        userId: 1,
+        registrationId: 1,
       }
-    }).fetch(), 'userId');
+    }).fetch(), 'registrationId');
 
-    var userIdsToRemove = _.difference(actualUserIds, desiredUserIds);
-    var userIdsToAdd = _.difference(desiredUserIds, actualUserIds);
+    var registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
+    var registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
 
     // We're ready to actually advance competitors to the next round!
 
     // First, remove any results that are currently in the next round that
     // shouldn't be.
-    _.each(userIdsToRemove, function(userId) {
+    _.each(registrationIdsToRemove, function(registrationId) {
       Results.remove({
         competitionId: competitionId,
         roundId: nextRound._id,
-        userId: userId,
+        registrationId: registrationId,
       });
     });
 
     // Now copy competitorCount results from the current round to the next
     // round.
-    _.each(userIdsToAdd, function(userId) {
+    _.each(registrationIdsToAdd, function(registrationId) {
       Results.insert({
         competitionId: competitionId,
         roundId: nextRound._id,
-        userId: userId,
-        uniqueName: uniqueNameByUserId[userId],
+        registrationId: registrationId,
       });
     });
     Meteor.call('recomputeWhoAdvanced', roundId);
@@ -295,7 +291,6 @@ Meteor.methods({
     }, {
       fields: {
         competitionId: 1,
-        uniqueName: 1,
         registeredEvents: 1,
         checkedInEvents: 1,
       }
@@ -332,7 +327,6 @@ Meteor.methods({
         competitionId: registration.competitionId,
         roundId: round._id,
         registrationId: registration._id,
-        uniqueName: registration.uniqueName,
       });
     });
     Registrations.update({
@@ -533,7 +527,6 @@ if(Meteor.isServer) {
               competitionId: competition._id,
               roundId: roundId,
               registrationId: registration._id,
-              uniqueName: registration.uniqueName,
               position: wcaResult.position,
               solves: solves,
               best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),

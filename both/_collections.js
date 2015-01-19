@@ -563,9 +563,6 @@ Results.attachSchema({
   registrationId: {
     type: String,
   },
-  uniqueName: {
-    type: String,
-  },
   position: {
     type: Number,
     min: 0,
@@ -622,7 +619,7 @@ if(Meteor.isServer) {
     roundId: 1,
     'average.wcaValue': 1,
     'best.wcaValue': 1,
-    uniqueName: 1, // As a last resort to break ties, sort by uniqueName
+    registrationId: 1, // As a last resort to break ties, sort by uniqueName
   });
 
   // One person should not appear twice in a round,
@@ -630,12 +627,6 @@ if(Meteor.isServer) {
   Results._ensureIndex({
     roundId: 1,
     registrationId: 1,
-  }, {
-    unique: true,
-  });
-  Results._ensureIndex({
-    roundId: 1,
-    uniqueName: 1,
   }, {
     unique: true,
   });

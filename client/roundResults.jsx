@@ -64,7 +64,7 @@ var ResultRow = React.createClass({
     if(competitionUrlId) {
       var path = Router.routes.competitorResults.path({
         competitionUrlId: competitionUrlId,
-        competitorUniqueName: result.uniqueName,
+        competitorUniqueName: result.uniqueName,//<<<
       });
       competitorNameNode = (
         <a href={path}>
@@ -72,7 +72,7 @@ var ResultRow = React.createClass({
         </a>
       );
     } else {
-      competitorNameNode = result.uniqueName;
+      competitorNameNode = result.uniqueName;//<<<
     }
 
     var roundFormat = this.props.roundFormat;
@@ -153,22 +153,11 @@ var ResultsList = React.createClass({
 
   getMeteorState: function() {
     var roundId = this.props.roundId;
-    var resultsCursor = Results.find({
-      roundId: roundId,
-    }, {
-      limit: this.props.limit, // https://github.com/jfly/ccm/issues/75
-      sort: {
-        // Note that limiting without sorting will result in an
-        // essentially random set of people being displayed, but
-        // that's fine, because we care more about speed than
-        // correctness. See comment below about sorting.
-        //'position': 1,
-      },
-    });
-    // Asking meteor to sort is
-    // *significantly* slower than just fetching and doing
+
+    // https://github.com/jfly/ccm/issues/75
+    var results = getResultsWithUniqueNamesForRound(roundId, this.props.limit);
+    // Asking meteor to sort is slower than just fetching and doing
     // it ourselves. So here we go.
-    var results = resultsCursor.fetch();
     results.sort(function(a, b) {
       // position may be undefined if no times have been entered yet.
       // We intentionally sort so that unentered rows are on the bottom.

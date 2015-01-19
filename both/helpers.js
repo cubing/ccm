@@ -310,3 +310,35 @@ if(Meteor.isClient) {
     return formatMomentDateTime(m);
   });
 }
+
+
+getResultsWithUniqueNamesForRound = function(roundId, limit) {
+  var results = Results.find({
+    roundId: roundId,
+  }, {
+    limit: limit,
+  }).fetch();
+
+  var competitionId = getRoundAttribute(roundId, 'competitionId');
+  var eventCode = getRoundAttribute(roundId, 'eventCode');
+
+  // Expand each result to also contain the uniqueName for that competitor
+  var registrations = Registrations.find({
+    competitionId: competitionId,
+    checkedInEvents: eventCode,
+  }, {
+    fields: {
+      uniqueName: 1,
+    }
+  });
+  var registrationById = {};
+  registrations.forEach(function(registration) {
+    registrationById[registration._id] = registration;
+  });
+  results.forEach(function(result) {
+    var registration = registrationById[result.registrationId];
+    result.uniqueName = registration.uniqueName;
+  });
+
+  return results;
+};

@@ -21,9 +21,7 @@ Template.dataEntry.helpers({
         // If the selected round is closed, we need to show all rounds so we can see the selected round.
         return true;
       }
-    }
-
-    if(this.eventCode) {
+    } else {
       // If they've only selected an eventCode, we want to show all rounds.
       return true;
     }
@@ -150,14 +148,7 @@ Template.roundDataEntry.rendered = function() {
   var results = [];
   template.autorun(function() {
     var data = Template.currentData();
-    results = Results.find({
-      roundId: data.roundId,
-    }, {
-      fields: {
-        _id: 1,
-        uniqueName: 1,
-      }
-    }).fetch();
+    results = getResultsWithUniqueNamesForRound(data.roundId);
   });
 
   this.$('.typeahead').typeahead({
@@ -214,9 +205,14 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
   var $inputCompetitorName = template.$('#inputCompetitorName');
   var uniqueName = $inputCompetitorName.typeahead('val');
+  var registration = Registrations.findOne({
+    uniqueName: uniqueName,
+  }, {
+    _id: 1,
+  });
   var result = Results.findOne({
     roundId: roundId,
-    uniqueName: uniqueName,
+    registrationId: registration._id,
   }, {
     fields: {
       _id: 1,
@@ -276,13 +272,22 @@ Template.roundDataEntry.events({
       _id: resultId,
     }, {
       fields: {
-        uniqueName: 1,
+        registrationId: 1,
       }
     });
     assert(result);
 
+    var registration = Registrations.findOne({
+      _id: result.registrationId,
+    }, {
+      fields: {
+        uniqueName: 1,
+      }
+    });
+    assert(registration);
+
     var $inputCompetitorName = template.$('#inputCompetitorName');
-    $inputCompetitorName.typeahead('val', result.uniqueName);
+    $inputCompetitorName.typeahead('val', registration.uniqueName);
 
     var jChesterToFocusIndex = 0;
 

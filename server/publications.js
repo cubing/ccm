@@ -128,6 +128,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
     return [];
   }
   return [
+    Registrations.find({ competitionId: competitionId, checkedInEvents: eventCode }),
     Results.find({ roundId: round._id, }),
   ];
 });
