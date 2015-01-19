@@ -76,8 +76,8 @@ var CheckinList = React.createClass({
   componentWillUnmount: function() {
     log.l1("component will unmount");
 
-    var $resultsTable = $(this.refs.resultsTable.getDOMNode());
-    $resultsTable.stickyTableHeaders('destroy');
+    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    $checkinTable.stickyTableHeaders('destroy');
   },
   registeredCheckboxToggled: function(registration, event, e) {
     var registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
