@@ -9,3 +9,35 @@ td.registered-for-event:not(.checkedin-for-event) {
 td.checkedin-for-event:not(.registered-for-event) {
   background-color: @bsDangerColor;
 }
+
+@addCompetitorButtonSize: 50px;
+
+#checkinTable {
+  margin-bottom: @addCompetitorButtonSize;
+}
+
+span.addCompetitor {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+
+  display: block;
+  height: @addCompetitorButtonSize;
+  width: @addCompetitorButtonSize;
+  line-height: @addCompetitorButtonSize;
+
+  border-radius: 50%;
+
+  color: white;
+  text-align: center;
+  font-size: 2em;
+
+  background-color: #4679BD;
+  box-shadow: 0px 1px 5px 2px #999;
+
+  cursor: pointer;
+}
+span.addCompetitor:before {
+  content: "\2b"; /* glyphicon-plus */
+  font-family: 'Glyphicons Halflings';
+}
