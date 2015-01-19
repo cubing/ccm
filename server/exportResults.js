@@ -26,7 +26,7 @@ Meteor.methods({
     }).fetch();
     // TODO - compare this list of people to the people who *actually* competed
     var wcaPersons = _.map(registrations, function(registration) {
-      var iso8601Date = moment(registration.dob).format("YYYY-MM-DD");
+      var iso8601Date = formatMomentDateIso8601(moment(registration.dob));
       var wcaPerson = {
         "id": registration._id,
         "name": registration.uniqueName,

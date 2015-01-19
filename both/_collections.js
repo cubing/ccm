@@ -236,7 +236,6 @@ if(Meteor.isServer) {
 var GenderType = {
   type: String,
   allowedValues: _.keys(wca.genderByValue),
-  optional: true,
   autoform: {
     type: "select",
     options: function() {
@@ -247,7 +246,6 @@ var GenderType = {
 
 var DobType = {
   type: Date,
-  optional: true,
   label: "Birthdate",
   autoform: {
     afFieldInput: {
@@ -259,7 +257,6 @@ var DobType = {
 var CountryIdType = {
   type: String,
   allowedValues: wca.countryISO2Codes,
-  optional: true,
   autoform: {
     type: "selectize",
     options: wca.countryISO2AutoformOptions,
@@ -269,8 +266,7 @@ var CountryIdType = {
 var WcaIdType = {
   label: "WCA id",
   type: String,
-  regEx: /(19|20)\d{2}[A-Z]{4}\d{2}/,
-  optional: true,
+  regEx: /^(19|20)\d{2}[A-Z]{4}\d{2}$/,
 };
 
 Registrations = new Mongo.Collection("registrations");
@@ -291,7 +287,7 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
   },
-  wcaId: WcaIdType,
+  wcaId: _.extend({}, WcaIdType, { optional: true }),
   countryId: CountryIdType,
   gender: GenderType,
   dob: DobType,
@@ -306,6 +302,7 @@ Registrations.attachSchema({
   registeredEvents: {
     type: [String],
     allowedValues: _.keys(wca.eventByCode),
+    defaultValue: [],
     autoform: {
       type: "select-checkbox",
     },
@@ -696,10 +693,10 @@ Meteor.users.attachSchema(new SimpleSchema({
         label: "Name",
         type: String,
       },
-      wcaId: WcaIdType,
-      countryId: CountryIdType,
-      gender: GenderType,
-      dob: DobType,
+      wcaId: _.extend({}, WcaIdType, { optional: true }),
+      countryId: _.extend({}, CountryIdType, { optional: true }),
+      gender: _.extend({}, GenderType, { optional: true }),
+      dob: _.extend({}, DobType, { optional: true }),
     }),
     optional: true,
   },

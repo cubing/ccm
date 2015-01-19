@@ -295,7 +295,6 @@ Meteor.methods({
     }, {
       fields: {
         competitionId: 1,
-        userId: 1,
         uniqueName: 1,
         registeredEvents: 1,
         checkedInEvents: 1,
@@ -321,7 +320,7 @@ Meteor.methods({
       assert(round);
       Results.remove({
         roundId: round._id,
-        userId: registration.userId,
+        registrationId: registration._id,
       });
     });
 
@@ -332,7 +331,7 @@ Meteor.methods({
       Results.insert({
         competitionId: registration.competitionId,
         roundId: round._id,
-        userId: registration.userId,
+        registrationId: registration._id,
         uniqueName: registration.uniqueName,
       });
     });

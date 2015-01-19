@@ -171,58 +171,6 @@
   </div>
 </template>
 
-<template name="editCompetition_userRow">
-  {{uniqueName}}
-  {{#if isMe}}
-    <span class="label label-default">Me</span>
-  {{/if}}
-</template>
-
-<template name="editCompetition_users">
-
-  <div class="panel panel-default">
-
-    <div class="panel-heading">
-      <h3 class="panel-title text-capitalize">
-        {{userIdsAtribute}}
-      </h3>
-      {{> UI.contentBlock}}
-    </div>
-
-    <ul class="list-group">
-      {{#each registrations}}
-        <li class="list-group-item">
-          {{> editCompetition_userRow}}
-          {{#unless isCurrentUser}}
-            <button type="button" name="buttonRemoveUser" class="btn btn-default btn-xs pull-right">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-          {{/unless}}
-        </li>
-      {{else}}
-        <li class="list-group-item">
-          No {{userIdsAtribute}} yet! Add some below.
-        </li>
-      {{/each}}
-
-      <div class="panel-footer">
-        <form class="form-horizontal" role="form">
-          <div class="input-group">
-            <input name="name" class="typeahead typeahead-inverted form-control" type="text" placeholder="Enter name">
-            <span class="input-group-btn">
-              <button type="submit" name="buttonAddUser" class="btn btn-default">
-                <span class="glyphicon glyphicon-plus"></span>
-              </button>
-            </span>
-          </div>
-        </form>
-      </div>
-    </ul>
-
-  </div>
-
-</template>
-
 <template name="competitionLocationMap">
   <div id="competitionLocationMap"></div>
 </template>

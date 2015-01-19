@@ -152,6 +152,6 @@ AutoForm.addHooks('registrationForm', {
   },
   onError: function(operation, error, template) {
     // unsuccessful submission... display error message
-    FlashMessages.sendError("Error submitting form!", { autoHide: true, hideDelay: 5000 });
+    FlashMessages.sendError("Error submitting form: " + error.message, { autoHide: true, hideDelay: 5000 });
   },
 });

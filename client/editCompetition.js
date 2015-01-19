@@ -209,27 +209,6 @@ Template.editCompetition.events({
   },
 });
 
-Template.editCompetition_users.events({
-  'click button[name="buttonRemoveUser"]': function(e, template) {
-  },
-  'submit form': function(e, template) {
-    e.preventDefault();
-
-    var registration = getSelectedUserRegistration(template);
-    if(!registration) {
-      // This should never happen, because we only enable
-      // submission when the input is valid (ie: the input maps to a registration).
-      log.l0("Could not find registration for:", getEnteredUniqueName(template));
-      return;
-    }
-
-    // Clear name input and close typeahead dialog
-    var $nameInput = template.$('input[name="name"]');
-    $nameInput.typeahead('val', '');
-    maybeEnableUserSelectForm(template);
-  },
-});
-
 Template.competitionLocationMap.rendered = function() {
   var template = this;
   template.autorun(function() {

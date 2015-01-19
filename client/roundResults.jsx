@@ -197,14 +197,7 @@ var ResultsList = React.createClass({
     log.l1("component did mount");
 
     var $resultsTable = $(this.refs.resultsTable.getDOMNode());
-    $resultsTable.stickyTableHeaders();
-
-    // React freaks out if it finds dom nodes that share a data-reactid.
-    // Since $.stickyTableHeaders copies the <thead> we generated with react,
-    // that copy has a data-reactid. Explicitly removing this attribute seems to
-    // be enough to make react happy.
-    var $floatingHead = $resultsTable.find("thead.tableFloatingHeader");
-    $floatingHead.removeAttr('data-reactid');
+    makeTableSticky($resultsTable);
   },
   componentWillUpdate(nextProps, nextState) {
     log.l1("component will update");
@@ -216,9 +209,10 @@ var ResultsList = React.createClass({
     log.l1("component will unmount");
 
     var $resultsTable = $(this.refs.resultsTable.getDOMNode());
-    $resultsTable.stickyTableHeaders('destroy');
+    makeTableNotSticky($resultsTable);
   },
   resultsTableScroll: function(e) {
+    // TODO - move this logic into stickytables.js
     // Workaround for https://github.com/jmosbech/StickyTableHeaders/issues/68.
     // StickyTableHeaders doesn't handle horizontal scrolling, so we detect it
     // ourselves and force the table header to reposition itself.

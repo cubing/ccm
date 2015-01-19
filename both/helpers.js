@@ -275,28 +275,37 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
   return lastRoundForEvent._id;
 };
 
-if(Meteor.isClient) {
-  var DATE_FORMAT = "MMMM D, YYYY";
-  var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
+var DATE_FORMAT = "MMMM D, YYYY";
+var ISO_DATE_FORMAT = "YYYY-MM-DD";
+var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a";
 
-  formatMomentDate = function(m) {
-    return m.format(DATE_FORMAT);
-  };
+formatMomentDate = function(m) {
+  return m.format(DATE_FORMAT);
+};
+
+formatMomentDateIso8601 = function(m) {
+  var iso8601Date = m.format(ISO_DATE_FORMAT);
+  return iso8601Date;
+};
+
+formatMomentDateRange = function(startMoment, endMoment) {
+  var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, DATE_FORMAT);
+  return rangeStr;
+};
+
+formatMomentDateTime = function(m) {
+  return m.format(DATETIME_FORMAT);
+};
+
+if(Meteor.isClient) {
   Template.registerHelper("formatMomentDate", function(m) {
     return formatMomentDate(m);
   });
 
-  formatMomentDateRange = function(startMoment, endMoment) {
-    var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, DATE_FORMAT);
-    return rangeStr;
-  };
   Template.registerHelper("formatMomentDateRange", function(startMoment, endMoment) {
     return formatMomentDateRange(startMoment, endMoment);
   });
 
-  formatMomentDateTime = function(m) {
-    return m.format(DATETIME_FORMAT);
-  };
   Template.registerHelper("formatMomentDateTime", function(m) {
     return formatMomentDateTime(m);
   });
