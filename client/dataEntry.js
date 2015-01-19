@@ -90,6 +90,7 @@ function keydown(e) {
         $tr.removeClass("unsaved");
       }
 
+      var jChesterData = Blaze.getData($jChester[0]);
       var resultId = selectedResultIdReact.get();
       selectedResultIdReact.set(null);
       Meteor.defer(function() {
@@ -98,7 +99,7 @@ function keydown(e) {
           $inputCompetitorName.focus();
         } else {
           Meteor.defer(function() {
-            $focused.select();
+            $('.jChester').eq(jChesterData.index).focus();
           });
         }
       });
