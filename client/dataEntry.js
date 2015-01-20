@@ -242,11 +242,13 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
 function jChesterSave($jChester) {
   var $tr = $jChester.closest('tr');
+  var solveTime = $jChester.jChester('getSolveTime');
   if(!$tr.hasClass("unsaved")) {
     // Don't bother saving unless something has actually changed.
+    // Get rid of the lazy input mode (if someone typed in the exact same time)
+    $jChester.jChester('setSolveTime', solveTime);
     return true;
   }
-  var solveTime = $jChester.jChester('getSolveTime');
   if(!solveTime) {
     return false;
   }
