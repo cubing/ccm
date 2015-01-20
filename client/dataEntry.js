@@ -248,14 +248,9 @@ function jChesterSave($jChester) {
   solveTime.decimals = 2;
   $tr.removeClass('unsaved');
   $tr.addClass('saving');
-  var $set = {};
-  $set['solves.' + this.index] = solveTime;
   var resultId = selectedResultIdReact.get();
-  Results.update({
-    _id: resultId,
-  }, {
-    $set: $set,
-  }, function(err, res) {
+  var solveIndex = this.index;
+  Meteor.call('setSolveTime', resultId, solveIndex, solveTime, function(err, res) {
     if(err) {
       throw err;
     }

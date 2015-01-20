@@ -370,6 +370,42 @@ Meteor.methods({
       }
     });
   },
+  setSolveTime: function(resultId, solveIndex, solveTime) {
+    var result = Results.findOne({
+      _id: resultId,
+    }, {
+      fields: {
+        competitionId: 1,
+        roundId: 1,
+      }
+    });
+    if(!result) {
+      throw new Meteor.Error(404, "Result not found");
+    }
+    throwIfCannotManageCompetition(this.userId, result.competitionId);
+
+    var round = Rounds.findOne({
+      _id: result.roundId,
+    }, {
+      fields: {
+        formatCode: 1,
+      }
+    });
+    var format = wca.formatByCode[round.formatCode];
+
+    check(solveIndex, Match.Integer);
+    if(solveIndex < 0 || solveIndex >= format.count) {
+      throw new Meteor.Error(400, "Invalid solve index for round");
+    }
+
+    var $set = {};
+    $set['solves.' + solveIndex] = solveTime;
+    Results.update({
+      _id: resultId,
+    }, {
+      $set: $set,
+    });
+  },
 });
 
 if(Meteor.isServer) {
