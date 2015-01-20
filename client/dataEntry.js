@@ -170,7 +170,13 @@ Template.roundDataEntry.helpers({
   },
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
-    var result = Results.findOne({ _id: selectedResultId });
+    var result = Results.findOne({
+      _id: selectedResultId,
+    }, {
+      fields: {
+        solves: 1,
+      }
+    });
     var roundFormatCode = getRoundAttribute(this.roundId, 'formatCode');
     var roundFormat = wca.formatByCode[roundFormatCode];
     var solves = result.solves || [];
