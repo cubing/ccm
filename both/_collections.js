@@ -576,8 +576,12 @@ Results.attachSchema({
     type: [SolveTime],
     defaultValue: [],
   },
-  best: {
-    type: SolveTime,
+  bestIndex: {
+    type: Number,
+    optional: true,
+  },
+  worstIndex: {
+    type: Number,
     optional: true,
   },
   average: {

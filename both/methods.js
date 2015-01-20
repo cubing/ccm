@@ -377,6 +377,7 @@ Meteor.methods({
       fields: {
         competitionId: 1,
         roundId: 1,
+        solves: 1,
       }
     });
     if(!result) {
@@ -389,21 +390,28 @@ Meteor.methods({
     }, {
       fields: {
         formatCode: 1,
+        roundCode: 1,
       }
     });
-    var format = wca.formatByCode[round.formatCode];
+    var roundFormat = wca.formatByCode[round.formatCode];
 
     check(solveIndex, Match.Integer);
-    if(solveIndex < 0 || solveIndex >= format.count) {
+    if(solveIndex < 0 || solveIndex >= roundFormat.count) {
       throw new Meteor.Error(400, "Invalid solve index for round");
     }
+    result.solves[solveIndex] = solveTime;
 
-    var $set = {};
-    $set['solves.' + solveIndex] = solveTime;
+    var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
+
     Results.update({
       _id: resultId,
     }, {
-      $set: $set,
+      $set: {
+        solves: result.solves,
+        worstIndex: statistics.worstIndex,
+        bestIndex: statistics.bestIndex,
+        average: statistics.average,
+      }
     });
   },
 });
@@ -539,13 +547,14 @@ if(Meteor.isServer) {
         });
         var newRoundIds = [];
         wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
-          var roundInfo = wca.roundByCode[wcaRound.roundId];
+          var roundCode = wcaRound.roundId;
+          var roundFormatCode = wcaRound.formatId;
           var roundId = Rounds.insert({
             nthRound: nthRound + 1,
             competitionId: competition._id,
             eventCode: wcaEvent.eventId,
-            roundCode: wcaRound.roundId,
-            formatCode: wcaRound.formatId,
+            roundCode: roundCode,
+            formatCode: roundFormatCode,
             status: wca.roundStatuses.closed,
           });
           newRoundIds.push(roundId);
@@ -559,15 +568,17 @@ if(Meteor.isServer) {
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
             });
-            var id = Results.insert({
+            var result = {
               competitionId: competition._id,
               roundId: roundId,
               registrationId: registration._id,
               position: wcaResult.position,
               solves: solves,
-              best: wca.valueToSolveTime(wcaResult.best, wcaEvent.eventId),
-              average: wca.valueToSolveTime(wcaResult.average, wcaEvent.eventId),
-            }, {
+            };
+            var statistics = wca.computeSolvesStatistics(solves, roundFormatCode, roundCode);
+            _.extend(result, statistics);
+            var id = Results.insert(
+              result, {
               // meteor-collection2 is *killing* us here when we are inserting
               // a bunch of stuff at once. Turning off all the validation it
               // does for us gives a huge speed boost.

@@ -154,6 +154,83 @@ wca.solveTimeSorter = function(s1, s2) {
   return s1.wcaValue - s2.wcaValue;
 };
 
+wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
+  var roundFormat = wca.formatByCode[roundFormatCode];
+  var roundType = wca.roundByCode[roundCode];
+
+  var bestSolve, bestIndex;
+  var worstSolve, worstIndex;
+  solves.forEach(function(solve, i) {
+    if(solve.wcaValue === 0) {
+      return;
+    }
+    if(!worstSolve || solve.millis > worstSolve.millis || $.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+      worstIndex = i;
+      worstSolve = solve;
+    }
+    if(!bestSolve || solve.millis < bestSolve.millis || $.solveTimeIsDNF(bestSolve) || $.solveTimeIsDNS(bestSolve)) {
+      bestIndex = i;
+      bestSolve = solve;
+    }
+  });
+
+  var completedAverage = false;
+  if(roundFormat.computeAverage) {
+    var hasEmptySolve = _.find(solves, function(solve) {
+      return !solve || solve.millis === 0;
+    });
+    if(!hasEmptySolve && solves.length == roundFormat.count) {
+      completedAverage = true;
+    }
+  }
+
+  var average;
+  if(completedAverage) {
+    var sumMillis = 0;
+    var solveCount = 0;
+    solves.forEach(function(solve, i) {
+      var solveMillis = solve.millis;
+      if(roundFormat.trimBestAndWorst && i == bestIndex) {
+        return;
+      } else if(roundFormat.trimBestAndWorst && i == worstIndex) {
+        return;
+      } else if($.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+        // A counting DNF or DNS is a DNF, I'm afraid.
+        solveMillis = Infinity;
+      }
+      sumMillis += solveMillis;
+      solveCount++;
+    });
+
+    if(sumMillis == Infinity) {
+      // DNF average =(
+      average = {
+        puzzlesSolvedCount: 0,
+        puzzlesAttemptedCount: 1,
+      };
+    } else {
+      // All timed results, averages, and means over 10 minutes are measured and
+      // rounded to the nearest second (e.g. x.4 becomes x, x.5 becomes x+1).
+      //  https://www.worldcubeassociation.org/regulations/#9f2
+      var averageMillis = Math.round(sumMillis / solveCount);
+      average = {
+        millis: averageMillis,
+        decimals: 2,
+      };
+    }
+    var wcaValue = wca.solveTimeToWcaValue(average);
+    average.wcaValue = wcaValue;
+  } else {
+    average = null;
+  }
+
+  return {
+    bestIndex: bestIndex,
+    worstIndex: worstIndex,
+    average: average,
+  };
+};
+
 wca.penalties = {};
 _.each([
   'DNF',
@@ -446,6 +523,8 @@ wca.formats = [
 
     // 333bf is a best of 3, but people do get a mean, even though we don't
     // sort by it.
+    "computeAverage": true,
+    "trimBestAndWorst": false,
     "averageName": "Mean",
     "sortBy": "best",
   },
@@ -456,6 +535,8 @@ wca.formats = [
     "code": "a",
     "softCutoffFormatCodes": [ 'cumulative', '1', '2', '3' ],
 
+    "computeAverage": true,
+    "trimBestAndWorst": true,
     "averageName": "Average",
     "sortBy": "average",
   },
@@ -466,6 +547,8 @@ wca.formats = [
     "code": "m",
     "softCutoffFormatCodes": [ 'cumulative', '1', '2' ],
 
+    "computeAverage": true,
+    "trimBestAndWorst": false,
     "averageName": "Mean",
     "sortBy": "average",
   },

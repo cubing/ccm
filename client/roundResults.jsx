@@ -95,47 +95,18 @@ var ResultRow = React.createClass({
       'last-competitor-to-advance': this.props.drawLine,
     });
 
-    // TODO - i think a lot of this logic will get moved into
-    // the Results collection via autovalues.
-    var bestSolve, bestIndex;
-    var worstSolve, worstIndex;
-    if(roundFormat.code == "a") {
-      var completedAverage = true;
-      if(this.props.roundType.combined) {
-        var hasEmptySolve = _.find(result.solves, function(solve) {
-          return !solve || solve.millis === 0;
-        });
-        if(hasEmptySolve || result.solves.length != roundFormat.count) {
-          completedAverage = false;
-        }
-      }
-
-      // Only compute the dropped solves if the competitor *did* do a full average.
-      if(completedAverage) {
-        result.solves.forEach(function(solve, i) {
-          if(!worstSolve || solve.millis > worstSolve.millis || $.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
-            worstIndex = i;
-            worstSolve = solve;
-          }
-          if(!bestSolve || solve.millis < bestSolve.millis || $.solveTimeIsDNF(bestSolve) || $.solveTimeIsDNS(bestSolve)) {
-            bestIndex = i;
-            bestSolve = solve;
-          }
-        });
-      }
-    }
-
+    var trimBestAndWorst = result.average && result.average.wcaValue && roundFormat.trimBestAndWorst;
     var tiedPrevious = this.props.tiedPrevious;
     return (
       <tr className={rowClasses} data-result-id={result._id}>
         <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
         <td>{competitorNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average, true)}</td>
-        <td className={bestClasses}>{clockFormat(result.best)}</td>
+        <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
         {(result.solves || []).map(function(solve, i) {
           var solveClasses = React.addons.classSet({
             'results-solve': true,
-            'results-solve-dropped': (i === bestIndex || i === worstIndex),
+            'results-solve-dropped': (trimBestAndWorst && (i === result.bestIndex || i === result.worstIndex)),
 
             'text-right': true,
           });
@@ -171,12 +142,10 @@ var ResultsList = React.createClass({
     });
 
     var formatCode = getRoundAttribute(roundId, 'formatCode');
-    var roundCode = getRoundAttribute(roundId, 'roundCode');
 
     return {
       results: results,
       formatCode: formatCode,
-      roundCode: roundCode,
     };
   },
   componentWillMount: function() {
@@ -212,7 +181,6 @@ var ResultsList = React.createClass({
     var that = this;
     var roundId = that.props.roundId;
     var format = wca.formatByCode[that.state.formatCode];
-    var roundType = wca.roundByCode[that.state.roundCode];
 
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
@@ -237,7 +205,6 @@ var ResultsList = React.createClass({
                            competitionUrlId={that.props.competitionUrlId}
                            result={result}
                            roundFormat={format}
-                           roundType={roundType}
                            drawLine={drawLine}
                            tiedPrevious={prevResult && prevResult.position == result.position}
                 />

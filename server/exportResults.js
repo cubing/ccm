@@ -56,7 +56,7 @@ Meteor.methods({
             eventCode: round.eventCode,
             nthRound: round.nthRound,
           });
-          if(!result.best) {
+          if(!result.hasOwnProperty('bestIndex') || !wcaValues[result.bestIndex]) {
             problems.push({
               warning: true,
               message: "Incorrect best for result",
@@ -64,20 +64,14 @@ Meteor.methods({
             });
             return;
           }
-          if(!result.average) {
-            problems.push({
-              warning: true,
-              message: "Incorrect average for result",
-              fixUrl: roundDataEntryPath,
-            });
-            return;
-          }
+
+          var wcaAverage = result.average ? result.average.wcaValue : 0;
           var wcaResult = {
             personId: result.userId,
             position: result.position,
             results: wcaValues,
-            best: result.best.wcaValue,
-            average: result.average.wcaValue,
+            best: wcaValues[result.bestIndex],
+            average: wcaAverage,
           };
           wcaResults.push(wcaResult);
         });
