@@ -559,6 +559,7 @@ if(Meteor.isServer) {
           });
           newRoundIds.push(roundId);
 
+          var softCutoff = null;
           wcaRound.results.forEach(function(wcaResult) {
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
@@ -568,6 +569,34 @@ if(Meteor.isServer) {
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
             });
+            if(!solves[solves.length - 1].wcaValue) {
+              // We're missing a solve, so this must be a combined round
+              // and this competitor didn't make the soft cutoff.
+              var roundInfo = wca.roundByCode[roundCode];
+              assert(roundInfo.combined);
+              var lastSolveIndex = -1;
+              var minSolveTime = null;
+              while(solves[lastSolveIndex + 1] && solves[lastSolveIndex + 1].wcaValue) {
+                lastSolveIndex++;
+                var lastSolveTime = solves[lastSolveIndex];
+                if(!minSolveTime || wca.compareSolveTimes(lastSolveTime, minSolveTime) < 0) {
+                  minSolveTime = lastSolveTime;
+                }
+              }
+              // We always import combined rounds as if they have a
+              // "soft cutoff in N" cutoff (this doesn't handle
+              // cumulative cutoffs).
+              var softCutoffFormatCode = "" + (lastSolveIndex + 1);
+              if(softCutoff) {
+                assert(softCutoff.formatCode === softCutoffFormatCode);
+                softCutoff.time = wca.minSolveTime(softCutoff.time, minSolveTime);
+              } else {
+                softCutoff = {
+                  formatCode: softCutoffFormatCode,
+                  time: minSolveTime,
+                };
+              }
+            }
             var result = {
               competitionId: competition._id,
               roundId: roundId,
@@ -589,6 +618,26 @@ if(Meteor.isServer) {
               getAutoValues: false,
             });
           });
+
+          if(softCutoff) {
+            // softCutoff.time is the best time achieved by the people who didn't
+            // make the soft cutoff, so decrement it by the tiniest amount before
+            // saving it.
+            if(softCutoff.time.millis) {
+              softCutoff.time.millis -= 1;
+              softCutoff.time.decimals = 3;
+            } else {
+              softCutoff.time.moveCount -= 1;
+            }
+            log.l0("Setting soft cutoff for", wcaEvent.eventId, "round", nthRound + 1, "to", softCutoff);
+            Rounds.update({
+              _id: roundId,
+            }, {
+              $set: {
+                softCutoff: softCutoff
+              }
+            });
+          }
 
           wcaRound.groups.forEach(function(wcaGroup) {
             Groups.insert({

@@ -64,6 +64,29 @@ wca.solveTimeToWcaValue = function(solveTime) {
   }
 };
 
+wca.compareSolveTimes = function(s1, s2) {
+  var s1Infinite = $.solveTimeIsDNF(s1) || $.solveTimeIsDNS(s1);
+  var s2Infinite = $.solveTimeIsDNF(s2) || $.solveTimeIsDNS(s2);
+  if(s1Infinite && s2Infinite) {
+    return 0;
+  }
+  if(s1Infinite) {
+    return 1;
+  }
+  if(s2Infinite) {
+    return -1;
+  }
+  return s1.wcaValue - s2.wcaValue;
+};
+
+wca.maxSolveTime = function(s1, s2) {
+  return wca.compareSolveTimes(s1, s2) > 0 ? s1 : s2;
+};
+
+wca.minSolveTime = function(s1, s2) {
+  return wca.compareSolveTimes(s1, s2) < 0 ? s1 : s2;
+};
+
 wca.valueToSolveTime = function(wcaValue, eventId) {
   if(wcaValue == WCA_DNF_VALUE) {
     return {
@@ -164,11 +187,11 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
     if(solve.wcaValue === 0) {
       return;
     }
-    if(!worstSolve || solve.millis > worstSolve.millis || $.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+    if(!worstSolve || wca.compareSolveTimes(solve, worstSolve) > 0) {
       worstIndex = i;
       worstSolve = solve;
     }
-    if(!bestSolve || solve.millis < bestSolve.millis || $.solveTimeIsDNF(bestSolve) || $.solveTimeIsDNS(bestSolve)) {
+    if(!bestSolve || wca.compareSolveTimes(solve, bestSolve) < 0) {
       bestIndex = i;
       bestSolve = solve;
     }
@@ -177,34 +200,46 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
   var completedAverage = false;
   if(roundFormat.computeAverage) {
     var hasEmptySolve = _.find(solves, function(solve) {
-      return !solve || solve.millis === 0;
+      return !solve || ( !solve.millis && !solve.moveCount );
     });
     if(!hasEmptySolve && solves.length == roundFormat.count) {
       completedAverage = true;
     }
   }
 
-  var average;
+  var averageSolveTime;
   if(completedAverage) {
-    var sumMillis = 0;
+    var sum = 0;
+    var sumSolveCount = 0;
     var solveCount = 0;
+    var isMillis = !!solves[0].millis;
     solves.forEach(function(solve, i) {
-      var solveMillis = solve.millis;
+      var value;
+      if($.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+        value = Infinity;
+      } else {
+        // assert that every solve in solves is millis or every solve is moveCount
+        if(isMillis) {
+          assert(solve.millis);
+          assert(!solve.solveCount);
+        } else {
+          assert(!solve.millis);
+          assert(solve.solveCount);
+        }
+        value = solve.millis || solve.moveCount || 0;
+      }
       if(roundFormat.trimBestAndWorst && i == bestIndex) {
         return;
       } else if(roundFormat.trimBestAndWorst && i == worstIndex) {
         return;
-      } else if($.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
-        // A counting DNF or DNS is a DNF, I'm afraid.
-        solveMillis = Infinity;
       }
-      sumMillis += solveMillis;
+      sum += value;
       solveCount++;
     });
 
-    if(sumMillis == Infinity) {
+    if(sum == Infinity) {
       // DNF average =(
-      average = {
+      averageSolveTime = {
         puzzlesSolvedCount: 0,
         puzzlesAttemptedCount: 1,
       };
@@ -212,22 +247,30 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
       // All timed results, averages, and means over 10 minutes are measured and
       // rounded to the nearest second (e.g. x.4 becomes x, x.5 becomes x+1).
       //  https://www.worldcubeassociation.org/regulations/#9f2
-      var averageMillis = Math.round(sumMillis / solveCount);
-      average = {
-        millis: averageMillis,
-        decimals: 2,
-      };
+      var average = Math.round(sum / solveCount);
+      if(isMillis) {
+        averageSolveTime = {
+          millis: average,
+          decimals: 2,
+        };
+      } else {
+        // The average field for FMC is bizarre:
+        // it's the average times 100 rounded to the nearest integer.
+        averageSolveTime = {
+          solveCount: Math.round(100 * average)
+        };
+      }
     }
-    var wcaValue = wca.solveTimeToWcaValue(average);
-    average.wcaValue = wcaValue;
+    var wcaValue = wca.solveTimeToWcaValue(averageSolveTime);
+    averageSolveTime.wcaValue = wcaValue;
   } else {
-    average = null;
+    averageSolveTime = null;
   }
 
   return {
     bestIndex: bestIndex,
     worstIndex: worstIndex,
-    average: average,
+    average: averageSolveTime,
   };
 };
 
