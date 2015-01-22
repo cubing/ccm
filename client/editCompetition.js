@@ -193,6 +193,17 @@ Template.editCompetition.events({
     setCompetitionAttribute(this.competitionId, 'listed', !listed);
   },
   'click button[name="buttonDeleteCompetition"]': function(e) {
+    // When deleting a competition, we want to delete any cached subscriptions
+    // from that competition.
+    // For some reason, just calling subs.reset() doesn't seem to be sufficient.
+    // This feels like a bug in subs-manager, but I don't really understand how
+    // subs-manager works. If we can characterize this problem, we should at
+    // least file an issue with them.
+    _.each(subs._cacheList, function(sub) {
+      delete subs._cacheMap[sub.hash];
+    });
+    subs.reset();
+
     var that = this;
     // Note that we navigate away from the competition page first, and wait for the
     // navigation to complete before we actually delete the competition. This

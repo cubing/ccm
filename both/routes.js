@@ -1,4 +1,4 @@
-var subs = new SubsManager({
+subs = new SubsManager({
   cacheLimit: 10,
   expireIn: 5, // minutes
 });
