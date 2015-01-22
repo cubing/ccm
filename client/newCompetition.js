@@ -25,6 +25,7 @@ Template.newCompetition.events({
     var competitionName = form.inputCompetitionName.value;
     Meteor.call("createCompetition", competitionName, function(err, competitionUrlId) {
       if(err) {
+        FlashMessages.sendError("Error submitting form: " + err.message, { autoHide: true, hideDelay: 5000 });
         throw err;
       }
       Router.go('manageCompetition', {

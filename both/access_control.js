@@ -25,7 +25,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
         organizer: 1,
       }
     });
-    if(!registration.organizer) {
+    if(!registration || !registration.organizer) {
       return new Meteor.Error(403, "Not an organizer for this competition");
     }
   }

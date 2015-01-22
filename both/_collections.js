@@ -687,6 +687,7 @@ Meteor.users.attachSchema(new SimpleSchema({
       name: {
         label: "Name",
         type: String,
+        optional: true,
       },
       wcaId: _.extend({}, WcaIdType, { optional: true }),
       countryId: _.extend({}, CountryIdType, { optional: true }),

@@ -30,13 +30,7 @@ Meteor.methods({
     }
     throwIfNotVerifiedUser(this.userId);
 
-    var competitionId = Competitions.insert({
-      competitionName: competitionName,
-      listed: false,
-      startDate: new Date(),
-    });
-
-    var user = Meteor.users.find({ _id: this.userId });
+    var user = Meteor.users.findOne({ _id: this.userId });
     if(!user.profile) {
       throw new Meteor.Error(400, "Must set up user profile");
     }
@@ -52,6 +46,15 @@ Meteor.methods({
     if(!user.profile.gender) {
       throw new Meteor.Error(400, "Gender must be nonemtpy");
     }
+
+    var uniqueName = user.profile.name;
+
+    var competitionId = Competitions.insert({
+      competitionName: competitionName,
+      listed: false,
+      startDate: new Date(),
+    });
+
     Registrations.insert({
       competitionId: competitionId,
       userId: this.userId,
