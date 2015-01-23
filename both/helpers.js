@@ -344,3 +344,22 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
 
   return results;
 };
+
+
+roundTitle = function(round) {
+  var title;
+
+  // Rounds don't necessarily have events, such as Lunch or Registration.
+  if(round.eventCode) {
+    title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+  } else {
+    title = round.title;
+  }
+
+  return title;
+};
+if(Meteor.isClient) {
+  Template.registerHelper("roundTitle", function(round) {
+    return roundTitle(round);
+  });
+}

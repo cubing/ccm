@@ -5,3 +5,7 @@
 #addCalendarEvent {
   position: absolute;
 }
+
+.fc-event {
+  cursor: move;
+}
