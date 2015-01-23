@@ -431,6 +431,9 @@ SolveTime = new SimpleSchema({
   },
 });
 
+MIN_ROUND_DURATION_MINUTES = 30;
+DEFAULT_ROUND_DURATION_MINUTES = 60;
+DEFAULT_ROUND_NTHDAY = 0;
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.
@@ -444,7 +447,7 @@ Rounds.attachSchema({
     type: Number,
     min: 0,
     // should be <= numberOfDays in the corresponding Competition
-    optional: true,
+    defaultValue: DEFAULT_ROUND_NTHDAY,
   },
 
   startMinutes: {
@@ -459,8 +462,8 @@ Rounds.attachSchema({
   },
   durationMinutes: {
     type: Number,
-    min: 0,
-    defaultValue: 60,
+    min: MIN_ROUND_DURATION_MINUTES,
+    defaultValue: DEFAULT_ROUND_DURATION_MINUTES,
   },
 
   title: {

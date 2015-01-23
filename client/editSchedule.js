@@ -1,7 +1,3 @@
-var MIN_ROUND_DURATION_MINUTES = 30;
-var DEFAULT_ROUND_DURATION_MINUTES = 60;
-var DEFAULT_ROUND_NTHDAY = 0;
-
 var editingRoundReact = new ReactiveVar(null);
 
 Template.editSchedule.helpers({
@@ -147,12 +143,12 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       },
       durationDays: numberOfDays,
       allDaySlot: false,
-      slotDuration: '00:30:00',
-      snapDuration: '00:' + MIN_ROUND_DURATION_MINUTES + ':00',
+      slotDuration: { minutes: 30 },
+      snapDuration: { minutes: MIN_ROUND_DURATION_MINUTES },
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: (DEFAULT_ROUND_DURATION_MINUTES / 60) + ':00',
+      defaultTimedEventDuration: { minutes: DEFAULT_ROUND_DURATION_MINUTES },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
