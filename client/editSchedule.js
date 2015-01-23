@@ -47,7 +47,6 @@ Template.editSchedule.events({
   },
   'click #addCalendarEvent button': function(e, t) {
     var newRound = {};
-    extendRound(newRound, this.competitionId);
     editingRoundReact.set(newRound);
     t.$('#addEditSomethingModal').modal('show');
   },
@@ -55,26 +54,6 @@ Template.editSchedule.events({
     editingRoundReact.set(null);
   },
 });
-
-function getRoundsWithSchedule(competitionId) {
-  var rounds = Rounds.find({
-    competitionId: competitionId,
-  }, {
-    fields: {
-      eventCode: 1,
-      roundCode: 1,
-
-      startMinutes: 1,
-      durationMinutes: 1,
-      nthDay: 1,
-      title: 1,
-    }
-  }).fetch();
-  _.each(rounds, function(round) {
-    extendRound(round, competitionId);
-  });
-  return rounds;
-}
 
 function getScheduledRounds(competitionId) {
   var rounds = Rounds.find({
@@ -91,9 +70,6 @@ function getScheduledRounds(competitionId) {
       title: 1,
     }
   }).fetch();
-  _.each(rounds, function(round) {
-    extendRound(round, competitionId);
-  });
   return rounds;
 }
 function getUnscheduledRounds(competitionId) {
@@ -110,16 +86,7 @@ function getUnscheduledRounds(competitionId) {
       title: 1,
     }
   }).fetch();
-  _.each(rounds, function(round) {
-    extendRound(round, competitionId);
-  });
   return rounds;
-}
-function extendRound(round, competitionId) {
-  var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
-  round.startMinutes = round.startMinutes || calendarStartMinutes;
-  round.durationMinutes = round.durationMinutes || DEFAULT_ROUND_DURATION_MINUTES;
-  round.nthDay = round.nthDay || DEFAULT_ROUND_NTHDAY;
 }
 
 // This is global so competitionSchedule.js can use it
@@ -185,6 +152,9 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
+      defaultTimedEventDuration: function() {
+        return clockFormat({millis: DEFAULT_ROUND_DURATION_MINUTES * 60 * 1000});
+      },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
@@ -207,13 +177,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
           var day = startDateMoment.clone().add(round.nthDay, 'days');
           var start = day.clone().add(round.startMinutes, 'minutes');
           var end = start.clone().add(round.durationMinutes, 'minutes');
-          var title;
-          // Rounds don't necessarily have events, such as Lunch or Registration.
-          if(round.eventCode) {
-            title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
-          } else {
-            title = round.title;
-          }
+          var title = roundTitle(round);
           var color = round.eventCode ? "" : "#aa0000";
           var calEvent = {
             id: round._id,
@@ -229,7 +193,6 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       },
       eventClick: function(calEvent, jsEvent, view) {
         var round = Rounds.findOne({ _id: calEvent.id });
-        extendRound(round, competitionId);
         editingRoundReact.set(round);
         $editModal.modal('show');
       },
@@ -244,7 +207,6 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
   template.autorun(function() {
     var data = Template.currentData();
-    // calendarRounds = getRoundsWithSchedule(data.competitionId);
     calendarRounds = getScheduledRounds(data.competitionId);
     $calendarDiv.fullCalendar('refetchEvents');
   });
@@ -257,7 +219,6 @@ Template.editSchedule.rendered = function() {
   // events.
   template.autorun(function() {
     var data = Template.currentData();
-    // var rounds = getRoundsWithSchedule(data.competitionId);
     var rounds = getScheduledRounds(data.competitionId);
     var maxNthDay = _.max(_.pluck(rounds, 'nthDay'));
 
@@ -271,7 +232,6 @@ Template.editSchedule.rendered = function() {
   });
   template.autorun(function() {
     var data = Template.currentData();
-    // var rounds = getRoundsWithSchedule(data.competitionId);
     var rounds = getScheduledRounds(data.competitionId);
     var earliestStartMinutes = _.min(_.pluck(rounds, "startMinutes"));
     var latestEndMinutes = _.max(_.map(rounds, function(round) {
@@ -317,20 +277,16 @@ Template.unscheduledRound.rendered = function() {
   var template = this;
   var $unscheduledRound = template.$('.fc-event');
 
-  // store data so the calendar knows to render an event upon drop
-  // $unscheduledRound.data('event');
-
   // make the event draggable using jQuery UI
   $unscheduledRound.draggable({
     zIndex: 999,
-    revert: false,      // will cause the event to go back to its
-    revertDuration: 0  //  original position after the drag
+    revert: false,
   });
 };
 
 Template.unscheduledRound.helpers({
     title: function() {
-      return wca.eventByCode[this.eventCode].name + ": " + wca.roundByCode[this.roundCode].name;
+      return roundTitle(this);
     },
 });
 

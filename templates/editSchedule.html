@@ -47,9 +47,9 @@
         </form>
         <h3>Unscheduled Rounds:</h3>
         <div id="unscheduled-rounds">
-            {{#each unscheduledRounds}}
-                {{> unscheduledRound }}
-            {{/each}}
+          {{#each unscheduledRounds}}
+              {{> unscheduledRound }}
+          {{/each}}
         </div>
       </div>
 
@@ -71,7 +71,7 @@
 </template>
 
 <template name="unscheduledRound">
-  <div class="fc-event" data-round-id="{{ _id }}" data-duration="01:00">{{ title }}</div>
+  <div class="fc-event" data-round-id="{{ _id }}">{{ title }}</div>
 </template>
 
 <template name="addEditSomethingModal">
