@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.5.4
+ *  jChester - v0.6.0
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -8,7 +8,7 @@
  */
 (function($) {
 
-  var INPUT_WIDTH_PIXELS = 75;
+  var INPUT_WIDTH_PIXELS = 80;
   var INTEGER_INPUT_WIDTH_PIXELS = 45; // Enough for 3 digits, which is *plenty*
 
   function isInt(n) {
@@ -88,20 +88,21 @@
           millisStr = millisStr.replace(/ /g, "");
           // If the user inputed only digits, treat this as a "lazy" input.
           if(millisStr.match(/^\d+$/)) {
-            // Only allow up to 2 digits for minutes, 2 digits for seconds,
-            // and 2 digits for decimal places.
+            // Only allow up to 1 digit for hours, 2 digits for minutes,
+            // 2 digits for seconds, and 2 digits for decimal places.
             // The WCA doesn't allow times over an hour, and supporting
             // more digits would overflow the space allocated for our inputs,
             // which would require keeping $inputMillis and $inputMillisMask
             // horizontally scroll-locked, which seems really hard/annoying.
-            var maxLength = 2 + 2 + 2;
+            var maxLength = 1 + 2 + 2 + 2;
             if(millisStr.length > maxLength) {
               millisStr = millisStr.substring(0, maxLength);
             }
             var len = millisStr.length;
             var decimalsStr = millisStr.substring(len - 2, len);
             var secondsStr = millisStr.substring(len - 4, len - 2);
-            var minutesStr = millisStr.substring(0, len - 4);
+            var minutesStr = millisStr.substring(len - 6, len - 4);
+            var hoursStr = millisStr.substring(0, len - 6);
 
             var newClockFormat = "";
             var mask = "";
@@ -113,9 +114,15 @@
               newClockFormat += str;
               mask += str;
             };
-            append(minutesStr, 2);
-            append(":", 0);
-            append(secondsStr, 2);
+            if(hoursStr.length > 0) {
+              append(hoursStr, 1);
+              append(":", 0);
+            }
+            if(minutesStr.length > 0) {
+              append(minutesStr, mask.length > 0 ? 2 : 1);
+              append(":", 0);
+            }
+            append(secondsStr, mask.length > 0 ? 2 : 1);
             append(".", 0);
             append(decimalsStr, 2);
             // Make space for the colon and period. Note that we don't
@@ -323,6 +330,7 @@
 
   var MILLIS_PER_SECOND = 1000;
   var MILLIS_PER_MINUTE = 60 * MILLIS_PER_SECOND;
+  var MILLIS_PER_HOUR = 60 * MILLIS_PER_MINUTE;
   $.extend({
     stopwatchFormatToSolveTime: function(stopwatchFormat, isMoveCount) {
       if(stopwatchFormat.length === 0) {
@@ -354,19 +362,20 @@
         };
       }
 
-      var m = stopwatchFormat.match(/^(?:(\d*):)?(\d+)?(?:[.,](\d*))?$/);
+      var m = stopwatchFormat.match(/^(?:(\d*):)??(?:(\d*):)?(\d+)?(?:[.,](\d*))?$/);
       if(!m) {
         throw "Invalid stopwatch format.";
       }
 
-      var minutes = parseInt(m[1] || "0");
-      var seconds = parseInt(m[2] || "0");
-      var decimalStr = m[3] || "";
+      var hours = parseInt(m[1] || "0");
+      var minutes = parseInt(m[2] || "0");
+      var seconds = parseInt(m[3] || "0");
+      var decimalStr = m[4] || "";
       var decimal = parseInt(decimalStr || "0");
       var denominator = Math.pow(10, decimalStr.length - 3); /* subtract 3 to get millis instead of seconds */
       var decimalValueInMillis = !decimal ? 0 : Math.round(decimal / denominator);
 
-      var millis = minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
+      var millis = hours * MILLIS_PER_HOUR + minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + decimalValueInMillis;
       var decimals = Math.min(3, decimalStr.length); /* max allowed decimals is 3 */
       return {
         millis: millis,
@@ -423,11 +432,15 @@
       }
 
       var millis = solveTime.millis;
-      var minutesField = Math.floor(millis / (60*1000));
-      millis %= (60*1000);
 
-      var secondsField = Math.floor(millis / 1000);
-      millis %= 1000;
+      var hoursField = Math.floor(millis / MILLIS_PER_HOUR);
+      millis %= MILLIS_PER_HOUR;
+
+      var minutesField = Math.floor(millis / MILLIS_PER_MINUTE);
+      millis %= MILLIS_PER_MINUTE;
+
+      var secondsField = Math.floor(millis / MILLIS_PER_SECOND);
+      millis %= MILLIS_PER_SECOND;
 
       function pad(toPad, padVal, minLength) {
         var padded = toPad + "";
@@ -437,11 +450,21 @@
         return padded;
       }
 
-      var stopwatchFormat;
-      if(minutesField) {
-        stopwatchFormat = minutesField + ":" + pad(secondsField, "0", 2);
+      var stopwatchFormat = "";
+      if(stopwatchFormat.length > 0) {
+        stopwatchFormat += ":" + pad(hoursField, "0", 2);
+      } else if(hoursField) {
+        stopwatchFormat += hoursField;
+      }
+      if(stopwatchFormat.length > 0) {
+        stopwatchFormat += ":" + pad(minutesField, "0", 2);
+      } else if(minutesField) {
+        stopwatchFormat += minutesField;
+      }
+      if(stopwatchFormat.length > 0) {
+        stopwatchFormat += ":" + pad(secondsField, "0", 2);
       } else {
-        stopwatchFormat = "" + secondsField;
+        stopwatchFormat += secondsField;
       }
       var decimals = solveTime.decimals;
       if(decimals > 0) {
