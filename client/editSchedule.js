@@ -7,7 +7,7 @@ var editingRoundReact = new ReactiveVar(null);
 Template.editSchedule.helpers({
   unscheduledRounds: function() {
     var rounds = getUnscheduledRounds(this.competitionId);
-    console.log(rounds);
+
     return rounds;
   },
   editingRound: function() {
@@ -153,7 +153,6 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
     var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
 
     var eventChanged = function(calEvent) {
-      console.log('event changed');
       var nthDay = calEvent.start.diff(startDateMoment, 'days');
       var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
 
