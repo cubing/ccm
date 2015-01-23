@@ -27,40 +27,13 @@ Meteor.publish(null, function() {
   });
 });
 
-var getCompetitions = function() {
-  return Competitions.find(
-    {},
-    { fields: { wcaCompetitionId: 1, competitionName: 1, listed: 1 } }
-  );
-};
 Meteor.publish('competitions', function() {
-  return getCompetitions();
+  return api.getCompetitions();
 });
-
-HTTP.publish({collection: Competitions}, function(data) {
-  return getCompetitions();
-});
-
-function competitionUrlIdToId(competitionUrlId) {
-  var competition = Competitions.findOne({
-    $or: [
-      { _id: competitionUrlId },
-      { wcaCompetitionId: competitionUrlId },
-    ]
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
-  if(!competition) {
-    return null;
-  }
-  return competition._id;
-}
 
 Meteor.publish('competition', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -81,7 +54,7 @@ Meteor.publish('competition', function(competitionUrlId) {
 
 Meteor.publish('competitionRegistrations', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -98,7 +71,7 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
 Meteor.publish('competitorResults', function(competitionUrlId, competitorUniqueName) {
   check(competitionUrlId, String);
   check(competitorUniqueName, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -129,7 +102,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
   check(competitionUrlId, String);
   check(eventCode, String);
   check(nthRound, Number);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -153,7 +126,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
 
 Meteor.publish('competitionScrambles', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = competitionUrlIdToId(competitionUrlId);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
