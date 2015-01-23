@@ -152,9 +152,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: function() {
-        return clockFormat({millis: DEFAULT_ROUND_DURATION_MINUTES * 60 * 1000});
-      },
+      defaultTimedEventDuration: (DEFAULT_ROUND_DURATION_MINUTES / 60) + ':00',
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
