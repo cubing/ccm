@@ -2,9 +2,16 @@
   <div class="container-fluid">
 
     <div id="editEventsList">
-      <h2>
-        Events
-      </h2>
+      <div class="row">
+        <div class="col-xs-6">
+          <h2>
+            Events
+          </h2>
+        </div>
+        <div class="col-xs-6 text-right">
+            <span id="toggleCollapseAllEvents">Expand/Collapse All</span>
+        </div>
+      </div>
 
       <div class="row">
         {{#each events}}

@@ -1,0 +1,8 @@
+#toggleCollapseAllEvents {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#toggleCollapseAllEvents:hover {
+  text-decoration: none;
+}
