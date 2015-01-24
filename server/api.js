@@ -30,14 +30,14 @@ api = {
 
 // TODO - someday when we're rich and successful, we'll have to paginate this,
 // and perhaps unify it with the competitions publication in publications.js
-HTTP.publish({name: '/api/competitions'}, function() {
+HTTP.publish({name: '/api/v0/competitions'}, function() {
   return api.getCompetitions();
 });
 
-HTTP.publish({name: '/api/competitions/:competitionUrlId/registrations'}, function() {
+HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/registrations'}, function() {
   var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
-    return [];
+    throw new Meteor.Error(404, "Competition not found");
   }
 
   var registrations = Registrations.find({
@@ -55,10 +55,10 @@ HTTP.publish({name: '/api/competitions/:competitionUrlId/registrations'}, functi
   return registrations;
 });
 
-HTTP.publish({name: '/api/competitions/:competitionUrlId/rounds'}, function() {
+HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/rounds'}, function() {
   var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
-    return null;
+    throw new Meteor.Error(404, "Competition not found");
   }
 
   var rounds = Rounds.find({
@@ -68,7 +68,7 @@ HTTP.publish({name: '/api/competitions/:competitionUrlId/rounds'}, function() {
 });
 
 HTTP.methods({
-  '/api/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results': {
+  '/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results': {
     get: function(data) {
       var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
       if(!competitionId) {
