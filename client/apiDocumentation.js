@@ -4,8 +4,7 @@ var ajaxer = function(PATH, DATA, CALLBACK) {
   $.get(PATH, DATA).done(function(data) {
     CALLBACK(data);
   }).fail(function(xhr, textStatus, error) {
-    // TODO - >>> get the actual error text from the server, it's useful!<<<
-    CALLBACK(null, "Error " + xhr.status + ": " + error);
+    CALLBACK(null, xhr.responseText);
   });
 };
 
@@ -117,8 +116,10 @@ Template.apiEndpoint.events({
     var data = getQueryData(this.queryParams, paramValues);
     ajaxer(path, data, function(data, error) {
       if(error) {
+        $output.addClass("api-error");
         $output.text(error);
       } else {
+        $output.removeClass("api-error");
         $output.text(JSON.stringify(data, null, 2));
         hljs.highlightBlock($output[0]);
       }
