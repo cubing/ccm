@@ -221,10 +221,10 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
         // assert that every solve in solves is millis or every solve is moveCount
         if(isMillis) {
           assert(solve.millis);
-          assert(!solve.solveCount);
+          assert(!solve.moveCount);
         } else {
           assert(!solve.millis);
-          assert(solve.solveCount);
+          assert(solve.moveCount);
         }
         value = solve.millis || solve.moveCount || 0;
       }

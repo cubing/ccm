@@ -550,6 +550,7 @@ if(Meteor.isServer) {
         });
         var newRoundIds = [];
         wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
+          log.l0("adding data for round " + nthRound);
           var roundCode = wcaRound.roundId;
           var roundFormatCode = wcaRound.formatId;
           var roundId = Rounds.insert({
@@ -564,6 +565,7 @@ if(Meteor.isServer) {
 
           var softCutoff = null;
           wcaRound.results.forEach(function(wcaResult) {
+            log.l0("adding data for personId " + wcaResult.personId);
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
             registration.registeredEvents[wcaEvent.eventId] = true;
@@ -572,11 +574,11 @@ if(Meteor.isServer) {
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
             });
-            if(!solves[solves.length - 1].wcaValue) {
+            if(false/*<<<*/ && !solves[solves.length - 1].wcaValue) {
               // We're missing a solve, so this must be a combined round
               // and this competitor didn't make the soft cutoff.
               var roundInfo = wca.roundByCode[roundCode];
-              assert(roundInfo.combined);
+              //<<<assert(roundInfo.combined);
               var lastSolveIndex = -1;
               var minSolveTime = null;
               while(solves[lastSolveIndex + 1] && solves[lastSolveIndex + 1].wcaValue) {
