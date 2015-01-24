@@ -1,13 +1,5 @@
 var API_VERSION = "0";
 
-var ajaxer = function(PATH, DATA, CALLBACK) {
-  $.get(PATH, DATA).done(function(data) {
-    CALLBACK(data);
-  }).fail(function(xhr, textStatus, error) {
-    CALLBACK(null, xhr.responseText);
-  });
-};
-
 var descriptionByParam = {
   competitionUrlId: "WCA Id or _id of a competition",
 };
@@ -61,22 +53,20 @@ Template.apiEndpoint.helpers({
   jsCode: function() {
     var template = Template.instance();
 
-    var js = ajaxer.toString();
-    var lines = js.split("\n");
-    lines = lines.splice(1, lines.length - 2);
-    js = lines.join("\n");
-    js = js.replace(/PATH/g, JSON.stringify(this.path));
-    js = js.replace(/CALLBACK/g, "console.log");
-    js = js.replace(/null, /g, ""); // hacksss
     var paramValues = template.paramValuesReact.get();
-    js = replaceParameters(js, paramValues);
+    var pathStr = JSON.stringify(replaceParameters(this.path, paramValues));
 
+    var dataStr = "";
     var queryData = getQueryData(this.queryParams, paramValues);
     if(_.keys(queryData).length > 0) {
-      js = js.replace(/DATA/g, JSON.stringify(queryData));
-    } else {
-      js = js.replace(/, DATA/g, "");
+      dataStr = ", " + JSON.stringify(queryData);
     }
+
+    var js = "$.get(" + pathStr + dataStr + ").done(function(data) {\n" +
+             "  console.log(data);\n" +
+             "}).fail(function(xhr, textStatus, error) {\n" +
+             "  console.log(xhr.responseText);\n" +
+             "});";
 
     return js;
   },
@@ -114,15 +104,13 @@ Template.apiEndpoint.events({
     var paramValues = template.paramValuesReact.get();
     var path = replaceParameters(this.path, paramValues);
     var data = getQueryData(this.queryParams, paramValues);
-    ajaxer(path, data, function(data, error) {
-      if(error) {
-        $output.addClass("api-error");
-        $output.text(error);
-      } else {
-        $output.removeClass("api-error");
-        $output.text(JSON.stringify(data, null, 2));
-        hljs.highlightBlock($output[0]);
-      }
+    $.get(path, data).done(function(data) {
+      $output.removeClass("api-error");
+      $output.text(JSON.stringify(data, null, 2));
+      hljs.highlightBlock($output[0]);
+    }).fail(function(xhr, textStatus, error) {
+      $output.addClass("api-error");
+      $output.text(xhr.responseText);
     });
   },
   'click .js-clear-api': function(e, template) {
