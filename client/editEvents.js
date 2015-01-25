@@ -71,10 +71,13 @@ Template.editEvents.events({
     delete localStorage[this.eventCode + "visible"];
   },
   'click #collapseAllEvents': function() {
-    $('#editEventsList .panel-collapse').collapse('hide');
+    // While it looks weird to method chain collapse, I couldn't get it to work
+    // via passing hide:tru. You can't just call collapse('hide') because when
+    // you  manually call collapse() it defaults to toggling the element.
+    $('#editEventsList .collapse').collapse({toggle:false}).collapse('hide');
   },
   'click #expandAllEvents': function() {
-    $('#editEventsList .panel-collapse').collapse('show');
+    $('#editEventsList .collapse').collapse({toggle:false}).collapse('show');
   },
 });
 
