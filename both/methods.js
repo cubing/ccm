@@ -374,7 +374,6 @@ Meteor.methods({
     });
   },
   setSolveTime: function(resultId, solveIndex, solveTime) {
-    solveTime.wcaValue = wca.solveTimeToWcaValue(solveTime);
     var result = Results.findOne({
       _id: resultId,
     }, {
@@ -551,7 +550,7 @@ if(Meteor.isServer) {
         });
         var newRoundIds = [];
         wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
-          log.l0("adding data for round " + nthRound);
+          log.l1("adding data for round " + nthRound);
           var roundCode = wcaRound.roundId;
           var roundFormatCode = wcaRound.formatId;
           var roundId = Rounds.insert({
@@ -566,23 +565,23 @@ if(Meteor.isServer) {
 
           var softCutoff = null;
           wcaRound.results.forEach(function(wcaResult) {
-            log.l0("adding data for personId " + wcaResult.personId);
+            log.l2("adding data for personId " + wcaResult.personId);
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
             registration.registeredEvents[wcaEvent.eventId] = true;
             registration.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
-              return wca.valueToSolveTime(wcaValue, wcaEvent.eventId);
+              return wca.wcaValueToSolveTime(wcaValue, wcaEvent.eventId);
             });
-            if(false/*<<<*/ && !solves[solves.length - 1].wcaValue) {
+            if(!solves[solves.length - 1]) {
               // We're missing a solve, so this must be a combined round
               // and this competitor didn't make the soft cutoff.
               var roundInfo = wca.roundByCode[roundCode];
-              //<<<assert(roundInfo.combined);
+              assert(roundInfo.combined);
               var lastSolveIndex = -1;
               var minSolveTime = null;
-              while(solves[lastSolveIndex + 1] && solves[lastSolveIndex + 1].wcaValue) {
+              while(solves[lastSolveIndex + 1] && solves[lastSolveIndex + 1]) {
                 lastSolveIndex++;
                 var lastSolveTime = solves[lastSolveIndex];
                 if(!minSolveTime || wca.compareSolveTimes(lastSolveTime, minSolveTime) < 0) {
@@ -610,7 +609,7 @@ if(Meteor.isServer) {
               position: wcaResult.position,
               solves: solves,
             };
-            var statistics = wca.computeSolvesStatistics(solves, roundFormatCode, roundCode);
+            var statistics = wca.computeSolvesStatistics(solves, roundFormatCode);
             _.extend(result, statistics);
             var id = Results.insert(
               result, {

@@ -74,12 +74,6 @@ clockFormat = function(solveTime, isAverage) {
     // solveTime is undefined when no data has been entered yet.
     return "";
   }
-  if(solveTime.wcaValue === 0) {
-    // A wcaValue of 0 means "nothing happened here", so we just show an
-    // empty string, rather than something like "0.00" which would look like
-    // clutter.
-    return "";
-  }
   if(solveTime.moveCount) {
     // jChester's solveTimeToStopwatchFormat doesn't handle FMC, which is fine,
     // FMC is *weird*.
