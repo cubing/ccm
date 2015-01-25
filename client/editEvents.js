@@ -70,14 +70,11 @@ Template.editEvents.events({
   'hide.bs.collapse .collapse': function(e) {
     delete localStorage[this.eventCode + "visible"];
   },
-  'click #toggleCollapseAllEvents': function() {
-    var collapsedEvents = $('#editEventsList [data-toggle="collapse"]').hasClass('collapsed');
-
-    if(collapsedEvents) {
-      $('#editEventsList .panel-collapse').collapse('show');
-    } else {
-      $('#editEventsList .panel-collapse').collapse('hide');
-    }
+  'click #collapseAllEvents': function() {
+    $('#editEventsList .panel-collapse').collapse('hide');
+  },
+  'click #expandAllEvents': function() {
+    $('#editEventsList .panel-collapse').collapse('show');
   },
 });
 
