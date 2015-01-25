@@ -233,13 +233,11 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
         }
         value = solve.millis || solve.moveCount || 0;
       }
-      if(roundFormat.trimBestAndWorst && i == bestIndex) {
-        return;
-      } else if(roundFormat.trimBestAndWorst && i == worstIndex) {
-        return;
+      var excluded = roundFormat.trimBestAndWorst && (i == bestIndex || i == worstIndex);
+      if(!excluded) {
+        sum += value;
+        solveCount++;
       }
-      sum += value;
-      solveCount++;
     });
 
     if(sum == Infinity) {
@@ -280,7 +278,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
 };
 
 wca.penalties = {};
-_.each([
+[
   'DNF',
   'DNS',
 
@@ -304,7 +302,7 @@ _.each([
   'PLUSTWO_STOP_PALMS_NOT_DOWN',
   // https://www.worldcubeassociation.org/regulations/#A6e
   'PLUSTWO_STOP_TOUCHED_PUZZLE_BEFORE_JUDGE_INSPECTED',
-], function(penaltyName) {
+].forEach(function(penaltyName) {
   wca.penalties[penaltyName] = penaltyName;
 });
 
@@ -337,7 +335,7 @@ wca.softCutoffFormats = [
   }
 ];
 wca.softCutoffFormatByCode = {};
-_.each(wca.softCutoffFormats, function(softCutoffFormat) {
+wca.softCutoffFormats.forEach(function(softCutoffFormat) {
   wca.softCutoffFormatByCode[softCutoffFormat.code] = softCutoffFormat;
 });
 
@@ -539,7 +537,7 @@ wca.events = [
 ];
 
 wca.eventByCode = {};
-_.each(wca.events, function(event) {
+wca.events.forEach(function(event) {
   wca.eventByCode[event.code] = event;
 });
 
@@ -603,7 +601,7 @@ wca.formats = [
 ];
 
 wca.formatByCode = {};
-_.each(wca.formats, function(format) {
+wca.formats.forEach(function(format) {
   wca.formatByCode[format.code] = format;
 });
 
@@ -641,7 +639,7 @@ wca.eventAllowsCutoffs = function(eventCode) {
 
 // https://www.worldcubeassociation.org/regulations/#A1a1
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE = {};
-_.each(_.keys(wca.formatsByEventCode), function(eventCode) {
+Object.keys(wca.formatsByEventCode).forEach(function(eventCode) {
   wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCode] = 10*60;
 });
 wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['444bf'] = 60*60;
@@ -650,8 +648,12 @@ wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['333mbf'] = 60*60;
 
 // Country codes
 // Grabbing these from: https://github.com/OpenBookPrices/country-data
-wca.countryISO2Codes = _.map(countries, function(data, key) { return data.alpha2; });
-wca.countryISO2AutoformOptions = _.map(countries, function(data, key) { return {label: data.name, value: data.alpha2 }; });
+if(typeof(countries) === "undefined") {
+  // Dirty hack to let us unit test this file without loading country data.
+  countries = [];
+}
+wca.countryISO2Codes = countries.map(function(data, key) { return data.alpha2; });
+wca.countryISO2AutoformOptions = countries.map(function(data, key) { return {label: data.name, value: data.alpha2 }; });
 
 wca.genders = [
   {
