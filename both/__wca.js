@@ -199,11 +199,16 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode, roundCode) {
 
   var completedAverage = false;
   if(roundFormat.computeAverage) {
-    var hasEmptySolve = _.find(solves, function(solve) {
-      return !solve || ( !solve.millis && !solve.moveCount );
+    var emptySolveCount = 0;
+    solves.forEach(function(solve) {
+      if(!solve || ( !solve.millis && !solve.moveCount )) {
+        emptySolveCount++;
+      }
     });
-    if(!hasEmptySolve && solves.length == roundFormat.count) {
-      completedAverage = true;
+    if(roundFormat.trimBestAndWorst) {
+      completedAverage = ( emptySolveCount <= 1 );
+    } else {
+      completedAverage = ( emptySolveCount === 0 );
     }
   }
 

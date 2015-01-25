@@ -374,6 +374,7 @@ Meteor.methods({
     });
   },
   setSolveTime: function(resultId, solveIndex, solveTime) {
+    solveTime.wcaValue = wca.solveTimeToWcaValue(solveTime);
     var result = Results.findOne({
       _id: resultId,
     }, {
