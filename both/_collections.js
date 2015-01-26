@@ -551,18 +551,36 @@ Results.attachSchema({
     type: [SolveTime],
     defaultValue: [],
   },
+
   bestIndex: {
     type: Number,
     optional: true,
   },
+  // sortableBestValue is an order preserving (almost perfect) hash of the
+  // best solve. This gives us a field we can ask the database to index on.
+  sortableBestValue: {
+    type: Number,
+    min: 0,
+    optional: true,
+  },
+
   worstIndex: {
     type: Number,
     optional: true,
   },
+
   average: {
     type: SolveTime,
     optional: true,
   },
+  // sortableAverageValue is an order preserving (almost perfect) hash of the
+  // average. This gives us a field we can ask the database to index on.
+  sortableAverageValue: {
+    type: Number,
+    min: 0,
+    optional: true,
+  },
+
   // Force value to be current date (on server) upon insert
   // and prevent updates thereafter.
   createdAt: {
@@ -593,6 +611,20 @@ Results.attachSchema({
 if(Meteor.isServer) {
   Results._ensureIndex({
     competitionId: 1,
+  });
+
+  // Sorting by average, then best
+  Results._ensureIndex({
+    roundId: 1,
+    sortableAverageValue: 1,
+    sortableBestValue: 1,
+  });
+
+  // Sorting by best, then average
+  Results._ensureIndex({
+    roundId: 1,
+    sortableBestValue: 1,
+    sortableAverageValue: 1,
   });
 
   // One person should not appear twice in a round,

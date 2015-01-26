@@ -404,20 +404,70 @@ Meteor.methods({
     }
     result.solves[solveIndex] = solveTime;
 
-    var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
+    var $set = {
+      solves: result.solves
+    };
 
-    Results.update({
-      _id: resultId,
-    }, {
-      $set: {
-        solves: result.solves,
-        worstIndex: statistics.worstIndex,
-        bestIndex: statistics.bestIndex,
-        average: statistics.average,
-      }
-    });
+    var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
+    _.extend($set, statistics);
+
+    Results.update({ _id: resultId }, { $set: $set });
+    if(!this.isSimulation) {
+      RoundSorter.addRoundToSort(result.roundId);
+    }
   },
 });
+
+/*
+ * RoundSorter.addRoundToSort(roundId) guarantees that a round will
+ * be sorted within some COALESCE_MILLIS (the implementation is free
+ * to sort sooner if the system is not busy). Multiple calls with
+ * the same round will coalesce, but not push back our original
+ * guarantee.
+ * TODO - i don't know enough about node-fibers to think about what exactly this code will do when multiple DDP connections call it simultaneously.
+ */
+var RoundSorter = {
+  COALESCE_MILLIS: 500,
+  roundsToSortById: {},
+  addRoundToSort: function(roundId) {
+    if(!this.roundsToSortById[roundId]) {
+      this.roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
+    }
+  },
+  _handleSortTimer: function(roundId) {
+    delete this.roundsToSortById[roundId];
+
+    var $sort = {};
+
+    var roundFormat = wca.formatByCode[getRoundAttribute(roundId, 'formatCode')];
+    if(roundFormat.sortBy == "best") {
+      $sort.sortableBestValue = 1;
+      $sort.sortableAverageValue = 1;
+    } else if(roundFormat.sortBy == "average") {
+      $sort.sortableAverageValue = 1;
+      $sort.sortableBestValue = 1;
+    } else {
+      // uh-oh, unrecognized roundFormat, give up
+      assert(false);
+    }
+    // To ensure consistency in the face of ties, sort by registrationId.
+    $sort.registrationId = 1;
+
+    var results = Results.find({ roundId: roundId }, { $sort: $sort }).fetch();
+    var position = 0;
+    results.forEach(function(result, i) {
+      var tied = false;
+      var previousResult = results[i - 1];
+      if(previousResult) {
+        //<<< TODO check if tied >>>
+      }
+      if(!tied) {
+        position++;
+      }
+      Results.update({ _id: result._id }, { $set: { position: position } });
+    });
+  },
+};
 
 if(Meteor.isServer) {
   var child_process = Npm.require('child_process');

@@ -92,6 +92,7 @@ describe('wca', function() {
       it('average with double DNS', function() {
         var solves = [time(1200), dns(), time(1200), dns(), time(1200)];
         var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+        // https://www.worldcubeassociation.org/regulations/#9f9
         expect(stats.average).to.deep.equal(dnf());
         expect(stats.bestIndex).to.equal(0);
         expect(stats.worstIndex).to.equal(1);

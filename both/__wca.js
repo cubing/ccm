@@ -27,8 +27,8 @@ wca = {};
     Note that this is designed so that a smaller value means a better result.
 */
 
-var WCA_DNF_VALUE = -1;
-var WCA_DNS_VALUE = -2;
+wca.DNF_VALUE = -1;
+wca.DNS_VALUE = -2;
 
 var DNF_SOLVE_TIME = {
   puzzlesSolvedCount: 0,
@@ -55,10 +55,10 @@ wca.solveTimeToWcaValue = function(solveTime) {
     return 0;
   }
   if($.solveTimeIsDNF(solveTime)) {
-    return WCA_DNF_VALUE;
+    return wca.DNF_VALUE;
   }
   if($.solveTimeIsDNS(solveTime)) {
-    return WCA_DNS_VALUE;
+    return wca.DNS_VALUE;
   }
   if(solveTime.moveCount) {
     // If moveCount is set, assume we're dealing with an FMC solve.
@@ -159,10 +159,10 @@ wca.wcaValueToSolveTime = function(wcaValue, eventId) {
     // A wcaValue of 0 means "nothing happened here"
     return null;
   }
-  if(wcaValue == WCA_DNF_VALUE) {
+  if(wcaValue == wca.DNF_VALUE) {
     return DNF_SOLVE_TIME;
   }
-  if(wcaValue == WCA_DNS_VALUE) {
+  if(wcaValue == wca.DNS_VALUE) {
     return DNS_SOLVE_TIME;
   }
 
@@ -236,6 +236,25 @@ wca.solveTimeSorter = function(s1, s2) {
 
   return s1.wcaValue - s2.wcaValue;
 };
+
+function solveTimePerfectOrderedHash(solveTime) {
+  var MAX_INT = Math.pow(2, 32) - 1;
+  if(!solveTime) {
+    return MAX_INT;
+  }
+
+  var wcaValue = wca.solveTimeToWcaValue(solveTime);
+  // wcaValue has almost the sorting properties we need, except for the fact
+  // that DNFs and DNSs are negative values, when we really want them to be
+  // treated as impossibly large positive values
+  if(wcaValue == wca.DNF_VALUE) {
+    return MAX_INT;
+  }
+  if(wcaValue == wca.DNS_VALUE) {
+    return MAX_INT;
+  }
+  return wcaValue;
+}
 
 wca.computeSolvesStatistics = function(solves, roundFormatCode) {
   var roundFormat = wca.formatByCode[roundFormatCode];
@@ -331,10 +350,15 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
     averageSolveTime = null;
   }
 
+  var sortableBestValue = solveTimePerfectOrderedHash(bestSolve);
+  var sortableAverageValue = solveTimePerfectOrderedHash(averageSolveTime);
+
   return {
     bestIndex: bestIndex,
+    sortableBestValue: sortableBestValue,
     worstIndex: worstIndex,
     average: averageSolveTime,
+    sortableAverageValue: sortableAverageValue,
   };
 };
 
