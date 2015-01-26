@@ -286,6 +286,18 @@ Registrations.attachSchema({
   },
   uniqueName: {
     type: String,
+    unique: true,
+    custom: function(a) {
+      var compId = this.field('competitionId').value;
+      var uniqueMatch = Registrations.find({
+        competitionId: compId,
+        uniqueName: this.value,
+      }).count();
+
+      if(uniqueMatch > 0) {
+        return "notUnique";
+      }
+    }
   },
   wcaId: _.extend({}, WcaIdType, { optional: true }),
   countryId: CountryIdType,

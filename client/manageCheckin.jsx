@@ -67,9 +67,6 @@ AutoForm.addHooks('editRegistrationForm', {
   onSuccess: function(operation, result, template) {
     $("#modalEditRegistration").modal('hide');
   },
-  onError: function(operation, error, template) {
-    console.error(error);
-  },
 });
 
 var CheckinList = React.createClass({
