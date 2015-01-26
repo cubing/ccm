@@ -286,15 +286,14 @@ Registrations.attachSchema({
   },
   uniqueName: {
     type: String,
-    unique: true,
     custom: function(a) {
       var compId = this.field('competitionId').value;
-      var uniqueMatch = Registrations.find({
+      var uniqueMatch = Registrations.findOne({
         competitionId: compId,
         uniqueName: this.value,
-      }).count();
+      });
 
-      if(uniqueMatch > 0) {
+      if(uniqueMatch && this.isInsert) {
         return "notUnique";
       }
     }

@@ -54,6 +54,7 @@ Template.manageCheckin.events({
   },
   'hidden.bs.modal .modal': function(e, template) {
     selectedRegistrationReact.set(null);
+    AutoForm.resetForm('editRegistrationForm');
   },
 });
 
