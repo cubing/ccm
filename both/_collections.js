@@ -286,15 +286,20 @@ Registrations.attachSchema({
   },
   uniqueName: {
     type: String,
-    custom: function(a) {
+    custom: function() {
+      var docId = this.docId;
       var compId = this.field('competitionId').value;
-      var uniqueMatch = Registrations.findOne({
-        competitionId: compId,
-        uniqueName: this.value,
-      });
+      var uniqueName = this.value;
 
-      if(uniqueMatch && this.isInsert) {
-        return "notUnique";
+      if(Meteor.isServer) {
+        var uniqueMatch = Registrations.findOne({
+          competitionId: compId,
+          uniqueName: uniqueName,
+        });
+
+        if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
+          return "notUnique";
+        }
       }
     }
   },
