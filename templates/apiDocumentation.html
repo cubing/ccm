@@ -1,0 +1,76 @@
+<template name="apiDocumentation">
+  <div class="container">
+    <h3>CCM API v{{apiVersion}}</h3>
+
+    <p>
+      We have an api! For now, we're not documenting exactly *what* any of the GET endpoints return,
+      because our database schema is still in flux. Some useful links:
+      <ul>
+        <li>
+          <a href="https://github.com/jfly/ccm/blob/master/both/_collections.js">CCM database schema</a>
+        </li>
+        <li>
+          <a href="http://www.jflei.com/jChester/">SolveTime documentation</a>
+        </li>
+        <li>
+          <a href="https://github.com/jfly/ccm/blob/master/server/api.js">API source code</a>
+        </li>
+      </ul>
+      It should also be easy to test out the api with the interactive "documentation" below.
+      All examples are written in jQuery, but should port easily to other languages/libraries.
+    </p>
+
+    {{#each apiEndpoints}}
+      {{> apiEndpoint}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="apiEndpoint">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <code>{{method}} {{path}}</code>
+    </div>
+    <div class="panel-body">
+      <form class="form-horizontal">
+        {{#each params}}
+          <div class="form-group">
+            <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
+            <div class="col-sm-10">
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+            </div>
+          </div>
+        {{/each}}
+      </form>
+      <form class="form-horizontal">
+        {{#each queryParams}}
+          <div class="form-group">
+            <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
+            <div class="col-sm-10">
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+            </div>
+          </div>
+        {{/each}}
+      </form>
+      {{> hljs jsCode}}
+
+      <div class="btn-group btn-group-justified" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default js-run-api">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Run
+          </button>
+        </div>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default js-clear-api">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Clear
+          </button>
+        </div>
+      </div>
+      <pre><code class="js-api-output"></code></pre>
+    </div>
+  </div>
+</template>
+
+<template name="hljs">
+  <pre><code class="javascript"></code></pre>
+</template>

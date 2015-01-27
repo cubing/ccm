@@ -108,8 +108,7 @@ function getCompetitorsDoneAndTotal(roundId) {
   var actualSolveCount = 0;
   _.each(results, function(result) {
     _.each(result.solves, function(solve) {
-      if(solve.wcaValue !== 0) {
-        // wcaValue of 0 means "nothing"
+      if(solve) {
         actualSolveCount++;
       }
     });

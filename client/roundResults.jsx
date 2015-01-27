@@ -64,7 +64,7 @@ var ResultRow = React.createClass({
     if(competitionUrlId) {
       var path = Router.routes.competitorResults.path({
         competitionUrlId: competitionUrlId,
-        competitorUniqueName: result.uniqueName,//<<<
+        competitorUniqueName: result.uniqueName,
       });
       competitorNameNode = (
         <a href={path}>
@@ -72,7 +72,7 @@ var ResultRow = React.createClass({
         </a>
       );
     } else {
-      competitorNameNode = result.uniqueName;//<<<
+      competitorNameNode = result.uniqueName;
     }
 
     var roundFormat = this.props.roundFormat;
@@ -95,7 +95,7 @@ var ResultRow = React.createClass({
       'last-competitor-to-advance': this.props.drawLine,
     });
 
-    var trimBestAndWorst = result.average && result.average.wcaValue && roundFormat.trimBestAndWorst;
+    var trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
     var tiedPrevious = this.props.tiedPrevious;
     return (
       <tr className={rowClasses} data-result-id={result._id}>

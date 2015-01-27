@@ -7,13 +7,16 @@
   "main": "",
   "private": true,
   "devDependencies": {
-    "precommit-hook": "1.0.7",
+    "chai": "^1.10.0",
     "jscs": "1.8.1",
-    "jshint": "2.5.10"
+    "jshint": "2.5.10",
+    "mocha": "^2.1.0",
+    "precommit-hook": "1.0.7"
   },
   "scripts": {
     "run": "meteor",
-    "lint": "(cd ..; jshint . && jscs .)"
+    "lint": "(cd ..; jshint . && jscs .)",
+    "test": "mocha --recursive both/"
   },
   "config": {
     "precommit": {
@@ -21,5 +24,7 @@
       "validate": false
     }
   },
-  "precommit": [ "lint" ]
+  "precommit": [
+    "lint"
+  ]
 }

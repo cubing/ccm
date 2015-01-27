@@ -49,7 +49,7 @@ Meteor.methods({
         Results.find({
           roundId: round._id
         }).forEach(function(result) {
-          var wcaValues = _.pluck(result.solves, 'wcaValue');
+          var wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
 
           var roundDataEntryPath = Router.routes.dataEntry.path({
             competitionUrlId: competitionUrlId,

@@ -316,6 +316,10 @@ Router.route('/', {
   titlePrefix: '',
 });
 
+Router.route('/api', {
+  name: 'apiDocumentation',
+});
+
 Router.route('/settings/profile', {
   name: 'editProfile',
   titlePrefix: 'Edit profile',
