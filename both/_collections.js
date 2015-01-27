@@ -288,19 +288,20 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
     custom: function() {
-      var docId = this.docId;
+      // For now, we are using userId as a hidden field, but we should change it
+      // to this.docId once (if) it becomes available. However, right now, it is
+      // not. See: https://github.com/aldeed/meteor-simple-schema/issues/208
+      var userId = this.field('userId').value;
       var compId = this.field('competitionId').value;
       var uniqueName = this.value;
 
-      if(Meteor.isServer) {
-        var uniqueMatch = Registrations.findOne({
-          competitionId: compId,
-          uniqueName: uniqueName,
-        });
+      var uniqueMatch = Registrations.findOne({
+        competitionId: compId,
+        uniqueName: uniqueName,
+      });
 
-        if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
-          return "notUnique";
-        }
+      if(uniqueMatch && (this.isInsert || userId != uniqueMatch.userId)) {
+        return "notUnique";
       }
     }
   },
