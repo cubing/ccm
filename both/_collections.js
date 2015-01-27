@@ -249,7 +249,8 @@ var DobType = {
   label: "Birthdate",
   autoform: {
     afFieldInput: {
-      type: "bootstrap-datepicker"
+      type: "date",
+      placeholder: "MM/DD/YYYY",
     }
   },
 };
