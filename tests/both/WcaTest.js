@@ -237,7 +237,7 @@ describe('wca', function() {
         expect(stats.worstIndex).to.equal(0);
       });
       describe('multiblind', function() {
-        it('(later)', function() {
+        it('sorts correctly', function() {
           var solves = [mbf(1000, 1, 2), mbf(1200, 2, 2)];
           var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
