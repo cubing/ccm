@@ -168,6 +168,18 @@ Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
   },
+  round: function() {
+    return Rounds.findOne(this.roundId);
+  },
+  solveWarnings: function() {
+    var parentData = Template.parentData(1);
+    var roundId = parentData.roundId;
+    var hardCutoff = getRoundAttribute(roundId, "hardCutoff");
+    if(wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0) {
+      return [ 'Greater than hard cutoff' ];
+    }
+    return [];
+  },
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
     var result = Results.findOne({

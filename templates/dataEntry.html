@@ -59,13 +59,26 @@
         <div class="focusguard" id="focusguard-1" tabindex="0"></div>
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
+        {{#with round}}
+          <p>
+            {{#if softCutoff}}
+              Soft cutoff: {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
+            {{else}}
+              No soft cutoff
+            {{/if}}
+          </p>
+          <p>
+            Hard cutoff: {{clockFormat hardCutoff.time}}
+          </p>
+        {{/with}}
+
         {{#if selectedResultId}}
           <table class="table jChesterTable">
             <tbody>
               {{#each selectedSolves}}
-                <tr>
+                <tr class="{{#if solveWarnings}}has-warnings{{/if}}">
                   <td>
-                    <i class="fa fa-fw"></i>
+                    <i class="fa fa-fw" title="{{solveWarnings}}"></i>
                   </td>
                   <td>
                     {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}

@@ -85,6 +85,17 @@ wca.solveTimeToWcaValue = function(solveTime) {
 };
 
 wca.compareSolveTimes = function(s1, s2) {
+  if(!s1 && !s2) {
+    return 0;
+  }
+  // The only thing worse than a DNF and a DNS is an empty solve
+  if(!s1) {
+    return 1;
+  }
+  if(!s2) {
+    return -1;
+  }
+
   var s1Infinite = $.solveTimeIsDNF(s1) || $.solveTimeIsDNS(s1);
   var s2Infinite = $.solveTimeIsDNF(s2) || $.solveTimeIsDNS(s2);
   if(s1Infinite && s2Infinite) {

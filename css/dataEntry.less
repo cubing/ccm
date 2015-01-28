@@ -41,8 +41,11 @@
   content: "\f111"; /* fa-circle */
 }
 
-.jChesterTable tr.unsaved td:first-child i.fa {
+.jChesterTable tr.has-warnings td:first-child i.fa::before {
+  content: "\f06a"; /* fa-exclamation-circle */
+  color: red;
 }
+
 .jChesterTable tr.unsaved td:first-child i.fa::before {
   content: "\f10c"; /* fa-circle-o */
 }
