@@ -249,7 +249,8 @@ var DobType = {
   label: "Birthdate",
   autoform: {
     afFieldInput: {
-      type: "bootstrap-datepicker"
+      type: "date",
+      placeholder: "MM/DD/YYYY",
     }
   },
 };
@@ -286,6 +287,27 @@ Registrations.attachSchema({
   },
   uniqueName: {
     type: String,
+    custom: function() {
+      // this.docId is not available to the client on the first validation check
+      // due to a bug. When the server validation hits then the docId makes it
+      // back to the client.
+      // See: https://github.com/aldeed/meteor-collection2/pull/164
+      // And: https://github.com/aldeed/meteor-simple-schema/issues/208
+      var docId = this.docId;
+      var userId = this.field('userId').value;
+      var compId = this.field('competitionId').value;
+      var uniqueName = this.value;
+
+      var uniqueMatch = Registrations.findOne({
+        competitionId: compId,
+        uniqueName: uniqueName,
+      });
+
+      if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
+        return "notUnique";
+      }
+
+    }
   },
   wcaId: _.extend({}, WcaIdType, { optional: true }),
   countryId: CountryIdType,

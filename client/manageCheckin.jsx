@@ -54,6 +54,7 @@ Template.manageCheckin.events({
   },
   'hidden.bs.modal .modal': function(e, template) {
     selectedRegistrationReact.set(null);
+    AutoForm.resetForm('editRegistrationForm');
   },
 });
 
@@ -66,9 +67,6 @@ Template.modalEditRegistration.helpers({
 AutoForm.addHooks('editRegistrationForm', {
   onSuccess: function(operation, result, template) {
     $("#modalEditRegistration").modal('hide');
-  },
-  onError: function(operation, error, template) {
-    console.error(error);
   },
 });
 

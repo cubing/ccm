@@ -27,7 +27,8 @@
             {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
               <div class="modal-body">
                 <div class="form-group">
-                  {{> afFieldInput name="competitionId" type="hidden"}}
+                  {{> afFieldInput name="competitionId"}}
+                  {{> afFieldInput name="userId"}}
                   {{> afQuickField name="uniqueName"}}
                   {{> afQuickField name="wcaId"}}
                   {{> afQuickField name="countryId"}}
