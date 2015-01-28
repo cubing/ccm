@@ -333,6 +333,12 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   });
   results.forEach(function(result) {
     var registration = registrationById[result.registrationId];
+    if(!registration) {
+      // The registration for this result may not have been found by our earlier
+      // query because checkedInEvents hasn't been populated yet. Just silently
+      // continue here, knowing we'll get recalled when the data has arrived.
+      return;
+    }
     result.uniqueName = registration.uniqueName;
   });
 
