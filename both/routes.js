@@ -208,7 +208,7 @@ ViewRoundController = ViewCompetitionController.extend({
     }
 
     if(!this.params.eventCode) {
-      // TODO - https://github.com/jfly/ccm/issues/119
+      // TODO - https://github.com/cubing/ccm/issues/119
     } else if(!this.params.nthRound) {
       var newParams = _.extend({}, this.params);
       // If the user didn't specify a specific round for the given event,

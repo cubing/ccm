@@ -1,4 +1,4 @@
-Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/jfly/ccm.png?branch=master)](https://travis-ci.org/jfly/ccm)
+Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/ccm.png?branch=master)](https://travis-ci.org/cubing/ccm)
 =======
 
 ## Setup

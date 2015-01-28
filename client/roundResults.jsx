@@ -125,7 +125,7 @@ var ResultsList = React.createClass({
   getMeteorState: function() {
     var roundId = this.props.roundId;
 
-    // https://github.com/jfly/ccm/issues/75
+    // https://github.com/cubing/ccm/issues/75
     var results = getResultsWithUniqueNamesForRound(roundId, this.props.limit);
     // Asking meteor to sort is slower than just fetching and doing
     // it ourselves. So here we go.

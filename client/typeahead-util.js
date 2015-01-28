@@ -93,7 +93,7 @@ $.fn.typeahead = function(method) {
         if(e.which >= 37 && e.which <= 40) {
           // For arrow keys, don't get in the way of typeahead.js,
           // it wants to highlight rows.
-          // This fixes https://github.com/jfly/ccm/issues/112.
+          // This fixes https://github.com/cubing/ccm/issues/112.
           return;
         }
         setTimeout(function() {

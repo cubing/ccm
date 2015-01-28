@@ -1,4 +1,4 @@
-// Workaround for https://github.com/jfly/ccm/issues/148
+// Workaround for https://github.com/cubing/ccm/issues/148
 
 assert = function(condition, msg) {
   if(!condition) {
