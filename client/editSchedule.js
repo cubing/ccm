@@ -158,6 +158,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
           id: $(this).data('round-id'),
           start: date,
         };
+        $(this).remove();
 
         eventChanged(calEvent);
       },
@@ -274,7 +275,8 @@ Template.unscheduledRound.rendered = function() {
   // make the event draggable using jQuery UI
   $unscheduledRound.draggable({
     zIndex: 999,
-    revert: false,
+    revert: true,
+    revertDuration: 0,
   });
 };
 
