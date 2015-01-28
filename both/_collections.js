@@ -288,9 +288,12 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
     custom: function() {
-      // For now, we are using userId as a hidden field, but we should change it
-      // to this.docId once (if) it becomes available. However, right now, it is
-      // not. See: https://github.com/aldeed/meteor-simple-schema/issues/208
+      // this.docId is not available to the client on the first validation check
+      // due to a bug. When the server validation hits then the docId makes it
+      // back to the client.
+      // See: https://github.com/aldeed/meteor-collection2/pull/164
+      // And: https://github.com/aldeed/meteor-simple-schema/issues/208
+      var docId = this.docId;
       var userId = this.field('userId').value;
       var compId = this.field('competitionId').value;
       var uniqueName = this.value;
@@ -300,9 +303,10 @@ Registrations.attachSchema({
         uniqueName: uniqueName,
       });
 
-      if(uniqueMatch && (this.isInsert || userId != uniqueMatch.userId)) {
+      if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
         return "notUnique";
       }
+
     }
   },
   wcaId: _.extend({}, WcaIdType, { optional: true }),
