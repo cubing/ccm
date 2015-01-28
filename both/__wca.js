@@ -282,13 +282,13 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
         }
       }
     }
-    if(!worstSolve || wca.compareSolveTimes(solve, worstSolve) > 0) {
-      worstIndex = i;
-      worstSolve = solve;
-    }
     if(!bestSolve || wca.compareSolveTimes(solve, bestSolve) < 0) {
       bestIndex = i;
       bestSolve = solve;
+    }
+    if(!worstSolve || wca.compareSolveTimes(solve, worstSolve) >= 0) {
+      worstIndex = i;
+      worstSolve = solve;
     }
   });
 

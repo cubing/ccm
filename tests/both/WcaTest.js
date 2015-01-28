@@ -86,7 +86,7 @@ describe('wca', function() {
         var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
         expect(stats.average).to.deep.equal(dnf());
         expect(stats.bestIndex).to.equal(0);
-        expect(stats.worstIndex).to.equal(1);
+        expect(stats.worstIndex).to.equal(3);
       });
 
       it('average with double DNS', function() {
@@ -95,7 +95,7 @@ describe('wca', function() {
         // https://www.worldcubeassociation.org/regulations/#9f9
         expect(stats.average).to.deep.equal(dnf());
         expect(stats.bestIndex).to.equal(0);
-        expect(stats.worstIndex).to.equal(1);
+        expect(stats.worstIndex).to.equal(3);
       });
 
       it('average with soft cutoff', function() {
@@ -121,6 +121,15 @@ describe('wca', function() {
         expect(stats.bestIndex).to.equal(3);
         expect(stats.worstIndex).to.equal(0);
       });
+
+      it('average with 5 identical times', function() {
+        var solves = [time(555), time(555), time(555), time(555), time(555)];
+        var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+        expect(stats.average).to.deep.equal(time(555));
+        // We don't particularly care which of these 5 identical solves is
+        // best or worst, but we do care that they are different solves.
+        expect(stats.bestIndex).to.not.equal(stats.worstIndex);
+      });
     });
 
     describe('mean of three', function() {
@@ -131,7 +140,7 @@ describe('wca', function() {
         var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
         expect(stats.average).to.deep.equal(time(2200));
         expect(stats.bestIndex).to.equal(1);
-        expect(stats.worstIndex).to.equal(0);
+        expect(stats.worstIndex).to.equal(2);
       });
 
       it('mean with DNF', function() {
@@ -160,7 +169,7 @@ describe('wca', function() {
           var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(2200));
           expect(stats.bestIndex).to.equal(1);
-          expect(stats.worstIndex).to.equal(0);
+          expect(stats.worstIndex).to.equal(2);
         });
 
         it('with DNF', function() {
