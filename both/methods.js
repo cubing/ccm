@@ -442,7 +442,6 @@ var RoundSorter = {
     var roundFormat = wca.formatByCode[getRoundAttribute(roundId, 'formatCode')];
     if(roundFormat.sortBy == "best") {
       $sort.sortableBestValue = 1;
-      $sort.sortableAverageValue = 1;
     } else if(roundFormat.sortBy == "average") {
       $sort.sortableAverageValue = 1;
       $sort.sortableBestValue = 1;
@@ -450,8 +449,6 @@ var RoundSorter = {
       // uh-oh, unrecognized roundFormat, give up
       assert(false);
     }
-    // To ensure consistency in the face of ties, sort by registrationId.
-    $sort.registrationId = 1;
 
     var results = Results.find({ roundId: roundId }, { $sort: $sort }).fetch();
     var position = 0;
@@ -459,7 +456,20 @@ var RoundSorter = {
       var tied = false;
       var previousResult = results[i - 1];
       if(previousResult) {
-        //<<< TODO check if tied >>>
+        var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
+        if(roundFormat.sortBy == "average") {
+          var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
+          if(tiedAverage && tiedBest) {
+            tied = true;
+          }
+        } else if(roundFormat.sortBy == "best") {
+          if(tiedBest) {
+            tied = true;
+          }
+        } else {
+          // uh-oh, unrecognized roundFormat, give up
+          assert(false);
+        }
       }
       if(!tied) {
         position++;
