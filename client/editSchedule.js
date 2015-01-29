@@ -154,11 +154,10 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       contentHeight: 'auto',
       droppable: true,
       drop: function(date) {
-        var calEvent;
         var roundId = $(this).data('round-id');
 
         if(roundId) {
-          calEvent = {
+          var calEvent = {
             id: roundId,
             start: date,
           };
