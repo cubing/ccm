@@ -177,7 +177,8 @@ Template.roundDataEntry.helpers({
     var parentData = Template.parentData(1);
     var roundId = parentData.roundId;
     var hardCutoff = getRoundAttribute(roundId, "hardCutoff");
-    if(wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0) {
+    var violatesHardCutoff = this.solveTime && wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0 && !$.solveTimeIsDNF(this.solveTime) && !$.solveTimeIsDNS(this.solveTime);
+    if(violatesHardCutoff) {
       warnings.push([ 'Greater than hard cutoff' ]);
     }
     return warnings;

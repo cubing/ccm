@@ -84,6 +84,13 @@
                     {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
                   </td>
                 </tr>
+                {{#each solveWarnings}}
+                  <tr>
+                    <td colspan="2">
+                      <span class="label label-danger">{{this}}</span>
+                    </td>
+                  </tr>
+                {{/each}}
               {{/each}}
             </tbody>
           </table>
