@@ -54,14 +54,21 @@ wca.solveTimeToWcaValue = function(solveTime) {
     // A wcaValue of 0 means "nothing happened here"
     return 0;
   }
-  if($.solveTimeIsDNF(solveTime)) {
+  if(jChester.solveTimeIsDNF(solveTime)) {
     return wca.DNF_VALUE;
   }
-  if($.solveTimeIsDNS(solveTime)) {
+  if(jChester.solveTimeIsDNS(solveTime)) {
     return wca.DNS_VALUE;
   }
   if(solveTime.moveCount) {
     // If moveCount is set, assume we're dealing with an FMC solve.
+    // Furthermore, if decimals is set, assume we're dealing with an FMC
+    // average.
+    if(solveTime.decimals) {
+      // The average field for FMC is bizarre:
+      // it's the average times 100 rounded to the nearest integer.
+      return Math.round(100 * solveTime.moveCount);
+    }
     return solveTime.moveCount;
   } else if(isMBFSolveTime(solveTime)) {
     var puzzlesUnsolvedCount = solveTime.puzzlesAttemptedCount - solveTime.puzzlesSolvedCount;
@@ -85,76 +92,9 @@ wca.solveTimeToWcaValue = function(solveTime) {
 };
 
 wca.compareSolveTimes = function(s1, s2) {
-  if(!s1 && !s2) {
-    return 0;
-  }
-  // The only thing worse than a DNF and a DNS is an empty solve
-  if(!s1) {
-    return 1;
-  }
-  if(!s2) {
-    return -1;
-  }
-
-  var s1Infinite = $.solveTimeIsDNF(s1) || $.solveTimeIsDNS(s1);
-  var s2Infinite = $.solveTimeIsDNF(s2) || $.solveTimeIsDNS(s2);
-  if(s1Infinite && s2Infinite) {
-    return 0;
-  }
-  if(s1Infinite) {
-    return 1;
-  }
-  if(s2Infinite) {
-    return -1;
-  }
-
-  // Verify that these are both timed solves, or both FMC solves
-  if(s1.millis) {
-    assert(!s1.moveCount);
-    assert(s2.millis);
-    assert(!s2.moveCount);
-  } else {
-    assert(s1.moveCount);
-    assert(!s1.millis);
-    assert(s2.moveCount);
-  }
-
-  if(s1.moveCount) {
-    // If moveCount is set, assume we're dealing with an FMC solve.
-    return s1.moveCount - s2.moveCount;
-  } else if(isMBFSolveTime(s1)) {
-    assert(isMBFSolveTime(s2));
-    // For Multiple Blindfolded Solving, rankings are assessed based on number
-    // of puzzles solved minus the number of puzzles not solved, where a
-    // greater difference is better. If the difference is less than 0, or if
-    // only 1 puzzle is solved, the attempt is considered unsolved (DNF). If
-    // competitors achieve the same result, rankings are assessed based on
-    // total time, where the shorter recorded time is better. If competitors
-    // achieve the same result and the same time, rankings are assessed based
-    // on the number of puzzles the competitors failed to solve, where fewer
-    // unsolved puzzles is better.
-    //  https://www.worldcubeassociation.org/regulations/#9f12c
-    var s1_unsolved = s1.puzzlesAttemptedCount - s1.puzzlesSolvedCount;
-    var s2_unsolved = s2.puzzlesAttemptedCount - s2.puzzlesSolvedCount;
-    var score1 = s1.puzzlesSolvedCount - s1_unsolved;
-    var score2 = s2.puzzlesSolvedCount - s2_unsolved;
-    if(score1 > score2) {
-      // "greater difference is better"
-      return -1;
-    } else if(s1.millis < s2.millis) {
-      // "shorter recorded time is better"
-      return -1;
-    } else if(s1_unsolved < s2_unsolved) {
-      // "fewer unsolved puzzles is better"
-      return -1;
-    } else {
-      // Everything else was equal, so the SolveTimes must be equal.
-      return 0;
-    }
-  } else {
-    // Otherwise, it must be a regular solve.
-    return s1.millis - s2.millis;
-  }
+  var h1 = solveTimePerfectOrderedHash(s1);
+  var h2 = solveTimePerfectOrderedHash(s2);
+  return h1 - h2;
 };
 
 wca.maxSolveTime = function(s1, s2) {
@@ -208,46 +148,6 @@ wca.wcaValueToSolveTime = function(wcaValue, eventId) {
   }
 };
 
-wca.solveTimeSorter = function(s1, s2) {
-  if(s1 && !s1.wcaValue) {
-    s1 = null;
-  }
-  if(s2 && !s2.wcaValue) {
-    s2 = null;
-  }
-
-  // Note that we sort so that missing/empty data are last.
-  if(!s1 && !s2) {
-    return 0;
-  } else if(!s1) {
-    return 1;
-  } else if(!s2) {
-    return -1;
-  }
-
-  var dns1 = $.solveTimeIsDNS(s1);
-  var dns2 = $.solveTimeIsDNS(s2);
-  if(dns1 && dns2) {
-    return 0;
-  } else if(dns1) {
-    return 1;
-  } else if(dns2) {
-    return -1;
-  }
-
-  var dnf1 = $.solveTimeIsDNF(s1);
-  var dnf2 = $.solveTimeIsDNF(s2);
-  if(dnf1 && dnf2) {
-    return 0;
-  } else if(dnf1) {
-    return 1;
-  } else if(dnf2) {
-    return -1;
-  }
-
-  return s1.wcaValue - s2.wcaValue;
-};
-
 function solveTimePerfectOrderedHash(solveTime) {
   var MAX_INT = Math.pow(2, 32) - 1;
   if(!solveTime) {
@@ -258,11 +158,12 @@ function solveTimePerfectOrderedHash(solveTime) {
   // wcaValue has almost the sorting properties we need, except for the fact
   // that DNFs and DNSs are negative values, when we really want them to be
   // treated as impossibly large positive values
-  if(wcaValue == wca.DNF_VALUE) {
-    return MAX_INT;
-  }
+  // Note that we treat DNS as even worse than DNF.
   if(wcaValue == wca.DNS_VALUE) {
-    return MAX_INT;
+    return MAX_INT - 1;
+  }
+  if(wcaValue == wca.DNF_VALUE) {
+    return MAX_INT - 2;
   }
   return wcaValue;
 }
@@ -277,7 +178,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
     if(!solve) {
       return;
     }
-    if(!$.solveTimeIsDNF(solve) && !$.solveTimeIsDNS(solve)) {
+    if(!jChester.solveTimeIsDN(solve)) {
       if(isTimed === null) {
         // We do not yet know if these solves are supposed to be timed
         // or FMC. This is the first non-DNF solve, so use it as our
@@ -321,7 +222,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
     var countingSolvesCount = 0;
     solves.forEach(function(solve, i) {
       var value;
-      if($.solveTimeIsDNF(solve) || $.solveTimeIsDNS(solve)) {
+      if(jChester.solveTimeIsDN(solve)) {
         value = Infinity;
       } else {
         value = isTimed ? solve.millis : solve.moveCount;
@@ -340,20 +241,18 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
         puzzlesAttemptedCount: 1,
       };
     } else {
-      // All timed results, averages, and means over 10 minutes are measured and
-      // rounded to the nearest second (e.g. x.4 becomes x, x.5 becomes x+1).
-      //  https://www.worldcubeassociation.org/regulations/#9f2
-      var average = Math.round(sum / countingSolvesCount);
+      var average;
       if(isTimed) {
+        average = Math.round(sum / countingSolvesCount);
         averageSolveTime = {
           millis: average,
           decimals: 2,
         };
       } else {
-        // The average field for FMC is bizarre:
-        // it's the average times 100 rounded to the nearest integer.
+        average = Math.round(100 * (sum / countingSolvesCount)) / 100;
         averageSolveTime = {
-          moveCount: Math.round(100 * average)
+          moveCount: average,
+          decimals: 2,
         };
       }
     }

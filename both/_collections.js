@@ -405,6 +405,7 @@ SolveTime = new SimpleSchema({
   },
   moveCount: {
     type: Number,
+    decimal: true, // To support FMC average, which contains decimals
     min: 0,
     optional: true,
   },
@@ -506,13 +507,15 @@ Rounds.attachSchema({
           }
           var eventCodeField = this.field("eventCode");
           if(eventCodeField.isSet) {
-            return {
-              millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCodeField.value],
-              decimals: 0,
-            };
-          } else {
-            this.unset();
+            var eventCode = eventCodeField.value;
+            if(wca.eventAllowsCutoffs(eventCode)) {
+              return {
+                millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCode],
+                decimals: 0,
+              };
+            }
           }
+          this.unset();
         },
       }
     }),

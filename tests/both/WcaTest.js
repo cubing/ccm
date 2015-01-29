@@ -5,17 +5,6 @@ var expect = require("chai").expect;
 // global scope for it.
 global.assert = assert;
 
-// Hacking to stub out jQuery
-global.jQuery = {};
-global.$ = jQuery;
-jQuery.fn = {};
-jQuery.extend = function(a) {
-  for(var k in a) {
-    $[k] = a[k];
-  }
-  return $;
-};
-
 require("../../both/__wca.js");
 require("../../both/components/jChester.js");
 
@@ -53,6 +42,19 @@ function dns() {
 }
 
 describe('wca', function() {
+  describe('compareSolveTimes', function() {
+    it('DNF == DNF', function() {
+      expect(wca.compareSolveTimes(dnf(), dnf())).to.equal(0);
+    });
+    it('DNS == DNS', function() {
+      expect(wca.compareSolveTimes(dns(), dns())).to.equal(0);
+    });
+    it('DNS > DNF', function() {
+      expect(wca.compareSolveTimes(dns(), dnf())).to.be.gt(0);
+      expect(wca.compareSolveTimes(dnf(), dns())).to.be.lt(0);
+    });
+  });
+
   describe('computeSolvesStatistics', function() {
     describe('average of five', function() {
       var roundFormatCode = 'a';
@@ -81,7 +83,7 @@ describe('wca', function() {
         expect(stats.worstIndex).to.equal(3);
       });
 
-      it('average with double DNF', function() {
+      it('average with double dnf', function() {
         var solves = [time(1200), dnf(), time(1200), dnf(), time(1200)];
         var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
         expect(stats.average).to.deep.equal(dnf());
@@ -192,10 +194,14 @@ describe('wca', function() {
 
       describe('fmc', function() {
         it('simple fmc', function() {
-          var solves = [moves(33), moves(42), moves(33)];
+          var solves = [moves(27), moves(29), moves(24)];
           var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
-          expect(stats.average).to.deep.equal(moves(3600));
-          expect(stats.bestIndex).to.equal(0);
+
+          var fmcAverage = moves(26.67);
+          fmcAverage.decimals = 2;
+          expect(stats.average).to.deep.equal(fmcAverage);
+
+          expect(stats.bestIndex).to.equal(2);
           expect(stats.worstIndex).to.equal(1);
         });
 
