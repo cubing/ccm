@@ -47,6 +47,7 @@
         </form>
         <h3>Unscheduled Rounds:</h3>
         <div id="unscheduled-rounds">
+          <div class="fc-event" id="new-calender-entry">Add New Calendar Entry</div>
           {{#each unscheduledRounds}}
               {{> unscheduledRound }}
           {{/each}}
@@ -54,12 +55,6 @@
       </div>
 
       <div class="col-md-8">
-        <div id="addCalendarEvent"
-          data-toggle="tooltip" data-placement="bottom" title="Add something to the schedule">
-          <button type="button" class="btn btn-default btn-md">
-            <span class="glyphicon glyphicon-plus"></span>
-          </button>
-        </div>
         <div id="calendar"></div>
       </div>
 
@@ -78,16 +73,16 @@
   <div class="modal fade" id="addEditSomethingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-          {{#if editingRound._id}}
-            <h4 class="modal-title" id="myModalLabel">Edit event</h4>
-          {{else}}
-            <h4 class="modal-title" id="myModalLabel">Add something to the schedule</h4>
-          {{/if}}
-        </div>
-        <div class="modal-body">
-          <form role="form">
+        <form role="form">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+            {{#if editingRound._id}}
+              <h4 class="modal-title" id="myModalLabel">Edit event</h4>
+            {{else}}
+              <h4 class="modal-title" id="myModalLabel">Add something to the schedule</h4>
+            {{/if}}
+          </div>
+          <div class="modal-body">
             <div class="form-group {{#if errors.title}}has-error{{/if}}">
               <label for="inputRoundTitle" class="control-label">Title {{errors.title}}</label>
               {{#if editingRound.eventCode}}
@@ -106,26 +101,26 @@
               <label for="modalInputEndTime" class="control-label">End time {{errors.endMinutes}}</label>
               <input name="endMinutes" id="modalInputEndTime" type="text" class="time end form-control" />
             </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          {{#if editingRound._id}}
-            {{#unless editingRound.eventCode}}
-              <button type="button" class="btn btn-danger pull-left"
-                      data-toggle="modal" data-target="#deleteRoundConfirmModal">
-                <span class="glyphicon glyphicon-trash"></span> Delete
-              </button>
-            {{/unless}}
-          {{/if}}
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="saveOrEditButton" disabled="{{#if errorCount}}disabled{{/if}}">
+          </div>
+          <div class="modal-footer">
             {{#if editingRound._id}}
-              Save
-            {{else}}
-              Add
+              {{#unless editingRound.eventCode}}
+                <button type="button" class="btn btn-danger pull-left"
+                        data-toggle="modal" data-target="#deleteRoundConfirmModal">
+                  <span class="glyphicon glyphicon-trash"></span> Delete
+                </button>
+              {{/unless}}
             {{/if}}
-          </button>
-        </div>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveOrEditButton" disabled="{{#if errorCount}}disabled{{/if}}">
+              {{#if editingRound._id}}
+                Save
+              {{else}}
+                Add
+              {{/if}}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

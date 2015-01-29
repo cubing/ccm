@@ -154,13 +154,28 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       contentHeight: 'auto',
       droppable: true,
       drop: function(date) {
-        calEvent = {
-          id: $(this).data('round-id'),
-          start: date,
-        };
-        $(this).remove();
+        var calEvent;
+        var roundId = $(this).data('round-id');
 
-        eventChanged(calEvent);
+        if(roundId) {
+          calEvent = {
+            id: roundId,
+            start: date,
+          };
+          eventChanged(calEvent);
+          $(this).remove();
+        } else {
+          var startHour = date.utc().get('hour');
+          var startMinute = date.utc().get('minute');
+
+          var round = {
+            startMinutes: startHour*60 + startMinute,
+            durationMinutes: DEFAULT_ROUND_DURATION_MINUTES,
+          };
+
+          editingRoundReact.set(round);
+          $editModal.modal('show');
+        }
       },
       events: function(start, end, timezone, callback) {
         var calEvents = [];
@@ -266,6 +281,12 @@ Template.editSchedule.rendered = function() {
   var $calendar = template.$('#calendar');
   var $addEditSomethingModal = template.$('#addEditSomethingModal');
   setupCompetitionCalendar(template, $calendar, $addEditSomethingModal);
+
+  this.$('.fc-event').draggable({
+    zIndex: 999,
+    revert: true,
+    revertDuration: 0,
+  });
 };
 
 Template.unscheduledRound.rendered = function() {

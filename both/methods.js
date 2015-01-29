@@ -105,7 +105,7 @@ Meteor.methods({
   addNonEventRound: function(competitionId, round) {
     check(competitionId, String);
     throwIfCannotManageCompetition(this.userId, competitionId);
-    Rounds.insert({
+    return Rounds.insert({
       competitionId: competitionId,
       title: round.title,
       startMinutes: round.startMinutes,
