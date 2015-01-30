@@ -69,23 +69,8 @@ if(Meteor.isClient) {
   });
 }
 
-clockFormat = function(solveTime, isAverage) {
-  if(!solveTime) {
-    // solveTime is undefined when no data has been entered yet.
-    return "";
-  }
-  if(solveTime.moveCount) {
-    // jChester's solveTimeToStopwatchFormat doesn't handle FMC, which is fine,
-    // FMC is *weird*.
-    if(isAverage) {
-      // The average field for FMC is bizarre:
-      // it's the average times 100 rounded to the nearest integer.
-      return (solveTime.moveCount / 100).toFixed(2);
-    } else {
-      return "" + solveTime.moveCount;
-    }
-  }
-  return $.solveTimeToStopwatchFormat(solveTime);
+clockFormat = function(solveTime) {
+  return jChester.solveTimeToStopwatchFormat(solveTime);
 };
 if(Meteor.isClient) {
   Template.registerHelper("clockFormat", function(solveTime) {

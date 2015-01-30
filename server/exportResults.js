@@ -65,7 +65,7 @@ Meteor.methods({
             return;
           }
 
-          var wcaAverage = result.average ? result.average.wcaValue : 0;
+          var wcaAverage = wca.solveTimeToWcaValue(result.average);
           var wcaResult = {
             personId: result.userId,
             position: result.position,

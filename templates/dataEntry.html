@@ -60,16 +60,16 @@
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#with round}}
-          <p>
-            {{#if softCutoff}}
+          {{#if softCutoff}}
+            <p>
               Soft cutoff: {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
-            {{else}}
-              No soft cutoff
-            {{/if}}
-          </p>
-          <p>
-            Hard cutoff: {{clockFormat hardCutoff.time}}
-          </p>
+            </p>
+          {{/if}}
+          {{#if hardCutoff}}
+            <p>
+              Hard cutoff: {{clockFormat hardCutoff.time}}
+            </p>
+          {{/if}}
         {{/with}}
 
         {{#if selectedResultId}}

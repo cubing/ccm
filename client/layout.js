@@ -32,6 +32,9 @@ Template.layout.events({
       // for tooltips above.
     }
   },
+  'shown.bs.modal .modal': function(e, template) {
+    template.$('input[autofocus]').focus();
+  }
 });
 
 Router.onBeforeAction(function() {
