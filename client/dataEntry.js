@@ -17,8 +17,9 @@ Template.dataEntry.helpers({
   showAllRounds: function() {
     if(this.roundId) {
       var status = getRoundAttribute(this.roundId, 'status');
-      if(status === wca.roundStatuses.closed) {
-        // If the selected round is closed, we need to show all rounds so we can see the selected round.
+      if(status !== wca.roundStatuses.open) {
+        // If the selected round is not open, we need to show all rounds so we
+        // can see the selected round.
         return true;
       }
     } else {
