@@ -11,5 +11,5 @@ assert = function(condition, msg) {
 };
 
 assert.equal = function(expected, actual) {
-  assert(expected == actual, "expected " + expected + " to equal " + actual);
+  assert(expected === actual, "expected " + expected + " to equal " + actual);
 };

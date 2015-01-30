@@ -14,7 +14,7 @@
 
 (cd both/components/; wget -N http://www.jflei.com/jChester/jChester.js)
 
-(cd both/components/; curl -s https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json | sed -e '1s/^/countries = /' -e '$a\;' > countries.js)
+(cd both/components/; curl -s https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json | sed -e '1s/^/JSON.stringify(/' -e '$a\,function(k,v,u){if(k!=="name"&&k!=="alpha2"&&isNaN(k)){return u}return v},2)' | node -p | sed -e '1s/^/countries = /' -e '$a\;' > countries.js)
 
 (cd both/components/; wget -N https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.js)
 
