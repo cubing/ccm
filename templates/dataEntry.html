@@ -46,6 +46,12 @@
           advanced to the next round.
         </div>
       {{/if}}
+      {{#if isSelectedRoundUnstarted}}
+        <div class="alert alert-warning" role="alert">
+          <strong>Warning!</strong> You're entering times for a round that has
+          not yet started.
+        </div>
+      {{/if}}
       {{> roundDataEntry roundId=roundId}}
     {{/if}}
   </div>

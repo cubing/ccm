@@ -292,16 +292,10 @@ Template.editEvents.helpers({
       return false;
     }
     if(this.status == wca.roundStatuses.unstarted) {
-      var results = Results.find({
-        roundId: this._id,
-      }, {
-        fields: {
-          _id: 1,
-        }
-      });
+      var done_total = getCompetitorsDoneAndTotal(this._id);
       // Only allow opening this unstarted round if there are some people *in*
       // the round.
-      return results.count() > 0;
+      return done_total[1] > 0;
     }
     return this.status == wca.roundStatuses.closed;
   },

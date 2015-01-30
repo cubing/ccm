@@ -40,6 +40,15 @@ Template.dataEntry.helpers({
     var status = getRoundAttribute(this.roundId, 'status');
     return status === wca.roundStatuses.closed;
   },
+  isSelectedRoundUnstarted: function() {
+    if(!this.roundId) {
+      // If there's no round selected, then the selected round is definitely
+      // *not* unstarted =)
+      return false;
+    }
+    var status = getRoundAttribute(this.roundId, 'status');
+    return status === wca.roundStatuses.unstarted;
+  },
   openRounds: function() {
     var openRounds = Rounds.find({
       competitionId: this.competitionId,
