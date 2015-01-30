@@ -760,18 +760,18 @@ if(Meteor.isServer) {
       }, {
         fields: {
           _id: 1,
-          userId: 1,
+          registrationId: 1,
         }
       });
 
       results.forEach(function(result) {
         var advanced;
         if(nextRound) {
-          // If the userId for this result is present in the next round,
+          // If the registrationId for this result is present in the next round,
           // then they advanced!
           advanced = !!Results.findOne({
             roundId: nextRound._id,
-            userId: result.userId
+            registrationId: result.registrationId,
           });
         } else {
           // If there is no next round, then this result cannot possibly have
