@@ -147,12 +147,17 @@ Meteor.methods({
     }
   },
   refreshRoundCodes: function(competitionId, eventCode) {
+    throwIfCannotManageCompetition(this.userId, competitionId);
+    check(eventCode, String);
+
     var rounds = Rounds.find({
       competitionId: competitionId,
       eventCode: eventCode
     }, {
       sort: {
         nthRound: 1,
+      },
+      fields: {
         softCutoff: 1,
       }
     }).fetch();
@@ -165,7 +170,8 @@ Meteor.methods({
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
       var supportedRoundsIndex;
-      if(index == rounds.length) {
+      if(index == rounds.length - 1) {
+        // The last round for an event is always treated as a final round.
         supportedRoundsIndex = wca.MAX_ROUNDS_PER_EVENT - 1;
       } else {
         supportedRoundsIndex = index;
@@ -189,7 +195,9 @@ Meteor.methods({
     if(!round) {
       throw new Meteor.Error("Invalid roundId");
     }
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
+    if(newGroup.competitionId !== round.competitionId) {
+      throw new Meteor.Error("Group's competitionId does not match round's competitionId");
+    }
 
     var existingGroup = Groups.findOne({
       roundId: newGroup.roundId,

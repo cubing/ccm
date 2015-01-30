@@ -436,11 +436,11 @@ Template.modalSoftCutoff.events({
     var $selectCutoffFormat = template.$('select[name="softCutoffFormatCode"]');
     var formatCode = $selectCutoffFormat.val();
 
-    var $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
-    var time = $inputSoftCutoff.jChester('getSolveTime');
-
     var toSet = {};
     if(formatCode) {
+      var $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
+      var time = $inputSoftCutoff.jChester('getSolveTime');
+
       toSet.$set = {
         // Explicitly listing all the fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202
@@ -459,7 +459,17 @@ Template.modalSoftCutoff.events({
       };
     }
 
-    Rounds.update({ _id: this._id }, toSet);
+    var roundId = this._id;
+    Rounds.update(roundId, toSet);
+
+    // Adding/removing a soft cutoff for a round makes a round a
+    // combined/uncombined round. Perhaps we should create a meteor
+    // method for changing the softcutoff of a round in order to encapsulate
+    // this logic.
+    var eventCode = getRoundAttribute(roundId, 'eventCode');
+    var competitionId = getRoundAttribute(roundId, 'competitionId');
+    Meteor.call('refreshRoundCodes', competitionId, eventCode);
+
     template.$(".modal").modal('hide');
   },
 });
