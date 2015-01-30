@@ -82,13 +82,12 @@ function keydown(e) {
     var $inputCompetitorName = $('#inputCompetitorName');
     if($jChester.length) {
       var $tr = $jChester.closest('tr');
-
       var wasUnsaved = $tr.hasClass("unsaved");
-      if(wasUnsaved) {
-        // When the blur is handled, we won't save the current value,
-        // because the unsaved class is not present.
-        $tr.removeClass("unsaved");
-      }
+
+      var $trs = $tr.parent().find('tr');
+      // To ensure that we don't save the current value when the blur is
+      // handled, remove the unsaved class from all trs.
+      $trs.removeClass("unsaved");
 
       var jChesterData = Blaze.getData($jChester[0]);
       var resultId = selectedResultIdReact.get();
@@ -177,7 +176,7 @@ Template.roundDataEntry.helpers({
     var parentData = Template.parentData(1);
     var roundId = parentData.roundId;
     var hardCutoff = getRoundAttribute(roundId, "hardCutoff");
-    if(wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0) {
+    if(hardCutoff && wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0) {
       warnings.push([ 'Greater than hard cutoff' ]);
     }
     return warnings;
@@ -256,18 +255,19 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
 function jChesterSave($jChester) {
   var $tr = $jChester.closest('tr');
-  var solveTime = $jChester.jChester('getSolveTime');
-  if(!$tr.hasClass("unsaved")) {
-    // Don't bother saving unless something has actually changed.
-    // Get rid of the lazy input mode (if someone typed in the exact same time)
-    $jChester.jChester('setSolveTime', solveTime);
-    return true;
-  }
-  if(!solveTime) {
+  var validationErrors = $jChester.jChester('getValidationErrors');
+  if(validationErrors.length) {
     return false;
   }
-  // For now, we unconditionally force everything to be 2 decimal places.
-  solveTime.decimals = 2;
+  if(!$tr.hasClass("unsaved")) {
+    // Don't bother saving unless something has actually changed.
+    return true;
+  }
+  var solveTime = $jChester.jChester('getSolveTime');
+  // For now, we unconditionally force everything that has decimals to 2.
+  if(solveTime && solveTime.decimals) {
+    solveTime.decimals = 2;
+  }
   $tr.removeClass('unsaved');
   $tr.addClass('saving');
   var resultId = selectedResultIdReact.get();
@@ -336,7 +336,7 @@ Template.roundDataEntry.events({
     // typing the first 3 letters of "Jayman".
     selectedResultIdReact.set(null);
   },
-  'solveTimeInput .jChester[name="inputSolve"]': function(e, template, solveTime) {
+  'solveTimeInput .jChester[name="inputSolve"]': function(e) {
     var $target = $(e.currentTarget);
     $target.closest('tr').addClass('unsaved');
   },
@@ -352,7 +352,7 @@ Template.roundDataEntry.events({
       }
     });
   },
-  'keydown .jChester[name="inputSolve"]': function(e, template, solveTime) {
+  'keydown .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) {
       var $jChester = $(e.currentTarget);
 

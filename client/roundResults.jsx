@@ -101,7 +101,7 @@ var ResultRow = React.createClass({
       <tr className={rowClasses} data-result-id={result._id}>
         <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
         <td>{competitorNameNode}</td>
-        <td className={averageClasses}>{clockFormat(result.average, true)}</td>
+        <td className={averageClasses}>{clockFormat(result.average)}</td>
         <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
         {(result.solves || []).map(function(solve, i) {
           var solveClasses = React.addons.classSet({
