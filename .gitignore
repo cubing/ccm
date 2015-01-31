@@ -27,3 +27,6 @@ node_modules
 # vim stuff
 *.swp
 *.swo
+
+#RubyMine
+.idea/
