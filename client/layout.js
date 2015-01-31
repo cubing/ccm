@@ -34,6 +34,11 @@ Template.layout.events({
   },
   'shown.bs.modal .modal': function(e, template) {
     template.$('input[autofocus]').focus();
+  },
+  'submit form': function(e) {
+    // To prevent the browser from following the form as it's not necessary for
+    // meteor, and it's bad UX.
+    e.preventDefault();
   }
 });
 
