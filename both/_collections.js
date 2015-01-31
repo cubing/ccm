@@ -552,7 +552,43 @@ if(Meteor.isServer) {
   });
 }
 
-Results = new Mongo.Collection("results");
+var Result = function(doc) {
+  _.extend(this, doc);
+};
+
+Result.prototype.getExpectedSolveCount = function() {
+  // This transform trick came from
+  //  https://www.eventedmind.com/feed/meteor-transforming-collection-documents
+  // However, it doesn't address the fact that callers shouldn't need to know
+  // what attributes we need in the Result. Here we just look up exactly
+  // what we need. This is slow, but feels better than the altenatives to me.
+  var result = Results.findOne(this._id, {
+    fields: {
+      roundId: 1,
+      solves: 1,
+    }
+  });
+
+  var round = Rounds.findOne(result.roundId, {
+    fields: {
+      roundCode: 1,
+      softCutoff: 1,
+    }
+  });
+  if(!round.softCutoff) {
+    var roundType = wca.roundByCode[round.roundCode];
+    return roundType.count;
+  }
+  var softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
+  var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(result.solves, round.softCutoff.time, round.roundCode);
+  return expectedSolveCount;
+};
+
+Results = new Mongo.Collection("results", {
+  transform: function(doc) {
+    return new Result(doc);
+  },
+});
 Results.attachSchema({
   competitionId: {
     type: String,

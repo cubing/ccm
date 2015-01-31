@@ -315,18 +315,72 @@ wca.softCutoffFormats = [
   {
     name: 'cumulative',
     code: 'cumulative',
+    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
+      var roundType = wca.roundByCode[roundCode];
+
+      var solveTimeSum = { millis: 0 };
+      for(var i = 0; i < solves.length; i++) {
+        // Soft cutoffs only make sense with timed events, so just assume
+        // the millis field is there.
+        solveTimeSum.millis += solves[0].millis;
+        if(wca.compareSolveTimes(solveTimeSum, cutoffTime) > 0) {
+          // The first i+1 solves accumulated to more than our cutoff time.
+          return i + 1;
+        }
+      }
+      return roundType.count;
+    },
   },
   {
     name: 'in 1',
     code: '1',
+    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
+      var roundType = wca.roundByCode[roundCode];
+      var madeCutoff = wca.compareSolveTimes(solves[0], cutoffTime) <= 0;
+      if(madeCutoff) {
+        return roundType.count;
+      } else {
+        return 1;
+      }
+    },
   },
   {
     name: 'in 2',
     code: '2',
+    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
+      var roundType = wca.roundByCode[roundCode];
+      var madeCutoff = false;
+      for(var i = 0; i < 2; i++) {
+        if(wca.compareSolveTimes(solves[i], cutoffTime) <= 0) {
+          madeCutoff = true;
+          break;
+        }
+      }
+      if(madeCutoff) {
+        return roundType.count;
+      } else {
+        return 2;
+      }
+    },
   },
   {
     name: 'in 3',
     code: '3',
+    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
+      var roundType = wca.roundByCode[roundCode];
+      var madeCutoff = false;
+      for(var i = 0; i < 3; i++) {
+        if(wca.compareSolveTimes(solves[i], cutoffTime) <= 0) {
+          madeCutoff = true;
+          break;
+        }
+      }
+      if(madeCutoff) {
+        return roundType.count;
+      } else {
+        return 3;
+      }
+    },
   }
 ];
 wca.softCutoffFormatByCode = {};
