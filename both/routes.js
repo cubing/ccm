@@ -90,28 +90,18 @@ ManageCompetitionController = RouteController.extend({
       // loadingTemplate.
       return;
     }
-    var competitionUrlId = this.params.competitionUrlId;
-    var competition = Competitions.findOne({
-      $or: [
-        { _id: competitionUrlId },
-        { wcaCompetitionId: competitionUrlId },
-      ]
-    }, {
-      fields: {
-        _id: 1,
-      }
-    });
-    if(!competition) {
+    var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+    if(!competitionId) {
       this.render('competitionNotFound');
-      return null;
+      return;
     }
-    if(getCannotManageCompetitionReason(Meteor.userId(), competition._id)) {
+    if(getCannotManageCompetitionReason(Meteor.userId(), competitionId)) {
       this.render('cannotManageCompetition');
-      return null;
+      return;
     }
     return {
-      competitionUrlId: competitionUrlId,
-      competitionId: competition._id,
+      competitionUrlId: this.params.competitionUrlId,
+      competitionId: competitionId,
     };
   },
 });
@@ -131,24 +121,14 @@ ViewCompetitionController = RouteController.extend({
       // loadingTemplate.
       return;
     }
-    var competitionUrlId = this.params.competitionUrlId;
-    var competition = Competitions.findOne({
-      $or: [
-        { _id: competitionUrlId },
-        { wcaCompetitionId: competitionUrlId }
-      ]
-    }, {
-      fields: {
-        _id: 1
-      }
-    });
-    if(!competition) {
+    var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+    if(!competitionId) {
       this.render('competitionNotFound');
       return;
     }
     return {
-      competitionUrlId: competitionUrlId,
-      competitionId: competition._id,
+      competitionUrlId: this.params.competitionUrlId,
+      competitionId: competitionId,
     };
   }
 });
