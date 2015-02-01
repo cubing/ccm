@@ -36,7 +36,6 @@ if(Meteor.isClient) {
       }
       if(data.roundId) {
         var eventCode = getRoundAttribute(data.roundId, 'eventCode');
-        var eventName = wca.eventByCode[eventCode].name;
 
         var roundCode = getRoundAttribute(data.roundId, 'roundCode');
         var roundName = wca.roundByCode[roundCode].name;
@@ -74,13 +73,17 @@ var subscriptionError = function(that) {
   };
 };
 
-ManageCompetitionController = RouteController.extend({
-  notFoundTemplate: "competitionNotFound",
+BaseCompetitionController = RouteController.extend({
+  fastRender: true,
   waitOn: function() {
-    return [
-      subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
-      subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this)),
-    ];
+    var subscriptions = [subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this))];
+    if(this.ccmManage) {
+      subscriptions.push(subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this)));
+    }
+    if(this.extraSubscriptions) {
+      subscriptions = subscriptions.concat(this.extraSubscriptions());
+    }
+    return subscriptions;
   },
   data: function() {
     if(!this.ready()) {
@@ -95,98 +98,99 @@ ManageCompetitionController = RouteController.extend({
       this.render('competitionNotFound');
       return;
     }
-    if(getCannotManageCompetitionReason(Meteor.userId(), competitionId)) {
+    if(this.ccmManage && getCannotManageCompetitionReason(Meteor.userId(), competitionId)) {
       this.render('cannotManageCompetition');
       return;
     }
-    return {
-      competitionUrlId: this.params.competitionUrlId,
-      competitionId: competitionId,
-    };
+
+    var data = (this.buildData ? this.buildData(competitionId) : {});
+    data.competitionUrlId = this.params.competitionUrlId;
+    data.competitionId = competitionId;
+    return data;
   },
 });
 
-ViewCompetitionController = RouteController.extend({
-  fastRender: true,
-  waitOn: function() {
-    return [
-      subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this)),
-    ];
+ManageCompetitionController = BaseCompetitionController.extend({
+  ccmManage: true,
+});
+
+ViewCompetitionController = BaseCompetitionController.extend({
+  ccmManage: false,
+});
+
+ViewCompetitorController = BaseCompetitionController.extend({
+  ccmManage: false,
+  extraSubscriptions: function() {
+    return [subs.subscribe('competitorResults',
+                           this.params.competitionUrlId,
+                           this.params.competitorUniqueName,
+                           subscriptionError(this))];
   },
-  data: function() {
-    if(!this.ready()) {
-      // We explicitly render *NotFound templates based on what's missing, and
-      // that steps on the toes of iron-router's loading hook. If we're not
-      // ready, just do nothing and let the loading hook render our
-      // loadingTemplate.
-      return;
-    }
-    var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
-    if(!competitionId) {
-      this.render('competitionNotFound');
-      return;
-    }
-    return {
-      competitionUrlId: this.params.competitionUrlId,
+  buildData: function(competitionId) {
+    var data = {};
+
+    data.registration = Registrations.findOne({
       competitionId: competitionId,
-    };
+      uniqueName: this.params.competitorUniqueName,
+    });
+    if(!data.registration) {
+      this.render('competitorNotFound');
+      return data;
+    }
+
+    data.user = Meteor.users.findOne(data.registration.userId);
+    return data;
+  },
+});
+
+BaseRoundController = BaseCompetitionController.extend({
+  extraSubscriptions: function() {
+    if(!this.params.eventCode || !this.params.nthRound) {
+      return [];
+    }
+    var nthRound = parseInt(this.params.nthRound);
+    return [subs.subscribe('roundResults',
+      this.params.competitionUrlId,
+      this.params.eventCode,
+      nthRound,
+      subscriptionError(this))];
+  },
+  buildRoundData: function(competitionId) {
+    var data = {};
+    if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
+      this.render('eventNotFound');
+      return data;
+    }
+    data.eventCode = this.params.eventCode;
+    if(!this.params.nthRound) {
+      return data;
+    }
+    if(!String.isNonNegInt(this.params.nthRound)) {
+      this.render('roundNotFound');
+      return data;
+    }
+    var nthRound = parseInt(this.params.nthRound);
+    var round = Rounds.findOne({
+      competitionId: competitionId,
+      eventCode: this.params.eventCode,
+      nthRound: nthRound,
+    }, {
+      fields: {
+        _id: 1,
+      }
+    });
+    if(!round) {
+      this.render('roundNotFound');
+      return data;
+    }
+    data.roundId = round._id;
+    return data;
   }
 });
 
-ViewCompetitorController = ViewCompetitionController.extend({
-  waitOn: function() {
-    var waitOn = this.constructor.__super__.waitOn.call(this);
-    waitOn.push(subs.subscribe('competitorResults',
-                               this.params.competitionUrlId,
-                               this.params.competitorUniqueName,
-                               subscriptionError(this)));
-    return waitOn;
-  },
-  data: function() {
-    var parentData = this.constructor.__super__.data.call(this);
-    if(!parentData) {
-      return null;
-    }
-
-    var uniqueName = this.params.competitorUniqueName;
-    var registration = Registrations.findOne({
-      competitionId: parentData.competitionId,
-      uniqueName: uniqueName,
-    });
-    parentData.registration = registration;
-    if(!registration) {
-      this.render('competitorNotFound');
-      return parentData;
-    }
-
-    var user = Meteor.users.findOne({
-      _id: registration.userId,
-    });
-    parentData.user = user;
-    return parentData;
-  },
-});
-
-ViewRoundController = ViewCompetitionController.extend({
-  waitOn: function() {
-    var waitOn = this.constructor.__super__.waitOn.call(this);
-    if(!this.params.eventCode || !this.params.nthRound) {
-      return waitOn;
-    }
-    var nthRound = parseInt(this.params.nthRound);
-    waitOn.push(subs.subscribe('roundResults',
-                               this.params.competitionUrlId,
-                               this.params.eventCode,
-                               nthRound,
-                               subscriptionError(this)));
-    return waitOn;
-  },
-  data: function() {
-    var parentData = this.constructor.__super__.data.call(this);
-    if(!parentData) {
-      return null;
-    }
-
+ViewRoundController = BaseRoundController.extend({
+  ccmManage: false,
+  buildData: function(competitionId) {
     if(!this.params.eventCode) {
       // TODO - https://github.com/cubing/ccm/issues/119
     } else if(!this.params.nthRound) {
@@ -198,7 +202,7 @@ ViewRoundController = ViewCompetitionController.extend({
       var round;
 
       var openRound = Rounds.findOne({
-        competitionId: parentData.competitionId,
+        competitionId: competitionId,
         eventCode: this.params.eventCode,
         status: wca.roundStatuses.open,
       }, {
@@ -210,7 +214,7 @@ ViewRoundController = ViewCompetitionController.extend({
         round = openRound;
       } else {
         var latestRound = Rounds.findOne({
-          competitionId: parentData.competitionId,
+          competitionId: competitionId,
           eventCode: this.params.eventCode,
         }, {
           fields: {
@@ -228,65 +232,22 @@ ViewRoundController = ViewCompetitionController.extend({
       //  http://stackoverflow.com/a/26490250
       Router.go('roundResults', newParams, { replaceState: true });
     }
-    return getRoundData.call(this, parentData);
+    return this.buildRoundData(competitionId);
   },
 });
 
-ManageRoundResultsController = ManageCompetitionController.extend({
-  waitOn: function() {
-    var waitOn = this.constructor.__super__.waitOn.call(this);
-    if(!this.params.eventCode || !this.params.nthRound) {
-      return waitOn;
-    }
-    var nthRound = parseInt(this.params.nthRound);
-    waitOn.push(subs.subscribe('roundResults',
-                               this.params.competitionUrlId,
-                               this.params.eventCode,
-                               nthRound,
-                               subscriptionError(this)));
-    return waitOn;
-  },
-  data: function() {
-    var parentData = this.constructor.__super__.data.call(this);
-    if(!parentData) {
-      return null;
-    }
-    return getRoundData.call(this, parentData);
+ManageRoundResultsController = BaseRoundController.extend({
+  ccmManage: true,
+  buildData: function(competitionId) {
+    return this.buildRoundData(competitionId);
   },
 });
 
-function getRoundData(data) {
-  if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
-    this.render('eventNotFound');
-    return data;
-  }
-  data.eventCode = this.params.eventCode;
-  if(!this.params.nthRound) {
-    return data;
-  }
-  if(!String.isNonNegInt(this.params.nthRound)) {
-    this.render('roundNotFound');
-    return data;
-  }
-  var nthRound = parseInt(this.params.nthRound);
-  var eventCode = this.params.eventCode;
-
-  var round = Rounds.findOne({
-    competitionId: data.competitionId,
-    eventCode: eventCode,
-    nthRound: nthRound,
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
-  if(!round) {
-    this.render('roundNotFound');
-    return data;
-  }
-  data.roundId = round._id;
-  return data;
-}
+RegistrationController = ViewCompetitionController.extend({
+  extraSubscriptions: function() {
+    return [subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this))];
+  },
+});
 
 Router.route('/', {
   name: 'home',
@@ -379,21 +340,6 @@ Router.route('/:competitionUrlId', {
   name: 'competition',
   controller: 'ViewCompetitionController',
   titlePrefix: null,
-});
-
-// TODO - fast-render breaks if we don't define a controller for this route.
-// It's seems to call waitOn with the wrong "this".
-RegistrationController = ViewCompetitionController.extend({
-  waitOn: function() {
-    var waitOn = this.constructor.__super__.waitOn.call(this);
-    // We need information about guests and # competitors to tell
-    // if registration is full.
-    // We also need all the registrations to know if a uniqueName is required.
-    waitOn.push(subs.subscribe('competitionRegistrations',
-                               this.params.competitionUrlId,
-                               subscriptionError(this)));
-    return waitOn;
-  },
 });
 Router.route('/:competitionUrlId/registration', {
   name: 'competitionRegistration',
