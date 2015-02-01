@@ -17,8 +17,9 @@ Template.dataEntry.helpers({
   showAllRounds: function() {
     if(this.roundId) {
       var status = getRoundAttribute(this.roundId, 'status');
-      if(status === wca.roundStatuses.closed) {
-        // If the selected round is closed, we need to show all rounds so we can see the selected round.
+      if(status !== wca.roundStatuses.open) {
+        // If the selected round is not open, we need to show all rounds so we
+        // can see the selected round.
         return true;
       }
     } else {
@@ -38,6 +39,15 @@ Template.dataEntry.helpers({
     }
     var status = getRoundAttribute(this.roundId, 'status');
     return status === wca.roundStatuses.closed;
+  },
+  isSelectedRoundUnstarted: function() {
+    if(!this.roundId) {
+      // If there's no round selected, then the selected round is definitely
+      // *not* unstarted =)
+      return false;
+    }
+    var status = getRoundAttribute(this.roundId, 'status');
+    return status === wca.roundStatuses.unstarted;
   },
   openRounds: function() {
     var openRounds = Rounds.find({
@@ -163,6 +173,7 @@ Template.roundDataEntry.rendered = function() {
     source: substringMatcher(function() { return results; }, 'uniqueName'),
   });
 };
+
 Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
@@ -176,8 +187,20 @@ Template.roundDataEntry.helpers({
     var parentData = Template.parentData(1);
     var roundId = parentData.roundId;
     var hardCutoff = getRoundAttribute(roundId, "hardCutoff");
-    if(hardCutoff && wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0) {
-      warnings.push([ 'Greater than hard cutoff' ]);
+    var violatesHardCutoff = hardCutoff && this.solveTime && wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0 && !jChester.solveTimeIsDN(this.solveTime);
+    if(violatesHardCutoff) {
+      warnings.push('Greater than hard cutoff');
+    }
+
+    var result = Results.findOne(this.resultId);
+    var expectedSolveCount = result.getExpectedSolveCount();
+    var formatCode = getRoundAttribute(roundId, "formatCode");
+    var roundFormat = wca.formatByCode[formatCode];
+    var madeCutoff = expectedSolveCount == roundFormat.count;
+    if(!madeCutoff && this.index >= expectedSolveCount && this.solveTime) {
+      // There's a SolveTime at this index and the user didn't make the cutoff.
+      // Complain!
+      warnings.push("Did not make soft cutoff");
     }
     return warnings;
   },
@@ -200,6 +223,7 @@ Template.roundDataEntry.helpers({
       return {
         solveTime: solve,
         index: i,
+        resultId: selectedResultId,
       };
     });
   },
@@ -217,6 +241,12 @@ Template.roundDataEntry.helpers({
       obj[field] = true;
     });
     return obj;
+  },
+  solveSkippedDueToCutoff: function() {
+    var index = this.index;
+    var result = Results.findOne(this.resultId, { fields: { _id: 1 } });
+    var expectedSolveCount = result.getExpectedSolveCount();
+    return index >= expectedSolveCount;
   },
 });
 
@@ -353,7 +383,7 @@ Template.roundDataEntry.events({
     });
   },
   'keydown .jChester[name="inputSolve"]': function(e) {
-    if(e.which == 13) {
+    if(e.which == 13) { // enter
       var $jChester = $(e.currentTarget);
 
       var saved = jChesterSave.call(this, $jChester);
@@ -381,13 +411,13 @@ Template.roundDataEntry.events({
   'focus #inputCompetitorName': function(e) {
     e.currentTarget.select();
   },
-  'focus #focusguard-1': function(e) {
+  'focus .focusguard-top': function(e) {
     var $target = $(e.currentTarget);
     var $sidebar = $target.closest(".results-sidebar");
     var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
     $focusables.last().focus();
   },
-  'focus #focusguard-2': function(e) {
+  'focus .focusguard-bottom': function(e) {
     var $target = $(e.currentTarget);
     var $sidebar = $target.closest(".results-sidebar");
     var $focusables = $sidebar.find('#inputCompetitorName, .jChester');

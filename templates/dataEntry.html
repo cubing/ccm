@@ -46,6 +46,12 @@
           advanced to the next round.
         </div>
       {{/if}}
+      {{#if isSelectedRoundUnstarted}}
+        <div class="alert alert-warning" role="alert">
+          <strong>Warning!</strong> You're entering times for a round that has
+          not yet started.
+        </div>
+      {{/if}}
       {{> roundDataEntry roundId=roundId}}
     {{/if}}
   </div>
@@ -54,9 +60,9 @@
 <template name="roundDataEntry">
   <div class="row">
 
-    <div class="col-xs-12 col-sm-4">
+    <div class="results-sidebar-container col-xs-12 col-sm-4">
       <div class="results-sidebar">
-        <div class="focusguard" id="focusguard-1" tabindex="0"></div>
+        <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#with round}}
@@ -76,18 +82,23 @@
           <table class="table jChesterTable">
             <tbody>
               {{#each selectedSolves}}
-                <tr class="{{#if solveWarnings}}has-warnings{{/if}}">
+              <tr class="{{#if solveWarnings}}has-warnings{{/if}} {{#if solveSkippedDueToCutoff}}solve-skipped-due-to-cutoff{{/if}}">
                   <td>
                     <i class="fa fa-fw" title="{{solveWarnings}}"></i>
                   </td>
                   <td>
                     {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
                   </td>
+                  <td>
+                    {{#each solveWarnings}}
+                      <span class="label label-danger">{{this}}</span>
+                    {{/each}}
+                  </td>
                 </tr>
               {{/each}}
             </tbody>
           </table>
-          <div class="focusguard" id="focusguard-2" tabindex="0"></div>
+          <div class="focusguard focusguard-bottom" tabindex="0"></div>
         {{/if}}
       </div>
     </div>

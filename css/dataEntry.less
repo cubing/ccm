@@ -20,6 +20,14 @@
   top: 50px;
 }
 
+.results-sidebar-container {
+  z-index: 1
+}
+
+tr:not(.solve-skipped-due-to-cutoff) + tr.solve-skipped-due-to-cutoff {
+  border-top: 2px solid red;
+}
+
 @media(max-width: 768px) {
   .results-sidebar.affix {
     top: 40px; /* avoid fixed table header */
