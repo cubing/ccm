@@ -105,7 +105,7 @@
                                 </a>
                               {{else}}
                                 {{#if isFirstRound}}
-                                  {{competitorsRegisteredForEventCount}} registered
+                                  {{participantsRegisteredForEventCount}} registered
                                 {{else}}
                                   <button type="button" name="buttonSetRoundSize"
                                           class="btn {{#if roundSizeWarning}}btn-warning{{else}}btn-default{{/if}} btn-xs btn-block"
@@ -137,7 +137,7 @@
                               {{/if}}
                               {{#if canAdvanceRound}}
                                 <a
-                                  href="{{pathFor 'advanceCompetitors' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                                  href="{{pathFor 'advanceParticipants' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
                                   data-toggle="tooltip" data-placement="left" data-original-title="Advance competitors to next round" data-container="body"
                                 >
                                   <i class="fa fa-step-forward"></i>
@@ -232,7 +232,7 @@
                 <div id="roundResultsListWrapper">
                   {{> roundResultsList roundId=_id advanceCount=advanceCount configurableAdvanceCount=true}}
                 </div>
-                <input type="number" min="1" max="{{competitorsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
+                <input type="number" min="1" max="{{participantsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
               </div>
             </div>
             <div class="modal-footer">

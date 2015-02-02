@@ -416,11 +416,11 @@ jChester = {
         of puzzles not solved, where a greater difference is better.
         If the difference is less than 0, or if only 1 puzzle is
         solved, the attempt is considered unsolved (DNF). If
-        competitors achieve the same result, rankings are assessed
+        participants achieve the same result, rankings are assessed
         based on total time, where the shorter recorded time is
-        better. If competitors achieve the same result and the same
+        better. If participants achieve the same result and the same
         time, rankings are assessed based on the number of puzzles
-        the competitors failed to solve, where fewer unsolved
+        the participants failed to solve, where fewer unsolved
         puzzles is better.
         */
         var puzzleUnsolved = solveTime.puzzlesAttemptedCount - solveTime.puzzlesSolvedCount;

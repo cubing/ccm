@@ -48,10 +48,10 @@ Template.roundResultsList.destroyed = function() {
 var autocompleteEnteredReact = new ReactiveVar(null);
 
 Template.roundResultsList.events({
-  'input #inputCompetitorName': function(e) {
+  'input #inputParticipantName': function(e) {
     autocompleteEnteredReact.set(e.currentTarget.value);
   },
-  'focus #inputCompetitorName': function(e) {
+  'focus #inputParticipantName': function(e) {
     e.currentTarget.select();
   },
 });
@@ -60,19 +60,19 @@ var ResultRow = React.createClass({
   render: function() {
     var result = this.props.result;
     var competitionUrlId = this.props.competitionUrlId;
-    var competitorNameNode;
+    var participantNameNode;
     if(competitionUrlId) {
-      var path = Router.routes.competitorResults.path({
+      var path = Router.routes.participantResults.path({
         competitionUrlId: competitionUrlId,
-        competitorUniqueName: result.uniqueName,
+        participantUniqueName: result.uniqueName,
       });
-      competitorNameNode = (
+      participantNameNode = (
         <a href={path}>
           {result.uniqueName}
         </a>
       );
     } else {
-      competitorNameNode = result.uniqueName;
+      participantNameNode = result.uniqueName;
     }
 
     var roundFormat = this.props.roundFormat;
@@ -91,8 +91,8 @@ var ResultRow = React.createClass({
 
     var rowClasses = React.addons.classSet({
       'result': true,
-      'competitor-advanced': result.advanced,
-      'last-competitor-to-advance': this.props.drawLine,
+      'participant-advanced': result.advanced,
+      'last-participant-to-advance': this.props.drawLine,
     });
 
     var trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
@@ -100,7 +100,7 @@ var ResultRow = React.createClass({
     return (
       <tr className={rowClasses} data-result-id={result._id}>
         <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
-        <td>{competitorNameNode}</td>
+        <td>{participantNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average)}</td>
         <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
         {(result.solves || []).map(function(solve, i) {

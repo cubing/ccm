@@ -308,7 +308,7 @@ wca.roundStatuses = {
 };
 
 // The various kinds of soft cutoffs we support. Usually, this is the number of
-// attempts the competitor gets to beat the "soft cutoff time". However, we
+// attempts the participant gets to beat the "soft cutoff time". However, we
 // also support "cumulative time limits":
 //  https://www.worldcubeassociation.org/regulations/#A1a2
 wca.softCutoffFormats = [

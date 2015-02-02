@@ -88,7 +88,7 @@ var eventCountPerRowByDeviceSize = {
   lg: 3,
 };
 
-function getCompetitorsDoneAndTotal(roundId) {
+function getParticipantsDoneAndTotal(roundId) {
   // Neutered until https://github.com/cubing/ccm/issues/81
   if(true) {
     return [ 5, 10 ];
@@ -214,8 +214,8 @@ Template.editEvents.helpers({
   isFirstRound: function() {
     return this.nthRound === 0;
   },
-  competitorsRegisteredForEventCount: function() {
-    var competitorsCount = Registrations.find({
+  participantsRegisteredForEventCount: function() {
+    var participantsCount = Registrations.find({
       competitionId: this.competitionId,
       events: this.eventCode,
     }, {
@@ -223,10 +223,10 @@ Template.editEvents.helpers({
         _id: 1
       }
     }).count();
-    return competitorsCount;
+    return participantsCount;
   },
   roundDoneAndTotal: function() {
-    return getCompetitorsDoneAndTotal(this._id);
+    return getParticipantsDoneAndTotal(this._id);
   },
   maxAllowedRoundSize: function() {
     var maxAllowedRoundSize = getMaxAllowedSize(this);
@@ -240,7 +240,7 @@ Template.editEvents.helpers({
     return this.size > maxAllowedRoundSize;
   },
   roundComplete: function() {
-    var done_total = getCompetitorsDoneAndTotal(this._id);
+    var done_total = getParticipantsDoneAndTotal(this._id);
     return done_total[0] == done_total[1];
   },
   lastRoundResultsCount: function() {
@@ -292,7 +292,7 @@ Template.editEvents.helpers({
       return false;
     }
     if(this.status == wca.roundStatuses.unstarted) {
-      var done_total = getCompetitorsDoneAndTotal(this._id);
+      var done_total = getParticipantsDoneAndTotal(this._id);
       // Only allow opening this unstarted round if there are some people *in*
       // the round.
       return done_total[1] > 0;

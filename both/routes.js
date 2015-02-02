@@ -118,12 +118,12 @@ ViewCompetitionController = BaseCompetitionController.extend({
   ccmManage: false,
 });
 
-ViewCompetitorController = BaseCompetitionController.extend({
+ViewParticipantController = BaseCompetitionController.extend({
   ccmManage: false,
   extraSubscriptions: function() {
-    return [subs.subscribe('competitorResults',
+    return [subs.subscribe('participantResults',
                            this.params.competitionUrlId,
-                           this.params.competitorUniqueName,
+                           this.params.participantUniqueName,
                            subscriptionError(this))];
   },
   buildData: function(competitionId) {
@@ -131,10 +131,10 @@ ViewCompetitorController = BaseCompetitionController.extend({
 
     data.registration = Registrations.findOne({
       competitionId: competitionId,
-      uniqueName: this.params.competitorUniqueName,
+      uniqueName: this.params.participantUniqueName,
     });
     if(!data.registration) {
-      this.render('competitorNotFound');
+      this.render('participantNotFound');
       return data;
     }
 
@@ -325,8 +325,8 @@ Router.route('/manage/:competitionUrlId/schedule', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
 });
-Router.route('/manage/:competitionUrlId/advance-competitors/:eventCode?/:nthRound?', {
-  name: 'advanceCompetitors',
+Router.route('/manage/:competitionUrlId/advance-participants/:eventCode?/:nthRound?', {
+  name: 'advanceParticipants',
   controller: 'ManageRoundResultsController',
   titlePrefix: "Advance competitors",
 });
@@ -357,9 +357,9 @@ Router.route('/:competitionUrlId/schedule', {
   titlePrefix: 'Schedule',
 });
 
-Router.route('/:competitionUrlId/results/byname/:competitorUniqueName', {
-  name: 'competitorResults',
-  controller: 'ViewCompetitorController',
+Router.route('/:competitionUrlId/results/byname/:participantUniqueName', {
+  name: 'participantResults',
+  controller: 'ViewParticipantController',
 });
 Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   name: 'roundResults',

@@ -68,22 +68,22 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
   ];
 });
 
-Meteor.publish('competitorResults', function(competitionUrlId, competitorUniqueName) {
+Meteor.publish('participantResults', function(competitionUrlId, participantUniqueName) {
   check(competitionUrlId, String);
-  check(competitorUniqueName, String);
+  check(participantUniqueName, String);
   var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
   var registration = Registrations.findOne({
     competitionId: competitionId,
-    uniqueName: competitorUniqueName,
+    uniqueName: participantUniqueName,
   });
   if(!registration) {
     return [];
   }
   return [
-    Registrations.find({competitionId: competitionId, uniqueName: competitorUniqueName, }, { fields: registrationFieldsToPublish }),
+    Registrations.find({competitionId: competitionId, uniqueName: participantUniqueName, }, { fields: registrationFieldsToPublish }),
     Meteor.users.find({
       _id: registration.userId,
     }, {

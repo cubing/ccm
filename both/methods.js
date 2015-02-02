@@ -214,7 +214,7 @@ Meteor.methods({
       Groups.insert(newGroup);
     }
   },
-  advanceCompetitorsFromRound: function(competitorCount, roundId) {
+  advanceParticipantsFromRound: function(participantCount, roundId) {
     var competitionId = getRoundAttribute(roundId, 'competitionId');
     throwIfCannotManageCompetition(this.userId, competitionId);
 
@@ -228,11 +228,11 @@ Meteor.methods({
         registrationId: 1,
       },
     }).fetch();
-    if(competitorCount < 0) {
+    if(participantCount < 0) {
       throw new Meteor.Error(400,
             'Cannot advance a negative number of competitors');
     }
-    if(competitorCount > results.length) {
+    if(participantCount > results.length) {
       throw new Meteor.Error(400,
             'Cannot advance more people than there are in round');
     }
@@ -253,7 +253,7 @@ Meteor.methods({
     }
 
     var desiredRegistrationIds = [];
-    for(var i = 0; i < competitorCount; i++) {
+    for(var i = 0; i < participantCount; i++) {
       var result = results[i];
       desiredRegistrationIds.push(result.registrationId);
     }
@@ -269,7 +269,7 @@ Meteor.methods({
     var registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
     var registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
 
-    // We're ready to actually advance competitors to the next round!
+    // We're ready to actually advance participants to the next round!
 
     // First, remove any results that are currently in the next round that
     // shouldn't be.
@@ -281,7 +281,7 @@ Meteor.methods({
       });
     });
 
-    // Now copy competitorCount results from the current round to the next
+    // Now copy participantCount results from the current round to the next
     // round.
     _.each(registrationIdsToAdd, function(registrationId) {
       Results.insert({
@@ -293,7 +293,7 @@ Meteor.methods({
     Meteor.call('recomputeWhoAdvanced', roundId);
   },
   checkInRegistration: function(registrationId) {
-    // This method is called to either check-in a competitor for the first time,
+    // This method is called to either check-in a participant for the first time,
     // or to update their check-in because the set of events they are registered for
     // changed. The latter may involve deleting results with data entered, so
     // be sure before you call this method =).
@@ -576,7 +576,7 @@ if(Meteor.isServer) {
       var registrationByWcaJsonId = {};
       var uniqueNames = {};
       wcaCompetition.persons.forEach(function(wcaPerson, i) {
-        // Pick a uniqueName for this competitor
+        // Pick a uniqueName for this participant
         var suffix = 0;
         var uniqueName;
         var uniqueNameTaken; // grrr...jshint
@@ -644,7 +644,7 @@ if(Meteor.isServer) {
             });
             if(!solves[solves.length - 1]) {
               // We're missing a solve, so this must be a combined round
-              // and this competitor didn't make the soft cutoff.
+              // and this participant didn't make the soft cutoff.
               var roundInfo = wca.roundByCode[roundCode];
               assert(roundInfo.combined);
               var lastSolveIndex = -1;
