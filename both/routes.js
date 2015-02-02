@@ -328,7 +328,7 @@ Router.route('/manage/:competitionUrlId/schedule', {
 Router.route('/manage/:competitionUrlId/advance-participants/:eventCode?/:nthRound?', {
   name: 'advanceParticipants',
   controller: 'ManageRoundResultsController',
-  titlePrefix: "Advance participants",
+  titlePrefix: "Advance competitors",
 });
 Router.route('/manage/:competitionUrlId/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',

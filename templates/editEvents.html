@@ -138,7 +138,7 @@
                               {{#if canAdvanceRound}}
                                 <a
                                   href="{{pathFor 'advanceParticipants' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
-                                  data-toggle="tooltip" data-placement="left" data-original-title="Advance participants to next round" data-container="body"
+                                  data-toggle="tooltip" data-placement="left" data-original-title="Advance competitors to next round" data-container="body"
                                 >
                                   <i class="fa fa-step-forward"></i>
                                 </a>
@@ -224,7 +224,7 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
               <h4 class="modal-title">
-                Advance participants from {{eventName eventCode}}: {{roundName roundCode}}
+                Advance competitors from {{eventName eventCode}}: {{roundName roundCode}}
               </h4>
             </div>
             <div class="modal-body">
@@ -238,7 +238,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
               <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
-                Advance participants <span class="glyphicon glyphicon-step-forward"></span>
+                Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
               </button>
             </div>
           </div><!-- /.modal-content -->
