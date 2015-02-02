@@ -63,7 +63,7 @@
     <div class="results-sidebar-container col-xs-12 col-sm-4">
       <div class="results-sidebar">
         <div class="focusguard focusguard-top" tabindex="0"></div>
-        <input name="name" id="inputCompetitorName" class="typeahead form-control" type="text" placeholder="Enter name">
+        <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
 
         {{#with round}}
           {{#if softCutoff}}
@@ -104,7 +104,7 @@
     </div>
 
     <div id="selectableResults" class="col-xs-12 col-sm-8">
-      {{> roundResultsList roundId=roundId selectCompetitor=true selectCompetitorListener=selectCompetitorListener}}
+      {{> roundResultsList roundId=roundId selectParticipant=true selectParticipantListener=selectParticipantListener}}
     </div>
 
   </div>

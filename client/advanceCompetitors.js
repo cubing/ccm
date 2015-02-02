@@ -1,4 +1,4 @@
-Template.advanceCompetitors.created = function() {
+Template.advanceParticipants.created = function() {
   var template = this;
 
   template.advanceCountReact = new ReactiveVar(null);
@@ -19,14 +19,14 @@ Template.advanceCompetitors.created = function() {
       }
     });
     if(nextRound) {
-      var competitorsInRound = Results.find({
+      var participantsInRound = Results.find({
         roundId: nextRound._id,
       }, {
         fields: {
           _id: 1,
         }
       }).count();
-      template.advanceCountReact.set(nextRound.size || competitorsInRound || null);
+      template.advanceCountReact.set(nextRound.size || participantsInRound || null);
     } else {
       template.advanceCountReact.set(null);
     }
@@ -42,7 +42,7 @@ Template.advanceCompetitors.created = function() {
     template.isSaveableReact.set(template.advanceCountReact.get());
   });
 };
-Template.advanceCompetitors.events({
+Template.advanceParticipants.events({
   'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
     template.$('input').filter(':visible:first').focus();
@@ -63,7 +63,7 @@ Template.advanceCompetitors.events({
     e.preventDefault();
 
     var advanceCount = template.advanceCountReact.get();
-    Meteor.call('advanceCompetitorsFromRound', advanceCount, this.roundId, function(err, data) {
+    Meteor.call('advanceParticipantsFromRound', advanceCount, this.roundId, function(err, data) {
       if(err) {
         throw err;
       }
@@ -71,16 +71,16 @@ Template.advanceCompetitors.events({
     });
   },
 });
-Template.advanceCompetitors.helpers({
+Template.advanceParticipants.helpers({
   isSaveable: function() {
     var template = Template.instance();
     return template.isSaveableReact.get();
   },
-  competitorsInRound: function() {
-    var competitorCount = Results.find({
+  participantsInRound: function() {
+    var participantCount = Results.find({
       roundId: this.roundId,
     }).count();
-    return competitorCount;
+    return participantCount;
   },
   advanceCount: function() {
     var template = Template.instance();

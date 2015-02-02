@@ -123,7 +123,7 @@ Competitions.attachSchema({
     min: 0,
     optional: true,
   },
-  registrationCompetitorLimitCount: {
+  registrationParticipantLimitCount: {
     type: Number, // empty = no limit
     label: "Maximum number of competitors (leave empty for no limit)",
     min: 1,
@@ -336,7 +336,7 @@ Registrations.attachSchema({
     allowedValues: _.keys(wca.eventByCode),
   },
   guestCount: {
-    // Number of guests a competitor is bringing
+    // Number of guests a participant is bringing
     // (in case the venue has a size limit)
     type: Number,
     min: 0,
@@ -476,7 +476,7 @@ Rounds.attachSchema({
     optional: true,
   },
   size: {
-    // How many competitors we expect to allow into this round.
+    // How many participants we expect to allow into this round.
     // Based on attendance and time, more or fewer people may end up competing
     // in this round.
     type: Number,

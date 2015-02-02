@@ -20,21 +20,21 @@ td.checkedin-for-event:not(.registered-for-event) {
   margin-right: 3px;
 }
 
-@addCompetitorButtonSize: 50px;
+@addParticipantButtonSize: 50px;
 
 #checkinTable {
-  margin-bottom: @addCompetitorButtonSize;
+  margin-bottom: @addParticipantButtonSize;
 }
 
-span.addCompetitor {
+span.addParticipant {
   position: fixed;
   bottom: 10px;
   right: 10px;
 
   display: block;
-  height: @addCompetitorButtonSize;
-  width: @addCompetitorButtonSize;
-  line-height: @addCompetitorButtonSize;
+  height: @addParticipantButtonSize;
+  width: @addParticipantButtonSize;
+  line-height: @addParticipantButtonSize;
 
   border-radius: 50%;
 
@@ -47,7 +47,7 @@ span.addCompetitor {
 
   cursor: pointer;
 }
-span.addCompetitor:before {
+span.addParticipant:before {
   content: "\2b"; /* glyphicon-plus */
   font-family: 'Glyphicons Halflings';
 }

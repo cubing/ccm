@@ -303,7 +303,7 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   var competitionId = getRoundAttribute(roundId, 'competitionId');
   var eventCode = getRoundAttribute(roundId, 'eventCode');
 
-  // Expand each result to also contain the uniqueName for that competitor
+  // Expand each result to also contain the uniqueName for that participant
   var registrations = Registrations.find({
     competitionId: competitionId,
     checkedInEvents: eventCode,

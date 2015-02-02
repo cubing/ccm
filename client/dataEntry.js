@@ -4,7 +4,7 @@ var selectedResultIdReact = new ReactiveVar(null);
 Router.onBeforeAction(function() {
   // Clear selected result
   selectedResultIdReact.set(null);
-  $('#inputCompetitorName').typeahead('val', '');
+  $('#inputParticipantName').typeahead('val', '');
   this.next();
 });
 
@@ -89,7 +89,7 @@ function keydown(e) {
   if(e.which == 27) { // escape
     var $focused = $(document.activeElement);
     var $jChester = $focused.closest('.jChester');
-    var $inputCompetitorName = $('#inputCompetitorName');
+    var $inputParticipantName = $('#inputParticipantName');
     if($jChester.length) {
       var $tr = $jChester.closest('tr');
       var wasUnsaved = $tr.hasClass("unsaved");
@@ -105,18 +105,18 @@ function keydown(e) {
       Meteor.defer(function() {
         selectedResultIdReact.set(resultId);
         if(!wasUnsaved) {
-          $inputCompetitorName.focus();
+          $inputParticipantName.focus();
         } else {
           Meteor.defer(function() {
             $('.jChester').eq(jChesterData.index).focus();
           });
         }
       });
-    } else if($focused[0] == $inputCompetitorName[0]) {
+    } else if($focused[0] == $inputParticipantName[0]) {
       selectedResultIdReact.set(null);
-      $inputCompetitorName.blur();
+      $inputParticipantName.blur();
     } else {
-      $inputCompetitorName.focus();
+      $inputParticipantName.focus();
     }
   }
 }
@@ -153,7 +153,7 @@ Template.roundDataEntry.rendered = function() {
 
   // This is subtle: we want to only query for users that are *in* the current round.
   // As the selected round changes (or less likely, but still possible:
-  // competitors are added/removed from the round), we want to recompute the set
+  // participants are added/removed from the round), we want to recompute the set
   // of userIds we're interested in.
   var results = [];
   template.autorun(function() {
@@ -253,8 +253,8 @@ Template.roundDataEntry.helpers({
 function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   jChesterToFocusIndex = jChesterToFocusIndex || 0;
 
-  var $inputCompetitorName = template.$('#inputCompetitorName');
-  var uniqueName = $inputCompetitorName.typeahead('val');
+  var $inputParticipantName = template.$('#inputParticipantName');
+  var uniqueName = $inputParticipantName.typeahead('val');
   var registration = Registrations.findOne({
     uniqueName: uniqueName,
   }, {
@@ -334,8 +334,8 @@ Template.roundDataEntry.events({
     });
     assert(registration);
 
-    var $inputCompetitorName = template.$('#inputCompetitorName');
-    $inputCompetitorName.typeahead('val', registration.uniqueName);
+    var $inputParticipantName = template.$('#inputParticipantName');
+    $inputParticipantName.typeahead('val', registration.uniqueName);
 
     var jChesterToFocusIndex = 0;
 
@@ -361,7 +361,7 @@ Template.roundDataEntry.events({
   },
   'input .typeahead': function(e, template) {
     // Wait for stronger user intent before we show the data entry fields.
-    // If there are two competitors: "Jay" and "Jayman", we wouldn't want to
+    // If there are two participants: "Jay" and "Jayman", we wouldn't want to
     // force the user to start entering times for "Jay" when they were really just
     // typing the first 3 letters of "Jayman".
     selectedResultIdReact.set(null);
@@ -392,7 +392,7 @@ Template.roundDataEntry.events({
       }
 
       var $sidebar = $jChester.closest(".results-sidebar");
-      var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+      var $focusables = $sidebar.find('#inputParticipantName, .jChester');
       var $next = $jChester.closest("tr").next("tr").find(".jChester");
       if($next.length === 0) {
         $next = $focusables.first();
@@ -408,19 +408,19 @@ Template.roundDataEntry.events({
       }
     }
   },
-  'focus #inputCompetitorName': function(e) {
+  'focus #inputParticipantName': function(e) {
     e.currentTarget.select();
   },
   'focus .focusguard-top': function(e) {
     var $target = $(e.currentTarget);
     var $sidebar = $target.closest(".results-sidebar");
-    var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+    var $focusables = $sidebar.find('#inputParticipantName, .jChester');
     $focusables.last().focus();
   },
   'focus .focusguard-bottom': function(e) {
     var $target = $(e.currentTarget);
     var $sidebar = $target.closest(".results-sidebar");
-    var $focusables = $sidebar.find('#inputCompetitorName, .jChester');
+    var $focusables = $sidebar.find('#inputParticipantName, .jChester');
     $focusables.first().focus();
   },
 });

@@ -89,28 +89,28 @@ getCannotRegisterReasons = function(competitionId) {
   var competition = Competitions.findOne({
     _id: competitionId
   }, {
-    registrationCompetitorLimitCount: 1,
+    registrationParticipantLimitCount: 1,
     registrationAttendeeLimitCount: 1,
   });
   // Users already registered should still be able to edit registrations
   if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
-    // competitor capacity limit
-    var numCompetitors;
-    if(competition.registrationCompetitorLimitCount) {
-      numCompetitors = Registrations.find({competitionId: competitionId}, {}).count();
-      if(numCompetitors >= competition.registrationCompetitorLimitCount) {
-        reasons.push("Registration has reached the maximum number of allowed competitors.");
+    // participant capacity limit
+    var numParticipants;
+    if(competition.registrationParticipantLimitCount) {
+      numParticipants = Registrations.find({competitionId: competitionId}, {}).count();
+      if(numParticipants >= competition.registrationParticipantLimitCount) {
+        reasons.push("Registration has reached the maximum number of allowed participants.");
       }
     }
     // total venue capacity limit
     if(competition.registrationAttendeeLimitCount) {
       var registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
-      numCompetitors = registrationGuestData.count();
+      numParticipants = registrationGuestData.count();
       var guestTotalCount = 0;
       registrationGuestData.fetch().forEach(function(obj) {
         guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
       });
-      if(numCompetitors + guestTotalCount >= competition.registrationAttendeeLimitCount) {
+      if(numParticipants + guestTotalCount >= competition.registrationAttendeeLimitCount) {
         reasons.push("Registration has reached the maximum number of allowed competitors and guests.");
       }
     }
@@ -198,7 +198,7 @@ if(Meteor.isServer) {
         'registrationCloseDate',
         'registrationAskAboutGuests',
         'registrationEnforceAttendanceLimit',
-        'registrationCompetitorLimitCount',
+        'registrationParticipantLimitCount',
         'registrationAttendeeLimitCount',
         'updatedAt',
         'createdAt',

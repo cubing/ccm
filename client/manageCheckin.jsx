@@ -35,7 +35,7 @@ Template.manageCheckin.helpers({
 });
 
 Template.manageCheckin.events({
-  'click .addCompetitor': function() {
+  'click .addParticipant': function() {
     var newRegistration = {
       competitionId: this.competitionId,
     };

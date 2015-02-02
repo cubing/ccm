@@ -1,4 +1,4 @@
-Template.competitorResults.helpers({
+Template.participantResults.helpers({
   results: function() {
     var results = Results.find({
       competitionId: this.competitionId,
