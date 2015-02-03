@@ -307,6 +307,31 @@ wca.roundStatuses = {
   closed: 'closed',
 };
 
+function expectedSolveCountInN(softCutoffAttempts) {
+  return function(solves, cutoffTime, roundFormatCode) {
+    var roundFormat = wca.formatByCode[roundFormatCode];
+    var missedCutoff = true;
+    for(var i = 0; i < softCutoffAttempts; i++) {
+      var solve = solves[i];
+      if(!solve) {
+        // They haven't done this solve yet, so there's still a chance
+        // they'll make the cutoff.
+        missedCutoff = false;
+        break;
+      }
+      if(wca.compareSolveTimes(solve, cutoffTime) <= 0) {
+        // They made the cutoff!
+        missedCutoff = false;
+        break;
+      }
+    }
+    if(missedCutoff) {
+      return softCutoffAttempts;
+    } else {
+      return roundFormat.count;
+    }
+  };
+}
 // The various kinds of soft cutoffs we support. Usually, this is the number of
 // attempts the participant gets to beat the "soft cutoff time". However, we
 // also support "cumulative time limits":
@@ -315,8 +340,8 @@ wca.softCutoffFormats = [
   {
     name: 'cumulative',
     code: 'cumulative',
-    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
-      var roundType = wca.roundByCode[roundCode];
+    getExpectedSolveCount: function(solves, cutoffTime, roundFormatCode) {
+      var roundFormat = wca.formatByCode[roundFormatCode];
 
       var solveTimeSum = { millis: 0 };
       for(var i = 0; i < solves.length; i++) {
@@ -328,59 +353,23 @@ wca.softCutoffFormats = [
           return i + 1;
         }
       }
-      return roundType.count;
+      return roundFormat.count;
     },
   },
   {
     name: 'in 1',
     code: '1',
-    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
-      var roundType = wca.roundByCode[roundCode];
-      var madeCutoff = wca.compareSolveTimes(solves[0], cutoffTime) <= 0;
-      if(madeCutoff) {
-        return roundType.count;
-      } else {
-        return 1;
-      }
-    },
+    getExpectedSolveCount: expectedSolveCountInN(1),
   },
   {
     name: 'in 2',
     code: '2',
-    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
-      var roundType = wca.roundByCode[roundCode];
-      var madeCutoff = false;
-      for(var i = 0; i < 2; i++) {
-        if(wca.compareSolveTimes(solves[i], cutoffTime) <= 0) {
-          madeCutoff = true;
-          break;
-        }
-      }
-      if(madeCutoff) {
-        return roundType.count;
-      } else {
-        return 2;
-      }
-    },
+    getExpectedSolveCount: expectedSolveCountInN(2),
   },
   {
     name: 'in 3',
     code: '3',
-    getExpectedSolveCount: function(solves, cutoffTime, roundCode) {
-      var roundType = wca.roundByCode[roundCode];
-      var madeCutoff = false;
-      for(var i = 0; i < 3; i++) {
-        if(wca.compareSolveTimes(solves[i], cutoffTime) <= 0) {
-          madeCutoff = true;
-          break;
-        }
-      }
-      if(madeCutoff) {
-        return roundType.count;
-      } else {
-        return 3;
-      }
-    },
+    getExpectedSolveCount: expectedSolveCountInN(3),
   }
 ];
 wca.softCutoffFormatByCode = {};
