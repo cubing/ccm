@@ -571,43 +571,6 @@ RoundSorter = {
     Rounds.update(roundId, { $set: { progress: progress } });
   },
 };
-/*<<<
-function getCompetitorsDoneAndTotal(roundId) {
-  var progress = getRoundAttribute(roundId, 'progress');
-  // Neutered until https://github.com/cubing/ccm/issues/81
-  if(true) {
-    return [ 5, 10 ];
-  }
-  var formatCode = getRoundAttribute(roundId, 'formatCode');
-  var format = wca.formatByCode[formatCode];
-  var expectedSolvesPerResult = format.count;
-
-  var results = Results.find({
-    roundId: roundId,
-  }, {
-    fields: {
-      solves: 1,
-    }
-  }).fetch();
-
-  var actualSolveCount = 0;
-  _.each(results, function(result) {
-    _.each(result.solves, function(solve) {
-      if(solve) {
-        actualSolveCount++;
-      }
-    });
-  });
-  if(actualSolveCount === 0) {
-    return [ 0, results.length ];
-  }
-
-  // TODO - this doesn't take into account soft cutoffs
-  var expectedSolveCount = results.length * expectedSolvesPerResult;
-  var doneRatio = actualSolveCount / expectedSolveCount;
-  return [ doneRatio*results.length, results.length ];
-}
-*/
 
 if(Meteor.isServer) {
   var child_process = Npm.require('child_process');
