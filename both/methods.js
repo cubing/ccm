@@ -290,12 +290,7 @@ Meteor.methods({
         registrationId: registrationId,
       });
     });
-
     Meteor.call('recomputeWhoAdvanced', roundId);
-
-    // Advancing people to nextRound means we need to update positions
-    // and its progress.
-    RoundSorter.addRoundToSort(nextRound);
   },
   checkInRegistration: function(registrationId) {
     // This method is called to either check-in a participant for the first time,
@@ -333,9 +328,6 @@ Meteor.methods({
         roundId: round._id,
         registrationId: registration._id,
       });
-
-      // Update round progress
-      RoundSorter.addRoundToSort(round._id);
     });
 
     var toCheckInTo = _.difference(registration.registeredEvents, registration.checkedInEvents);
@@ -347,9 +339,6 @@ Meteor.methods({
         roundId: round._id,
         registrationId: registration._id,
       });
-
-      // Update round progress
-      RoundSorter.addRoundToSort(round._id);
     });
     Registrations.update({
       _id: registration._id,
@@ -393,7 +382,9 @@ Meteor.methods({
     });
   },
   setSolveTime: function(resultId, solveIndex, solveTime) {
-    var result = Results.findOne(resultId, {
+    var result = Results.findOne({
+      _id: resultId,
+    }, {
       fields: {
         competitionId: 1,
         roundId: 1,
@@ -428,52 +419,10 @@ Meteor.methods({
     var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
     _.extend($set, statistics);
 
-    Results.update(resultId, { $set: $set });
+    Results.update({ _id: resultId }, { $set: $set });
     if(!this.isSimulation) {
       RoundSorter.addRoundToSort(result.roundId);
     }
-  },
-  setRoundSoftCutoff: function(roundId, softCutoff) {
-    var round = Rounds.findOne(roundId, {
-      fields: {
-        competitionId: 1,
-        eventCode: 1,
-      }
-    });
-    if(!round) {
-      throw new Meteor.Error(404, "Round not found");
-    }
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
-
-    var toSet;
-    if(softCutoff) {
-      toSet.$set = {
-        // Explicitly listing all the relevant fields in SolveTime as a workaround for
-        //  https://github.com/aldeed/meteor-simple-schema/issues/202
-        //softCutoff: {
-          //time: time,
-          //formatCode: formatCode,
-        //}
-        'softCutoff.time.millis': softCutoff.time.millis,
-        'softCutoff.time.decimals': softCutoff.time.decimals,
-        'softCutoff.time.penalties': softCutoff.time.penalties,
-        'softCutoff.formatCode': softCutoff.formatCode,
-      };
-    } else {
-      toSet.$unset = {
-        softCutoff: 1,
-      };
-    }
-
-    Rounds.update(roundId, toSet);
-
-    // Adding/removing a soft cutoff for a round makes a round a
-    // combined/uncombined round.
-    Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
-
-    // Changing the softCutoff for a round could affect the rounds progress,
-    // so queue up a recomputation of that.
-    RoundSorter.addRoundToSort(roundId);
   },
 });
 
@@ -485,7 +434,7 @@ Meteor.methods({
  * guarantee.
  * TODO - i don't know enough about node-fibers to think about what exactly this code will do when multiple DDP connections call it simultaneously.
  */
-RoundSorter = {
+var RoundSorter = {
   COALESCE_MILLIS: 500,
   roundsToSortById: {},
   addRoundToSort: function(roundId) {
@@ -494,19 +443,11 @@ RoundSorter = {
     }
   },
   _handleSortTimer: function(roundId) {
-    log.l1("RoundSorter._handleSortTimer(", roundId, ")");
     delete this.roundsToSortById[roundId];
-
-    var round = Rounds.findOne(roundId, {
-      fields: {
-        formatCode: 1,
-        softCutoff: 1,
-      }
-    });
 
     var $sort = {};
 
-    var roundFormat = wca.formatByCode[round.formatCode];
+    var roundFormat = wca.formatByCode[getRoundAttribute(roundId, 'formatCode')];
     if(roundFormat.sortBy == "best") {
       $sort.sortableBestValue = 1;
     } else if(roundFormat.sortBy == "average") {
@@ -519,8 +460,6 @@ RoundSorter = {
 
     var results = Results.find({ roundId: roundId }, { $sort: $sort }).fetch();
     var position = 0;
-    var done = 0;
-    var total = 0;
     results.forEach(function(result, i) {
       var tied = false;
       var previousResult = results[i - 1];
@@ -543,32 +482,8 @@ RoundSorter = {
       if(!tied) {
         position++;
       }
-
-      // update total
-      total += result.getExpectedSolveCount();
-      // update done
-      result.solves.forEach(function(solve) {
-        if(solve) {
-          done++;
-        }
-      });
-
-      Results.update(result._id, { $set: { position: position } });
+      Results.update({ _id: result._id }, { $set: { position: position } });
     });
-
-    // Normalize done and total to the number of competitors (results)
-    if(total === 0) {
-      done = 0;
-    } else {
-      done = (done/total)*results.length;
-    }
-    total = results.length;
-    var progress = {
-      done: done,
-      total: total,
-    };
-    log.l2(roundId, " setting progress to ", progress);
-    Rounds.update(roundId, { $set: { progress: progress } });
   },
 };
 
@@ -796,10 +711,6 @@ if(Meteor.isServer) {
               }
             });
           }
-
-          // We don't actually need to resort, but we do want to recompute
-          // how far we've progressed in the round.
-          RoundSorter.addRoundToSort(roundId);
 
           wcaRound.groups.forEach(function(wcaGroup) {
             Groups.insert({

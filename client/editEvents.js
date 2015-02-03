@@ -5,11 +5,11 @@ Template.editEvents.events({
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonRemoveRound"]': function(e, template) {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    var progress = getRoundAttribute(lastRoundId, 'progress');
-    if(progress && progress.total > 0) {
+    var lastRoundResultsCount = getLastRoundResultsCount(this.competitionId, this.eventCode);
+    if(lastRoundResultsCount > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
+      var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
       Meteor.call('removeRound', lastRoundId);
     }
   },
@@ -72,7 +72,7 @@ Template.editEvents.events({
   },
   'click #collapseAllEvents': function() {
     // While it looks weird to method chain collapse, I couldn't get it to work
-    // via passing hide:true. You can't just call collapse('hide') because when
+    // via passing hide:tru. You can't just call collapse('hide') because when
     // you  manually call collapse() it defaults to toggling the element.
     $('#editEventsList .collapse').collapse({toggle:false}).collapse('hide');
   },
@@ -87,6 +87,60 @@ var eventCountPerRowByDeviceSize = {
   md: 2,
   lg: 3,
 };
+
+function getParticipantsDoneAndTotal(roundId) {
+  // Neutered until https://github.com/cubing/ccm/issues/81
+  if(true) {
+    return [ 5, 10 ];
+  }
+  var formatCode = getRoundAttribute(roundId, 'formatCode');
+  var format = wca.formatByCode[formatCode];
+  var expectedSolvesPerResult = format.count;
+
+  var results = Results.find({
+    roundId: roundId,
+  }, {
+    fields: {
+      solves: 1,
+    }
+  }).fetch();
+
+  var actualSolveCount = 0;
+  _.each(results, function(result) {
+    _.each(result.solves, function(solve) {
+      if(solve) {
+        actualSolveCount++;
+      }
+    });
+  });
+  if(actualSolveCount === 0) {
+    return [ 0, results.length ];
+  }
+
+  // TODO - this doesn't take into account soft cutoffs
+  var expectedSolveCount = results.length * expectedSolvesPerResult;
+  var doneRatio = actualSolveCount / expectedSolveCount;
+  return [ doneRatio*results.length, results.length ];
+}
+
+function getLastRoundResultsCount(competitionId, eventCode) {
+  // Neutered until https://github.com/cubing/ccm/issues/81
+  if(true) {
+    return 1;
+  }
+  var roundId = getLastRoundIdForEvent(competitionId, eventCode);
+  if(!roundId) {
+    return false;
+  }
+  var resultsForRound = Results.find({
+    roundId: roundId,
+  }, {
+    fields: {
+      _id: 1,
+    }
+  });
+  return resultsForRound.count();
+}
 
 function getMaxAllowedSize(round) {
   var prevRound = Rounds.findOne({
@@ -171,9 +225,8 @@ Template.editEvents.helpers({
     }).count();
     return participantsCount;
   },
-  roundProgress: function() {
-    var roundId = this._id;
-    return getRoundAttribute(roundId, 'progress');
+  roundDoneAndTotal: function() {
+    return getParticipantsDoneAndTotal(this._id);
   },
   maxAllowedRoundSize: function() {
     var maxAllowedRoundSize = getMaxAllowedSize(this);
@@ -187,32 +240,18 @@ Template.editEvents.helpers({
     return this.size > maxAllowedRoundSize;
   },
   roundComplete: function() {
-    var roundId = this._id;
-    var progress = getRoundAttribute(roundId, 'progress');
-    return progress && progress.done == progress.total;
-  },
-  roundOvercomplete: function() {
-    var roundId = this._id;
-    var progress = getRoundAttribute(roundId, 'progress');
-    return progress && progress.done > progress.total;
+    var done_total = getParticipantsDoneAndTotal(this._id);
+    return done_total[0] == done_total[1];
   },
   lastRoundResultsCount: function() {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    if(!lastRoundId) {
-      return 0;
-    }
-    var progress = getRoundAttribute(lastRoundId, 'progress');
-    if(!progress) {
-      return 0;
-    }
-    return progress.total;
+    return getLastRoundResultsCount(this.competitionId, this.eventCode);
   },
   canRemoveRound: function() {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    if(!lastRoundId) {
+    var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    if(!roundId) {
       return false;
     }
-    return canRemoveRound(Meteor.userId(), lastRoundId);
+    return canRemoveRound(Meteor.userId(), roundId);
   },
   canAddRound: function() {
     return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
@@ -253,11 +292,10 @@ Template.editEvents.helpers({
       return false;
     }
     if(this.status == wca.roundStatuses.unstarted) {
-      var roundId = this._id;
-      var progress = getRoundAttribute(roundId, 'progress');
+      var done_total = getParticipantsDoneAndTotal(this._id);
       // Only allow opening this unstarted round if there are some people *in*
       // the round.
-      return progress && progress.total > 0;
+      return done_total[1] > 0;
     }
     return this.status == wca.roundStatuses.closed;
   },
@@ -398,25 +436,41 @@ Template.modalSoftCutoff.events({
     var $selectCutoffFormat = template.$('select[name="softCutoffFormatCode"]');
     var formatCode = $selectCutoffFormat.val();
 
-    var softCutoff = {};
+    var toSet = {};
     if(formatCode) {
       var $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
       var time = $inputSoftCutoff.jChester('getSolveTime');
-      softCutoff = {
-        time: time,
-        formatCode: formatCode,
+
+      toSet.$set = {
+        // Explicitly listing all the fields in SolveTime as a workaround for
+        //  https://github.com/aldeed/meteor-simple-schema/issues/202
+        //softCutoff: {
+          //time: time,
+          //formatCode: formatCode,
+        //}
+        'softCutoff.time.millis': time.millis,
+        'softCutoff.time.decimals': time.decimals,
+        'softCutoff.time.penalties': time.penalties,
+        'softCutoff.formatCode': formatCode,
       };
     } else {
-      softCutoff = null;
+      toSet.$unset = {
+        softCutoff: 1,
+      };
     }
 
     var roundId = this._id;
-    Meteor.call('setRoundSoftCutoff', roundId, softCutoff, function(err, res) {
-      if(err) {
-        throw err;
-      }
-      template.$(".modal").modal('hide');
-    });
+    Rounds.update(roundId, toSet);
+
+    // Adding/removing a soft cutoff for a round makes a round a
+    // combined/uncombined round. Perhaps we should create a meteor
+    // method for changing the softcutoff of a round in order to encapsulate
+    // this logic.
+    var eventCode = getRoundAttribute(roundId, 'eventCode');
+    var competitionId = getRoundAttribute(roundId, 'competitionId');
+    Meteor.call('refreshRoundCodes', competitionId, eventCode);
+
+    template.$(".modal").modal('hide');
   },
 });
 

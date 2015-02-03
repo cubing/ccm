@@ -57,11 +57,15 @@ if(Meteor.isClient) {
     // Neat trick from http://stackoverflow.com/a/18358056
     return +(n.toFixed(fixed));
   });
-  Template.registerHelper("percentage", function(progress) {
-    if(progress.total === 0) {
+  Template.registerHelper("percentage", function(a, b) {
+    if(_.isArray(a)) {
+      b = a[1];
+      a = a[0];
+    }
+    if(b === 0) {
       return 0;
     }
-    return Math.round(100.0 * progress.done / progress.total);
+    return Math.round(100.0 * a / b);
   });
 }
 
