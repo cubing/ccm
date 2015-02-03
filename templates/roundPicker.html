@@ -27,7 +27,7 @@
           <ul class="nav navbar-nav">
             <li class="{{#if isCurrentRound}}active{{/if}} leaf">
               <p class="navbar-text navbar-brand">
-                <span class="cubing-icon icon-{{selectedEventCode}}"></span> {{eventName selectedEventCode}}
+                <span class="cubing-icon icon-{{selectedEventCode}}"></span><span>{{eventName selectedEventCode}}</span>
               </p>
             </li>
             {{#each roundsForEvent}}

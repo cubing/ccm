@@ -37,15 +37,11 @@
 }
 
 @iconSize: 50px;
-
-.cubing-icon {
-  font-size: @iconSize - 10px;
-  height: @iconSize;
-  width: @iconSize;
-}
+@thumbnailPaddingAndBorder: 2*4px + 2*1px;
 
 .panel-title .cubing-icon {
   position: absolute;
+  font-size: @iconSize - @thumbnailPaddingAndBorder;
   top: 20px - @iconSize / 2;
 }
 
