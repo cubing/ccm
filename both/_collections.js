@@ -546,6 +546,22 @@ Rounds.attachSchema({
     defaultValue: wca.roundStatuses.unstarted,
     optional: true,
   },
+  progress: {
+    type: new SimpleSchema({
+      done: {
+        type: Number,
+        // done is meant to give a sense of how many people are done, and
+        // people can be partway done.
+        decimal: true,
+        min: 0,
+      },
+      total: {
+        type: Number,
+        min: 0,
+      },
+    }),
+    optional: true,
+  },
 });
 if(Meteor.isServer) {
   Rounds._ensureIndex({
@@ -561,27 +577,24 @@ Result.prototype.getExpectedSolveCount = function() {
   // This transform trick came from
   //  https://www.eventedmind.com/feed/meteor-transforming-collection-documents
   // However, it doesn't address the fact that callers shouldn't need to know
-  // what attributes we need in the Result. Here we just look up exactly
-  // what we need. This is slow, but feels better than the altenatives to me.
-  var result = Results.findOne(this._id, {
-    fields: {
-      roundId: 1,
-      solves: 1,
-    }
-  });
+  // what attributes we need in the Result. Here we just assert that
+  // we've got the fields we need. Anyone who wants to call this method will
+  // need to be changed to query for the right fields beforehand.
+  assert(this.hasOwnProperty('roundId'));
+  assert(this.hasOwnProperty('solves'));
 
-  var round = Rounds.findOne(result.roundId, {
+  var round = Rounds.findOne(this.roundId, {
     fields: {
-      roundCode: 1,
+      formatCode: 1,
       softCutoff: 1,
     }
   });
   if(!round.softCutoff) {
-    var roundType = wca.roundByCode[round.roundCode];
-    return roundType.count;
+    var roundFormat = wca.formatByCode[round.formatCode];
+    return roundFormat.count;
   }
   var softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
-  var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(result.solves, round.softCutoff.time, round.roundCode);
+  var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
   return expectedSolveCount;
 };
 
