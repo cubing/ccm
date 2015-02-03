@@ -77,8 +77,8 @@ thead.tableFloatingHeaderOriginal {
   background-color: white;
 }
 
-.table th img {
-  height: 22px;
+.table th .cubing-icon {
+  font-size: 22px;
 }
 
 /*

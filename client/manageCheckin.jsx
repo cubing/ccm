@@ -171,7 +171,7 @@ var CheckinList = React.createClass({
               {that.state.competitionEvents.map(function(event) {
                 return (
                   <th key={event.eventCode} className="text-center">
-                    <img src={getEventIcon(event.eventCode)} /><br />
+                    <span className={"cubing-icon icon-" + event.eventCode}></span><br />
                     <span>{event.eventCode}</span>
                   </th>
                 );
