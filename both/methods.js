@@ -556,7 +556,7 @@ RoundSorter = {
       Results.update(result._id, { $set: { position: position } });
     });
 
-    // Normalize done and total to the number of competitors (results)
+    // Normalize done and total to the number of results
     if(total === 0) {
       done = 0;
     } else {
