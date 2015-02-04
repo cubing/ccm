@@ -1,12 +1,11 @@
 <template name="competitions">
-  <h1>Look at all the people who love our software</h1>
   <ul class="competitions">
-    {{#each allComps}}
-      <li class="competition {{listedClass}}">
+    {{#each competitions}}
+      <li class="competition {{#if listed}}listed{{else}}unlisted{{/if}}">
         {{#if wcaCompetitionId}}
-          <a href="{{pathFor 'competition' competitionUrlId=wcaCompetitionId}}">name: {{competitionName}} wcaCompetitionId: {{wcaCompetitionId}}</a>
+          <a href="{{pathFor 'competition' competitionUrlId=wcaCompetitionId}}">{{competitionName}}</a>
         {{else}}
-          <a href="{{pathFor 'competition' competitionUrlId=_id}}">name: {{competitionName}} _id: {{_id}}</a>
+          <a href="{{pathFor 'competition' competitionUrlId=_id}}">{{competitionName}}</a>
         {{/if}}
       </li>
     {{/each}}

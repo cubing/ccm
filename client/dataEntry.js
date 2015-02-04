@@ -196,8 +196,8 @@ Template.roundDataEntry.helpers({
     var expectedSolveCount = result.getExpectedSolveCount();
     var formatCode = getRoundAttribute(roundId, "formatCode");
     var roundFormat = wca.formatByCode[formatCode];
-    var madeCutoff = expectedSolveCount == roundFormat.count;
-    if(!madeCutoff && this.index >= expectedSolveCount && this.solveTime) {
+    var missedCutoff = expectedSolveCount != roundFormat.count;
+    if(missedCutoff && this.index >= expectedSolveCount && this.solveTime) {
       // There's a SolveTime at this index and the user didn't make the cutoff.
       // Complain!
       warnings.push("Did not make soft cutoff");
@@ -238,7 +238,7 @@ Template.roundDataEntry.helpers({
   },
   solveSkippedDueToCutoff: function() {
     var index = this.index;
-    var result = Results.findOne(this.resultId, { fields: { _id: 1 } });
+    var result = Results.findOne(this.resultId);
     var expectedSolveCount = result.getExpectedSolveCount();
     return index >= expectedSolveCount;
   },
