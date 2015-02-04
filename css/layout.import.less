@@ -1,13 +1,22 @@
-@import (reference) url('bs-constants.import.less');
-
 .navbar img {
   height: 18px;
 }
 
-.navbar img.img-lg,
-.navbar .navbar-brand img {
-  margin-top: -5px;
-  height: 32px;
+.navbar {
+  .navbar-brand img {
+    margin-top: -5px;
+    height: 32px;
+  }
+
+  .cubing-icon {
+    font-size: 32px;
+    vertical-align: middle;
+  }
+
+  .navbar-brand .cubing-icon {
+    display: inline-block;
+    margin-top: -5px;
+  }
 }
 
 .navbar-plain-rectangle {
@@ -17,8 +26,8 @@
 
 @navbarColorDarkenPercent: 12%;
 
-@subNavbarColor: @bsNavbarActiveColor;
-@subNavbarActiveColor: darken(@bsNavbarActiveColor, @navbarColorDarkenPercent);
+@subNavbarColor: @navbar-default-link-active-bg;
+@subNavbarActiveColor: darken(@subNavbarColor, @navbarColorDarkenPercent);
 @subSubNavbarColor: @subNavbarActiveColor;
 @subSubNavbarActiveColor: darken(@subNavbarActiveColor, @navbarColorDarkenPercent);
 @subSubSubNavbarColor: @subSubNavbarActiveColor;
@@ -178,7 +187,7 @@ p.navbar-brand > img {
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  color: @bsNavbarTextColor;
+  color: @navbar-default-link-color;
 }
 
 /* Get rid of the whitespace between the navbars */

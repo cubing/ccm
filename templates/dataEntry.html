@@ -7,7 +7,7 @@
             <li class="{{#if isSelectedRound}}active{{/if}} leaf">
               <a href="{{pathFor 'dataEntry' competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
                  class="brand">
-                <img src="{{eventIcon eventCode}}" alt="{{eventCode}}">
+                <span class="icon-{{eventCode}}" alt="{{eventCode}}"></span>
                 {{eventName eventCode}}: {{roundName roundCode}}
               </a>
             </li>
