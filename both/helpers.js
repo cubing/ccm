@@ -199,9 +199,9 @@ isRegisteredForCompetition = function(userId, competitionId) {
   var competition = Registrations.findOne({
     competitionId: competitionId,
     userId: userId,
-  },
-    { fields: { _id: 1 } }
-  );
+  }, {
+    fields: { _id: 1 }
+  });
   return !!competition;
 };
 if(Meteor.isClient) {
@@ -287,9 +287,9 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   var registrations = Registrations.find({
     competitionId: competitionId,
     checkedInEvents: eventCode,
-  },
-    { fields: { uniqueName: 1 } }
-  );
+  }, {
+    fields: { uniqueName: 1 }
+  });
   var registrationById = {};
   registrations.forEach(function(registration) {
     registrationById[registration._id] = registration;

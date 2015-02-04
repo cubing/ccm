@@ -143,9 +143,9 @@ Template.editEvents.helpers({
     var participantsCount = Registrations.find({
       competitionId: this.competitionId,
       events: this.eventCode,
-    },
-      { fields: { _id: 1 } }
-    ).count();
+    }, {
+      fields: { _id: 1 }
+    }).count();
     return participantsCount;
   },
   roundProgress: function() {
@@ -220,9 +220,7 @@ Template.editEvents.helpers({
       eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
-      fields: {
-        status: 1,
-      }
+      fields: { status: 1 }
     });
     if(nextRound && nextRound.status != wca.roundStatuses.unstarted) {
       // If there's a next round that is already opened (or
@@ -248,9 +246,7 @@ Template.editEvents.helpers({
       eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
-      fields: {
-        status: 1
-      }
+      fields: { status: 1 }
     });
     if(!nextRound) {
       // We can't possibly advance people from this round if there is no next

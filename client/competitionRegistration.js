@@ -91,9 +91,9 @@ Template.competitionRegistration.helpers({
     var registrationWithUniqueName = Registrations.findOne({
       uniqueName: userName,
       competitionId: competitionId
-    },
-      { fields: { userId: 1 } }
-    );
+    }, {
+      fields: { userId: 1 }
+    });
     if(!registrationWithUniqueName) {
       return false;
     }

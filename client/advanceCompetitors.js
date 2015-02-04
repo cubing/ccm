@@ -13,9 +13,9 @@ Template.advanceParticipants.created = function() {
       competitionId: data.competitionId,
       eventCode: data.eventCode,
       nthRound: data.nthRound + 1,
-    },
-      { fields: { size: 1 } }
-    );
+    }, {
+      fields: { size: 1 }
+    });
     if(nextRound) {
       var participantsInRound = Results.find({ roundId: nextRound._id }, { fields: { _id: 1 } }).count();
       template.advanceCountReact.set(nextRound.size || participantsInRound || null);
