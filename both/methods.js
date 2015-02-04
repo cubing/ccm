@@ -136,9 +136,9 @@ Meteor.methods({
         competitionId: round.competitionId,
         eventCode: round.eventCode,
         nthRound: round.nthRound - 1,
-      },
-        { fields: { _id: 1 } }
-      );
+      }, {
+        fields: { _id: 1 }
+      });
       if(previousRound) {
         Meteor.call('recomputeWhoAdvanced', previousRound._id);
       }
@@ -223,9 +223,9 @@ Meteor.methods({
       competitionId: competitionId,
       eventCode: eventCode,
       nthRound: nthRound + 1,
-    },
-      { fields: { _id: 1 } }
-    );
+    }, {
+      fields: { _id: 1 }
+    });
     if(!nextRound) {
       throw new Meteor.Error(404,
             'No next round found for roundId ' + roundId);
@@ -291,9 +291,9 @@ Meteor.methods({
         competitionId: registration.competitionId,
         eventCode: eventCode,
         nthRound: 1,
-      },
-        { fields: { _id: 1 } }
-      );
+      }, {
+        fields: { _id: 1 }
+      });
     }
     var toUnCheckInTo = _.difference(registration.checkedInEvents, registration.registeredEvents);
     toUnCheckInTo.forEach(function(eventCode) {
@@ -792,9 +792,9 @@ if(Meteor.isServer) {
         competitionId: round.competitionId,
         eventCode: round.eventCode,
         nthRound: round.nthRound + 1,
-      },
-        { fields: { size: 1 } }
-      );
+      }, {
+        fields: { size: 1 }
+      });
 
       var results = Results.find({ roundId: roundId }, { fields: { registrationId: 1 } });
 

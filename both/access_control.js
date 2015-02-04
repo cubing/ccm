@@ -14,9 +14,9 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
     var registration = Registrations.findOne({
       competitionId: competitionId,
       userId: userId,
-    },
-      { fields: { organizer: 1 } }
-    );
+    }, {
+      fields: { organizer: 1 }
+    });
     if(!registration || !registration.organizer) {
       return new Meteor.Error(403, "Not an organizer for this competition");
     }
@@ -161,9 +161,9 @@ canAddRound = function(userId, competitionId, eventCode) {
   var rounds = Rounds.find({
     competitionId: competitionId,
     eventCode: eventCode
-  },
-    { fields: { _id: 1 } }
-  );
+  }, {
+    fields: { _id: 1 }
+  });
   var nthRound = rounds.count();
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };

@@ -99,9 +99,9 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
     competitionId: competitionId,
     eventCode: eventCode,
     nthRound: nthRound,
-  },
-    { fields: { _id: 1 } }
-  );
+  }, {
+    fields: { _id: 1 }
+  });
   if(!round) {
     return [];
   }

@@ -5,9 +5,9 @@ api = {
         { _id: competitionUrlId },
         { wcaCompetitionId: competitionUrlId },
       ]
-    },
-      { fields: { _id: 1 } }
-    );
+    }, {
+      fields: { _id: 1 }
+    });
     if(!competition) {
       return null;
     }

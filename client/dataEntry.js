@@ -253,9 +253,9 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   var result = Results.findOne({
     roundId: roundId,
     registrationId: registration._id,
-  },
-    { fields: { _id: 1 } }
-  );
+  }, {
+    fields: { _id: 1 }
+  });
   if(!result) {
     selectedResultIdReact.set(null);
     return;

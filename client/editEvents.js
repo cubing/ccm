@@ -143,9 +143,9 @@ Template.editEvents.helpers({
     var participantsCount = Registrations.find({
       competitionId: this.competitionId,
       events: this.eventCode,
-    },
-      { fields: { _id: 1 } }
-    ).count();
+    }, {
+      fields: { _id: 1 }
+    }).count();
     return participantsCount;
   },
   roundProgress: function() {
