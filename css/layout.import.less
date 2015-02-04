@@ -26,8 +26,8 @@
 
 @navbarColorDarkenPercent: 12%;
 
-@subNavbarColor: @bsNavbarActiveColor;
-@subNavbarActiveColor: darken(@bsNavbarActiveColor, @navbarColorDarkenPercent);
+@subNavbarColor: @navbar-default-link-active-bg;
+@subNavbarActiveColor: darken(@subNavbarColor, @navbarColorDarkenPercent);
 @subSubNavbarColor: @subNavbarActiveColor;
 @subSubNavbarActiveColor: darken(@subNavbarActiveColor, @navbarColorDarkenPercent);
 @subSubSubNavbarColor: @subSubNavbarActiveColor;
@@ -187,7 +187,7 @@ p.navbar-brand > img {
 }
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-brand:focus {
-  color: @bsNavbarTextColor;
+  color: @navbar-default-link-color;
 }
 
 /* Get rid of the whitespace between the navbars */
