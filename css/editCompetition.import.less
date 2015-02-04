@@ -11,13 +11,15 @@
   font-weight: 300;
   text-overflow: ellipsis;
   margin-top: 20px;
+
+  &:focus {
+    border-color: #4d90fe;
+    margin-left: -1px;
+    padding-left: 14px;  /* Regular padding-left + 1. */
+    width: 401px;
+  }
 }
-#competitionLocationMapInput:focus {
-  border-color: #4d90fe;
-  margin-left: -1px;
-  padding-left: 14px;  /* Regular padding-left + 1. */
-  width: 401px;
-}
+
 #competitionLocationMap {
   height: 400px;
   width: 100%;
