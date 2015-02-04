@@ -1,9 +1,20 @@
+@import (reference) "bootstrap/custom.bootstrap.less";
+
 .competition.listed {
   color: black;
 }
 
 .competition.unlisted {
   opacity: 0.5;
+}
+
+.collapse-indicator {
+  .glyphicon;
+  .glyphicon-chevron-down;
+}
+
+.collapsed .collapse-indicator {
+  .glyphicon-chevron-right;
 }
 
 /*
@@ -88,3 +99,15 @@ thead.tableFloatingHeaderOriginal {
 body.modal-open .datepicker {
   z-index: 1200 !important;
 }
+
+@import "advanceCompetitors.import.less";
+@import "apiDocumentation.import.less";
+@import "competitionSchedule.import.less";
+@import "dataEntry.import.less";
+@import "editCompetition.import.less";
+@import "editEvents.import.less";
+@import "editSchedule.import.less";
+@import "exportResults.import.less";
+@import "layout.import.less";
+@import "manageCheckin.import.less";
+@import "roundResults.import.less";
