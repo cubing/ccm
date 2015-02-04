@@ -174,11 +174,9 @@ BaseRoundController = BaseCompetitionController.extend({
       competitionId: competitionId,
       eventCode: this.params.eventCode,
       nthRound: nthRound,
-    }, {
-      fields: {
-        _id: 1,
-      }
-    });
+    },
+      { fields: { _id: 1 } }
+    );
     if(!round) {
       this.render('roundNotFound');
       return data;
@@ -205,11 +203,9 @@ ViewRoundController = BaseRoundController.extend({
         competitionId: competitionId,
         eventCode: this.params.eventCode,
         status: wca.roundStatuses.open,
-      }, {
-        fields: {
-          nthRound: 1,
-        },
-      });
+      },
+        { fields: { nthRound: 1 } }
+      );
       if(openRound) {
         round = openRound;
       } else {
@@ -217,12 +213,8 @@ ViewRoundController = BaseRoundController.extend({
           competitionId: competitionId,
           eventCode: this.params.eventCode,
         }, {
-          fields: {
-            nthRound: 1,
-          },
-          sort: {
-            nthRound: -1,
-          },
+          fields: { nthRound: 1 },
+          sort: { nthRound: -1 },
         });
         round = latestRound;
       }

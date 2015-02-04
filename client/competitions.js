@@ -14,10 +14,7 @@ Template.competitions.helpers({
   },
 
   myCompetitions: function() {
-    var myCompetitions = Competitions.find(
-      { organizers: { $elemMatch: { $in: [ Meteor.userId() ] } } }
-    );
-    return myCompetitions;
+    return Competitions.find({ organizers: { $elemMatch: { $in: [ Meteor.userId() ] } } });
   },
 });
 

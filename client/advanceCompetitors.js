@@ -13,19 +13,11 @@ Template.advanceParticipants.created = function() {
       competitionId: data.competitionId,
       eventCode: data.eventCode,
       nthRound: data.nthRound + 1,
-    }, {
-      fields: {
-        size: 1,
-      }
-    });
+    },
+      { fields: { size: 1 } }
+    );
     if(nextRound) {
-      var participantsInRound = Results.find({
-        roundId: nextRound._id,
-      }, {
-        fields: {
-          _id: 1,
-        }
-      }).count();
+      var participantsInRound = Results.find({ roundId: nextRound._id }, { fields: { _id: 1 } }).count();
       template.advanceCountReact.set(nextRound.size || participantsInRound || null);
     } else {
       template.advanceCountReact.set(null);
@@ -77,10 +69,7 @@ Template.advanceParticipants.helpers({
     return template.isSaveableReact.get();
   },
   participantsInRound: function() {
-    var participantCount = Results.find({
-      roundId: this.roundId,
-    }).count();
-    return participantCount;
+    return Results.find({ roundId: this.roundId }).count();
   },
   advanceCount: function() {
     var template = Template.instance();

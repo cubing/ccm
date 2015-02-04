@@ -145,13 +145,7 @@ if(Meteor.isClient) {
 }
 
 getCompetitionEvents = function(competitionId) {
-  var rounds = Rounds.find({
-    competitionId: competitionId,
-  }, {
-    fields: {
-      eventCode: 1,
-    }
-  }).fetch();
+  var rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
 
   var eventCodes = {};
   rounds.forEach(function(round) {
@@ -209,11 +203,9 @@ isRegisteredForCompetition = function(userId, competitionId) {
   var competition = Registrations.findOne({
     competitionId: competitionId,
     userId: userId,
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
+  },
+    { fields: { _id: 1 } }
+  );
   return !!competition;
 };
 if(Meteor.isClient) {
@@ -241,12 +233,8 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
     competitionId: competitionId,
     eventCode: eventCode,
   }, {
-    sort: {
-      "nthRound": -1
-    },
-    fields: {
-      _id: 1
-    }
+    sort: { "nthRound": -1 },
+    fields: { _id: 1 }
   });
   if(!lastRoundForEvent) {
     return null;
@@ -294,11 +282,7 @@ if(Meteor.isClient) {
 
 
 getResultsWithUniqueNamesForRound = function(roundId, limit) {
-  var results = Results.find({
-    roundId: roundId,
-  }, {
-    limit: limit,
-  }).fetch();
+  var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
 
   var competitionId = getRoundAttribute(roundId, 'competitionId');
   var eventCode = getRoundAttribute(roundId, 'eventCode');
@@ -307,11 +291,9 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   var registrations = Registrations.find({
     competitionId: competitionId,
     checkedInEvents: eventCode,
-  }, {
-    fields: {
-      uniqueName: 1,
-    }
-  });
+  },
+    { fields: { uniqueName: 1 } }
+  );
   var registrationById = {};
   registrations.forEach(function(registration) {
     registrationById[registration._id] = registration;

@@ -2,13 +2,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
-  var competition = Competitions.findOne({
-    _id: competitionId,
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
+  var competition = Competitions.findOne({ _id: competitionId }, { fields: { _id: 1 } });
   if(!competition) {
     return new Meteor.Error(404, "Competition does not exist");
   }
@@ -20,11 +14,9 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
     var registration = Registrations.findOne({
       competitionId: competitionId,
       userId: userId,
-    }, {
-      fields: {
-        organizer: 1,
-      }
-    });
+    },
+      { fields: { organizer: 1 } }
+    );
     if(!registration || !registration.organizer) {
       return new Meteor.Error(403, "Not an organizer for this competition");
     }
@@ -169,11 +161,9 @@ canAddRound = function(userId, competitionId, eventCode) {
   var rounds = Rounds.find({
     competitionId: competitionId,
     eventCode: eventCode
-  }, {
-    fields: {
-      _id: 1
-    }
-  });
+  },
+    { fields: { _id: 1 } }
+  );
   var nthRound = rounds.count();
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
@@ -220,13 +210,7 @@ if(Meteor.isServer) {
 
   Rounds.allow({
     update: function(userId, round, fields, modifier) {
-      var competition = Competitions.findOne({
-        _id: round.competitionId,
-      }, {
-        fields: {
-          _id: 1,
-        }
-      });
+      var competition = Competitions.findOne({ _id: round.competitionId }, { fields: { _id: 1 } });
       if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
       }
@@ -257,13 +241,7 @@ if(Meteor.isServer) {
 
   Results.allow({
     update: function(userId, result, fields, modifier) {
-      var competition = Competitions.findOne({
-        _id: result.competitionId,
-      }, {
-        fields: {
-          _id: 1,
-        }
-      });
+      var competition = Competitions.findOne({ _id: result.competitionId }, { fields: { _id: 1 } });
       if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
       }

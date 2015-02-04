@@ -20,34 +20,16 @@ Template.editEvents.events({
     Meteor.call('removeRound', lastRoundId);
   },
   'click button[name="buttonOpenRound"]': function(e, template) {
-    Rounds.update({
-      _id: this._id,
-    }, {
-      $set: {
-        status: wca.roundStatuses.open,
-      }
-    });
+    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.open } });
   },
   'click button[name="buttonCloseRound"]': function(e, template) {
-    Rounds.update({
-      _id: this._id,
-    }, {
-      $set: {
-        status: wca.roundStatuses.closed,
-      }
-    });
+    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.closed } });
   },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
     var formatCode = select.value;
     var roundId = this._id;
-    Rounds.update({
-      _id: roundId
-    }, {
-      $set: {
-        formatCode: formatCode
-      }
-    });
+    Rounds.update({ _id: roundId }, { $set: { formatCode: formatCode } });
   },
   'click button[name="buttonSetRoundSize"]': function(e, template) {
     roundPopupReact.set({ setRoundSize: this });
@@ -97,13 +79,7 @@ function getParticipantsDoneAndTotal(roundId) {
   var format = wca.formatByCode[formatCode];
   var expectedSolvesPerResult = format.count;
 
-  var results = Results.find({
-    roundId: roundId,
-  }, {
-    fields: {
-      solves: 1,
-    }
-  }).fetch();
+  var results = Results.find({ roundId: roundId }, { fields: { solves: 1 } }).fetch();
 
   var actualSolveCount = 0;
   _.each(results, function(result) {
@@ -132,13 +108,7 @@ function getLastRoundResultsCount(competitionId, eventCode) {
   if(!roundId) {
     return false;
   }
-  var resultsForRound = Results.find({
-    roundId: roundId,
-  }, {
-    fields: {
-      _id: 1,
-    }
-  });
+  var resultsForRound = Results.find({ roundId: roundId }, { fields: { _id: 1 } });
   return resultsForRound.count();
 }
 
@@ -193,15 +163,12 @@ Template.editEvents.helpers({
   },
 
   rounds: function() {
-    var rounds = Rounds.find({
+    return Rounds.find({
       competitionId: this.competitionId,
       eventCode: this.eventCode
-    }, {
-      sort: {
-        nthRound: 1
-      }
-    }).fetch();
-    return rounds;
+    },
+      { sort: { nthRound: 1 } }
+    ).fetch();
   },
   roundSoftCutoffAllowed: function() {
     if(!this.softCutoff) {
@@ -218,11 +185,9 @@ Template.editEvents.helpers({
     var participantsCount = Registrations.find({
       competitionId: this.competitionId,
       events: this.eventCode,
-    }, {
-      fields: {
-        _id: 1
-      }
-    }).count();
+    },
+      { fields: { _id: 1 } }
+    ).count();
     return participantsCount;
   },
   roundDoneAndTotal: function() {
@@ -372,9 +337,7 @@ Template.modalSetRoundSize.events({
     } else {
       toSet.$unset = { size: 1 };
     }
-    Rounds.update({
-      _id: this._id,
-    }, toSet);
+    Rounds.update({ _id: this._id }, toSet);
     template.$(".modal").modal('hide');
   },
 });

@@ -91,12 +91,9 @@ Template.competitionRegistration.helpers({
     var registrationWithUniqueName = Registrations.findOne({
       uniqueName: userName,
       competitionId: competitionId
-    }, {
-      fields: {
-        _id: 1,
-        userId: 1,
-      }
-    });
+    },
+      { fields: { userId: 1 } }
+    );
     if(!registrationWithUniqueName) {
       return false;
     }
@@ -114,13 +111,7 @@ Template.competitionRegistration.helpers({
 
   registrationAskAboutGuests: function() {
     var competitionId = this.competitionId;
-    competition = Competitions.findOne({
-      _id: competitionId,
-    }, {
-      fields: {
-        registrationAskAboutGuests: 1,
-      }
-    });
+    competition = Competitions.findOne({ _id: competitionId }, { fields: { registrationAskAboutGuests: 1 } });
     return competition.registrationAskAboutGuests;
   }
 });
