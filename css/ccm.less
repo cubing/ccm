@@ -12,10 +12,10 @@
 .collapse-indicator {
   .glyphicon;
   .glyphicon-chevron-down;
-}
 
-.collapsed .collapse-indicator {
-  .glyphicon-chevron-right;
+  .collapsed & {
+    .glyphicon-chevron-right;
+  }
 }
 
 /*
@@ -100,6 +100,11 @@ thead.tableFloatingHeaderOriginal {
 body.modal-open .datepicker {
   z-index: 1200 !important;
 }
+
+@import "components/cubing-icons.import.less";
+@import "components/fullcalendar.import.less";
+@import "components/jquery.timepicker.import.less";
+@import "components/typeaheadjs.import.less";
 
 @import "advanceCompetitors.import.less";
 @import "apiDocumentation.import.less";
