@@ -10,7 +10,7 @@
                  class="brand"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="{{eventName eventCode}}">
-                <img class="img-lg" src="{{eventIcon eventCode}}" />
+                <span class="cubing-icon icon-{{eventCode}}"></span>
                 <span class="hidden-xs">{{eventCode}}</span>
               </a>
             </li>
@@ -27,7 +27,7 @@
           <ul class="nav navbar-nav">
             <li class="{{#if isCurrentRound}}active{{/if}} leaf">
               <p class="navbar-text navbar-brand">
-                <img src="{{eventIcon selectedEventCode}}" /> {{eventName selectedEventCode}}
+                <span class="cubing-icon icon-{{selectedEventCode}}"></span><span>{{eventName selectedEventCode}}</span>
               </p>
             </li>
             {{#each roundsForEvent}}
