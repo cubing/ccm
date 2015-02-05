@@ -184,7 +184,7 @@ var ResultsList = React.createClass({
 
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
-        <table className="table table-striped table-results" ref="resultsTable">
+        <table className="table table-striped table-hover table-results" ref="resultsTable">
           <thead>
             <tr>
               <th></th>

@@ -21,7 +21,6 @@ wylio:mandrill
 natestrauser:connection-banner
 aldeed:collection2
 linto:fontawesome
-ian:bootstrap-3
 aldeed:autoform
 react
 multiply:iron-router-progress
@@ -40,3 +39,4 @@ yogiben:autoform-map
 mizzao:autocomplete
 mrt:moment-timezone
 sewdn:highlightjs
+nemo64:bootstrap

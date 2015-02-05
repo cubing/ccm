@@ -1,9 +1,26 @@
+@import "bootstrap/custom.bootstrap.modules.import.less";
+@import "bs-constants.import.less";
+
+@import "components/cubing-icons.import.less";
+@import "components/fullcalendar.import.less";
+@import "components/jquery.timepicker.import.less";
+@import "components/typeaheadjs.import.less";
+
 .competition.listed {
   color: black;
 }
 
 .competition.unlisted {
   opacity: 0.5;
+}
+
+.collapse-indicator {
+  .glyphicon;
+  .glyphicon-chevron-down;
+
+  .collapsed & {
+    .glyphicon-chevron-right;
+  }
 }
 
 /*
@@ -77,8 +94,8 @@ thead.tableFloatingHeaderOriginal {
   background-color: white;
 }
 
-.table th img {
-  height: 22px;
+.table th .cubing-icon {
+  font-size: 22px;
 }
 
 /*
@@ -88,3 +105,15 @@ thead.tableFloatingHeaderOriginal {
 body.modal-open .datepicker {
   z-index: 1200 !important;
 }
+
+@import "advanceCompetitors.import.less";
+@import "apiDocumentation.import.less";
+@import "competitionSchedule.import.less";
+@import "dataEntry.import.less";
+@import "editCompetition.import.less";
+@import "editEvents.import.less";
+@import "editSchedule.import.less";
+@import "exportResults.import.less";
+@import "layout.import.less";
+@import "manageCheckin.import.less";
+@import "roundResults.import.less";
