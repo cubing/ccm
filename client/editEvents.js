@@ -124,9 +124,9 @@ Template.editEvents.helpers({
     return Rounds.find({
       competitionId: this.competitionId,
       eventCode: this.eventCode
-    },
-      { sort: { nthRound: 1 } }
-    ).fetch();
+    }, {
+      sort: { nthRound: 1 }
+    }).fetch();
   },
   roundSoftCutoffAllowed: function() {
     if(!this.softCutoff) {
