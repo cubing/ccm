@@ -75,13 +75,7 @@ var CheckinList = React.createClass({
 
   getMeteorState: function() {
     var competitionId = this.props.competitionId;
-    var registrations = Registrations.find({
-      competitionId: competitionId,
-    }, {
-      sort: {
-        uniqueName: 1,
-      },
-    });
+    var registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } });
 
     var competitionEvents = getCompetitionEvents(this.props.competitionId);
 
@@ -129,9 +123,7 @@ var CheckinList = React.createClass({
         }
       };
     }
-    Registrations.update({
-      _id: registration._id,
-    }, update);
+    Registrations.update({ _id: registration._id }, update);
   },
   checkInClicked: function(registration, e) {
     var eventsToUncheckinFor = _.difference(registration.checkedInEvents, registration.registeredEvents);

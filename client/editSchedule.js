@@ -128,11 +128,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         $set.durationMinutes = calEvent.end.diff(calEvent.start, 'minutes');
       }
 
-      Rounds.update({
-        _id: calEvent.id
-      }, {
-        $set: $set,
-      });
+      Rounds.update({ _id: calEvent.id }, { $set: $set });
     };
 
     $calendarDiv.fullCalendar({

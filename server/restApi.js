@@ -35,10 +35,7 @@ HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/rounds'}, function()
     throw new Meteor.Error(404, "Competition not found");
   }
 
-  var rounds = Rounds.find({
-    competitionId: competitionId
-  });
-  return rounds;
+  return Rounds.find({ competitionId: competitionId });
 });
 
 HTTP.methods({

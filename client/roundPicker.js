@@ -42,9 +42,7 @@ Template.roundPicker.helpers({
         eventCode: 1,
         nthRound: 1,
       },
-      sort: {
-        nthRound: 1,
-      }
+      sort: { nthRound: 1 }
     });
     return rounds;
   },

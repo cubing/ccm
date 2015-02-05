@@ -73,18 +73,10 @@ function pollTNoodleStatus() {
 }
 
 function getRoundsWithoutScrambles(competitionId) {
-  var groups = Groups.find({
-    competitionId: competitionId
-  }, {
-    fields: {
-      roundId: 1
-    }
-  }).fetch();
+  var groups = Groups.find({ competitionId: competitionId }, { fields: { roundId: 1 } }).fetch();
   var rounds = Rounds.find({
     competitionId: competitionId,
-    _id: {
-      $nin: _.pluck(groups, "roundId")
-    }
+    _id: { $nin: _.pluck(groups, "roundId") }
   }).fetch();
   return rounds;
 }

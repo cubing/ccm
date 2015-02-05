@@ -20,34 +20,16 @@ Template.editEvents.events({
     Meteor.call('removeRound', lastRoundId);
   },
   'click button[name="buttonOpenRound"]': function(e, template) {
-    Rounds.update({
-      _id: this._id,
-    }, {
-      $set: {
-        status: wca.roundStatuses.open,
-      }
-    });
+    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.open } });
   },
   'click button[name="buttonCloseRound"]': function(e, template) {
-    Rounds.update({
-      _id: this._id,
-    }, {
-      $set: {
-        status: wca.roundStatuses.closed,
-      }
-    });
+    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.closed } });
   },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
     var formatCode = select.value;
     var roundId = this._id;
-    Rounds.update({
-      _id: roundId
-    }, {
-      $set: {
-        formatCode: formatCode
-      }
-    });
+    Rounds.update({ _id: roundId }, { $set: { formatCode: formatCode } });
   },
   'click button[name="buttonSetRoundSize"]': function(e, template) {
     roundPopupReact.set({ setRoundSize: this });
@@ -139,15 +121,12 @@ Template.editEvents.helpers({
   },
 
   rounds: function() {
-    var rounds = Rounds.find({
+    return Rounds.find({
       competitionId: this.competitionId,
       eventCode: this.eventCode
     }, {
-      sort: {
-        nthRound: 1
-      }
+      sort: { nthRound: 1 }
     }).fetch();
-    return rounds;
   },
   roundSoftCutoffAllowed: function() {
     if(!this.softCutoff) {
@@ -165,9 +144,7 @@ Template.editEvents.helpers({
       competitionId: this.competitionId,
       events: this.eventCode,
     }, {
-      fields: {
-        _id: 1
-      }
+      fields: { _id: 1 }
     }).count();
     return participantsCount;
   },
@@ -243,9 +220,7 @@ Template.editEvents.helpers({
       eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
-      fields: {
-        status: 1,
-      }
+      fields: { status: 1 }
     });
     if(nextRound && nextRound.status != wca.roundStatuses.unstarted) {
       // If there's a next round that is already opened (or
@@ -271,9 +246,7 @@ Template.editEvents.helpers({
       eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     }, {
-      fields: {
-        status: 1
-      }
+      fields: { status: 1 }
     });
     if(!nextRound) {
       // We can't possibly advance people from this round if there is no next
@@ -334,9 +307,7 @@ Template.modalSetRoundSize.events({
     } else {
       toSet.$unset = { size: 1 };
     }
-    Rounds.update({
-      _id: this._id,
-    }, toSet);
+    Rounds.update({ _id: this._id }, toSet);
     template.$(".modal").modal('hide');
   },
 });

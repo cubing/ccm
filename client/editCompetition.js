@@ -130,20 +130,12 @@ function getExpandableListSettings(competitionId, registrationAttribute) {
     addDoc: function(registrationId) {
       var $toSet = {};
       $toSet[registrationAttribute] = true;
-      Registrations.update({
-        _id: registrationId,
-      }, {
-        $set: $toSet
-      });
+      Registrations.update({ _id: registrationId }, { $set: $toSet });
     },
     removeDoc: function(registrationId) {
       var $toSet = {};
       $toSet[registrationAttribute] = false;
-      Registrations.update({
-        _id: registrationId,
-      }, {
-        $set: $toSet
-      });
+      Registrations.update({ _id: registrationId }, { $set: $toSet });
     },
     docCriteria: criteria,
     isDeletable: function(registration) {

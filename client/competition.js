@@ -4,9 +4,7 @@ Template.competition.helpers({
       competitionId: this.competitionId,
       userId: Meteor.userId(),
     }, {
-      fields: {
-        _id: 1,
-      }
+      fields: { _id: 1 }
     }).fetch();
 
     var registered = _.contains(_.pluck(registrations, '_id'), Meteor.userId());

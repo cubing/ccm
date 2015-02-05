@@ -206,13 +206,7 @@ Template.roundDataEntry.helpers({
   },
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
-    var result = Results.findOne({
-      _id: selectedResultId,
-    }, {
-      fields: {
-        solves: 1,
-      }
-    });
+    var result = Results.findOne({ _id: selectedResultId }, { fields: { solves: 1 } });
     var roundFormatCode = getRoundAttribute(this.roundId, 'formatCode');
     var roundFormat = wca.formatByCode[roundFormatCode];
     var solves = result.solves || [];
@@ -255,18 +249,12 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
   var $inputParticipantName = template.$('#inputParticipantName');
   var uniqueName = $inputParticipantName.typeahead('val');
-  var registration = Registrations.findOne({
-    uniqueName: uniqueName,
-  }, {
-    _id: 1,
-  });
+  var registration = Registrations.findOne({ uniqueName: uniqueName }, { _id: 1 });
   var result = Results.findOne({
     roundId: roundId,
     registrationId: registration._id,
   }, {
-    fields: {
-      _id: 1,
-    }
+    fields: { _id: 1 }
   });
   if(!result) {
     selectedResultIdReact.set(null);
@@ -316,22 +304,10 @@ Template.roundDataEntry.events({
     var $row = $(e.currentTarget);
     var resultId = $row.data('result-id');
 
-    var result = Results.findOne({
-      _id: resultId,
-    }, {
-      fields: {
-        registrationId: 1,
-      }
-    });
+    var result = Results.findOne({ _id: resultId }, { fields: { registrationId: 1 } });
     assert(result);
 
-    var registration = Registrations.findOne({
-      _id: result.registrationId,
-    }, {
-      fields: {
-        uniqueName: 1,
-      }
-    });
+    var registration = Registrations.findOne({ _id: result.registrationId }, { fields: { uniqueName: 1 } });
     assert(registration);
 
     var $inputParticipantName = template.$('#inputParticipantName');

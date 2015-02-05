@@ -137,9 +137,7 @@ Meteor.methods({
         eventCode: round.eventCode,
         nthRound: round.nthRound - 1,
       }, {
-        fields: {
-          _id: 1,
-        }
+        fields: { _id: 1 }
       });
       if(previousRound) {
         Meteor.call('recomputeWhoAdvanced', previousRound._id);
@@ -154,12 +152,8 @@ Meteor.methods({
       competitionId: competitionId,
       eventCode: eventCode
     }, {
-      sort: {
-        nthRound: 1,
-      },
-      fields: {
-        softCutoff: 1,
-      }
+      sort: { nthRound: 1 },
+      fields: { softCutoff: 1 }
     }).fetch();
     if(rounds.length > wca.MAX_ROUNDS_PER_EVENT) {
       throw new Meteor.Error(400, "Too many rounds");
@@ -205,11 +199,7 @@ Meteor.methods({
     });
     if(existingGroup) {
       log.l0("Clobbering existing group", existingGroup);
-      Groups.update({
-        _id: existingGroup._id,
-      }, {
-        $set: newGroup,
-      });
+      Groups.update({ _id: existingGroup._id }, { $set: newGroup });
     } else {
       Groups.insert(newGroup);
     }
@@ -218,16 +208,7 @@ Meteor.methods({
     var competitionId = getRoundAttribute(roundId, 'competitionId');
     throwIfCannotManageCompetition(this.userId, competitionId);
 
-    var results = Results.find({
-      roundId: roundId,
-    }, {
-      sort: {
-        position: 1,
-      },
-      fields: {
-        registrationId: 1,
-      },
-    }).fetch();
+    var results = Results.find({ roundId: roundId }, { sort: { position: 1 }, fields: { registrationId: 1 } }).fetch();
     if(participantCount < 0) {
       throw new Meteor.Error(400,
             'Cannot advance a negative number of competitors');
@@ -243,9 +224,7 @@ Meteor.methods({
       eventCode: eventCode,
       nthRound: nthRound + 1,
     }, {
-      fields: {
-        _id: 1,
-      }
+      fields: { _id: 1 }
     });
     if(!nextRound) {
       throw new Meteor.Error(404,
@@ -258,13 +237,7 @@ Meteor.methods({
       desiredRegistrationIds.push(result.registrationId);
     }
 
-    var actualRegistrationIds = _.pluck(Results.find({
-      roundId: nextRound._id,
-    }, {
-      fields: {
-        registrationId: 1,
-      }
-    }).fetch(), 'registrationId');
+    var actualRegistrationIds = _.pluck(Results.find({ roundId: nextRound._id }, { fields: { registrationId: 1 } }).fetch(), 'registrationId');
 
     var registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
     var registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
@@ -314,16 +287,13 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, registration.competitionId);
 
     function getFirstRoundForEvent(eventCode) {
-      var round = Rounds.findOne({
+      return Rounds.findOne({
         competitionId: registration.competitionId,
         eventCode: eventCode,
         nthRound: 1,
       }, {
-        fields: {
-          _id: 1,
-        }
+        fields: { _id: 1 }
       });
-      return round;
     }
     var toUnCheckInTo = _.difference(registration.checkedInEvents, registration.registeredEvents);
     toUnCheckInTo.forEach(function(eventCode) {
@@ -351,13 +321,7 @@ Meteor.methods({
       // Update round progress
       RoundSorter.addRoundToSort(round._id);
     });
-    Registrations.update({
-      _id: registration._id,
-    }, {
-      $set: {
-        checkedInEvents: registration.registeredEvents,
-      }
-    });
+    Registrations.update({ _id: registration._id }, { $set: { checkedInEvents: registration.registeredEvents } });
   },
   addSiteAdmin: function(newSiteAdminUserId) {
     var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
@@ -365,13 +329,7 @@ Meteor.methods({
       throw new Meteor.Error(403, "Must be a site admin");
     }
 
-    Meteor.users.update({
-      _id: newSiteAdminUserId,
-    }, {
-      $set: {
-        siteAdmin: true,
-      }
-    });
+    Meteor.users.update({ _id: newSiteAdminUserId }, { $set: { siteAdmin: true } });
   },
   removeSiteAdmin: function(siteAdminToRemoveUserId) {
     var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
@@ -384,13 +342,7 @@ Meteor.methods({
       throw new Meteor.Error(403, "Site admins may not unresign themselves!");
     }
 
-    Meteor.users.update({
-      _id: siteAdminToRemoveUserId,
-    }, {
-      $set: {
-        siteAdmin: false,
-      }
-    });
+    Meteor.users.update({ _id: siteAdminToRemoveUserId }, { $set: { siteAdmin: false } });
   },
   setSolveTime: function(resultId, solveIndex, solveTime) {
     var result = Results.findOne(resultId, {
@@ -788,13 +740,7 @@ if(Meteor.isServer) {
               softCutoff.time.moveCount -= 1;
             }
             log.l0("Setting soft cutoff for", wcaEvent.eventId, "round", nthRound + 1, "to", softCutoff);
-            Rounds.update({
-              _id: roundId,
-            }, {
-              $set: {
-                softCutoff: softCutoff
-              }
-            });
+            Rounds.update({ _id: roundId }, { $set: { softCutoff: softCutoff } });
           }
 
           // We don't actually need to resort, but we do want to recompute
@@ -847,19 +793,10 @@ if(Meteor.isServer) {
         eventCode: round.eventCode,
         nthRound: round.nthRound + 1,
       }, {
-        fields: {
-          size: 1,
-        }
+        fields: { size: 1 }
       });
 
-      var results = Results.find({
-        roundId: roundId,
-      }, {
-        fields: {
-          _id: 1,
-          registrationId: 1,
-        }
-      });
+      var results = Results.find({ roundId: roundId }, { fields: { registrationId: 1 } });
 
       results.forEach(function(result) {
         var advanced;
@@ -875,13 +812,7 @@ if(Meteor.isServer) {
           // advanced.
           advanced = false;
         }
-        Results.update({
-          _id: result._id,
-        }, {
-          $set: {
-            advanced: advanced,
-          }
-        });
+        Results.update({ _id: result._id }, { $set: { advanced: advanced } });
       });
     },
   });
