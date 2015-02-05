@@ -272,11 +272,10 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
   };
 };
 
+// DNF and DNS are derived by looking at puzzlesSolvedCount and
+// puzzlesAttemptedCount, so they are not separate penalties.
 wca.penalties = {};
 [
-  'DNF',
-  'DNS',
-
   // All the kinds of +2s the WCA regulations define.
   // Naming convention is as follows:
   //  PLUSTWO_THING_THEY_DID_WRONG
