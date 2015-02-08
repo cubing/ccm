@@ -133,7 +133,7 @@ var CheckinList = React.createClass({
       confirmStr += "You are about to uncheck-in " + registration.uniqueName +
                     " from " + eventsStr + ", which may involve deleting " +
                     " results if they have already competed. Are you sure" +
-                    " you want to procede?";
+                    " you want to proceed?";
       bootbox.confirm(confirmStr, function(confirm) {
         if(confirm) {
           Meteor.call('checkInRegistration', registration._id);
