@@ -381,9 +381,7 @@ Meteor.methods({
     _.extend($set, statistics);
 
     Results.update(resultId, { $set: $set });
-    if(!this.isSimulation) {
-      RoundSorter.addRoundToSort(result.roundId);
-    }
+    RoundSorter.addRoundToSort(result.roundId);
   },
   setRoundSoftCutoff: function(roundId, softCutoff) {
     var round = Rounds.findOne(roundId, {
@@ -397,7 +395,7 @@ Meteor.methods({
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var toSet;
+    var toSet = {};
     if(softCutoff) {
       toSet.$set = {
         // Explicitly listing all the relevant fields in SolveTime as a workaround for
@@ -441,6 +439,10 @@ RoundSorter = {
   COALESCE_MILLIS: 500,
   roundsToSortById: {},
   addRoundToSort: function(roundId) {
+    if(Meteor.isClient) {
+      // We only bother sorting serverside.
+      return;
+    }
     if(!this.roundsToSortById[roundId]) {
       this.roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
     }
