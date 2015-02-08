@@ -34,7 +34,7 @@
         Meteor.loginWithPassword("ccm@ccm.com", "ccm", function(err) { if(err) { throw err; } console.log(Accounts._storedLoginToken()); })
       </pre>
       <pre>
-        curl -X PUT 'http://localhost:3000/api/v0/competitions/penis/rounds/333/1/results?token=aa7G8LvWGQHtzUJbYnro7szbNuGe4Xs0uN9S8x6X_03' -d '{"foo": 3}'
+        curl -X PUT 'http://localhost:3000/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results?token=aa7G8LvWGQHtzUJbYnro7szbNuGe4Xs0uN9S8x6X_03' -d '{"foo": 3}'
       </pre>
     </p>
   </div>
