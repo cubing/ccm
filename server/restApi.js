@@ -1,9 +1,4 @@
-// TODO - add documentation at /api!
-// logging in requires a webbrowser:
-//  Meteor.loginWithPassword("ccm@ccm.com", "ccm", function(err) { if(err) { throw err; } console.log(Accounts._storedLoginToken()); })
-
-// TODO - someday when we're rich and successful, we'll have to paginate this,
-// and perhaps unify it with the competitions publication in publications.js
+// TODO - someday when we're rich and successful, we'll have to paginate this
 HTTP.publish({name: '/api/v0/competitions'}, function() {
   return api.getCompetitions();
 });

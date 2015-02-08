@@ -26,7 +26,7 @@ Template.apiDocumentation.helpers({
         method: "GET",
         path: "/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results",
         queryParams: [ 'registrationId' ],
-      }
+      },
     ];
   },
 });
