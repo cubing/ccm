@@ -22,6 +22,46 @@ var throwIfNotSiteAdmin = function(userId) {
   }
 };
 
+setSolveTime = function(resultId, solveIndex, solveTime) {
+  var result = Results.findOne(resultId, {
+    fields: {
+      competitionId: 1,
+      roundId: 1,
+      solves: 1,
+    }
+  });
+  if(!result) {
+    throw new Meteor.Error(404, "Result not found");
+  }
+  throwIfCannotManageCompetition(this.userId, result.competitionId);
+
+  var round = Rounds.findOne({
+    _id: result.roundId,
+  }, {
+    fields: {
+      formatCode: 1,
+      roundCode: 1,
+    }
+  });
+  var roundFormat = wca.formatByCode[round.formatCode];
+
+  check(solveIndex, Match.Integer);
+  if(solveIndex < 0 || solveIndex >= roundFormat.count) {
+    throw new Meteor.Error(400, "Invalid solve index for round");
+  }
+  result.solves[solveIndex] = solveTime;
+
+  var $set = {
+    solves: result.solves
+  };
+
+  var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
+  _.extend($set, statistics);
+
+  Results.update(resultId, { $set: $set });
+  RoundSorter.addRoundToSort(result.roundId);
+};
+
 Meteor.methods({
   createCompetition: function(competitionName) {
     check(competitionName, String);
@@ -344,45 +384,7 @@ Meteor.methods({
 
     Meteor.users.update({ _id: siteAdminToRemoveUserId }, { $set: { siteAdmin: false } });
   },
-  setSolveTime: function(resultId, solveIndex, solveTime) {
-    var result = Results.findOne(resultId, {
-      fields: {
-        competitionId: 1,
-        roundId: 1,
-        solves: 1,
-      }
-    });
-    if(!result) {
-      throw new Meteor.Error(404, "Result not found");
-    }
-    throwIfCannotManageCompetition(this.userId, result.competitionId);
-
-    var round = Rounds.findOne({
-      _id: result.roundId,
-    }, {
-      fields: {
-        formatCode: 1,
-        roundCode: 1,
-      }
-    });
-    var roundFormat = wca.formatByCode[round.formatCode];
-
-    check(solveIndex, Match.Integer);
-    if(solveIndex < 0 || solveIndex >= roundFormat.count) {
-      throw new Meteor.Error(400, "Invalid solve index for round");
-    }
-    result.solves[solveIndex] = solveTime;
-
-    var $set = {
-      solves: result.solves
-    };
-
-    var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
-    _.extend($set, statistics);
-
-    Results.update(resultId, { $set: $set });
-    RoundSorter.addRoundToSort(result.roundId);
-  },
+  setSolveTime: setSolveTime,
   setRoundSoftCutoff: function(roundId, softCutoff) {
     var round = Rounds.findOne(roundId, {
       fields: {
