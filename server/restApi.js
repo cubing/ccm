@@ -77,6 +77,10 @@ HTTP.methods({
       var requireManagement = true;
       var roundId = getRoundId.call(this, requireManagement);
 
+      if(!data) {
+        throw new Meteor.Error(400, "Please send an object with registrationId, solveIndex, and solveTime");
+      }
+
       if(!data.registrationId) {
         throw new Meteor.Error(400, "Please specify a registrationId");
       }
