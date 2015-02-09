@@ -97,6 +97,9 @@ HTTP.methods({
         roundId: roundId,
         registrationId: data.registrationId,
       });
+      if(!result) {
+        throw new Meteor.Error(404, "Could not find result for given registrationId");
+      }
       setSolveTime.call(this, result._id, data.solveIndex, data.solveTime);
     },
   }

@@ -2,6 +2,8 @@ var API_VERSION = "0";
 
 var descriptionByParam = {
   competitionUrlId: "WCA Id or _id of a competition",
+  token: 'Meteor.loginWithPassword("ccm@ccm.com", "ccm", function(err) { if(err) { throw err; } console.log(Accounts._storedLoginToken()); })',
+  solveTime: '<a href="http://www.jflei.com/jChester/" rel="external" target="_blank">SolveTime definition</a>',
 };
 
 Template.apiDocumentation.helpers({
@@ -26,6 +28,12 @@ Template.apiDocumentation.helpers({
         method: "GET",
         path: "/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results",
         queryParams: [ 'registrationId' ],
+      },
+      {
+        method: "PUT",
+        path: "/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results?token=:token",
+        queryParams: [ 'registrationId', 'solveIndex', 'solveTime' ],
+        jsonData: true,
       },
     ];
   },
@@ -54,15 +62,23 @@ Template.apiEndpoint.helpers({
     var template = Template.instance();
 
     var paramValues = template.paramValuesReact.get();
-    var pathStr = JSON.stringify(replaceParameters(this.path, paramValues));
+    var pathStr = replaceParameters(this.path, paramValues);
+    var pathStrRepr = JSON.stringify(pathStr);
 
-    var dataStr = "";
-    var queryData = getQueryData(this.queryParams, paramValues);
-    if(_.keys(queryData).length > 0) {
-      dataStr = ", " + JSON.stringify(queryData);
+    var settingsStr = "";
+    var data = getData.call(this, paramValues);
+    if(data || this.method != "GET") {
+      var settings = {};
+      if(data) {
+        settings.data = data;
+      }
+      if(this.method != "GET") {
+        settings.type = this.method;
+      }
+      settingsStr = ", " + JSON.stringify(settings);
     }
 
-    var js = "$.get(" + pathStr + dataStr + ").done(function(data) {\n" +
+    var js = "$.ajax(" + pathStrRepr + settingsStr + ").done(function(data) {\n" +
              "  console.log(data);\n" +
              "}).fail(function(xhr, textStatus, error) {\n" +
              "  console.log(xhr.responseText);\n" +
@@ -72,16 +88,32 @@ Template.apiEndpoint.helpers({
   },
 });
 
-function getQueryData(queryParams, paramValues) {
-  var queryData = {};
-  if(queryParams) {
-    queryParams.forEach(function(param) {
+function getData(paramValues) {
+  if(this.queryParams) {
+    var queryData = {};
+    this.queryParams.forEach(function(param) {
       if(paramValues[param]) {
-        queryData[param] = paramValues[param];
+        var value = paramValues[param];
+        if(param == "solveIndex") {//<<<
+          value = parseInt(value);
+        } else if(param == "solveTime") {//<<<
+          try {
+            value = JSON.parse(value);
+          } catch(e) {
+            value = e.message;
+          }
+        }
+        queryData[param] = value;
       }
     });
+    if(this.jsonData) {
+      return JSON.stringify(queryData);
+    } else {
+      return queryData;
+    }
   }
-  return queryData;
+
+  return null;
 }
 
 function replaceParameters(js, paramValues) {
@@ -103,8 +135,11 @@ Template.apiEndpoint.events({
 
     var paramValues = template.paramValuesReact.get();
     var path = replaceParameters(this.path, paramValues);
-    var data = getQueryData(this.queryParams, paramValues);
-    $.get(path, data).done(function(data) {
+    var data = getData.call(this, paramValues);
+    $.ajax(path, {
+      type: this.method,
+      data: data,
+    }).done(function(data) {
       $output.removeClass("api-error");
       $output.text(JSON.stringify(data, null, 2));
       hljs.highlightBlock($output[0]);

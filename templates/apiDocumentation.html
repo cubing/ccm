@@ -7,13 +7,13 @@
       because our database schema is still in flux. Some useful links:
       <ul>
         <li>
-          <a href="https://github.com/cubing/ccm/blob/master/both/_collections.js">CCM database schema</a>
+          <a rel="external" target="_blank" href="https://github.com/cubing/ccm/blob/master/both/_collections.js">CCM database schema</a>
         </li>
         <li>
-          <a href="http://www.jflei.com/jChester/">SolveTime documentation</a>
+          <a rel="external" target="_blank" href="http://www.jflei.com/jChester/">SolveTime documentation</a>
         </li>
         <li>
-          <a href="https://github.com/cubing/ccm/blob/master/server/api.js">API source code</a>
+          <a rel="external" target="_blank" href="https://github.com/cubing/ccm/blob/master/server/api.js">API source code</a>
         </li>
       </ul>
       It should also be easy to test out the api with the interactive "documentation" below.
@@ -24,19 +24,6 @@
       {{> apiEndpoint}}
     {{/each}}
 
-    <p>
-      PUT /api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results
-      <p>
-        You need an auth token. You can get one of these by running the following javascript:
-      </p>
-
-      <pre>
-        Meteor.loginWithPassword("ccm@ccm.com", "ccm", function(err) { if(err) { throw err; } console.log(Accounts._storedLoginToken()); })
-      </pre>
-      <pre>
-        curl -X PUT 'http://localhost:3000/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results?token=aa7G8LvWGQHtzUJbYnro7szbNuGe4Xs0uN9S8x6X_03' -d '{"foo": 3}'
-      </pre>
-    </p>
   </div>
 </template>
 
@@ -51,7 +38,10 @@
           <div class="form-group">
             <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
             <div class="col-sm-10">
-              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" />
+              {{#if paramDescription}}
+                <p class="help-block">{{{paramDescription}}}</p>
+              {{/if}}
             </div>
           </div>
         {{/each}}
@@ -61,7 +51,10 @@
           <div class="form-group">
             <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
             <div class="col-sm-10">
-              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" />
+              {{#if paramDescription}}
+                <p class="help-block">{{{paramDescription}}}</p>
+              {{/if}}
             </div>
           </div>
         {{/each}}
