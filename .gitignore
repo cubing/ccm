@@ -28,5 +28,8 @@ node_modules
 *.swp
 *.swo
 
-#RubyMine
+# RubyMine
 .idea/
+
+# Meteor server settings
+settings.json

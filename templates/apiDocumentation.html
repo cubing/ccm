@@ -7,13 +7,13 @@
       because our database schema is still in flux. Some useful links:
       <ul>
         <li>
-          <a href="https://github.com/cubing/ccm/blob/master/both/_collections.js">CCM database schema</a>
+          <a rel="external" target="_blank" href="https://github.com/cubing/ccm/blob/master/both/_collections.js">CCM database schema</a>
         </li>
         <li>
-          <a href="http://www.jflei.com/jChester/">SolveTime documentation</a>
+          <a rel="external" target="_blank" href="http://www.jflei.com/jChester/">SolveTime documentation</a>
         </li>
         <li>
-          <a href="https://github.com/cubing/ccm/blob/master/server/api.js">API source code</a>
+          <a rel="external" target="_blank" href="https://github.com/cubing/ccm/blob/master/server/api.js">API source code</a>
         </li>
       </ul>
       It should also be easy to test out the api with the interactive "documentation" below.
@@ -23,6 +23,7 @@
     {{#each apiEndpoints}}
       {{> apiEndpoint}}
     {{/each}}
+
   </div>
 </template>
 
@@ -37,7 +38,10 @@
           <div class="form-group">
             <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
             <div class="col-sm-10">
-              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" />
+              {{#if paramDescription}}
+                <p class="help-block">{{{paramDescription}}}</p>
+              {{/if}}
             </div>
           </div>
         {{/each}}
@@ -47,7 +51,10 @@
           <div class="form-group">
             <label for="input-{{../path}}-{{this}}" class="col-sm-2 control-label">{{this}}</label>
             <div class="col-sm-10">
-              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" placeholder="{{paramDescription}}" />
+              <input type="text" id="input-{{../path}}-{{this}}" class="form-control input-block-level" />
+              {{#if paramDescription}}
+                <p class="help-block">{{{paramDescription}}}</p>
+              {{/if}}
             </div>
           </div>
         {{/each}}
