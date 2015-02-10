@@ -1,8 +1,13 @@
-.navbar img {
-  height: 18px;
-}
-
 .navbar {
+  img {
+    height: 18px;
+  }
+
+  /* Get rid of the whitespace between the navbar and the jumbotron */
+  ~ .jumbotron {
+    margin-top: -20px;
+  }
+
   .navbar-brand img {
     margin-top: -5px;
     height: 32px;
@@ -17,6 +22,13 @@
     display: inline-block;
     margin-top: -5px;
   }
+  
+  // Move navbar down when the connection status is visible.
+  #connection-lost-banner + &,
+  #connection-try-reconnect + & {
+    top: 42px;
+    margin-bottom: 62px;
+  }
 }
 
 .navbar-plain-rectangle {
@@ -24,158 +36,133 @@
   border-radius: 0px;
 }
 
-@navbarColorDarkenPercent: 12%;
-
-@subNavbarColor: @navbar-default-link-active-bg;
-@subNavbarActiveColor: darken(@subNavbarColor, @navbarColorDarkenPercent);
-@subSubNavbarColor: @subNavbarActiveColor;
-@subSubNavbarActiveColor: darken(@subNavbarActiveColor, @navbarColorDarkenPercent);
-@subSubSubNavbarColor: @subSubNavbarActiveColor;
-@subSubSubNavbarActiveColor: darken(@subSubNavbarActiveColor, @navbarColorDarkenPercent);
-@subSubSubSubNavbarColor: @subSubSubNavbarActiveColor;
-@subSubSubSubNavbarActiveColor: darken(@subSubSubNavbarActiveColor, @navbarColorDarkenPercent);
-
-@navbarBoxShadowColor: #999;
-@navbarBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
-@navbarTabBoxShadow: 0px 0px 4px 1px @navbarBoxShadowColor;
-@subNavbarBoxShadowColor: darken(@navbarBoxShadowColor, @navbarColorDarkenPercent);
-@subNavbarBoxShadow: 0px -4px 4px -3px @subNavbarBoxShadowColor;
-@subNavbarTabBoxShadow: 0px 0px 4px 1px @subNavbarBoxShadowColor;
-@subSubNavbarBoxShadowColor: darken(@subNavbarBoxShadowColor, @navbarColorDarkenPercent);
-@subSubNavbarBoxShadow: 0px -4px 4px -3px @subSubNavbarBoxShadowColor;
-@subSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubNavbarBoxShadowColor;
-@subSubSubNavbarBoxShadowColor: darken(@subSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
-@subSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubNavbarBoxShadowColor;
-@subSubSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubSubNavbarBoxShadowColor;
-@subSubSubSubNavbarBoxShadowColor: darken(@subSubSubNavbarBoxShadowColor, @navbarColorDarkenPercent);
-@subSubSubSubNavbarBoxShadow: 0px -4px 4px -3px @subSubSubSubNavbarBoxShadowColor;
-@subSubSubSubNavbarTabBoxShadow: 0px 0px 4px 1px @subSubSubSubNavbarBoxShadowColor;
-
-@activeTabSpace: 5px;
-.navbar-default li.active a {
-  padding-top: 15px - @activeTabSpace;
-  margin-top: @activeTabSpace;
-  box-shadow: @navbarTabBoxShadow;
-}
 .navbar-default {
   box-shadow: inset @navbarBoxShadow;
-}
-.navbar-default .active.leaf {
-  padding: 0px 4px 0px 4px;
-  overflow: hidden;
-}
-.navbar-default .active.leaf a {
-  padding: 10px 11px 15px 11px;
+
+  .active.leaf {
+    padding: 0px 4px 0px 4px;
+    overflow: hidden;
+
+    a {
+      padding: 10px 11px 15px 11px;
+    }
+  }
+
+  li.active a {
+    padding-top: 15px - @activeTabSpace;
+    margin-top: @activeTabSpace;
+    box-shadow: @navbarTabBoxShadow;
+  }
+
+  .navbar-brand {
+    &:hover,
+    &:focus {
+      color: @navbar-default-link-color;
+    }
+  }
+
+  .navbar-nav {
+    > li {
+      > a,
+      > p,
+      > p:hover {
+        @{nav-lvl-4}& {
+          color: @bsSubSubSubNavbarTextColor;
+        } 
+      }
+      
+      > a:hover,
+      &.active > a {
+        @{nav-lvl-4}& {
+          color: @bsSubSubSubNavbarTextColorActive;
+        }
+      }
+    }
+
+    > .active {
+      > a,
+      > a:hover,
+      > a:focus {
+
+        @{nav-lvl-2}& {
+          background-color: @navLvl2NavbarActiveColor;
+          box-shadow: @navLvl2NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-3}& {
+          background-color: @navLvl3NavbarActiveColor;
+          box-shadow: @navLvl3NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-4}& {
+          background-color: @navLvl4NavbarActiveColor;
+          box-shadow: @navLvl4NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-5}& {
+          background-color: @navLvl5NavbarActiveColor;
+          box-shadow: @navLvl5NavbarTabBoxShadow;
+        }
+      }
+    }
+
+    > .active.leaf {
+      > a,
+      > a:hover,
+      > a:focus {
+
+        @{nav-lvl-2}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-3}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-4}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-5}& {
+          background-color: #FFF;
+        }
+      }
+
+      &.match-jumbotron {
+        > a,
+        > a:hover,
+        > a:focus {
+          background-color: #EEE !important;
+          box-shadow: @navbarTabBoxShadow;
+        }
+      }
+    }
+  }
 }
 
 .navbar-header .navbar-brand {
   padding: 0px 0px 0px 15px;
 }
 
-/* navbar colors */
-
-.navbar-default .navbar-nav > .active > a,
-.navbar-default .navbar-nav > .active > a:hover,
-.navbar-default .navbar-nav > .active > a:focus {
-  background-color: @subNavbarColor;
-  box-shadow: @navbarTabBoxShadow;
-}
-
-.navbar-default .navbar-nav > .active.leaf > a,
-.navbar-default .navbar-nav > .active.leaf > a:hover,
-.navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
-}
-
-/* match jumbotron */
-.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a,
-.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:hover,
-.navbar-default .navbar-nav > .active.leaf.match-jumbotron > a:focus {
-  background-color: #EEE !important;
-  box-shadow: @navbarTabBoxShadow;
-}
-
 /* sub navbar colors */
-.navbar + .navbar {
-  background-color: @subNavbarColor;
-  box-shadow: inset @subNavbarBoxShadow;
-}
-.navbar + .navbar-default .navbar-nav > .active > a,
-.navbar + .navbar-default .navbar-nav > .active > a:hover,
-.navbar + .navbar-default .navbar-nav > .active > a:focus {
-  background-color: @subNavbarActiveColor;
-  box-shadow: @subNavbarTabBoxShadow;
-}
-.navbar + .navbar-default .navbar-nav > .active.leaf > a,
-.navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
-.navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
+@{nav-lvl-2} {
+  .navProperties(@navLvl2NavbarColor, @navLvl2NavbarBoxShadow);
+  margin-top: -20px; // Get rid of the whitespace between the navbars
 }
 
 /* sub sub navbar colors */
-.navbar + .navbar + .navbar {
-  background-color: @subSubNavbarColor;
-  box-shadow: inset @subSubNavbarBoxShadow;
-}
-.navbar + .navbar + .navbar-default .navbar-nav > .active > a,
-.navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
-.navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
-  background-color: @subSubNavbarActiveColor;
-  box-shadow: @subSubNavbarTabBoxShadow;
-}
-.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
-.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
-.navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
+@{nav-lvl-3} {
+  .navProperties(@navLvl3NavbarColor, @navLvl3NavbarBoxShadow);
 }
 
 /* sub sub sub navbar colors */
-.navbar + .navbar + .navbar + .navbar {
-  background-color: @subSubSubNavbarColor;
-  box-shadow: inset @subSubSubNavbarBoxShadow;
-}
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a,
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
-  background-color: @subSubSubNavbarActiveColor;
-  box-shadow: @subSubSubNavbarTabBoxShadow;
-}
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
-}
-@bsSubSubSubNavbarTextColor: #FFF;
-@bsSubSubSubNavbarTextColorActive: #000;
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > a {
-  color: @bsSubSubSubNavbarTextColor;
-}
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > p {
-  color: @bsSubSubSubNavbarTextColor;
-}
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > a:hover,
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li.active > a {
-  color: @bsSubSubSubNavbarTextColorActive;
-}
-.navbar + .navbar + .navbar + .navbar-default .navbar-nav > li > p:hover {
-  color: @bsSubSubSubNavbarTextColor;
+@{nav-lvl-4} {
+  .navProperties(@navLvl4NavbarColor, @navLvl4NavbarBoxShadow);
 }
 
 /* sub sub sub sub navbar colors */
-.navbar + .navbar + .navbar + .navbar + .navbar {
-  background-color: @subSubSubSubNavbarColor;
-  box-shadow: inset @subSubSubNavbarBoxShadow;
-}
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a,
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:hover,
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active > a:focus {
-  background-color: @subSubSubSubNavbarActiveColor;
-  box-shadow: @subSubSubSubNavbarTabBoxShadow;
-}
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a,
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:hover,
-.navbar + .navbar + .navbar + .navbar + .navbar-default .navbar-nav > .active.leaf > a:focus {
-  background-color: #FFF;
+@{nav-lvl-5} {
+  .navProperties(@navLvl5NavbarColor, @navLvl5NavbarBoxShadow);
 }
 
 /* futzing around to make nth round subsubsub nav look nice */
@@ -185,44 +172,18 @@
 p.navbar-brand > img {
   display: inline;
 }
-.navbar-default .navbar-brand:hover,
-.navbar-default .navbar-brand:focus {
-  color: @navbar-default-link-color;
-}
-
-/* Get rid of the whitespace between the navbars */
-.navbar + .navbar {
-  margin-top: -20px;
-}
-
-/* Get rid of the whitespace between the navbar and the jumbotron */
-.navbar ~ .jumbotron {
-  margin-top: -20px;
-}
-
-/*
- * Move navbar down when the connection status is visible.
- */
-#connection-lost-banner + .navbar {
-  top: 42px;
-  margin-bottom: 62px;
-}
-#connection-try-reconnect + .navbar {
-  top: 42px;
-  margin-bottom: 62px;
-}
 
 /*
  * https://github.com/Multiply/iron-router-progress#customization
  */
 #iron-router-progress {
   background-color: #337ab7; /* color copied from bootstrap */
-}
 
-/* Speed up progress bar transition */
-#iron-router-progress.loading {
-  transition: 0.5s width, 0.1s opacity;
-  transition-delay: 0s, 0.5s;
+  /* Speed up progress bar transition */
+  &.loading {
+    transition: 0.5s width, 0.1s opacity;
+    transition-delay: 0s, 0.5s;
+  }
 }
 
 /* Prevent navbar collapse entirely */
