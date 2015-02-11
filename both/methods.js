@@ -23,6 +23,10 @@ var throwIfNotSiteAdmin = function(userId) {
 };
 
 setSolveTime = function(resultId, solveIndex, solveTime) {
+  // If the client didn't send us a timestamp, cons one up here.
+  if(!solveTime.updatedAt) {
+    solveTime.updatedAt = new Date();
+  }
   var result = Results.findOne(resultId, {
     fields: {
       competitionId: 1,
