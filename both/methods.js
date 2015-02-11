@@ -460,20 +460,20 @@ RoundSorter = {
       }
     });
 
-    var $sort = {};
+    var sort = {};
 
     var roundFormat = wca.formatByCode[round.formatCode];
     if(roundFormat.sortBy == "best") {
-      $sort.sortableBestValue = 1;
+      sort.sortableBestValue = 1;
     } else if(roundFormat.sortBy == "average") {
-      $sort.sortableAverageValue = 1;
-      $sort.sortableBestValue = 1;
+      sort.sortableAverageValue = 1;
+      sort.sortableBestValue = 1;
     } else {
       // uh-oh, unrecognized roundFormat, give up
       assert(false);
     }
 
-    var results = Results.find({ roundId: roundId }, { $sort: $sort }).fetch();
+    var results = Results.find({ roundId: roundId }, { sort: sort }).fetch();
     var position = 0;
     var done = 0;
     var total = 0;
