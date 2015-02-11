@@ -439,19 +439,19 @@ Meteor.methods({
  */
 RoundSorter = {
   COALESCE_MILLIS: 500,
-  roundsToSortById: {},
+  _roundsToSortById: {},
   addRoundToSort: function(roundId) {
     if(Meteor.isClient) {
       // We only bother sorting serverside.
       return;
     }
-    if(!this.roundsToSortById[roundId]) {
-      this.roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
+    if(!this._roundsToSortById[roundId]) {
+      this._roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
     }
   },
   _handleSortTimer: function(roundId) {
     log.l1("RoundSorter._handleSortTimer(", roundId, ")");
-    delete this.roundsToSortById[roundId];
+    delete this._roundsToSortById[roundId];
 
     var round = Rounds.findOne(roundId, {
       fields: {
@@ -509,6 +509,7 @@ RoundSorter = {
         }
       });
 
+      log.l3("Setting resultId", result._id, "to position", position);
       Results.update(result._id, { $set: { position: position } });
     });
 
