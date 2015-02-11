@@ -678,6 +678,15 @@ if(Meteor.isServer) {
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
             registration.registeredEvents[wcaEvent.eventId] = true;
+
+            if(!wcaResult.results) {
+              // If the results field isn't defined, then the user isn't
+              // checked in for this event. This is a little trick to
+              // allow registration sites such as cubingusa to export registration
+              // information via the WCA competition JSON format.
+              return;
+            }
+
             registration.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
