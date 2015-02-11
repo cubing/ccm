@@ -1,7 +1,0 @@
-.DS_Store
-.build*
-.npm*
-.meteor*
-smart.lock
-/nbproject/
-/packages/
