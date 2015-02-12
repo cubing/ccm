@@ -425,6 +425,12 @@ SolveTime = new SimpleSchema({
     min: 0,
     optional: true,
   },
+  // Note that we don't use an autovalue for this. This is because we do
+  // trust clients to send us timestamps if they want to.
+  updatedAt: {
+    type: Date,
+    optional: true
+  },
 });
 
 MIN_ROUND_DURATION_MINUTES = 30;
