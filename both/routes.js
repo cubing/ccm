@@ -358,3 +358,7 @@ Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   template: 'roundResults',
   controller: 'ViewRoundController',
 });
+
+Router.route('/api/v0/login', {
+  name: 'standaloneLogin',
+});

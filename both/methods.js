@@ -23,6 +23,10 @@ var throwIfNotSiteAdmin = function(userId) {
 };
 
 setSolveTime = function(resultId, solveIndex, solveTime) {
+  // If the client didn't send us a timestamp, cons one up here.
+  if(!solveTime.updatedAt) {
+    solveTime.updatedAt = new Date();
+  }
   var result = Results.findOne(resultId, {
     fields: {
       competitionId: 1,
@@ -439,19 +443,19 @@ Meteor.methods({
  */
 RoundSorter = {
   COALESCE_MILLIS: 500,
-  roundsToSortById: {},
+  _roundsToSortById: {},
   addRoundToSort: function(roundId) {
     if(Meteor.isClient) {
       // We only bother sorting serverside.
       return;
     }
-    if(!this.roundsToSortById[roundId]) {
-      this.roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
+    if(!this._roundsToSortById[roundId]) {
+      this._roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
     }
   },
   _handleSortTimer: function(roundId) {
     log.l1("RoundSorter._handleSortTimer(", roundId, ")");
-    delete this.roundsToSortById[roundId];
+    delete this._roundsToSortById[roundId];
 
     var round = Rounds.findOne(roundId, {
       fields: {
@@ -460,20 +464,20 @@ RoundSorter = {
       }
     });
 
-    var $sort = {};
+    var sort = {};
 
     var roundFormat = wca.formatByCode[round.formatCode];
     if(roundFormat.sortBy == "best") {
-      $sort.sortableBestValue = 1;
+      sort.sortableBestValue = 1;
     } else if(roundFormat.sortBy == "average") {
-      $sort.sortableAverageValue = 1;
-      $sort.sortableBestValue = 1;
+      sort.sortableAverageValue = 1;
+      sort.sortableBestValue = 1;
     } else {
       // uh-oh, unrecognized roundFormat, give up
       assert(false);
     }
 
-    var results = Results.find({ roundId: roundId }, { $sort: $sort }).fetch();
+    var results = Results.find({ roundId: roundId }, { sort: sort }).fetch();
     var position = 0;
     var done = 0;
     var total = 0;
@@ -509,6 +513,7 @@ RoundSorter = {
         }
       });
 
+      log.l3("Setting resultId", result._id, "to position", position);
       Results.update(result._id, { $set: { position: position } });
     });
 
@@ -678,6 +683,15 @@ if(Meteor.isServer) {
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
             registration.registeredEvents[wcaEvent.eventId] = true;
+
+            if(!wcaResult.results) {
+              // If the results field isn't defined, then the user isn't
+              // checked in for this event. This is a little trick to
+              // allow registration sites such as cubingusa to export registration
+              // information via the WCA competition JSON format.
+              return;
+            }
+
             registration.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
