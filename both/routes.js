@@ -353,6 +353,11 @@ Router.route('/:competitionUrlId/results/byname/:participantUniqueName', {
   name: 'participantResults',
   controller: 'ViewParticipantController',
 });
+
+// We use nthRound in the url instead of the WCA round code because if an organizer
+// adds rounds, a "final" round could change to a "first" round. The WCA round code
+// also changes if a round is changed from soft cutoff (combined) to not. In both these
+// scenarios, the round's nthRound stays the same.
 Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
