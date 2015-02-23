@@ -1,4 +1,4 @@
-MochaWeb.testOnly(function(){
+MochaWeb.testOnly(function() {
   describe('helpers', function() {
 
     describe('getCompetitionEvents', function() {
