@@ -213,7 +213,7 @@ describe('wca', function() {
         var solves = [dnf()];
         var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
         expect(stats.average).to.equal(null);
-        expectBestWorstIndex(stats, 0, 0)
+        expectBestWorstIndex(stats, 0, 0);
       });
     });
   });
