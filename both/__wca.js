@@ -497,80 +497,24 @@ wca.roundByCode = {
 };
 
 wca.events = [
-  {
-    "code": "222",
-    "name": "2x2 Cube",
-  },
-  {
-    "code": "333",
-    "name": "Rubik's Cube",
-  },
-  {
-    "code": "444",
-    "name": "4x4 Cube",
-  },
-  {
-    "code": "555",
-    "name": "5x5 Cube",
-  },
-  {
-    "code": "666",
-    "name": "6x6 Cube",
-  },
-  {
-    "code": "777",
-    "name": "7x7 Cube",
-  },
-  {
-    "code": "333bf",
-    "name": "Rubik's Cube: Blindfolded",
-  },
-  {
-    "code": "333oh",
-    "name": "Rubik's Cube: One-handed",
-  },
-  {
-    "code": "333fm",
-    "name": "Rubik's Cube: Fewest moves",
-    solveTimeFields: [ 'moveCount' ],
-  },
-  {
-    "code": "333ft",
-    "name": "Rubik's Cube: With feet",
-  },
-  {
-    "code": "minx",
-    "name": "Megaminx",
-  },
-  {
-    "code": "pyram",
-    "name": "Pyraminx",
-  },
-  {
-    "code": "sq1",
-    "name": "Square-1",
-  },
-  {
-    "code": "clock",
-    "name": "Rubik's Clock",
-  },
-  {
-    "code": "skewb",
-    "name": "Skewb",
-  },
-  {
-    "code": "444bf",
-    "name": "4x4 Cube: Blindfolded",
-  },
-  {
-    "code": "555bf",
-    "name": "5x5 Cube: Blindfolded",
-  },
-  {
-    "code": "333mbf",
-    "name": "Rubik's Cube: Multiple Blindfolded",
-    solveTimeFields: [ 'millis', 'puzzlesSolvedCount', 'puzzlesAttemptedCount' ],
-  },
+  { "code": "222",   "name": "2x2 Cube" },
+  { "code": "333",   "name": "Rubik's Cube" },
+  { "code": "444",   "name": "4x4 Cube" },
+  { "code": "555",   "name": "5x5 Cube" },
+  { "code": "666",   "name": "6x6 Cube" },
+  { "code": "777",   "name": "7x7 Cube" },
+  { "code": "333bf", "name": "Rubik's Cube: Blindfolded" },
+  { "code": "333oh", "name": "Rubik's Cube: One-handed" },
+  { "code": "333fm", "name": "Rubik's Cube: Fewest moves", solveTimeFields: [ 'moveCount' ] },
+  { "code": "333ft", "name": "Rubik's Cube: With feet" },
+  { "code": "minx",  "name": "Megaminx" },
+  { "code": "pyram", "name": "Pyraminx" },
+  { "code": "sq1",   "name": "Square-1" },
+  { "code": "clock", "name": "Rubik's Clock", },
+  { "code": "skewb", "name": "Skewb" },
+  { "code": "444bf", "name": "4x4 Cube: Blindfolded" },
+  { "code": "555bf", "name": "5x5 Cube: Blindfolded" },
+  { "code": "333mbf","name": "Rubik's Cube: Multiple Blindfolded", solveTimeFields: [ 'millis', 'puzzlesSolvedCount', 'puzzlesAttemptedCount' ] },
 ];
 
 wca.eventByCode = {};
