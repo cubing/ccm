@@ -1,4 +1,4 @@
-(function(){ // This is a Closure
+(function() { // This is a Closure
   function register(name, func) {
     if(Meteor.isClient) {
       Template.registerHelper(name, func);
