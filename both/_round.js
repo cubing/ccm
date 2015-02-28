@@ -1,29 +1,29 @@
 
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
-Round = function (doc) {
+Round = function(doc) {
   _.extend(this, doc);
 };
 _.extend(Round.prototype, {
 
-  format: function () {
+  format: function() {
     return wca.formatByCode[this.formatCode];
   },
-  properties: function () {
+  properties: function() {
     return wca.roundByCode[this.roundCode];
   },
-  eventName: function () {
+  eventName: function() {
     return this.eventCode ? wca.eventByCode[this.eventCode].name : '';
   },
-  eventSolveTimeFields: function () {
+  eventSolveTimeFields: function() {
     return this.eventCode ? wca.eventByCode[this.eventCode].solveTimeFields : undefined;
   },
-  isUnstarted: function () {
+  isUnstarted: function() {
     return this.status === wca.roundStatuses.unstarted;
   },
-  isOpen: function () {
+  isOpen: function() {
     return this.status === wca.roundStatuses.open;
   },
-  isClosed: function () {
+  isClosed: function() {
     return this.status === wca.roundStatuses.closed;
   },
 });
@@ -36,7 +36,7 @@ DEFAULT_ROUND_NTHDAY = 0;
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.
-Rounds = new Mongo.Collection("rounds", { transform: function (doc) { return new Round(doc); } });
+Rounds = new Mongo.Collection("rounds", { transform: function(doc) { return new Round(doc); } });
 
 Rounds.attachSchema({
   competitionId: {
