@@ -41,9 +41,6 @@
   register("roundFormatCode", function() {
     return getRoundAttribute(this.roundId, 'formatCode');
   });
-  register("roundCompetitionId", function() {
-    return getRoundAttribute(this.roundId, 'competitionId');
-  });
 
   register("isSiteAdmin", function() {
     if(!Meteor.user()) {
@@ -251,15 +248,11 @@
 
 
   getResultsWithUniqueNamesForRound = function(roundId, limit) {
-    var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
-
-    var competitionId = getRoundAttribute(roundId, 'competitionId');
-    var eventCode = getRoundAttribute(roundId, 'eventCode');
-
+    var round = Rounds.findOne(roundId);
     // Expand each result to also contain the uniqueName for that participant
     var registrations = Registrations.find({
-      competitionId: competitionId,
-      checkedInEvents: eventCode,
+      competitionId: round.competitionId,
+      checkedInEvents: round.eventCode,
     }, {
       fields: { uniqueName: 1 }
     });
@@ -267,6 +260,8 @@
     registrations.forEach(function(registration) {
       registrationById[registration._id] = registration;
     });
+
+    var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
     results.forEach(function(result) {
       var registration = registrationById[result.registrationId];
       if(!registration) {
@@ -287,7 +282,7 @@
 
     // Rounds don't necessarily have events, such as Lunch or Registration.
     if(round.eventCode) {
-      title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+      title = round.eventName() + ": " + round.properties().name;
     } else {
       title = round.title;
     }

@@ -84,8 +84,7 @@ Meteor.methods({
         if(wcaGroups.length === 0) {
           problems.push({
             error: true,
-            message: "No scramble groups found for " + e.code +
-                     " " + wca.roundByCode[ round.roundCode ].name,
+            message: "No scramble groups found for " + e.code + " " + round.properties().name,
             fixUrl: uploadScramblesPath
           });
         }
