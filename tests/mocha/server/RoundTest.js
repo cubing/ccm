@@ -2,6 +2,11 @@ MochaWeb.testOnly(function() {
   describe('Round', function() {
     var lunch = makeRound({ title: 'lunch' });
 
+    it('CONSTANTS', function() {
+      chai.expect(Round.MIN_ROUND_DURATION_MINUTES).to.equal(30)
+      chai.expect(Round.DEFAULT_ROUND_DURATION_MINUTES).to.equal(60)
+    });
+
     it('format()', function() {
       chai.expect(makeRound({ formatCode: '2' }).format().name).to.equal("Best of 2");
       chai.expect(makeRound({ formatCode: 'a' }).format().name).to.equal("Average of 5");
@@ -26,8 +31,8 @@ MochaWeb.testOnly(function() {
 
     it('status convenience functions', function() {
       var unstarted = makeRound({ status: 'unstarted' });
-      var open      = makeRound({ status: 'open' });
-      var closed    = makeRound({ status: 'closed' });
+      var open = makeRound({ status: 'open' });
+      var closed = makeRound({ status: 'closed' });
 
       chai.expect(unstarted.isUnstarted()).to.be.true;
       chai.expect(open.isUnstarted()).to.be.false;

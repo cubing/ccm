@@ -3,6 +3,10 @@
 Round = function(doc) {
   _.extend(this, doc);
 };
+
+Round.MIN_ROUND_DURATION_MINUTES = 30;
+Round.DEFAULT_ROUND_DURATION_MINUTES = 60;
+
 _.extend(Round.prototype, {
 
   format: function() {
@@ -30,9 +34,6 @@ _.extend(Round.prototype, {
 
 
 
-MIN_ROUND_DURATION_MINUTES = 30;
-DEFAULT_ROUND_DURATION_MINUTES = 60;
-DEFAULT_ROUND_NTHDAY = 0;
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
 // It's basically anything that would show up in the schedule.
@@ -47,7 +48,7 @@ Rounds.attachSchema({
     type: Number,
     min: 0,
     // should be <= numberOfDays in the corresponding Competition
-    defaultValue: DEFAULT_ROUND_NTHDAY,
+    defaultValue: 0,
   },
 
   startMinutes: {
@@ -62,8 +63,8 @@ Rounds.attachSchema({
   },
   durationMinutes: {
     type: Number,
-    min: MIN_ROUND_DURATION_MINUTES,
-    defaultValue: DEFAULT_ROUND_DURATION_MINUTES,
+    min: Round.MIN_ROUND_DURATION_MINUTES,
+    defaultValue: Round.DEFAULT_ROUND_DURATION_MINUTES,
   },
 
   title: {
