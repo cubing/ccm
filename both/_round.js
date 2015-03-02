@@ -16,10 +16,12 @@ _.extend(Round.prototype, {
     return wca.roundByCode[this.roundCode];
   },
   eventName: function() {
-    return this.eventCode ? wca.eventByCode[this.eventCode].name : '';
+    assert(this.eventCode);
+    return wca.eventByCode[this.eventCode].name;
   },
   eventSolveTimeFields: function() {
-    return this.eventCode ? wca.eventByCode[this.eventCode].solveTimeFields : undefined;
+    assert(this.eventCode);
+    return wca.eventByCode[this.eventCode].solveTimeFields;
   },
   isUnstarted: function() {
     return this.status === wca.roundStatuses.unstarted;

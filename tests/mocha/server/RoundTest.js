@@ -3,8 +3,8 @@ MochaWeb.testOnly(function() {
     var lunch = makeRound({ title: 'lunch' });
 
     it('CONSTANTS', function() {
-      chai.expect(Round.MIN_ROUND_DURATION_MINUTES).to.equal(30)
-      chai.expect(Round.DEFAULT_ROUND_DURATION_MINUTES).to.equal(60)
+      chai.expect(Round.MIN_ROUND_DURATION_MINUTES).to.equal(30);
+      chai.expect(Round.DEFAULT_ROUND_DURATION_MINUTES).to.equal(60);
     });
 
     it('format()', function() {
@@ -21,12 +21,11 @@ MochaWeb.testOnly(function() {
 
     it('eventName()', function() {
       chai.expect(makeRound({ eventCode: '333bf' }).eventName()).to.equal("Rubik's Cube: Blindfolded");
-      chai.expect(lunch.eventName()).to.equal("");
     });
 
     it('eventSolveTimeFields()', function() {
       chai.expect(makeRound({ eventCode: '333mbf' }).eventSolveTimeFields().join()).to.equal("millis,puzzlesSolvedCount,puzzlesAttemptedCount");
-      chai.expect(lunch.eventSolveTimeFields()).to.be.undefined;
+      chai.expect(makeRound({ eventCode: '777' }).eventSolveTimeFields()).to.be.undefined;
     });
 
     it('status convenience functions', function() {
