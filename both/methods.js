@@ -47,10 +47,9 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
       roundCode: 1,
     }
   });
-  var roundFormat = wca.formatByCode[round.formatCode];
 
   check(solveIndex, Match.Integer);
-  if(solveIndex < 0 || solveIndex >= roundFormat.count) {
+  if(solveIndex < 0 || solveIndex >= round.format().count) {
     throw new Meteor.Error(400, "Invalid solve index for round");
   }
   result.solves[solveIndex] = solveTime;
@@ -248,35 +247,30 @@ Meteor.methods({
       Groups.insert(newGroup);
     }
   },
-  advanceParticipantsFromRound: function(participantCount, roundId) {
-    var competitionId = getRoundAttribute(roundId, 'competitionId');
-    throwIfCannotManageCompetition(this.userId, competitionId);
+  advanceParticipantsFromRound: function(participantsToAdvance, roundId) {
+    var round = Rounds.findOne(roundId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId);
 
     var results = Results.find({ roundId: roundId }, { sort: { position: 1 }, fields: { registrationId: 1 } }).fetch();
-    if(participantCount < 0) {
-      throw new Meteor.Error(400,
-            'Cannot advance a negative number of competitors');
+    if(participantsToAdvance < 0) {
+      throw new Meteor.Error(400, 'Cannot advance a negative number of competitors');
     }
-    if(participantCount > results.length) {
-      throw new Meteor.Error(400,
-            'Cannot advance more people than there are in round');
+    if(participantsToAdvance > results.length) {
+      throw new Meteor.Error(400, 'Cannot advance more people than there are in round');
     }
-    var eventCode = getRoundAttribute(roundId, 'eventCode');
-    var nthRound = getRoundAttribute(roundId, 'nthRound');
     var nextRound = Rounds.findOne({
-      competitionId: competitionId,
-      eventCode: eventCode,
-      nthRound: nthRound + 1,
+      competitionId: round.competitionId,
+      eventCode: round.eventCode,
+      nthRound: round.nthRound + 1,
     }, {
       fields: { _id: 1 }
     });
     if(!nextRound) {
-      throw new Meteor.Error(404,
-            'No next round found for roundId ' + roundId);
+      throw new Meteor.Error(404, 'No next round found for roundId ' + roundId);
     }
 
     var desiredRegistrationIds = [];
-    for(var i = 0; i < participantCount; i++) {
+    for(var i = 0; i < participantsToAdvance; i++) {
       var result = results[i];
       desiredRegistrationIds.push(result.registrationId);
     }
@@ -298,7 +292,7 @@ Meteor.methods({
       });
     });
 
-    // Now copy participantCount results from the current round to the next
+    // Now copy participantsToAdvance results from the current round to the next
     // round.
     _.each(registrationIdsToAdd, function(registrationId) {
       Results.insert({
@@ -466,10 +460,9 @@ RoundSorter = {
 
     var sort = {};
 
-    var roundFormat = wca.formatByCode[round.formatCode];
-    if(roundFormat.sortBy == "best") {
+    if(round.format().sortBy == "best") {
       sort.sortableBestValue = 1;
-    } else if(roundFormat.sortBy == "average") {
+    } else if(round.format().sortBy == "average") {
       sort.sortableAverageValue = 1;
       sort.sortableBestValue = 1;
     } else {
@@ -486,12 +479,12 @@ RoundSorter = {
       var previousResult = results[i - 1];
       if(previousResult) {
         var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
-        if(roundFormat.sortBy == "average") {
+        if(round.format().sortBy == "average") {
           var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
           if(tiedAverage && tiedBest) {
             tied = true;
           }
-        } else if(roundFormat.sortBy == "best") {
+        } else if(round.format().sortBy == "best") {
           if(tiedBest) {
             tied = true;
           }

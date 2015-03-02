@@ -222,7 +222,7 @@ Template.editEvents.helpers({
     }, {
       fields: { status: 1 }
     });
-    if(nextRound && nextRound.status != wca.roundStatuses.unstarted) {
+    if(nextRound && !nextRound.isUnstarted()) {
       // If there's a next round that is already opened (or
       // closed), we can't reopen this round.
       return false;
@@ -249,8 +249,7 @@ Template.editEvents.helpers({
       fields: { status: 1 }
     });
     if(!nextRound) {
-      // We can't possibly advance people from this round if there is no next
-      // round.
+      // We can't advance people from the final round
       return false;
     }
     return true;
@@ -262,7 +261,7 @@ Template.editEvents.helpers({
   },
   lastRoundCode: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    return getRoundAttribute(roundId, 'roundCode');
+    return Rounds.findOne(roundId).roundCode;
   },
   roundPopup: function() {
     return roundPopupReact.get();

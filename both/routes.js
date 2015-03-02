@@ -35,12 +35,8 @@ if(Meteor.isClient) {
         title = competitionName + " - " + title;
       }
       if(data.roundId) {
-        var eventCode = getRoundAttribute(data.roundId, 'eventCode');
-
-        var roundCode = getRoundAttribute(data.roundId, 'roundCode');
-        var roundName = wca.roundByCode[roundCode].name;
-
-        title = wca.eventByCode[eventCode].name + " " + roundName + " - " + title;
+        var round = Rounds.findOne(data.roundId);
+        title = round.eventName() + " " + round.properties().name + " - " + title;
       }
       if(data.user) {
         title = data.user.profile.name + " - " + title;
