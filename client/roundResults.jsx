@@ -141,11 +141,9 @@ var ResultsList = React.createClass({
       return a.position - b.position;
     });
 
-    var formatCode = getRoundAttribute(roundId, 'formatCode');
-
     return {
       results: results,
-      formatCode: formatCode,
+      formatCode: Rounds.findOne(roundId).formatCode,
     };
   },
   componentWillMount: function() {

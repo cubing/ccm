@@ -1,72 +1,71 @@
-if(Meteor.isClient) {
-  Template.registerHelper("roundName", function(roundCode) {
-    return wca.roundByCode[roundCode].name;
-  });
-  Template.registerHelper("eventName", function(eventCode) {
-    return wca.eventByCode[eventCode].name;
-  });
-  Template.registerHelper("formatName", function(formatCode) {
-    return wca.formatByCode[formatCode].name;
-  });
-  Template.registerHelper("formatShortName", function(formatCode) {
-    return wca.formatByCode[formatCode].shortName;
-  });
-  Template.registerHelper("wcaFormats", function() {
-    return wca.formats;
-  });
-
-  Template.registerHelper("softCutoffFormatName", function(softCutoffFormatCode) {
-    return wca.softCutoffFormatByCode[softCutoffFormatCode].name;
-  });
-
-  Template.registerHelper("eventAllowsCutoffs", function(eventCode) {
-    return wca.eventAllowsCutoffs(eventCode);
-  });
-
-  Template.registerHelper("competition", function(attribute) {
-    return getCompetitionAttribute(this.competitionId, attribute);
-  });
-
-  Template.registerHelper("roundEventCode", function() {
-    return getRoundAttribute(this.roundId, 'eventCode');
-  });
-  Template.registerHelper("roundRoundCode", function() {
-    return getRoundAttribute(this.roundId, 'roundCode');
-  });
-  Template.registerHelper("roundFormatCode", function() {
-    return getRoundAttribute(this.roundId, 'formatCode');
-  });
-  Template.registerHelper("roundCompetitionId", function() {
-    return getRoundAttribute(this.roundId, 'competitionId');
-  });
-
-  Template.registerHelper("isSiteAdmin", function() {
-    if(!Meteor.user()) {
-      return false;
-    }
-    return Meteor.user().siteAdmin;
-  });
-
-  Template.registerHelper("toAtMostFixed", function(n, fixed) {
-    // Neat trick from http://stackoverflow.com/a/18358056
-    return +(n.toFixed(fixed));
-  });
-  Template.registerHelper("percentage", function(progress) {
-    if(progress.total === 0) {
-      return 0;
-    }
-    return Math.round(100.0 * progress.done / progress.total);
-  });
+function register(name, func) {
+  if(Meteor.isClient) {
+    Template.registerHelper(name, func);
+  }
 }
+register("roundName", function(roundCode) {
+  return wca.roundByCode[roundCode].name;
+});
+register("eventName", function(eventCode) {
+  return wca.eventByCode[eventCode].name;
+});
+register("formatName", function(formatCode) {
+  return wca.formatByCode[formatCode].name;
+});
+register("formatShortName", function(formatCode) {
+  return wca.formatByCode[formatCode].shortName;
+});
+register("wcaFormats", function() {
+  return wca.formats;
+});
+
+register("softCutoffFormatName", function(softCutoffFormatCode) {
+  return wca.softCutoffFormatByCode[softCutoffFormatCode].name;
+});
+
+register("eventAllowsCutoffs", function(eventCode) {
+  return wca.eventAllowsCutoffs(eventCode);
+});
+
+register("competition", function(attribute) {
+  return getCompetitionAttribute(this.competitionId, attribute);
+});
+
+register("roundEventCode", function() {
+  return getRoundAttribute(this.roundId, 'eventCode');
+});
+register("roundRoundCode", function() {
+  return getRoundAttribute(this.roundId, 'roundCode');
+});
+register("roundFormatCode", function() {
+  return getRoundAttribute(this.roundId, 'formatCode');
+});
+
+register("isSiteAdmin", function() {
+  if(!Meteor.user()) {
+    return false;
+  }
+  return Meteor.user().siteAdmin;
+});
+
+register("toAtMostFixed", function(n, fixed) {
+  // Neat trick from http://stackoverflow.com/a/18358056
+  return +(n.toFixed(fixed));
+});
+register("percentage", function(progress) {
+  if(progress.total === 0) {
+    return 0;
+  }
+  return Math.round(100.0 * progress.done / progress.total);
+});
+
 
 clockFormat = function(solveTime) {
   return jChester.solveTimeToStopwatchFormat(solveTime);
 };
-if(Meteor.isClient) {
-  Template.registerHelper("clockFormat", function(solveTime) {
-    return clockFormat(solveTime);
-  });
-}
+register("clockFormat", function(solveTime) {
+  return clockFormat(solveTime);
+});
 
 getCompetitionStartDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
@@ -75,11 +74,9 @@ getCompetitionStartDateMoment = function(competitionId) {
   }
   return moment(startDate);
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionStartDateMoment", function() {
-    return getCompetitionStartDateMoment(this.competitionId);
-  });
-}
+register("competitionStartDateMoment", function() {
+  return getCompetitionStartDateMoment(this.competitionId);
+});
 
 getCompetitionEndDateMoment = function(competitionId) {
   var startDate = getCompetitionAttribute(competitionId, 'startDate');
@@ -91,11 +88,9 @@ getCompetitionEndDateMoment = function(competitionId) {
   var endDate = startDate.clone().add(numberOfDays - 1, 'days');
   return endDate;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionEndDateMoment", function() {
-    return getCompetitionEndDateMoment(this.competitionId);
-  });
-}
+register("competitionEndDateMoment", function() {
+  return getCompetitionEndDateMoment(this.competitionId);
+});
 
 getCompetitionRegistrationOpenMoment = function(competitionId) {
   var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
@@ -104,11 +99,9 @@ getCompetitionRegistrationOpenMoment = function(competitionId) {
   }
   return moment(open);
 };
-if(Meteor.isClient) {
-  Template.registerHelper("getCompetitionRegistrationOpenMoment", function() {
-    return getCompetitionRegistrationOpenMoment(this.competitionId);
-  });
-}
+register("getCompetitionRegistrationOpenMoment", function() {
+  return getCompetitionRegistrationOpenMoment(this.competitionId);
+});
 
 getCompetitionRegistrationCloseMoment = function(competitionId) {
   var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
@@ -117,22 +110,18 @@ getCompetitionRegistrationCloseMoment = function(competitionId) {
   }
   return moment(close);
 };
-if(Meteor.isClient) {
-  Template.registerHelper("getCompetitionRegistrationCloseMoment", function() {
-    return getCompetitionRegistrationCloseMoment(this.competitionId);
-  });
-}
+register("getCompetitionRegistrationCloseMoment", function() {
+  return getCompetitionRegistrationCloseMoment(this.competitionId);
+});
 
 getCompetitionNumberOfDays = function(competitionId) {
   var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
   numberOfDays = parseInt(numberOfDays);
   return numberOfDays || 1;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionNumberOfDays", function() {
-    return getCompetitionNumberOfDays(this.competitionId);
-  });
-}
+register("competitionNumberOfDays", function() {
+  return getCompetitionNumberOfDays(this.competitionId);
+});
 
 getCompetitionEvents = function(competitionId) {
   var rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
@@ -154,40 +143,32 @@ getCompetitionEvents = function(competitionId) {
     .value();
   return events;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionEvents", function() {
-    return getCompetitionEvents(this.competitionId);
-  });
-}
+register("competitionEvents", function() {
+  return getCompetitionEvents(this.competitionId);
+});
 
 getCompetitionCalendarStartMinutes = function(competitionId) {
   var calendarStartMinutes = getCompetitionAttribute(competitionId, 'calendarStartMinutes');
   calendarStartMinutes = calendarStartMinutes || 0;
   return calendarStartMinutes;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionCalendarStartMinutes", function() {
-    return getCompetitionCalendarStartMinutes(this.competitionId);
-  });
-}
+register("competitionCalendarStartMinutes", function() {
+  return getCompetitionCalendarStartMinutes(this.competitionId);
+});
 
 getCompetitionCalendarEndMinutes = function(competitionId) {
   var calendarEndMinutes = getCompetitionAttribute(competitionId, 'calendarEndMinutes');
   calendarEndMinutes = calendarEndMinutes || 23.5*60;
   return calendarEndMinutes;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("competitionCalendarEndMinutes", function() {
-    return getCompetitionCalendarEndMinutes(this.competitionId);
-  });
-}
+register("competitionCalendarEndMinutes", function() {
+  return getCompetitionCalendarEndMinutes(this.competitionId);
+});
 
-if(Meteor.isClient) {
-  Template.registerHelper("canManageCompetition", function(userId) {
-    var cannotManageReason = getCannotManageCompetitionReason(userId, this.competitionId);
-    return !cannotManageReason;
-  });
-}
+register("canManageCompetition", function(userId) {
+  var cannotManageReason = getCannotManageCompetitionReason(userId, this.competitionId);
+  return !cannotManageReason;
+});
 
 isRegisteredForCompetition = function(userId, competitionId) {
   var competition = Registrations.findOne({
@@ -198,11 +179,9 @@ isRegisteredForCompetition = function(userId, competitionId) {
   });
   return !!competition;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("isRegisteredForCompetition", function(userId) {
-    return isRegisteredForCompetition(userId, this.competitionId);
-  });
-}
+register("isRegisteredForCompetition", function(userId) {
+  return isRegisteredForCompetition(userId, this.competitionId);
+});
 
 minutesToPrettyTime = function(timeMinutes) {
   var duration = moment.duration(timeMinutes, 'minutes');
@@ -212,11 +191,9 @@ minutesToPrettyTime = function(timeMinutes) {
   });
   return timeMoment.format("h:mma");
 };
-if(Meteor.isClient) {
-  Template.registerHelper("minutesToPrettyTime", function(timeMinutes) {
-    return minutesToPrettyTime(timeMinutes);
-  });
-}
+register("minutesToPrettyTime", function(timeMinutes) {
+  return minutesToPrettyTime(timeMinutes);
+});
 
 getLastRoundIdForEvent = function(competitionId, eventCode) {
   var lastRoundForEvent = Rounds.findOne({
@@ -256,31 +233,25 @@ formatMomentDateTime = function(m) {
   return m.tz(LOCAL_TIMEZONE).format(DATETIME_FORMAT);
 };
 
-if(Meteor.isClient) {
-  Template.registerHelper("formatMomentDate", function(m) {
-    return formatMomentDate(m);
-  });
+register("formatMomentDate", function(m) {
+  return formatMomentDate(m);
+});
 
-  Template.registerHelper("formatMomentDateRange", function(startMoment, endMoment) {
-    return formatMomentDateRange(startMoment, endMoment);
-  });
+register("formatMomentDateRange", function(startMoment, endMoment) {
+  return formatMomentDateRange(startMoment, endMoment);
+});
 
-  Template.registerHelper("formatMomentDateTime", function(m) {
-    return formatMomentDateTime(m);
-  });
-}
+register("formatMomentDateTime", function(m) {
+  return formatMomentDateTime(m);
+});
 
 
 getResultsWithUniqueNamesForRound = function(roundId, limit) {
-  var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
-
-  var competitionId = getRoundAttribute(roundId, 'competitionId');
-  var eventCode = getRoundAttribute(roundId, 'eventCode');
-
+  var round = Rounds.findOne(roundId);
   // Expand each result to also contain the uniqueName for that participant
   var registrations = Registrations.find({
-    competitionId: competitionId,
-    checkedInEvents: eventCode,
+    competitionId: round.competitionId,
+    checkedInEvents: round.eventCode,
   }, {
     fields: { uniqueName: 1 }
   });
@@ -288,10 +259,12 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   registrations.forEach(function(registration) {
     registrationById[registration._id] = registration;
   });
+
+  var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
   results.forEach(function(result) {
     var registration = registrationById[result.registrationId];
     if(!registration) {
-      // The registration for this result may not have been found by our earlier
+      // The registration  for this result may not have been found by our earlier
       // query because checkedInEvents hasn't been populated yet. Just silently
       // continue here, knowing we'll get recalled when the data has arrived.
       return;
@@ -308,15 +281,14 @@ roundTitle = function(round) {
 
   // Rounds don't necessarily have events, such as Lunch or Registration.
   if(round.eventCode) {
-    title = wca.eventByCode[round.eventCode].name + ": " + wca.roundByCode[round.roundCode].name;
+    title = round.eventName() + ": " + round.properties().name;
   } else {
     title = round.title;
   }
 
   return title;
 };
-if(Meteor.isClient) {
-  Template.registerHelper("roundTitle", function(round) {
-    return roundTitle(round);
-  });
-}
+register("roundTitle", function(round) {
+  return roundTitle(round);
+});
+

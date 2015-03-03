@@ -16,8 +16,7 @@ Template.dataEntry.created = function() {
 Template.dataEntry.helpers({
   showAllRounds: function() {
     if(this.roundId) {
-      var status = getRoundAttribute(this.roundId, 'status');
-      if(status !== wca.roundStatuses.open) {
+      if(!Rounds.findOne(this.roundId).isOpen()) {
         // If the selected round is not open, we need to show all rounds so we
         // can see the selected round.
         return true;
@@ -37,8 +36,7 @@ Template.dataEntry.helpers({
       // *not* closed =)
       return false;
     }
-    var status = getRoundAttribute(this.roundId, 'status');
-    return status === wca.roundStatuses.closed;
+    return Rounds.findOne(this.roundId).isClosed();
   },
   isSelectedRoundUnstarted: function() {
     if(!this.roundId) {
@@ -46,8 +44,7 @@ Template.dataEntry.helpers({
       // *not* unstarted =)
       return false;
     }
-    var status = getRoundAttribute(this.roundId, 'status');
-    return status === wca.roundStatuses.unstarted;
+    return Rounds.findOne(this.roundId).isUnstarted;
   },
   openRounds: function() {
     var openRounds = Rounds.find({
@@ -185,18 +182,15 @@ Template.roundDataEntry.helpers({
     var warnings = [];
 
     var parentData = Template.parentData(1);
-    var roundId = parentData.roundId;
-    var hardCutoff = getRoundAttribute(roundId, "hardCutoff");
-    var violatesHardCutoff = hardCutoff && this.solveTime && wca.compareSolveTimes(this.solveTime, hardCutoff.time) > 0 && !jChester.solveTimeIsDN(this.solveTime);
+    var round = Rounds.findOne(parentData.roundId);
+    var violatesHardCutoff = round.hardCutoff && this.solveTime && wca.compareSolveTimes(this.solveTime, round.hardCutoff.time) > 0 && !jChester.solveTimeIsDN(this.solveTime);
     if(violatesHardCutoff) {
       warnings.push('Greater than hard cutoff');
     }
 
     var result = Results.findOne(this.resultId);
     var expectedSolveCount = result.getExpectedSolveCount();
-    var formatCode = getRoundAttribute(roundId, "formatCode");
-    var roundFormat = wca.formatByCode[formatCode];
-    var missedCutoff = expectedSolveCount != roundFormat.count;
+    var missedCutoff = expectedSolveCount != round.format().count;
     if(missedCutoff && this.index >= expectedSolveCount && this.solveTime) {
       // There's a SolveTime at this index and the user didn't make the cutoff.
       // Complain!
@@ -207,10 +201,9 @@ Template.roundDataEntry.helpers({
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
     var result = Results.findOne({ _id: selectedResultId }, { fields: { solves: 1 } });
-    var roundFormatCode = getRoundAttribute(this.roundId, 'formatCode');
-    var roundFormat = wca.formatByCode[roundFormatCode];
+    var round = Rounds.findOne(this.roundId);
     var solves = result.solves || [];
-    while(solves.length < roundFormat.count) {
+    while(solves.length < round.format().count) {
       solves.push(null);
     }
     return solves.map(function(solve, i) {
@@ -223,8 +216,7 @@ Template.roundDataEntry.helpers({
   },
   editableSolveTimeFields: function() {
     var data = Template.parentData(1);
-    var eventCode = getRoundAttribute(data.roundId, 'eventCode');
-    var fields = wca.eventByCode[eventCode].solveTimeFields;
+    var fields = Rounds.findOne(data.roundId).eventSolveTimeFields();
     if(!fields) {
       // jChester will only use its default if the value for
       // editableSolveTimeFields is undefined, null won't work.

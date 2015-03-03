@@ -4,14 +4,14 @@ Template.roundPicker.created = function() {
   template.autorun(function() {
     var data = Template.currentData();
     var currentRoundId = data.roundId;
+
+    var newEventCode = null;
     if(currentRoundId) {
-      var eventCode = getRoundAttribute(currentRoundId, 'eventCode');
-      template.selectedEventCodeReact.set(eventCode);
+      newEventCode = Rounds.findOne(currentRoundId).eventCode;
     } else if(data.eventCode) {
-      template.selectedEventCodeReact.set(data.eventCode);
-    } else {
-      template.selectedEventCodeReact.set(null);
+      newEventCode = data.eventCode;
     }
+    template.selectedEventCodeReact.set(newEventCode);
   });
 };
 
@@ -52,15 +52,14 @@ Template.roundPicker.helpers({
     if(!currentRoundId) {
       return false;
     }
-    var currentEventCode = getRoundAttribute(currentRoundId, 'eventCode');
+    var currentRound = Rounds.findOne(currentRoundId);
     var template = Template.instance();
     var selectedEventCode = template.selectedEventCodeReact.get();
-    if(selectedEventCode != currentEventCode) {
+    if(selectedEventCode != currentRound.eventCode) {
       return false;
     }
 
-    var currentNthRound = getRoundAttribute(currentRoundId, 'nthRound');
-    return this.nthRound == currentNthRound;
+    return this.nthRound == currentRound.nthRound;
   },
 });
 
