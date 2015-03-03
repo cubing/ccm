@@ -12,13 +12,13 @@
 
 (cd client/components/; wget -N https://raw.githubusercontent.com/jmosbech/StickyTableHeaders/master/js/jquery.stickytableheaders.js)
 
-(cd both/components/; wget -N http://www.jflei.com/jChester/jChester.js)
+(cd both/lib/; wget -N http://www.jflei.com/jChester/jChester.js)
 
 (cd css/components/; wget -N https://raw.githubusercontent.com/cubing/icons/master/cubing-icons.import.less)
 
-(cd both/components/; curl -s https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json | sed -e '1s/^/JSON.stringify(/' -e '$a\,function(k,v){return k!=="name"&&k!=="alpha2"&&isNaN(k)?undefined:v},2)' | node -p | sed -e '1s/^/countries = /' -e '$a\;' > countries.js)
+(cd both/lib/; curl -s https://raw.githubusercontent.com/OpenBookPrices/country-data/master/data/countries.json | sed -e '1s/^/JSON.stringify(/' -e '$a\,function(k,v){return k!=="name"&&k!=="alpha2"&&isNaN(k)?undefined:v},2)' | node -p | sed -e '1s/^/countries = /' -e '$a\;' > countries.js)
 
-(cd both/components/; wget -N https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.js)
+(cd both/lib/; wget -N https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.4/jstz.js)
 
 # Custom build of jquery-ui that includes only the stuff we need
 #  http://jqueryui.com/download/#!version=1.11.2&components=1110110000000000000000000000000000000
