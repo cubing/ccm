@@ -1,4 +1,4 @@
 tests/node_modules
-packages
+lib
 client/components
 both/components
