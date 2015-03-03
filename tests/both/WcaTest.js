@@ -1,12 +1,12 @@
 var assert = require("assert");
 var expect = require("chai").expect;
 
-// __wca.js uses assert and doesn't require() it, so lets jam it into the
+// wca.js uses assert and doesn't require() it, so lets jam it into the
 // global scope for it.
 global.assert = assert;
 
-require("../../both/__wca.js");
-require("../../both/components/jChester.js");
+require("../../both/lib/wca.js");
+require("../../both/lib/jChester.js");
 
 describe('wca', function() {
   describe('compareSolveTimes', function() {
