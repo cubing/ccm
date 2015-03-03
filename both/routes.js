@@ -349,6 +349,7 @@ Router.route('/:competitionUrlId/results/byname/:participantUniqueName', {
   name: 'participantResults',
   controller: 'ViewParticipantController',
 });
+
 Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
