@@ -8,20 +8,18 @@ td.checkedin-for-event:not(.registered-for-event) {
   background-color: @state-danger-text;
 }
 
-@eventColumnWidth: 55px;
-#checkinTable thead th {
-  min-width: @eventColumnWidth;
-  max-width: @eventColumnWidth;
-}
-
-#checkinTable button {
-  margin-right: 3px;
-}
-
-@addParticipantButtonSize: 50px;
 
 #checkinTable {
   margin-bottom: @addParticipantButtonSize;
+  
+  thead th {
+    min-width: @eventColumnWidth;
+    max-width: @eventColumnWidth;
+  }
+
+  button {
+    margin-right: 3px;
+  }
 }
 
 span.addParticipant {
@@ -44,8 +42,9 @@ span.addParticipant {
   box-shadow: 0px 1px 5px 2px #999;
 
   cursor: pointer;
-}
-span.addParticipant:before {
-  content: "\2b"; /* glyphicon-plus */
-  font-family: 'Glyphicons Halflings';
+
+  :before {
+    content: "\2b"; /* glyphicon-plus */
+    font-family: 'Glyphicons Halflings';
+  }
 }
