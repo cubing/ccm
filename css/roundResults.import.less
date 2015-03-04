@@ -19,9 +19,12 @@ tr.last-participant-to-advance {
   color: #DDD;
 }
 
-.results-solve-dropped::before {
-  content: "(";
-}
-.results-solve-dropped::after {
-  content: ")";
+.results-solve-dropped {
+  &::before: {
+    content: "(";
+  }
+
+  &::after {
+    content: ")";
+  }
 }
