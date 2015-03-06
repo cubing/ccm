@@ -13,6 +13,11 @@ MochaWeb.testOnly(function() {
       chai.expect(lunch.format()).to.be.undefined;
     });
 
+    it('resultSortOrder()', function() {
+      chai.expect(makeRound({ formatCode: '1' }).resultSortOrder()).to.deep.equal({sortableBestValue: 1}); // sortBy: "best"
+      chai.expect(makeRound({ formatCode: 'a' }).resultSortOrder()).to.deep.equal({sortableAverageValue: 1, sortableBestValue: 1}); // sortBy: "average"
+    });
+
     it('properties()', function() {
       chai.expect(makeRound({ roundCode: '1' }).properties().name).to.equal("First round");
       chai.expect(makeRound({ roundCode: 'g' }).properties().name).to.equal("Combined Third Round");

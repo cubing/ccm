@@ -53,10 +53,7 @@ register("toAtMostFixed", function(n, fixed) {
   return +(n.toFixed(fixed));
 });
 register("percentage", function(progress) {
-  if(progress.total === 0) {
-    return 0;
-  }
-  return Math.round(100.0 * progress.done / progress.total);
+  return progress.percentage();
 });
 
 

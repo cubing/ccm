@@ -1,3 +1,5 @@
+// File name starts with "_" so it loads first
+
 // For filter to be false. I really wish this was the default for SimpleSchema.
 var oldClean = SimpleSchema.prototype.clean;
 SimpleSchema.prototype.clean = function(doc, options) {

@@ -6,8 +6,8 @@ Template.editEvents.events({
   },
   'click button[name="buttonRemoveRound"]': function(e, template) {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    var progress = getRoundAttribute(lastRoundId, 'progress');
-    if(progress && progress.total > 0) {
+    var progress = RoundProgresses.findOne({roundId: lastRoundId});
+    if(progress.total > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
       Meteor.call('removeRound', lastRoundId);
@@ -149,8 +149,7 @@ Template.editEvents.helpers({
     return participantsCount;
   },
   roundProgress: function() {
-    var roundId = this._id;
-    return getRoundAttribute(roundId, 'progress');
+    return RoundProgresses.findOne({roundId: this._id});
   },
   maxAllowedRoundSize: function() {
     var maxAllowedRoundSize = getMaxAllowedSize(this);
@@ -164,24 +163,19 @@ Template.editEvents.helpers({
     return this.size > maxAllowedRoundSize;
   },
   roundComplete: function() {
-    var roundId = this._id;
-    var progress = getRoundAttribute(roundId, 'progress');
-    return progress && progress.done == progress.total;
+    var progress = RoundProgresses.findOne({roundId: this._id});
+    return progress.isComplete();
   },
   roundOvercomplete: function() {
-    var roundId = this._id;
-    var progress = getRoundAttribute(roundId, 'progress');
-    return progress && progress.done > progress.total;
+    var progress = RoundProgresses.findOne({roundId: this._id});
+    return progress.isOverComplete();
   },
   lastRoundResultsCount: function() {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     if(!lastRoundId) {
       return 0;
     }
-    var progress = getRoundAttribute(lastRoundId, 'progress');
-    if(!progress) {
-      return 0;
-    }
+    var progress = RoundProgresses.findOne({roundId: this._id});
     return progress.total;
   },
   canRemoveRound: function() {
@@ -228,11 +222,10 @@ Template.editEvents.helpers({
       return false;
     }
     if(this.status == wca.roundStatuses.unstarted) {
-      var roundId = this._id;
-      var progress = getRoundAttribute(roundId, 'progress');
+      var progress = RoundProgresses.findOne({roundId: this._id});
       // Only allow opening this unstarted round if there are some people *in*
       // the round.
-      return progress && progress.total > 0;
+      return progress.total > 0;
     }
     return this.status == wca.roundStatuses.closed;
   },
