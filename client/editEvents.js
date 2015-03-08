@@ -175,7 +175,7 @@ Template.editEvents.helpers({
     if(!lastRoundId) {
       return 0;
     }
-    var progress = RoundProgresses.findOne({roundId: this._id});
+    var progress = RoundProgresses.findOne({roundId: lastRoundId});
     return progress.total;
   },
   canRemoveRound: function() {

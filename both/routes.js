@@ -285,6 +285,9 @@ Router.route('/manage/:competitionUrlId/events', {
   name: 'editEvents',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit events",
+  waitOn: function() {
+    return [subs.subscribe('roundProgresses', this.params.competitionUrlId, subscriptionError(this))];
+  },
 });
 Router.route('/manage/:competitionUrlId/check-in', {
   name: 'manageCheckin',
