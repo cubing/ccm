@@ -168,6 +168,10 @@ canAddRound = function(userId, competitionId, eventCode) {
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
 
+function _onlyAllowedFields(fields, allowedFields) {
+  return _.difference(fields, allowedFields).length === 0;
+};
+
 if(Meteor.isServer) {
 
   Competitions.allow({
@@ -261,7 +265,7 @@ if(Meteor.isServer) {
 
   Registrations.allow({
     insert: function(userId, registration) {
-      return Registrations.userIsAllowed(userId, registration)
+      return Registrations.userIsAllowed(userId, registration);
     },
     update: function(userId, registration, fields, modifier) {
       if(!Registrations.userIsAllowed(userId, registration)) {
@@ -281,7 +285,7 @@ if(Meteor.isServer) {
       return _onlyAllowedFields(fields, allowedFields);
     },
     remove: function(userId, registration) {
-      return Registrations.userIsAllowed(userId, registration)
+      return Registrations.userIsAllowed(userId, registration);
     },
   });
 
@@ -296,8 +300,4 @@ if(Meteor.isServer) {
     // can only edit entries with their user id
     return registration.userId == userId;
   };
-
-  function _onlyAllowedFields(fields, allowedFields) {
-    return _.difference(fields, allowedFields).length === 0;
-  }
 }

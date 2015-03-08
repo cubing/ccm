@@ -474,9 +474,11 @@ RoundSorter = {
         switch(round.format().sortBy) {
         case "best":
           tied = tiedBest;
+          break;
         case "average":
           var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
           tied = tiedAverage && tiedBest;
+          break;
         default:
           // uh-oh, unrecognized roundFormat, give up
           assert(false);
