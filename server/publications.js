@@ -23,7 +23,7 @@ Meteor.publish(null, function() {
   return Meteor.users.find({ _id: this.userId }, { fields: userFieldsToPublish });
 });
 
-Meteor.publish("roundProgresses", function (competitionUrlId) {
+Meteor.publish("roundProgresses", function(competitionUrlId) {
   var competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
