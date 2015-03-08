@@ -170,7 +170,7 @@ canAddRound = function(userId, competitionId, eventCode) {
 
 function _onlyAllowedFields(fields, allowedFields) {
   return _.difference(fields, allowedFields).length === 0;
-};
+}
 
 if(Meteor.isServer) {
 
