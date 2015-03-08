@@ -89,3 +89,7 @@ $.fn.scrollToCenter = function(speed) {
   }
   $('html, body').animate({ scrollTop: offset }, speed);
 };
+
+// Set datepicker to autoclose on select. There does not appear to be
+// a corresponding option for bootstrap-datetimepicker.
+$.fn.datepicker.defaults.autoclose = true;
