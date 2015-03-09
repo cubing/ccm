@@ -173,3 +173,14 @@
 p.navbar-brand > img {
   display: inline;
 }
+
+.navbar-nav #competition-name a {
+  width: 175px; // 215 to put cogs on new line
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  @media (min-width: @screen-sm-min) {
+    width: auto;
+  }
+}
