@@ -23,46 +23,45 @@
  * This looks gross inside of tables.
  * https://github.com/twbs/bootstrap/issues/3905
  */
-.table .progress {
+.table .progress,
+.table-condensed {
   margin-bottom: 0px;
 }
-.table-condensed .progress {
-  margin-bottom: 0px;
-}
-
-@iconSize: 50px;
-@thumbnailPaddingAndBorder: 2*4px + 2*1px;
 
 .panel-title .cubing-icon {
   position: absolute;
   font-size: @iconSize - @thumbnailPaddingAndBorder;
   top: 20px - @iconSize / 2;
-}
 
-.panel-title .cubing-icon + span {
-  padding-left: @iconSize + 5px;
+  + span {
+    padding-left: @iconSize + 5px;
+  }
 }
 
 .btn-unlock {
   width: 2em;
   text-align: center;
-}
-.btn-unlock i.fa:before {
-  content: "\f023"; /* fa-lock */
-}
-.btn-unlock:hover i.fa:before {
-  content: "\f09c"; /* fa-unlock */
+
+  i.fa:before {
+    content: "\f023"; /* fa-lock */
+  }
+
+  &:hover i.fa:before {
+    content: "\f09c"; /* fa-unlock */
+  }
 }
 
 .btn-lock {
   width: 2em;
   text-align: center;
-}
-.btn-lock i.fa:before {
-  content: "\f09c"; /* fa-unlock */
-}
-.btn-lock:hover i.fa:before {
-  content: "\f023"; /* fa-lock */
+
+  i.fa:before {
+    content: "\f09c"; /* fa-unlock */
+  }
+
+  &:hover i.fa:before{
+    content: "\f023"; /* fa-lock */
+  }
 }
 
 select[name="roundFormat"] {

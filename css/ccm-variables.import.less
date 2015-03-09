@@ -1,0 +1,67 @@
+////////////////////////////////////////////////////////////////////////////////
+// Bootstrap overrides
+////////////////////////////////////////////////////////////////////////////////
+
+// We want to prevent the navbar from collapsing
+@grid-float-breakpoint: 0px;
+
+// Bootstrap's default table-bg-hover is too similar to the darker
+// table stripe.
+@table-bg-hover: #eee;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// CCM Variables
+////////////////////////////////////////////////////////////////////////////////
+
+@nav-lvl-1: ~'.navbar';
+@nav-lvl-2: ~'.navbar + .navbar';
+@nav-lvl-3: ~'.navbar + .navbar + .navbar';
+@nav-lvl-4: ~'.navbar + .navbar + .navbar + .navbar';
+@nav-lvl-5: ~'.navbar + .navbar + .navbar + .navbar + .navbar';
+
+// Navbar variables
+@navbarColorDarkenPercent: 12%;
+@navbarBoxShadowColor: #999;
+@navbarBoxShadow: 0px -4px 4px -3px @navbarBoxShadowColor;
+@navbarTabBoxShadow: 0px 0px 4px 1px @navbarBoxShadowColor;
+
+// nav lvl 2 / subNavbar
+@navLvl2NavbarColor: @navbar-default-link-active-bg;
+@navLvl2NavbarActiveColor: darken(@navLvl2NavbarColor, @navbarColorDarkenPercent);
+@navLvl2NavbarBoxShadowColor: darken(@navbarBoxShadowColor, @navbarColorDarkenPercent);
+@navLvl2NavbarBoxShadow: 0px -4px 4px -3px @navLvl2NavbarBoxShadowColor;
+@navLvl2NavbarTabBoxShadow: 0px 0px 4px 1px @navLvl2NavbarBoxShadowColor;
+
+//nav lvl 3 / subSubNavbar
+@navLvl3NavbarColor: @navLvl2NavbarActiveColor;
+@navLvl3NavbarActiveColor: darken(@navLvl3NavbarColor, @navbarColorDarkenPercent);
+@navLvl3NavbarBoxShadowColor: darken(@navLvl2NavbarBoxShadowColor, @navbarColorDarkenPercent);
+@navLvl3NavbarBoxShadow: 0px -4px 4px -3px @navLvl3NavbarBoxShadowColor;
+@navLvl3NavbarTabBoxShadow: 0px 0px 4px 1px @navLvl3NavbarBoxShadowColor;
+
+//nav lvl 4 / subSubSubNavbar
+@navLvl4NavbarColor: @navLvl3NavbarActiveColor;
+@navLvl4NavbarActiveColor: darken(@navLvl4NavbarColor, @navbarColorDarkenPercent);
+@navLvl4NavbarBoxShadowColor: darken(@navLvl3NavbarBoxShadowColor, @navbarColorDarkenPercent);
+@navLvl4NavbarBoxShadow: 0px -4px 4px -3px @navLvl4NavbarBoxShadowColor;
+@navLvl4NavbarTabBoxShadow: 0px 0px 4px 1px @navLvl4NavbarBoxShadowColor;
+
+//nav lvl 5 / subSubSubSubNavbar
+@navLvl5NavbarColor: @navLvl4NavbarActiveColor;
+@navLvl5NavbarActiveColor: darken(@navLvl5NavbarColor, @navbarColorDarkenPercent);
+@navLvl5NavbarBoxShadowColor: darken(@navLvl4NavbarBoxShadowColor, @navbarColorDarkenPercent);
+@navLvl5NavbarBoxShadow: 0px -4px 4px -3px @navLvl5NavbarBoxShadowColor;
+@navLvl5NavbarTabBoxShadow: 0px 0px 4px 1px @navLvl5NavbarBoxShadowColor;
+
+
+@activeTabSpace: 5px;
+
+@bsSubSubSubNavbarTextColor: #FFF;
+@bsSubSubSubNavbarTextColorActive: #000;
+
+@iconSize: 50px;
+@thumbnailPaddingAndBorder: 2*4px + 2*1px;
+
+@eventColumnWidth: 55px;
+@addParticipantButtonSize: 50px;

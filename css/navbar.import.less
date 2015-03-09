@@ -1,0 +1,186 @@
+.navbar {
+  img {
+    height: 18px;
+  }
+
+  /* Get rid of the whitespace between the navbar and the jumbotron */
+  ~ .jumbotron {
+    margin-top: -20px;
+  }
+
+  .navbar-brand img {
+    margin-top: -7px;
+    margin-bottom: -7px;
+    height: 32px;
+  }
+
+  .cubing-icon {
+    font-size: 32px;
+    vertical-align: middle;
+  }
+
+  .navbar-brand .cubing-icon {
+    display: inline-block;
+    margin-top: -5px;
+  }
+  
+  // Move navbar down when the connection status is visible.
+  #connection-lost-banner + &,
+  #connection-try-reconnect + & {
+    top: 42px;
+    margin-bottom: 62px;
+  }
+}
+
+.navbar-plain-rectangle {
+  border: none;
+  border-radius: 0px;
+}
+
+.navbar-default {
+  box-shadow: inset @navbarBoxShadow;
+
+  .active.leaf {
+    padding: 0px 4px 0px 4px;
+    overflow: hidden;
+
+    a {
+      padding: 10px 11px 15px 11px;
+    }
+  }
+
+  li.active a {
+    padding-top: 15px - @activeTabSpace;
+    margin-top: @activeTabSpace;
+    box-shadow: @navbarTabBoxShadow;
+  }
+
+  .navbar-brand {
+    &:hover,
+    &:focus {
+      color: @navbar-default-link-color;
+    }
+  }
+
+  .navbar-nav {
+    > li {
+      > a,
+      > p,
+      > p:hover {
+        @{nav-lvl-4}& {
+          color: @bsSubSubSubNavbarTextColor;
+        } 
+      }
+      
+      > a:hover,
+      &.active > a {
+        @{nav-lvl-4}& {
+          color: @bsSubSubSubNavbarTextColorActive;
+        }
+      }
+    }
+
+    > .active {
+      > a,
+      > a:hover,
+      > a:focus {
+
+        @{nav-lvl-2}& {
+          background-color: @navLvl2NavbarActiveColor;
+          box-shadow: @navLvl2NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-3}& {
+          background-color: @navLvl3NavbarActiveColor;
+          box-shadow: @navLvl3NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-4}& {
+          background-color: @navLvl4NavbarActiveColor;
+          box-shadow: @navLvl4NavbarTabBoxShadow;
+        }
+
+        @{nav-lvl-5}& {
+          background-color: @navLvl5NavbarActiveColor;
+          box-shadow: @navLvl5NavbarTabBoxShadow;
+        }
+      }
+    }
+
+    > .active.leaf {
+      > a,
+      > a:hover,
+      > a:focus {
+
+        @{nav-lvl-2}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-3}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-4}& {
+          background-color: #FFF;
+        }
+
+        @{nav-lvl-5}& {
+          background-color: #FFF;
+        }
+      }
+
+      &.match-jumbotron {
+        > a,
+        > a:hover,
+        > a:focus {
+          background-color: #EEE !important;
+          box-shadow: @navbarTabBoxShadow;
+        }
+      }
+    }
+  }
+}
+
+.navbar-header .navbar-brand {
+  padding: 0px 0px 0px 15px;
+}
+
+/* sub navbar colors */
+@{nav-lvl-2} {
+  .navProperties(@navLvl2NavbarColor, @navLvl2NavbarBoxShadow);
+  margin-top: -20px; // Get rid of the whitespace between the navbars
+}
+
+/* sub sub navbar colors */
+@{nav-lvl-3} {
+  .navProperties(@navLvl3NavbarColor, @navLvl3NavbarBoxShadow);
+}
+
+/* sub sub sub navbar colors */
+@{nav-lvl-4} {
+  .navProperties(@navLvl4NavbarColor, @navLvl4NavbarBoxShadow);
+}
+
+/* sub sub sub sub navbar colors */
+@{nav-lvl-5} {
+  .navProperties(@navLvl5NavbarColor, @navLvl5NavbarBoxShadow);
+}
+
+/* futzing around to make nth round subsubsub nav look nice */
+.navbar-text.navbar-brand {
+  margin: 0;
+}
+p.navbar-brand > img {
+  display: inline;
+}
+
+.navbar-nav #competition-name a {
+  width: 175px; // 215 to put cogs on new line
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  @media (min-width: @screen-sm-min) {
+    width: auto;
+  }
+}
