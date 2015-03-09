@@ -222,7 +222,7 @@ formatMomentDateIso8601 = function(m) {
 };
 
 formatMomentDateRange = function(startMoment, endMoment) {
-  var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, DATE_FORMAT);
+  var rangeStr = $.fullCalendar.formatRange(startMoment.tz(LOCAL_TIMEZONE), endMoment.tz(LOCAL_TIMEZONE), DATE_FORMAT);
   return rangeStr;
 };
 

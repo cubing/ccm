@@ -65,6 +65,11 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   RoundSorter.addRoundToSort(result.roundId);
 };
 
+function getTodayDateNoTime() {
+  var today = moment();
+  return new Date(Date.UTC(today.year(), today.month(), today.date()));
+}
+
 Meteor.methods({
   createCompetition: function(competitionName) {
     check(competitionName, String);
@@ -95,7 +100,7 @@ Meteor.methods({
     var competitionId = Competitions.insert({
       competitionName: competitionName,
       listed: false,
-      startDate: new Date(),
+      startDate: getTodayDateNoTime(),
     });
 
     Registrations.insert({
@@ -580,7 +585,7 @@ if(Meteor.isServer) {
       var newCompetition = {
         competitionName: competitionName,
         listed: false,
-        startDate: new Date(),
+        startDate: getTodayDateNoTime(),
       };
 
       var wcaCompetitionId = wcaCompetition.competitionId;
