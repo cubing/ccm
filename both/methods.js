@@ -116,10 +116,9 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
-    Rounds.remove({ competitionId: competitionId });
-    Results.remove({ competitionId: competitionId });
-    Groups.remove({ competitionId: competitionId });
-    Registrations.remove({ competitionId: competitionId });
+    [Rounds, RoundProgresses, Results, Groups, Registrations].forEach(function(collection) {
+      collection.remove({ competitionId: competitionId });
+    });
   },
   addRound: function(competitionId, eventCode) {
     if(!canAddRound(this.userId, competitionId, eventCode)) {
@@ -131,16 +130,20 @@ Meteor.methods({
     // in order, but I don't know if there is any guarantee of such across users
     // See http://docs.meteor.com/#method_unblock.
 
-    var formatCode = wca.formatsByEventCode[eventCode][0];
-    Rounds.insert({
+    var newRoundId = Rounds.insert({
       competitionId: competitionId,
       eventCode: eventCode,
-      formatCode: formatCode,
+      formatCode: wca.formatsByEventCode[eventCode][0],
 
       // These will be filled in by refreshRoundCodes, but
       // add valid value so the UI doesn't crap out.
       roundCode: 'f',
       nthRound: wca.MAX_ROUNDS_PER_EVENT,
+    });
+
+    RoundProgresses.insert({
+      roundId: newRoundId,
+      competitionId: competitionId,
     });
 
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
@@ -168,6 +171,7 @@ Meteor.methods({
     assert(round); // canRemoveRound checked that roundId is valid
 
     Rounds.remove({ _id: roundId });
+    RoundProgresses.remove({ roundId: roundId });
     Groups.remove({ roundId: roundId });
 
     if(round.eventCode) {
@@ -458,37 +462,24 @@ RoundSorter = {
       }
     });
 
-    var sort = {};
-
-    if(round.format().sortBy == "best") {
-      sort.sortableBestValue = 1;
-    } else if(round.format().sortBy == "average") {
-      sort.sortableAverageValue = 1;
-      sort.sortableBestValue = 1;
-    } else {
-      // uh-oh, unrecognized roundFormat, give up
-      assert(false);
-    }
-
-    var results = Results.find({ roundId: roundId }, { sort: sort }).fetch();
+    var results = Results.find({ roundId: roundId }, { sort: round.resultSortOrder() }).fetch();
     var position = 0;
-    var done = 0;
-    var total = 0;
+    var doneSolves = 0;
+    var totalSolves = 0;
     results.forEach(function(result, i) {
       var tied = false;
       var previousResult = results[i - 1];
       if(previousResult) {
         var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
-        if(round.format().sortBy == "average") {
+        switch(round.format().sortBy) {
+        case "best":
+          tied = tiedBest;
+          break;
+        case "average":
           var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
-          if(tiedAverage && tiedBest) {
-            tied = true;
-          }
-        } else if(round.format().sortBy == "best") {
-          if(tiedBest) {
-            tied = true;
-          }
-        } else {
+          tied = tiedAverage && tiedBest;
+          break;
+        default:
           // uh-oh, unrecognized roundFormat, give up
           assert(false);
         }
@@ -497,12 +488,10 @@ RoundSorter = {
         position++;
       }
 
-      // update total
-      total += result.getExpectedSolveCount();
-      // update done
+      totalSolves += result.getExpectedSolveCount();
       result.solves.forEach(function(solve) {
         if(solve) {
-          done++;
+          doneSolves++;
         }
       });
 
@@ -510,19 +499,12 @@ RoundSorter = {
       Results.update(result._id, { $set: { position: position } });
     });
 
-    // Normalize done and total to the number of results
-    if(total === 0) {
-      done = 0;
-    } else {
-      done = (done/total)*results.length;
-    }
-    total = results.length;
-    var progress = {
-      done: done,
-      total: total,
-    };
-    log.l2(roundId, " setting progress to ", progress);
-    Rounds.update(roundId, { $set: { progress: progress } });
+    // Normalize done and total to the number of participants
+    var total = results.length;
+    var done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
+
+    log.l2(roundId, " updating progress - done: " + done + ", total: " + total);
+    RoundProgresses.update({ roundId: round._id }, { $set: { done: done, total: total }});
   },
 };
 
@@ -658,17 +640,20 @@ if(Meteor.isServer) {
         var newRoundIds = [];
         wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
           log.l1("adding data for round " + nthRound);
-          var roundCode = wcaRound.roundId;
-          var roundFormatCode = wcaRound.formatId;
           var roundId = Rounds.insert({
             nthRound: nthRound + 1,
             competitionId: competition._id,
             eventCode: wcaEvent.eventId,
-            roundCode: roundCode,
-            formatCode: roundFormatCode,
+            roundCode: wcaRound.roundId,
+            formatCode: wcaRound.formatId,
             status: wca.roundStatuses.closed,
           });
           newRoundIds.push(roundId);
+
+          RoundProgresses.insert({
+            roundId: roundId,
+            competitionId: competitionId,
+          });
 
           var softCutoff = null;
           wcaRound.results.forEach(function(wcaResult) {
@@ -693,7 +678,7 @@ if(Meteor.isServer) {
             if(!solves[solves.length - 1]) {
               // We're missing a solve, so this must be a combined round
               // and this participant didn't make the soft cutoff.
-              var roundInfo = wca.roundByCode[roundCode];
+              var roundInfo = wca.roundByCode[wcaRound.roundId];
               assert(roundInfo.combined);
               var lastSolveIndex = -1;
               var minSolveTime = null;
@@ -725,7 +710,7 @@ if(Meteor.isServer) {
               position: wcaResult.position,
               solves: solves,
             };
-            var statistics = wca.computeSolvesStatistics(solves, roundFormatCode);
+            var statistics = wca.computeSolvesStatistics(solves, wcaRound.formatId);
             _.extend(result, statistics);
             var id = Results.insert(
               result, {

@@ -168,6 +168,10 @@ canAddRound = function(userId, competitionId, eventCode) {
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
 
+function _onlyAllowedFields(fields, allowedFields) {
+  return _.difference(fields, allowedFields).length === 0;
+}
+
 if(Meteor.isServer) {
 
   Competitions.allow({
@@ -197,24 +201,18 @@ if(Meteor.isServer) {
 
       var siteAdmin = getUserAttribute(userId, 'siteAdmin');
       if(siteAdmin) {
-        allowedFields.push("listed");
-        allowedFields.push('wcaCompetitionId');
+        allowedFields.push('listed', 'wcaCompetitionId');
       }
 
-      if(_.difference(fields, allowedFields).length > 0) {
-        return false;
-      }
-      return true;
+      return _onlyAllowedFields(fields, allowedFields);
     },
   });
 
   Rounds.allow({
     update: function(userId, round, fields, modifier) {
-      var competition = Competitions.findOne({ _id: round.competitionId }, { fields: { _id: 1 } });
-      if(getCannotManageCompetitionReason(userId, competition._id)) {
+      if(getCannotManageCompetitionReason(userId, round.competitionId)) {
         return false;
       }
-
       var allowedFields = [
         'formatCode',
         'softCutoff',
@@ -231,101 +229,75 @@ if(Meteor.isServer) {
         'createdAt',
       ];
 
-      if(_.difference(fields, allowedFields).length > 0) {
-        return false;
-      }
-      return true;
+      return _onlyAllowedFields(fields, allowedFields);
     },
     fetch: [ 'competitionId' ],
   });
 
-  Results.allow({
-    update: function(userId, result, fields, modifier) {
-      var competition = Competitions.findOne({ _id: result.competitionId }, { fields: { _id: 1 } });
-      if(getCannotManageCompetitionReason(userId, competition._id)) {
+  RoundProgresses.allow({
+    update: function(userId, progress, fields, modifier) {
+      if(getCannotManageCompetitionReason(userId, progress.competitionId)) {
         return false;
       }
+      var allowedFields = [
+        'done',
+        'total',
+      ];
+      return _onlyAllowedFields(fields, allowedFields);
+    },
+  });
 
+  Results.allow({
+    update: function(userId, result, fields, modifier) {
+      if(getCannotManageCompetitionReason(userId, result.competitionId)) {
+        return false;
+      }
       var allowedFields = [
         'solves',
 
         'updatedAt',
         'createdAt',
       ];
-
-      if(_.difference(fields, allowedFields).length > 0) {
-        return false;
-      }
-      return true;
+      return _onlyAllowedFields(fields, allowedFields);
     },
     fetch: [ 'competitionId' ],
   });
 
-  var allowedOwnRegistrationFields = [
-    'userId',
-    'competitionId',
-    'uniqueName',
-    'registeredEvents',
-    'guestCount',
-    'comments',
-
-    'updatedAt',
-    'createdAt',
-  ];
   Registrations.allow({
     insert: function(userId, registration) {
-      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
-        // If you're allowed to manage the competition, then you can
-        // add any registration.
-        return true;
-      }
-      if(getCannotRegisterReasons(registration.competitionId)) {
-        return false;
-      }
-      // can only edit entries with their user id
-      if(registration.userId != userId) {
-        return false;
-      }
-
-      if(_.difference(fields, allowedOwnRegistrationFields).length > 0) {
-        return false;
-      }
-      return true;
+      return Registrations.userIsAllowed(userId, registration);
     },
     update: function(userId, registration, fields, modifier) {
-      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
-        // If you're allowed to manage the competition, then you can
-        // change anyone's registration.
-        return true;
-      }
-      if(getCannotRegisterReasons(registration.competitionId)) {
+      if(!Registrations.userIsAllowed(userId, registration)) {
         return false;
       }
-      // can only edit entries with their user id
-      if(registration.userId != userId) {
-        return false;
-      }
+      var allowedFields = [
+        'userId',
+        'competitionId',
+        'uniqueName',
+        'registeredEvents',
+        'guestCount',
+        'comments',
 
-      if(_.difference(fields, allowedOwnRegistrationFields).length > 0) {
-        return false;
-      }
-      return true;
+        'updatedAt',
+        'createdAt',
+      ];
+      return _onlyAllowedFields(fields, allowedFields);
     },
     remove: function(userId, registration) {
-      if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
-        // If you're allowed to manage the competition, then you can
-        // change anyone's registration.
-        return true;
-      }
-      if(getCannotRegisterReasons(registration.competitionId)) {
-        return false;
-      }
-      // can only edit entries with their user id
-      if(registration.userId != userId) {
-        return false;
-      }
-      return true;
+      return Registrations.userIsAllowed(userId, registration);
     },
   });
 
+  Registrations.userIsAllowed = function(userId, registration) {
+    if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
+      // If you're allowed to manage the competition, you can change anyone's registration.
+      return true;
+    }
+    if(getCannotRegisterReasons(registration.competitionId)) {
+      return false;
+    }
+    // can only edit entries with their user id
+    return registration.userId == userId;
+  };
 }

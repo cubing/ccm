@@ -12,6 +12,16 @@ _.extend(Round.prototype, {
   format: function() {
     return wca.formatByCode[this.formatCode];
   },
+  resultSortOrder: function() {
+    switch(this.format().sortBy) {
+    case "best":
+      return {sortableBestValue: 1};
+    case "average":
+      return {sortableAverageValue: 1, sortableBestValue: 1};
+    default:
+      throw new Error("Unknown format sortBy '" + sortBy + "'");
+    }
+  },
   properties: function() {
     return wca.roundByCode[this.roundCode];
   },
