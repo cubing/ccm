@@ -267,7 +267,7 @@ if(Meteor.isServer) {
       return Registrations.allowOperation(userId, registration, []);
     },
     update: function(userId, registration, fields, modifier) {
-      return Registrations.allowOperation(userId, registration, fields)
+      return Registrations.allowOperation(userId, registration, fields);
     },
     remove: function(userId, registration) {
       return Registrations.allowOperation(userId, registration, []);
