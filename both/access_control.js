@@ -168,7 +168,7 @@ canAddRound = function(userId, competitionId, eventCode) {
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
 
-function _onlyAllowedFields(fields, allowedFields) {
+function onlyAllowedFields(fields, allowedFields) {
   return _.difference(fields, allowedFields).length === 0;
 }
 
@@ -182,7 +182,6 @@ if(Meteor.isServer) {
       var allowedFields = [
         'competitionName',
         'organizers',
-        'staff',
 
         'startDate',
         'numberOfDays',
@@ -204,7 +203,7 @@ if(Meteor.isServer) {
         allowedFields.push('listed', 'wcaCompetitionId');
       }
 
-      return _onlyAllowedFields(fields, allowedFields);
+      return onlyAllowedFields(fields, allowedFields);
     },
   });
 
@@ -229,7 +228,7 @@ if(Meteor.isServer) {
         'createdAt',
       ];
 
-      return _onlyAllowedFields(fields, allowedFields);
+      return onlyAllowedFields(fields, allowedFields);
     },
     fetch: [ 'competitionId' ],
   });
@@ -243,7 +242,7 @@ if(Meteor.isServer) {
         'done',
         'total',
       ];
-      return _onlyAllowedFields(fields, allowedFields);
+      return onlyAllowedFields(fields, allowedFields);
     },
   });
 
@@ -258,38 +257,24 @@ if(Meteor.isServer) {
         'updatedAt',
         'createdAt',
       ];
-      return _onlyAllowedFields(fields, allowedFields);
+      return onlyAllowedFields(fields, allowedFields);
     },
     fetch: [ 'competitionId' ],
   });
 
   Registrations.allow({
     insert: function(userId, registration) {
-      return Registrations.userIsAllowed(userId, registration);
+      return Registrations.allowOperation(userId, registration, []);
     },
     update: function(userId, registration, fields, modifier) {
-      if(!Registrations.userIsAllowed(userId, registration)) {
-        return false;
-      }
-      var allowedFields = [
-        'userId',
-        'competitionId',
-        'uniqueName',
-        'registeredEvents',
-        'guestCount',
-        'comments',
-
-        'updatedAt',
-        'createdAt',
-      ];
-      return _onlyAllowedFields(fields, allowedFields);
+      return Registrations.allowOperation(userId, registration, fields)
     },
     remove: function(userId, registration) {
-      return Registrations.userIsAllowed(userId, registration);
+      return Registrations.allowOperation(userId, registration, []);
     },
   });
 
-  Registrations.userIsAllowed = function(userId, registration) {
+  Registrations.allowOperation = function(userId, registration, fields) {
     if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
       // If you're allowed to manage the competition, you can change anyone's registration.
       return true;
@@ -297,7 +282,21 @@ if(Meteor.isServer) {
     if(getCannotRegisterReasons(registration.competitionId)) {
       return false;
     }
-    // can only edit entries with their user id
-    return registration.userId == userId;
+    // can only edit entries with own user id
+    if(registration.userId != userId) {
+      return false;
+    }
+    var allowedFields = [
+      'userId',
+      'competitionId',
+      'uniqueName',
+      'registeredEvents',
+      'guestCount',
+      'comments',
+
+      'updatedAt',
+      'createdAt',
+    ];
+    return onlyAllowedFields(fields, allowedFields);
   };
 }
