@@ -165,7 +165,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
           var round = {
             startMinutes: startHour*60 + startMinute,
-            durationMinutes: DEFAULT_ROUND_DURATION_MINUTES,
+            durationMinutes: Round.DEFAULT_ROUND_DURATION_MINUTES,
           };
 
           editingRoundReact.set(round);
