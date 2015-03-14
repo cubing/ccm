@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=false template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+    {{#autoForm id="competitionDataForm" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title text-capitalize">
@@ -76,12 +76,6 @@
             {{> afFieldInput name="location.addressText" type="hidden" }}
           </div>
 
-          <button type="submit" class="btn btn-default">
-            <span class="glyphicon glyphicon-floppy-save"></span>
-            Save
-          </button>
-          <button type="reset" class="btn btn-default">Reset</button>
-
         </div>
       </div>
 
@@ -102,12 +96,6 @@
 
               {{> afQuickField name="registrationParticipantLimitCount" }}
               {{> afQuickField name="registrationAttendeeLimitCount" }}
-
-              <button type="submit" class="btn btn-default">
-                <span class="glyphicon glyphicon-floppy-save"></span>
-                Save
-              </button>
-              <button type="reset" class="btn btn-default">Reset</button>
 
             </div>
           </div><!-- /.panel -->
