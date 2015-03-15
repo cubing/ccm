@@ -42,6 +42,16 @@ _.extend(Round.prototype, {
   isClosed: function() {
     return this.status === wca.roundStatuses.closed;
   },
+  prettyTitle: function() {
+    var prettyTitle;
+    // Rounds don't necessarily have events, such as Lunch or Registration.
+    if(this.eventCode) {
+      prettyTitle = this.eventName() + ": " + this.properties().name;
+    } else {
+      prettyTitle = this.title;
+    }
+    return prettyTitle;
+  },
 });
 
 

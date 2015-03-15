@@ -69,20 +69,19 @@ getCompetitionStartDateMoment = function(competitionId) {
   if(!startDate) {
     return null;
   }
-  return moment(startDate);
+  return moment(startDate).utc();
 };
 register("competitionStartDateMoment", function() {
   return getCompetitionStartDateMoment(this.competitionId);
 });
 
 getCompetitionEndDateMoment = function(competitionId) {
-  var startDate = getCompetitionAttribute(competitionId, 'startDate');
-  if(!startDate) {
+  var startDateMoment = getCompetitionStartDateMoment(competitionId);
+  if(!startDateMoment) {
     return null;
   }
-  startDate = moment(startDate);
   var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
-  var endDate = startDate.clone().add(numberOfDays - 1, 'days');
+  var endDate = startDateMoment.clone().add(numberOfDays - 1, 'days');
   return endDate;
 };
 register("competitionEndDateMoment", function() {
@@ -271,21 +270,3 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
 
   return results;
 };
-
-
-roundTitle = function(round) {
-  var title;
-
-  // Rounds don't necessarily have events, such as Lunch or Registration.
-  if(round.eventCode) {
-    title = round.eventName() + ": " + round.properties().name;
-  } else {
-    title = round.title;
-  }
-
-  return title;
-};
-register("roundTitle", function(round) {
-  return roundTitle(round);
-});
-
