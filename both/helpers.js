@@ -217,7 +217,7 @@ formatMomentDate = function(m) {
 };
 
 formatMomentDateIso8601 = function(m) {
-  var iso8601Date = m.format(ISO_DATE_FORMAT);
+  var iso8601Date = m.utc().format(ISO_DATE_FORMAT);
   return iso8601Date;
 };
 
