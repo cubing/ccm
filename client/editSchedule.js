@@ -234,12 +234,6 @@ Template.editSchedule.rendered = function() {
   var $calendar = template.$('#calendar');
   var $addEditSomethingModal = template.$('#addEditSomethingModal');
   setupCompetitionCalendar(template, $calendar, $addEditSomethingModal);
-
-  this.$('.fc-event').draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
 };
 
 Template.unscheduledRound.rendered = function() {
