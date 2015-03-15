@@ -13,7 +13,7 @@
 
         <h3>Unscheduled Rounds:</h3>
         <div id="unscheduled-rounds">
-          <div class="fc-event" id="new-calender-entry">Add New Calendar Entry</div>
+          <div class="fc-event" id="new-calender-entry">Add new calendar entry</div>
           {{#each unscheduledRounds}}
             {{> unscheduledRound }}
           {{/each}}
@@ -40,7 +40,9 @@
     <div class="modal-dialog">
       {{#if editingRound}}
         <div class="modal-content">
-          {{#autoForm id="editRoundForm" type="update" doc=editingRound collection="Rounds" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+          {{#autoForm id="editRoundForm" doc=editingRound collection="Rounds" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+            {{> afFieldInput name="competitionId" hidden="true" }}
+
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
               {{#if editingRound._id}}

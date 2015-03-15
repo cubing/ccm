@@ -2,7 +2,6 @@ var editingRoundReact = new ReactiveVar(null);
 
 Template.editSchedule.helpers({
   competition: function() {
-    console.log(this.competitionId, Competitions.findOne(this.competitionId));//<<<
     return Competitions.findOne(this.competitionId);
   },
   unscheduledRounds: function() {
@@ -127,8 +126,6 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       droppable: true,
       drop: function(date) {
         var roundId = $(this).data('round-id');
-        console.log(this);//<<<
-        console.log(roundId);//<<<
 
         if(roundId) {
           var calEvent = {
@@ -142,6 +139,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
           var startMinute = date.utc().get('minute');
 
           var round = {
+            competitionId: competitionId,
             startMinutes: startHour*60 + startMinute,
             durationMinutes: Round.DEFAULT_DURATION_MINUTES,
           };
@@ -195,64 +193,74 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   });
 };
 
+function makeDraggable($el) {
+  $el.draggable({
+    zIndex: 999,
+    revert: true,
+    revertDuration: 0,
+  });
+}
+
 Template.editSchedule.rendered = function() {
   var template = this;
 
   var $calendar = template.$('#calendar');
   var $addEditSomethingModal = template.$('#addEditSomethingModal');
   setupCompetitionCalendar(template, $calendar, $addEditSomethingModal);
+  makeDraggable(template.$('#new-calender-entry'));
 };
 
 Template.unscheduledRound.rendered = function() {
   var template = this;
   var $unscheduledRound = template.$('.fc-event');
-
-  // make the event draggable using jQuery UI
-  $unscheduledRound.draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
+  makeDraggable($unscheduledRound);
 };
 
 Template.addEditSomethingModal.helpers({
   editingRound: function() {
     return editingRoundReact.get();
   },
+  formType: function() {
+    return this._id ? "update" : "add";
+  },
+});
+
+AutoForm.hooks({
+  editRoundForm: {
+    onSubmit: function(insertDoc, updateDoc, currentDoc) {
+      this.event.preventDefault();
+
+      if(currentDoc._id) {
+        // Updating an existing round
+        Rounds.update({
+          _id: currentDoc._id,
+        }, {
+          $set: {
+            title: insertDoc.title,
+            startMinutes: insertDoc.startMinutes,
+            durationMinutes: insertDoc.durationMinutes,
+          }
+        });
+        $('#addEditSomethingModal').modal('hide');
+      } else {
+        // Adding a new round
+        Meteor.call('addNonEventRound', currentDoc.competitionId, insertDoc, function(error, result) {
+          if(error) {
+            throw error;
+          }
+          $('#addEditSomethingModal').modal('hide');
+        });
+      }
+    }
+  },
 });
 
 Template.addEditSomethingModal.events({
-  'submit form': function(e, template) {
-    template.$('#addEditSomethingModal').modal('hide');
-    return;//<<<
-    var proposedRound = getProposedRound();
-    if(proposedRound._id) {
-      // Updating an existing round
-      Rounds.update({
-        _id: proposedRound._id,
-      }, {
-        $set: {
-          title: proposedRound.title,
-          startMinutes: proposedRound.startMinutes,
-          durationMinutes: proposedRound.durationMinutes,
-        }
-      });
-      template.$('#addEditSomethingModal').modal('hide');
-    } else {
-      // Adding a new round
-      Meteor.call('addNonEventRound', this.competitionId, proposedRound, function(error, result) {
-        if(error) {
-          throw error;
-        }
-        template.$('#addEditSomethingModal').modal('hide');
-      });
-    }
-  },
   'click #buttonDeleteRound': function(e, template) {
-    var proposedRound = getProposedRound();
-    assert(!proposedRound.eventCode);
-    assert(proposedRound._id);
-    Meteor.call('removeRound', proposedRound._id, function(error, result) {
+    var editingRound = editingRoundReact.get();
+    assert(!editingRound.eventCode);
+    assert(editingRound._id);
+    Meteor.call('removeRound', editingRound._id, function(error, result) {
       if(error) {
         throw error;
       }
@@ -261,7 +269,3 @@ Template.addEditSomethingModal.events({
     });
   },
 });
-
-Template.addEditSomethingModal.created = function() {
-  this.errorsReact = new ReactiveVar({});
-};
