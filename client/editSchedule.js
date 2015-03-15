@@ -1,9 +1,11 @@
 var editingRoundReact = new ReactiveVar(null);
 
 Template.editSchedule.helpers({
+  competition: function() {
+    return Competitions.findOne(this.competitionId);
+  },
   unscheduledRounds: function() {
     var rounds = getUnscheduledRounds(this.competitionId);
-
     return rounds;
   },
   editingRound: function() {
@@ -12,40 +14,6 @@ Template.editSchedule.helpers({
 });
 
 Template.editSchedule.events({
-  'input .date': function(e) {
-    var attribute = e.currentTarget.dataset.attribute;
-    var $target = $(e.currentTarget);
-    var $input = $target.find('input');
-    var value = $input.val();
-    if(value.length === 0) {
-      // bootstrap-datepicker doesn't fire changeDate when someone deletes all
-      // the text from the input (https://github.com/cubing/ccm/issues/46).
-      // This is a workaround for that.
-      setCompetitionAttribute(this.competitionId, attribute, null);
-    }
-  },
-  'changeDate .date': function(e) {
-    var attribute = e.currentTarget.dataset.attribute;
-    var value = e.date;
-    setCompetitionAttribute(this.competitionId, attribute, value);
-  },
-  'input input[type="number"]': function(e) {
-    var attribute = e.currentTarget.name;
-    var value = parseInt(e.currentTarget.value);
-    if(!isNaN(value)) {
-      setCompetitionAttribute(this.competitionId, attribute, value);
-    }
-  },
-  'changeTime #startEndTime input.time': function(e) {
-    var attribute = e.currentTarget.name;
-    var minutes = $(e.currentTarget).timepicker('getSecondsFromMidnight') / 60;
-    setCompetitionAttribute(this.competitionId, attribute, minutes);
-  },
-  'click #addCalendarEvent button': function(e, t) {
-    var newRound = {};
-    editingRoundReact.set(newRound);
-    t.$('#addEditSomethingModal').modal('show');
-  },
   'hidden.bs.modal #addEditSomethingModal': function(e, t) {
     editingRoundReact.set(null);
   },
@@ -140,11 +108,11 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
-      snapDuration: { minutes: Round.MIN_ROUND_DURATION_MINUTES },
+      snapDuration: { minutes: Round.MIN_DURATION_MINUTES },
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: { minutes: Round.DEFAULT_ROUND_DURATION_MINUTES },
+      defaultTimedEventDuration: { minutes: Round.DEFAULT_DURATION_MINUTES },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
@@ -165,7 +133,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
           var round = {
             startMinutes: startHour*60 + startMinute,
-            durationMinutes: Round.DEFAULT_ROUND_DURATION_MINUTES,
+            durationMinutes: Round.DEFAULT_DURATION_MINUTES,
           };
 
           editingRoundReact.set(round);
@@ -260,16 +228,6 @@ Template.editSchedule.rendered = function() {
     $endTime.timepicker('option', {
       minTime: earliestPossibleEndTimePretty,
       maxTime: '11:30pm',
-    });
-  });
-
-  template.autorun(function() {
-    var data = Template.currentData();
-    template.$('.date').each(function() {
-      var date = getCompetitionAttribute(data.competitionId, this.dataset.attribute);
-
-      var $datePicker = template.$(this);
-      $datePicker.datepicker('update', date);
     });
   });
 
@@ -415,7 +373,7 @@ function refreshErrors(errorsReact, competitionId) {
   });
 
   var $endTime = $('#modalInputEndTime');
-  var earliestPossibleEndMinutes = MIN_ROUND_DURATION_MINUTES + (proposedRound.startMinutes || 0);
+  var earliestPossibleEndMinutes = Round.MIN_DURATION_MINUTES + (proposedRound.startMinutes || 0);
   $endTime.timepicker('option', {
     minTime: minutesToPrettyTime(Math.max(calendarStartMinutes, earliestPossibleEndMinutes)),
     maxTime: minutesToPrettyTime(calendarEndMinutes),

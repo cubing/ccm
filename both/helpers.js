@@ -208,12 +208,12 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
 
 var LOCAL_TIMEZONE = jstz.determine().name();
 
-var DATE_FORMAT = "MMMM D, YYYY";
+var DATE_FORMAT = "LL";
 var ISO_DATE_FORMAT = "YYYY-MM-DD";
-var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a z";
+var DATETIME_FORMAT = "LLLL z";
 
 formatMomentDate = function(m) {
-  return m.format(DATE_FORMAT);
+  return m.utc().format(DATE_FORMAT);
 };
 
 formatMomentDateIso8601 = function(m) {
@@ -222,7 +222,7 @@ formatMomentDateIso8601 = function(m) {
 };
 
 formatMomentDateRange = function(startMoment, endMoment) {
-  var rangeStr = $.fullCalendar.formatRange(startMoment.tz(LOCAL_TIMEZONE), endMoment.tz(LOCAL_TIMEZONE), DATE_FORMAT);
+  var rangeStr = $.fullCalendar.formatRange(startMoment.utc(), endMoment.utc(), DATE_FORMAT);
   return rangeStr;
 };
 

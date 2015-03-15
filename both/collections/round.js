@@ -4,8 +4,8 @@ Round = function(doc) {
   _.extend(this, doc);
 };
 
-Round.MIN_ROUND_DURATION_MINUTES = 30;
-Round.DEFAULT_ROUND_DURATION_MINUTES = 60;
+Round.MIN_DURATION_MINUTES = 30;
+Round.DEFAULT_DURATION_MINUTES = 60;
 
 _.extend(Round.prototype, {
 
@@ -75,8 +75,8 @@ Rounds.attachSchema({
   },
   durationMinutes: {
     type: Number,
-    min: Round.MIN_ROUND_DURATION_MINUTES,
-    defaultValue: Round.DEFAULT_ROUND_DURATION_MINUTES,
+    min: Round.MIN_DURATION_MINUTES,
+    defaultValue: Round.DEFAULT_DURATION_MINUTES,
   },
 
   title: {

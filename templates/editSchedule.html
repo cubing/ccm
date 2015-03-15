@@ -3,58 +3,24 @@
 
     <div class="row">
 
-      <div class="col-md-4">
-        <form class="form-horizontal" role="form">
+      <div class="col-md-2">
+        {{#autoForm id="competitionDataForm" type="update" doc=competition collection="Competitions" autosave=true template="bootstrap3" label-class="col-sm-3" input-col-class="col-sm-9"}}
+          {{> afQuickField name="startDate" }}
+          {{> afQuickField name="numberOfDays" }}
+          {{> afQuickField name="calendarStartMinutes" }}
+          {{> afQuickField name="calendarEndMinutes" }}
+        {{/autoForm}}
 
-          <div class="form-group">
-            <label for="inputCompetitionStart" class="col-sm-4 control-label">Start date</label>
-            <div class="col-sm-8">
-              <div class="input-group date" id="startDatePicker"
-                   data-provide="datepicker" data-date-today-btn="true" data-date-today-highlight="true"
-                   data-date-format="D M d, yyyy"
-                   data-attribute='startDate'>
-                <input type="text" name="startDate" id="inputCompetitionStart" class="form-control" />
-                <span class="input-group-addon">
-                  <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="inputCompetitionNumberDays" class="col-sm-4 control-label">Number of days</label>
-            <div class="col-sm-8">
-              <input name="numberOfDays" id="inputCompetitionNumberDays" type="number" min="1" class="form-control" value="{{competitionNumberOfDays}}" />
-            </div>
-          </div>
-
-          <div id="startEndTime">
-            <div class="form-group">
-              <label for="inputStartTime" class="col-sm-4 control-label">Start time</label>
-              <div class="col-sm-8">
-                <input name="calendarStartMinutes" id="inputStartTime" type="text" class="time start form-control" value="{{minutesToPrettyTime competitionCalendarStartMinutes}}" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="inputEndTime" class="col-sm-4 control-label">End time</label>
-              <div class="col-sm-8">
-                <input name="calendarEndMinutes" id="inputEndTime" type="text" class="time end form-control" value="{{minutesToPrettyTime competitionCalendarEndMinutes}}" />
-              </div>
-            </div>
-          </div>
-
-        </form>
         <h3>Unscheduled Rounds:</h3>
         <div id="unscheduled-rounds">
           <div class="fc-event" id="new-calender-entry">Add New Calendar Entry</div>
           {{#each unscheduledRounds}}
-              {{> unscheduledRound }}
+            {{> unscheduledRound }}
           {{/each}}
         </div>
       </div>
 
-      <div class="col-md-8">
+      <div class="col-md-10">
         <div id="calendar"></div>
       </div>
 
