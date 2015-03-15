@@ -93,3 +93,12 @@ $.fn.scrollToCenter = function(speed) {
 // Set datepicker to autoclose on select. There does not appear to be
 // a corresponding option for bootstrap-datetimepicker.
 $.fn.datepicker.defaults.autoclose = true;
+
+// https://github.com/okgrow/analytics complains when
+// Meteor.settings.public.analyticsSettings is unset. Velocity ensures that
+// we see the message twice, which just drives me crazy. Here we just set
+// Meteor.settings.public.analyticsSettings to an empty object to squelch this
+// message.
+Meteor.settings = Meteor.settings || {};
+Meteor.settings.public = Meteor.settings.public || {};
+Meteor.settings.public.analyticsSettings = {};

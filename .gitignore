@@ -31,8 +31,5 @@ node_modules
 # RubyMine
 .idea/
 
-# Meteor server settings
-settings.json
-
 # Generated Velocity test set
 /packages/tests-proxy/package.js
