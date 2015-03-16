@@ -9,6 +9,9 @@ Template.participantResults.helpers({
       }
     });
     var resultsArray = results.fetch();
+    //This big lot of code here is just sorting Results
+    //by event name, and then organizing each round number
+    //in ascending order.
     var groupByEvent = {};
     for(var i = 0; i < resultsArray.length; i++) {
       var round = Rounds.findOne({_id:resultsArray[i].roundId});
@@ -45,10 +48,6 @@ Template.participantResults.helpers({
   eventName: function() {
     var round = Rounds.findOne({_id:this.roundId});
     return round.eventCode;
-  },
-  roundDay: function() {
-    var round = Rounds.findOne({_id:this.roundId});
-    return round.nthDay;
   },
   roundNumber: function() {
     var round = Rounds.findOne({_id:this.roundId});
