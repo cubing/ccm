@@ -5,7 +5,7 @@ Template.editSchedule.helpers({
     return Competitions.findOne(this.competitionId);
   },
   unscheduledRounds: function() {
-    var rounds = getScheduledRounds(this.competitionId, false);
+    var rounds = getRounds(this.competitionId, { scheduled: false });
     return rounds;
   },
   editingRound: function() {
@@ -19,7 +19,8 @@ Template.editSchedule.events({
   },
 });
 
-function getScheduledRounds(competitionId, includeScheduled) {
+function getRounds(competitionId, opts) {
+  var includeScheduled = !!opts.scheduled;
   var rounds = Rounds.find({
     competitionId: competitionId,
   }, {
@@ -43,14 +44,13 @@ function getScheduledRounds(competitionId, includeScheduled) {
     }
   });
   function roundIsScheduled(round) {
-    if(typeof(round.nthDay) === "undefined" || typeof(round.startMinutes) === "undefined" || typeof(round.durationMinutes) === "undefined") {
+    if(round.nthDay === undefined || round.startMinutes === undefined || round.durationMinutes === undefined) {
       return false;
     }
     if(round.nthDay < 0 || round.nthDay >= competition.numberOfDays) {
       return false;
     }
-    var roundEndMinutes = round.startMinutes + round.durationMinutes;
-    if(roundEndMinutes < competition.calendarStartMinutes) {
+    if(round.endMinutes() < competition.calendarStartMinutes) {
       return false;
     }
     if(round.startMinutes > competition.calendarEndMinutes) {
@@ -188,7 +188,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
   template.autorun(function() {
     var data = Template.currentData();
-    calendarRounds = getScheduledRounds(data.competitionId, true);
+    calendarRounds = getRounds(data.competitionId, { scheduled: true });
     $calendarDiv.fullCalendar('refetchEvents');
   });
 };

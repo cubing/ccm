@@ -52,6 +52,9 @@ _.extend(Round.prototype, {
     }
     return prettyTitle;
   },
+  endMinutes: function() {
+    return this.startMinutes + this.durationMinutes;
+  },
 });
 
 
