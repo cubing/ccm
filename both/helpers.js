@@ -69,20 +69,19 @@ getCompetitionStartDateMoment = function(competitionId) {
   if(!startDate) {
     return null;
   }
-  return moment(startDate);
+  return moment(startDate).utc();
 };
 register("competitionStartDateMoment", function() {
   return getCompetitionStartDateMoment(this.competitionId);
 });
 
 getCompetitionEndDateMoment = function(competitionId) {
-  var startDate = getCompetitionAttribute(competitionId, 'startDate');
-  if(!startDate) {
+  var startDateMoment = getCompetitionStartDateMoment(competitionId);
+  if(!startDateMoment) {
     return null;
   }
-  startDate = moment(startDate);
   var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
-  var endDate = startDate.clone().add(numberOfDays - 1, 'days');
+  var endDate = startDateMoment.clone().add(numberOfDays - 1, 'days');
   return endDate;
 };
 register("competitionEndDateMoment", function() {
@@ -208,21 +207,21 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
 
 var LOCAL_TIMEZONE = jstz.determine().name();
 
-var DATE_FORMAT = "MMMM D, YYYY";
+var DATE_FORMAT = "LL";
 var ISO_DATE_FORMAT = "YYYY-MM-DD";
-var DATETIME_FORMAT = "dddd, MMMM Do YYYY, h:mm:ss a z";
+var DATETIME_FORMAT = "LLLL z";
 
 formatMomentDate = function(m) {
-  return m.format(DATE_FORMAT);
+  return m.utc().format(DATE_FORMAT);
 };
 
 formatMomentDateIso8601 = function(m) {
-  var iso8601Date = m.format(ISO_DATE_FORMAT);
+  var iso8601Date = m.utc().format(ISO_DATE_FORMAT);
   return iso8601Date;
 };
 
 formatMomentDateRange = function(startMoment, endMoment) {
-  var rangeStr = $.fullCalendar.formatRange(startMoment, endMoment, DATE_FORMAT);
+  var rangeStr = $.fullCalendar.formatRange(startMoment.utc(), endMoment.utc(), DATE_FORMAT);
   return rangeStr;
 };
 
@@ -271,21 +270,3 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
 
   return results;
 };
-
-
-roundTitle = function(round) {
-  var title;
-
-  // Rounds don't necessarily have events, such as Lunch or Registration.
-  if(round.eventCode) {
-    title = round.eventName() + ": " + round.properties().name;
-  } else {
-    title = round.title;
-  }
-
-  return title;
-};
-register("roundTitle", function(round) {
-  return roundTitle(round);
-});
-

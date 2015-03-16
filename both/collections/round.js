@@ -4,8 +4,8 @@ Round = function(doc) {
   _.extend(this, doc);
 };
 
-Round.MIN_ROUND_DURATION_MINUTES = 30;
-Round.DEFAULT_ROUND_DURATION_MINUTES = 60;
+Round.MIN_DURATION_MINUTES = 30;
+Round.DEFAULT_DURATION_MINUTES = 60;
 
 _.extend(Round.prototype, {
 
@@ -42,9 +42,46 @@ _.extend(Round.prototype, {
   isClosed: function() {
     return this.status === wca.roundStatuses.closed;
   },
+  prettyTitle: function() {
+    var prettyTitle;
+    // Rounds don't necessarily have events, such as Lunch or Registration.
+    if(this.eventCode) {
+      prettyTitle = this.eventName() + ": " + this.properties().name;
+    } else {
+      prettyTitle = this.title;
+    }
+    return prettyTitle;
+  },
+  endMinutes: function() {
+    return this.startMinutes + this.durationMinutes;
+  },
+  isScheduled: function() {
+    if(this.nthDay === undefined || this.startMinutes === undefined || this.durationMinutes === undefined) {
+      return false;
+    }
+
+    // Round that are scheduled for times outside of the range shown by our calendar
+    // are considered unscheduled.
+    var competition = Competitions.findOne(this.competitionId, {
+      fields: {
+        numberOfDays: 1,
+        calendarStartMinutes: 1,
+        calendarEndMinutes: 1,
+      }
+    });
+    assert(competition);
+    if(this.nthDay < 0 || this.nthDay >= competition.numberOfDays) {
+      return false;
+    }
+    if(this.endMinutes() < competition.calendarStartMinutes) {
+      return false;
+    }
+    if(this.startMinutes > competition.calendarEndMinutes) {
+      return false;
+    }
+    return true;
+  },
 });
-
-
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
@@ -75,8 +112,8 @@ Rounds.attachSchema({
   },
   durationMinutes: {
     type: Number,
-    min: Round.MIN_ROUND_DURATION_MINUTES,
-    defaultValue: Round.DEFAULT_ROUND_DURATION_MINUTES,
+    min: Round.MIN_DURATION_MINUTES,
+    defaultValue: Round.DEFAULT_DURATION_MINUTES,
   },
 
   title: {
