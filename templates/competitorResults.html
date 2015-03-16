@@ -2,9 +2,12 @@
   <div class="container">
     <h1>{{competitorName}}</h1>
     <h3><a href={{wcaProfileUrl}}>WCA Profile</a></h3>
-    <table class="table table-striped table-bordered table-hover">
+    {{#each results}}
+    <h3>{{event}}</h3>
+    <table class="table table-striped table-bordered">
       <thead>
 	<tr>
+	  
 	  <th class="text-center">Round</th>
 	  <th class="text-center">Average</th>
 	  <th class="text-center">Best</th>
@@ -12,20 +15,20 @@
 	</tr>
       </thead>
       <tbody>
-	{{#each results}}
-        <tr>
-	  <td class="text-center">{{roundName}}</td>
+	{{#each sorted_times}}
+	<tr>
+	  <td class="text-center">{{roundNumber}}</td>
 	  <td class="text-center">{{clockFormat average}}</td>
 	  <td class="text-center">{{clockFormat best}}</td>
 	  {{#each solves}}
-	    <td class="text-center">
-	      {{clockFormat this}}
+	  <td class="text-center">
+	    {{clockFormat this}}
 	  </td>
 	  {{/each}}
 	</tr>
 	{{/each}}
       </tbody>
     </table>
-
+    {{/each}}
   </div>
 </template>

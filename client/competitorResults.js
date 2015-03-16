@@ -5,14 +5,55 @@ Template.participantResults.helpers({
 	    registrationId: this.registration._id,
 	}, { 
 	    sort: {
-		sortableBestValue: 1,
+		roundId: 1,
 	    }
 	});
-	return results;
+	var resultsArray = results.fetch();
+	var groupByEvent = {};
+	for(var i = 0; i < resultsArray.length; i++) {
+	    var round = Rounds.findOne({_id:resultsArray[i].roundId});
+	    if(groupByEvent.hasOwnProperty(round.eventCode)) {
+		var len = groupByEvent[round.eventCode].length;
+		groupByEvent[round.eventCode][len] = resultsArray[i];
+	    } else {
+		groupByEvent[round.eventCode] = [resultsArray[i]];
+	    }
+	}
+	var grouped = [];
+	for(i in groupByEvent) {
+	    var obj = {};
+	    obj['event'] = i;
+	    obj['times'] = groupByEvent[i]; 
+	    //Need to sort obj['times'] by nthRound
+	    var sorted_times = [];
+	    for(var x = 0; x < groupByEvent[i].length; x++) {
+		var roundId = groupByEvent[i][x].roundId;
+		var round = Rounds.findOne({_id:roundId});
+		var nthRound = parseInt(round.nthRound);
+		sorted_times[nthRound-1] = groupByEvent[i][x];
+	    }
+	    console.log(sorted_times);
+	    obj['sorted_times'] = sorted_times;
+
+	    grouped[grouped.length] = obj;
+	}
+	return grouped;
     },
-    roundName: function() {
+    events: function() {
+	var registeredEvents = this.registration.registeredEvents;
+	return registeredEvents;
+    },
+    eventName: function() {
 	var round = Rounds.findOne({_id:this.roundId});
-	return round.nthRound; 
+	return round.eventCode;
+    },
+    roundDay: function() {
+	var round = Rounds.findOne({_id:this.roundId});
+	return round.nthDay;
+    },
+    roundNumber: function() {
+	var round = Rounds.findOne({_id:this.roundId});
+	return round.nthRound;
     },
     best: function() {
 	return this.solves[this.bestIndex];
