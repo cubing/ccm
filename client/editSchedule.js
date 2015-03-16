@@ -140,11 +140,11 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
-      snapDuration: { minutes: Round.MIN_ROUND_DURATION_MINUTES },
+      snapDuration: { minutes: Round.MIN_ROUND_DURATION.asMinutes() },
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: { minutes: Round.DEFAULT_ROUND_DURATION_MINUTES },
+      defaultTimedEventDuration: { minutes: Round.DEFAULT_ROUND_DURATION.asMinutes() },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
@@ -165,7 +165,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
           var round = {
             startMinutes: startHour*60 + startMinute,
-            durationMinutes: DEFAULT_ROUND_DURATION_MINUTES,
+            durationMinutes: DEFAULT_ROUND_DURATION.asMinutes(),
           };
 
           editingRoundReact.set(round);
@@ -333,10 +333,8 @@ Template.addEditSomethingModal.rendered = function() {
     }
 
     var startPretty = null;
-    var startMinutes = null;
     var endPretty = null;
     if(typeof editingRound.startMinutes !== 'undefined' && editingRound.startMinutes !== null) {
-      startMinutes = editingRound.startMinutes;
       startPretty = minutesToPrettyTime(editingRound.startMinutes);
       if(typeof editingRound.durationMinutes !== 'undefined' && editingRound.durationMinutes !== null) {
         var endMinutes = editingRound.startMinutes + editingRound.durationMinutes;
@@ -415,7 +413,7 @@ function refreshErrors(errorsReact, competitionId) {
   });
 
   var $endTime = $('#modalInputEndTime');
-  var earliestPossibleEndMinutes = MIN_ROUND_DURATION_MINUTES + (proposedRound.startMinutes || 0);
+  var earliestPossibleEndMinutes = Round.MIN_ROUND_DURATION.asMinutes() + (proposedRound.startMinutes || 0);
   $endTime.timepicker('option', {
     minTime: minutesToPrettyTime(Math.max(calendarStartMinutes, earliestPossibleEndMinutes)),
     maxTime: minutesToPrettyTime(calendarEndMinutes),
