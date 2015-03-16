@@ -55,9 +55,33 @@ _.extend(Round.prototype, {
   endMinutes: function() {
     return this.startMinutes + this.durationMinutes;
   },
+  isScheduled: function() {
+    if(this.nthDay === undefined || this.startMinutes === undefined || this.durationMinutes === undefined) {
+      return false;
+    }
+
+    // Round that are scheduled for times outside of the range shown by our calendar
+    // are considered unscheduled.
+    var competition = Competitions.findOne(this.competitionId, {
+      fields: {
+        numberOfDays: 1,
+        calendarStartMinutes: 1,
+        calendarEndMinutes: 1,
+      }
+    });
+    assert(competition);
+    if(this.nthDay < 0 || this.nthDay >= competition.numberOfDays) {
+      return false;
+    }
+    if(this.endMinutes() < competition.calendarStartMinutes) {
+      return false;
+    }
+    if(this.startMinutes > competition.calendarEndMinutes) {
+      return false;
+    }
+    return true;
+  },
 });
-
-
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
 // stuff like "Lunch" and "Registration" in addition to rounds with WCA events.

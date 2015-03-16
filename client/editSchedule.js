@@ -21,45 +21,9 @@ Template.editSchedule.events({
 
 function getRounds(competitionId, opts) {
   var includeScheduled = !!opts.scheduled;
-  var rounds = Rounds.find({
-    competitionId: competitionId,
-  }, {
-    fields: {
-      eventCode: 1,
-      roundCode: 1,
-
-      startMinutes: 1,
-      durationMinutes: 1,
-      nthDay: 1,
-      title: 1,
-    }
-  }).fetch();
-  // Round that are scheduled for times outside of the range shown by our calendar
-  // are considered unscheduled.
-  var competition = Competitions.findOne(competitionId, {
-    fields: {
-      numberOfDays: 1,
-      calendarStartMinutes: 1,
-      calendarEndMinutes: 1,
-    }
-  });
-  function roundIsScheduled(round) {
-    if(round.nthDay === undefined || round.startMinutes === undefined || round.durationMinutes === undefined) {
-      return false;
-    }
-    if(round.nthDay < 0 || round.nthDay >= competition.numberOfDays) {
-      return false;
-    }
-    if(round.endMinutes() < competition.calendarStartMinutes) {
-      return false;
-    }
-    if(round.startMinutes > competition.calendarEndMinutes) {
-      return false;
-    }
-    return true;
-  }
+  var rounds = Rounds.find({ competitionId: competitionId }).fetch();
   rounds = _.filter(rounds, function(round) {
-    var roundScheduled = roundIsScheduled(round);
+    var roundScheduled = round.isScheduled();
     return roundScheduled == includeScheduled;
   });
   return rounds;
