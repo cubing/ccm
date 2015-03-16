@@ -14,6 +14,12 @@ Template.newCompetition.helpers({
     return uploadedCompetitionReact.get();
   },
 });
+
+function getTodayDateNoTime() {
+  var today = moment();
+  return new Date(Date.UTC(today.year(), today.month(), today.date()));
+}
+
 Template.newCompetition.events({
   'input #formNewCompetition input[type="text"]': function(e, template) {
     newCompetitionNameReact.set(e.currentTarget.value);
@@ -23,7 +29,7 @@ Template.newCompetition.events({
 
     var form = e.currentTarget;
     var competitionName = form.inputCompetitionName.value;
-    Meteor.call("createCompetition", competitionName, function(err, competitionUrlId) {
+    Meteor.call("createCompetition", competitionName, getTodayDateNoTime(), function(err, competitionUrlId) {
       if(err) {
         FlashMessages.sendError("Error submitting form: " + err.message, { autoHide: true, hideDelay: 5000 });
         throw err;
@@ -55,7 +61,7 @@ Template.newCompetition.events({
 
     $form.css('cursor', 'wait');
     $form.find('button').addClass('disabled');
-    Meteor.call('uploadCompetition', wcaCompetition, function(err, competitionUrlId) {
+    Meteor.call('uploadCompetition', wcaCompetition, getTodayDateNoTime(), function(err, competitionUrlId) {
       $form.css('cursor', '');
       $form.find('button').removeClass('disabled');
       if(err) {

@@ -65,14 +65,14 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   RoundSorter.addRoundToSort(result.roundId);
 };
 
-function getTodayDateNoTime() {
-  var today = moment();
-  return new Date(Date.UTC(today.year(), today.month(), today.date()));
-}
+var stripTimeFromDate = function(date) {
+  return moment(date).utc().startOf('day').toDate();
+};
 
 Meteor.methods({
-  createCompetition: function(competitionName) {
+  createCompetition: function(competitionName, startDate) {
     check(competitionName, String);
+    startDate = stripTimeFromDate(startDate);
     if(competitionName.trim().length === 0) {
       throw new Meteor.Error(400, "Competition name must be nonempty");
     }
@@ -100,7 +100,7 @@ Meteor.methods({
     var competitionId = Competitions.insert({
       competitionName: competitionName,
       listed: false,
-      startDate: getTodayDateNoTime(),
+      startDate: startDate,
     });
 
     Registrations.insert({
@@ -578,14 +578,15 @@ if(Meteor.isServer) {
         throw new Meteor.Error('unzip', e.message);
       }
     },
-    uploadCompetition: function(wcaCompetition) {
+    uploadCompetition: function(wcaCompetition, startDate) {
+      startDate = stripTimeFromDate(startDate);
       throwIfNotSiteAdmin(this.userId);
 
       var competitionName = wcaCompetition.competitionId;
       var newCompetition = {
         competitionName: competitionName,
         listed: false,
-        startDate: getTodayDateNoTime(),
+        startDate: startDate,
       };
 
       var wcaCompetitionId = wcaCompetition.competitionId;
