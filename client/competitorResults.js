@@ -65,8 +65,4 @@ Template.participantResults.helpers({
   wcaId: function() {
     return this.registration.wcaId;
   },
-  wcaProfileUrl: function() {
-    var wcaId = this.registration.wcaId;
-    return 'https://www.worldcubeassociation.org/results/p.php?i='+wcaId;
-  }
 });
