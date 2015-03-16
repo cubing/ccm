@@ -4,7 +4,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   }
   var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
   if(!user) {
-    return new Meteor.Error(401, "User not found");
+    return new Meteor.Error(401, "User " + userId + " not found");
   }
   var competition = Competitions.findOne({ _id: competitionId }, { fields: { _id: 1 } });
   if(!competition) {
