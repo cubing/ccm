@@ -223,9 +223,14 @@ Template.editEvents.helpers({
     }
     if(this.status == wca.roundStatuses.unstarted) {
       var progress = RoundProgresses.findOne({roundId: this._id});
-      // Only allow opening this unstarted round if there are some people *in*
-      // the round.
-      return progress.total > 0;
+      // We always create and delete WCA Rounds and RoundProgresses together,
+      // but when deleting a Round, there's a window where this helper gets called,
+      // so we first make sure progress exists before we use it.
+      if(progress) {
+        // Only allow opening this unstarted round if there are some people *in*
+        // the round.
+        return progress.total > 0;
+      }
     }
     return this.status == wca.roundStatuses.closed;
   },
