@@ -1,7 +1,7 @@
 <template name="participantResults">
   <div class="container">
     <h1>{{competitorName}}</h1>
-    <h3><a href={{wcaProfileUrl}}>WCA Profile</a></h3>
+    {{#if wcaId}}<h3><a href="https://www.worldcubeassociation.org/results/p.php?i={{wcaId}}">WCA Profile</a></h3>{{/if}}
     {{#each results}}
     <h3>{{event}}</h3>
     <table class="table table-striped table-bordered">
