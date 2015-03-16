@@ -12,51 +12,49 @@
   <div id="modalEditRegistration" class="modal fade" data-keyboard="false">
     <div class="modal-dialog full-screen">
       {{#if this}}
-        <form role="form">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-              <h4 class="modal-title">
-                {{#if _id}}
-                  Edit registration for {{uniqueName}}
-                {{else}}
-                  Add new competitor
-                {{/if}}
-              </h4>
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
+            <h4 class="modal-title">
+              {{#if _id}}
+                Edit registration for {{uniqueName}}
+              {{else}}
+                Add new competitor
+              {{/if}}
+            </h4>
+          </div>
+          {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
+            <div class="modal-body">
+              <div class="form-group">
+                {{> afFieldInput name="competitionId"}}
+                {{> afFieldInput name="userId"}}
+                {{> afQuickField name="uniqueName" autofocus=''}}
+                {{> afQuickField name="wcaId"}}
+                {{> afQuickField name="countryId"}}
+                {{> afQuickField name="gender"}}
+                {{> afQuickField name="dob"}}
+              </div>
             </div>
-            {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
-              <div class="modal-body">
-                <div class="form-group">
-                  {{> afFieldInput name="competitionId"}}
-                  {{> afFieldInput name="userId"}}
-                  {{> afQuickField name="uniqueName" autofocus=''}}
-                  {{> afQuickField name="wcaId"}}
-                  {{> afQuickField name="countryId"}}
-                  {{> afQuickField name="gender"}}
-                  {{> afQuickField name="dob"}}
-                </div>
-              </div>
-              <div class="modal-footer">
-                {{#if _id}}
-                  <button type="button" class="btn btn-danger pull-left js-delete-registration">
-                    <span class="glyphicon glyphicon-trash"></span> Delete registration
-                  </button>
-                {{/if}}
-
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="reset" class="btn btn-default">Reset Form</button>
-                <button type="submit" class="btn btn-success">
-                  <span class="glyphicon {{#if _id}}glyphicon-floppy-save{{else}}glyphicon-plus{{/if}}"></span>
-                  {{#if _id}}
-                    Save
-                  {{else}}
-                    Add
-                  {{/if}}
+            <div class="modal-footer">
+              {{#if _id}}
+                <button type="button" class="btn btn-danger pull-left js-delete-registration">
+                  <span class="glyphicon glyphicon-trash"></span> Delete registration
                 </button>
-              </div>
-            {{/autoForm}}
-          </div><!-- /.modal-content -->
-        </form>
+              {{/if}}
+
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="reset" class="btn btn-default">Reset Form</button>
+              <button type="submit" class="btn btn-success">
+                <span class="glyphicon {{#if _id}}glyphicon-floppy-save{{else}}glyphicon-plus{{/if}}"></span>
+                {{#if _id}}
+                  Save
+                {{else}}
+                  Add
+                {{/if}}
+              </button>
+            </div>
+          {{/autoForm}}
+        </div><!-- /.modal-content -->
       {{/if}}
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->

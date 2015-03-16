@@ -14,7 +14,6 @@ cfs:http-publish
 ian:accounts-ui-bootstrap-3
 less
 reactive-var
-rajit:bootstrap3-datepicker
 mrt:moment
 mrt:assert
 wylio:mandrill
@@ -28,9 +27,6 @@ meteorhacks:fast-render
 meteorhacks:subs-manager
 
 mrt:flash-messages
-aldeed:autoform-bs-datetimepicker
-tsega:bootstrap3-datetimepicker
-aldeed:autoform-bs-datepicker
 comerc:autoform-selectize
 chhib:selectize-bootstrap-3
 mrt:googlemaps
@@ -42,3 +38,4 @@ sewdn:highlightjs
 nemo64:bootstrap
 okgrow:analytics
 percolate:migrations
+mike:mocha
