@@ -3,14 +3,16 @@ Template.participantResults.helpers({
 	var results = Results.find({
 	    competitionId: this.competitionId,
 	    registrationId: this.registration._id,
+	}, { 
+	    sort: {
+		sortableBestValue: 1,
+	    }
 	});
 	return results;
     },
-    roundId: function() {
-	return this.roundId;
-    },
-    average: function() {
-	return this.average;
+    roundName: function() {
+	var round = Rounds.findOne({_id:this.roundId});
+	return round.nthRound; 
     },
     best: function() {
 	return this.solves[this.bestIndex];
