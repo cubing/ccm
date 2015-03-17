@@ -1,7 +1,7 @@
 MochaWeb.testOnly(function() {
   describe('Collections', function() {
 
-    Gizmos = new Mongo.Collection("gizmos");
+    var Gizmos = new Mongo.Collection("gizmos");
     Gizmos.attachSchema({
       name: {
         type: String,
@@ -22,8 +22,11 @@ MochaWeb.testOnly(function() {
       var updated = Gizmos.findOne(gid);
 
       chai.expect(updated.name).to.equal("Sven");
-      chai.expect(updated.createdAt).to.exist;
-      chai.expect(updated.updatedAt).to.exist;
+      chai.expect(updated.createdAt.getTime()).to.exist;
+      chai.expect(updated.updatedAt.getTime()).to.exist;
+
+      chai.expect(updated.createdAt.getTime()).to.equal(inserted.createdAt.getTime());
+      chai.expect(updated.createdAt.getTime()).to.not.be.greaterThan(inserted.createdAt.getTime());
     });
   });
 });
