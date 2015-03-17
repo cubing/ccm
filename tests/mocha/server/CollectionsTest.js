@@ -26,7 +26,7 @@ MochaWeb.testOnly(function() {
       chai.expect(updated.updatedAt.getTime()).to.exist;
 
       chai.expect(updated.createdAt.getTime()).to.equal(inserted.createdAt.getTime());
-      chai.expect(updated.createdAt.getTime()).to.not.be.greaterThan(inserted.createdAt.getTime());
+      chai.expect(updated.createdAt.getTime()).to.not.be.greaterThan(updated.updatedAt.getTime()); // could be same millisecond
     });
   });
 });
