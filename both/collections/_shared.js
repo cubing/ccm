@@ -139,7 +139,7 @@ Meteor.users.attachSchema(new SimpleSchema({
 // and prevent updates thereafter.
 createdAtSchemaField = {
   type: Date,
-  autoValue: function () {
+  autoValue: function() {
     if(this.isInsert) {
       return new Date();
     }
