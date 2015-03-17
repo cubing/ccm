@@ -29,7 +29,7 @@ Competitions.attachSchema({
     type: Date,
     autoform: {
       afFieldInput: {
-        type: "bootstrap-datepicker"
+        type: "date"
       }
     },
   },
@@ -43,7 +43,7 @@ Competitions.attachSchema({
     optional: true,
     autoform: {
       afFieldInput: {
-        type: "bootstrap-datetimepicker"
+        type: "date"
       }
     },
     custom: function() {
@@ -77,7 +77,7 @@ Competitions.attachSchema({
     optional: true,
     autoform: {
       afFieldInput: {
-        type: "bootstrap-datetimepicker"
+        type: "date"
       }
     },
     custom: function() {

@@ -2,13 +2,16 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
+  var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
+  if(!user) {
+    return new Meteor.Error(401, "User " + userId + " not found");
+  }
   var competition = Competitions.findOne({ _id: competitionId }, { fields: { _id: 1 } });
   if(!competition) {
     return new Meteor.Error(404, "Competition does not exist");
   }
 
-  var siteAdmin = getUserAttribute(userId, 'siteAdmin');
-  if(!siteAdmin) {
+  if(!user.siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
     // in order to manage =)
     var registration = Registrations.findOne({

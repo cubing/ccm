@@ -33,11 +33,11 @@ Template.layout.events({
     }
   },
   'shown.bs.modal .modal': function(e, template) {
+    template.$('input[autofocus]').select();
     template.$('input[autofocus]').focus();
   },
   'submit form': function(e) {
-    // To prevent the browser from following the form as it's not necessary for
-    // meteor, and it's bad UX.
+    // Prevent the browser from following the forms, as we handle them all in JS.
     e.preventDefault();
   }
 });
@@ -90,6 +90,11 @@ $.fn.scrollToCenter = function(speed) {
   $('html, body').animate({ scrollTop: offset }, speed);
 };
 
-// Set datepicker to autoclose on select. There does not appear to be
-// a corresponding option for bootstrap-datetimepicker.
-$.fn.datepicker.defaults.autoclose = true;
+// https://github.com/okgrow/analytics complains when
+// Meteor.settings.public.analyticsSettings is unset. Velocity ensures that
+// we see the message twice, which just drives me crazy. Here we just set
+// Meteor.settings.public.analyticsSettings to an empty object to squelch this
+// message.
+Meteor.settings = Meteor.settings || {};
+Meteor.settings.public = Meteor.settings.public || {};
+Meteor.settings.public.analyticsSettings = {};
