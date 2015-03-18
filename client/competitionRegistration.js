@@ -111,7 +111,7 @@ Template.competitionRegistration.helpers({
 
   registrationAskAboutGuests: function() {
     var competitionId = this.competitionId;
-    competition = Competitions.findOne({ _id: competitionId }, { fields: { registrationAskAboutGuests: 1 } });
+    var competition = Competitions.findOne({ _id: competitionId }, { fields: { registrationAskAboutGuests: 1 } });
     return competition.registrationAskAboutGuests;
   }
 });

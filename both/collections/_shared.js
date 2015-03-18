@@ -135,6 +135,34 @@ Meteor.users.attachSchema(new SimpleSchema({
   },
 }));
 
+// Force value to be current date (on server) upon insert
+// and prevent updates thereafter.
+createdAtSchemaField = {
+  type: Date,
+  autoValue: function() {
+    if(this.isInsert) {
+      return new Date();
+    }
+    if(this.isUpsert) {
+      return {$setOnInsert: new Date()};
+    }
+    this.unset();
+  }
+};
+
+// Force value to be current date (on server) upon update
+// and don't allow it to be set upon insert.
+updatedAtSchemaField = {
+  type: Date,
+  denyInsert: true,
+  optional: true,
+  autoValue: function() {
+    if(this.isUpdate) {
+      return new Date();
+    }
+  },
+};
+
 var getDocumentAttribute = function(Collection, id, attribute) {
   var fields = {};
   fields[attribute] = 1;
