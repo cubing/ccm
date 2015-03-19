@@ -77,7 +77,7 @@ Competitions.attachSchema({
     optional: true,
     autoform: {
       afFieldInput: {
-        type: "date"
+        type: "datetime-local"
       }
     },
     custom: function() {
@@ -111,7 +111,7 @@ Competitions.attachSchema({
     optional: true,
     autoform: {
       afFieldInput: {
-        type: "date"
+        type: "datetime-local"
       }
     },
     custom: function() {
