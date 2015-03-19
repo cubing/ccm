@@ -8,12 +8,6 @@ SimpleSchema.prototype.clean = function(doc, options) {
   return oldClean.call(this, doc, options);
 };
 
-SimpleSchema.messages({
-  "missingCompetitionStartDate": "Please set a competition start date before setting registration open/close dates.",
-  "registrationCloseDateAfterRegistrationOpenDate": "Registration close date should be after the registration open date.",
-  "missingRegistrationCloseDate": "Please enter a registration close date.",
-});
-
 GenderType = {
   type: String,
   allowedValues: _.keys(wca.genderByValue),

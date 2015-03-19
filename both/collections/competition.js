@@ -1,4 +1,17 @@
-Competitions = new Mongo.Collection("competitions");
+SimpleSchema.messages({
+  registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
+  missingRegistrationCloseDate: "Please enter a registration close date.",
+  calendarEndIsNotBeforeStart: "End time must be after start time.",
+});
+
+Competition = function(doc) {
+  _.extend(this, doc);
+};
+
+_.extend(Competition.prototype, {
+});
+
+Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
 Competitions.attachSchema({
   competitionName: {
     type: String,
@@ -16,14 +29,33 @@ Competitions.attachSchema({
   calendarStartMinutes: {
     type: Number,
     min: 0,
-    max: 24*60,
+    max: 23*60,
     defaultValue: 0,
+    autoform: {
+      afFieldInput: {
+        type: "timeOfDayMinutes"
+      }
+    }
   },
   calendarEndMinutes: {
     type: Number,
     min: 0,
-    max: 24*60,
-    defaultValue: 24*60,
+    max: 23.5*60,
+    defaultValue: 23.5*60,
+    custom: function() {
+      // require the competition calendar end time to be after the start time
+      var calendarStartMinutes = this.field("calendarStartMinutes").value;
+      var calendarEndMinutes = this.value;
+      if(calendarEndMinutes <= calendarStartMinutes) {
+        return "calendarEndIsNotBeforeStart";
+      }
+      return null;
+    },
+    autoform: {
+      afFieldInput: {
+        type: "timeOfDayMinutes"
+      }
+    }
   },
   startDate: {
     type: Date,

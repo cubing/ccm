@@ -14,13 +14,6 @@ function styleRegistrationInputButtonsOnChange() {
   $("#changeRegistrationButton").prop('disabled', false);
 }
 
-Template.competitionRegistration.rendered = function() {
-  var template = this;
-  template.autorun(function() {
-
-  });
-};
-
 Template.competitionRegistration.helpers({
   eventOptions: function() {
     var competitionId = this.competitionId;
