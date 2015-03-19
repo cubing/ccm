@@ -1,5 +1,6 @@
 SimpleSchema.messages({
   registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
+  missingRegistrationOpenDate: "Please enter a registration open date.",
   missingRegistrationCloseDate: "Please enter a registration close date.",
   calendarEndIsNotBeforeStart: "End time must be after start time.",
 });
