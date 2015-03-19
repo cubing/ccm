@@ -28,6 +28,7 @@ Competitions.attachSchema({
   },
   calendarStartMinutes: {
     type: Number,
+    label: "Schedule start time",
     min: 0,
     max: 23*60,
     defaultValue: 0,
@@ -39,6 +40,7 @@ Competitions.attachSchema({
   },
   calendarEndMinutes: {
     type: Number,
+    label: "Schedule end time",
     min: 0,
     max: 23.5*60,
     defaultValue: 23.5*60,
