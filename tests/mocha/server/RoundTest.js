@@ -3,8 +3,8 @@ MochaWeb.testOnly(function() {
     var lunch = makeRound({ title: 'lunch' });
 
     it('CONSTANTS', function() {
-      chai.expect(Round.MIN_DURATION_MINUTES).to.equal(30);
-      chai.expect(Round.DEFAULT_DURATION_MINUTES).to.equal(60);
+      chai.expect(Round.MIN_DURATION.asMinutes()).to.equal(30);
+      chai.expect(Round.DEFAULT_DURATION.asMinutes()).to.equal(60);
     });
 
     it('format()', function() {

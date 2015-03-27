@@ -79,11 +79,11 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
-      snapDuration: { minutes: Round.MIN_DURATION_MINUTES },
+      snapDuration: { minutes: Round.MIN_DURATION.asMinutes() },
       minTime: minTime,
       maxTime: maxTime,
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: { minutes: Round.DEFAULT_DURATION_MINUTES },
+      defaultTimedEventDuration: { minutes: Round.DEFAULT_DURATION.asMinutes() },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
@@ -105,7 +105,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
           var round = {
             competitionId: competitionId,
             startMinutes: startHour*60 + startMinute,
-            durationMinutes: Round.DEFAULT_DURATION_MINUTES,
+            durationMinutes: Round.DEFAULT_DURATION.asMinutes(),
           };
 
           editingRoundReact.set(round);
