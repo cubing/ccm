@@ -11,8 +11,11 @@ Template.participantResults.helpers({
   competitorRounds: function() {
     return this.registration.checkedInEvents;
   },
+  eventName: function(eventCode) {
+    //return Meteor.call('eventName', {"eventCode": eventCode});
+    return wca.eventByCode[eventCode].name;
+  },
   roundsByEventCode: function() {
-
     var eventCode = this.toString();
     var rounds = Rounds.find(
       {eventCode: eventCode}, 
@@ -20,13 +23,14 @@ Template.participantResults.helpers({
     return rounds;
   },
   resultsOfRound: function() {
-    console.log(this);
     var registrationId = competitorReact.get().registration._id;
     var results = Results.findOne({
       roundId: this._id,
       registrationId: registrationId
     });
-    //console.log(results);
-    return results.solves;
+    if(results) {
+      return results.solves;
+    }
+    return;
   }, 
 });

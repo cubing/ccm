@@ -2,17 +2,27 @@
   <div class="container">
     <h1>{{competitorName}}</h1>
     {{#each competitorRounds}}
-    <h2>{{this}}</h2>
-    <ul>
-      {{#each roundsByEventCode}}
-      <li><h1>{{nthRound}}</h1></li>
-      {{#each resultsOfRound}}
-      <li>
-        {{clockFormat this}}
-      </li>
-      {{/each}}
-      {{/each}}
-    </ul>
+      <h3>{{eventName this}}</h3>
+      <table class="table table-striped table-bordered table-hover">
+        <thead>
+          <th>round</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
+        </thead>
+        <tbody>
+          {{#each roundsByEventCode}}
+            <tr>
+              <td>{{nthRound}}</td>
+              {{#each resultsOfRound}}
+                <td>{{clockFormat this}}</td>
+              {{/each}}
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
     {{/each}}
   </div>
 </template>
