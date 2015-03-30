@@ -18,7 +18,7 @@ Template.participantResults.helpers({
   roundsByEventCode: function() {
     var eventCode = this.toString();
     var rounds = Rounds.find(
-      {eventCode: eventCode}, 
+      {eventCode: eventCode},
       {sort: {nthRound: 1} });
     return rounds;
   },
@@ -32,5 +32,5 @@ Template.participantResults.helpers({
       return results.solves;
     }
     return;
-  }, 
+  },
 });
