@@ -12,20 +12,21 @@ Template.participantResults.helpers({
     return this.registration.checkedInEvents;
   },
   roundsByEventCode: function() {
-    var registrationId = competitorReact.get().registration._id;
+
     var eventCode = this.toString();
     var rounds = Rounds.find(
       {eventCode: eventCode}, 
       {sort: {nthRound: 1} });
     return rounds;
   },
-  results: function() {
-    var results = [];
-    var r = Results.find({
+  resultsOfRound: function() {
+    console.log(this);
+    var registrationId = competitorReact.get().registration._id;
+    var results = Results.findOne({
       roundId: this._id,
       registrationId: registrationId
-    }).fetch();
-    results = results.concat(r);
-    return [1,2,3];
+    });
+    //console.log(results);
+    return results.solves;
   }, 
 });

@@ -5,9 +5,12 @@
     <h2>{{this}}</h2>
     <ul>
       {{#each roundsByEventCode}}
-      <!-- {{#each results}} -->
-      <!-- <li>{{this}},</li> -->
-      <!-- {{/each}} -->
+      <li><h1>{{nthRound}}</h1></li>
+      {{#each resultsOfRound}}
+      <li>
+        {{clockFormat this}}
+      </li>
+      {{/each}}
       {{/each}}
     </ul>
     {{/each}}
