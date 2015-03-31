@@ -10,23 +10,26 @@ MochaWeb.testOnly(function() {
       updatedAt: updatedAtSchemaField,
     });
 
-    it('createdAt & updatedAt autoValue functions', function() {
-      var gid = Gizmos.insert({name: "Rune"});
-      var inserted = Gizmos.findOne(gid);
+    describe('autoValue functions', function() {
+      before(function () { this.clock = sinon.useFakeTimers(); });
+      after(function () { this.clock.restore(); });
 
-      chai.expect(inserted.name).to.equal("Rune");
-      chai.expect(inserted.createdAt).to.exist;
-      chai.expect(inserted.updatedAt).to.not.exist;
+      it('createdAt & updatedAt', function() {
+        var gid = Gizmos.insert({name: "Rune"});
+        var inserted = Gizmos.findOne(gid);
 
-      Gizmos.update({_id: gid}, { $set: {name: "Sven"}});
-      var updated = Gizmos.findOne(gid);
+        chai.expect(inserted.name).to.equal("Rune");
+        chai.expect(inserted.createdAt.getTime()).to.equal(0);
+        chai.expect(inserted.updatedAt).to.not.exist;
 
-      chai.expect(updated.name).to.equal("Sven");
-      chai.expect(updated.createdAt.getTime()).to.exist;
-      chai.expect(updated.updatedAt.getTime()).to.exist;
+        this.clock.tick(99);
+        Gizmos.update({_id: gid}, { $set: {name: "Sven"}});
+        var updated = Gizmos.findOne(gid);
 
-      chai.expect(updated.createdAt.getTime()).to.equal(inserted.createdAt.getTime());
-      chai.expect(updated.createdAt.getTime()).to.not.be.greaterThan(updated.updatedAt.getTime()); // could be same millisecond
+        chai.expect(updated.name).to.equal("Sven");
+        chai.expect(updated.createdAt.getTime()).to.equal(0);
+        chai.expect(updated.updatedAt.getTime()).to.equal(99);
+      });
     });
   });
 });

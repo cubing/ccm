@@ -18,18 +18,17 @@ MochaWeb.testOnly(function() {
       chai.expect(Rounds.find().count() - preRounds).to.equal(2);
       chai.expect(RoundProgresses.find().count() - preProgs).to.equal(2);
 
-      var g = global;
-
-      var old = g.throwIfCannotManageCompetition;
-      g.throwIfCannotManageCompetition = function(userId, competitionId) {};
+      stubs.create('tICMC', global, 'throwIfCannotManageCompetition');
 
       Meteor.call('deleteCompetition', comp1Id);
-
-      g.throwIfCannotManageCompetition = old;
 
       chai.expect(Competitions.find().count() - preComps).to.equal(1);
       chai.expect(Rounds.find().count() - preRounds).to.equal(1);
       chai.expect(RoundProgresses.find().count() - preProgs).to.equal(1);
     });
+  });
+
+  afterEach(function(){
+      stubs.restoreAll();
   });
 });
