@@ -37,7 +37,7 @@ Registrations.attachSchema({
 
     }
   },
-  wcaId: _.extend({}, WcaIdType, { optional: true }),
+  wcaId: _.extend({ optional: true }, WcaIdType),
   countryId: CountryIdType,
   gender: GenderType,
   dob: DobType,
