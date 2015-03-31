@@ -11,8 +11,8 @@ MochaWeb.testOnly(function() {
     });
 
     describe('autoValue functions', function() {
-      before(function () { this.clock = sinon.useFakeTimers(); });
-      after(function () { this.clock.restore(); });
+      beforeEach(function() { this.clock = sinon.useFakeTimers(); });
+      afterEach(function() { this.clock.restore(); });
 
       it('createdAt & updatedAt', function() {
         var gid = Gizmos.insert({name: "Rune"});

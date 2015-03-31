@@ -28,7 +28,7 @@ MochaWeb.testOnly(function() {
     });
   });
 
-  afterEach(function(){
-      stubs.restoreAll();
+  afterEach(function() {
+    stubs.restoreAll();
   });
 });
