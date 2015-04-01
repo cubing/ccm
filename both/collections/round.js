@@ -81,6 +81,9 @@ _.extend(Round.prototype, {
     }
     return true;
   },
+  groups: function() {
+    return Groups.find({roundId: this._id}, { sort: { group: 1 }});
+  },
 });
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
