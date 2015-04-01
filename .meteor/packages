@@ -39,3 +39,4 @@ nemo64:bootstrap
 okgrow:analytics
 percolate:migrations
 mike:mocha
+practicalmeteor:sinon
