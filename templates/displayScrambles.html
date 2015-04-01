@@ -1,0 +1,23 @@
+<template name="displayScrambles">
+  <div class="container">
+
+    <h4>Display Scrambles</h4>
+
+    <ul id="scramble-display">
+      {{#each allRounds}}
+        <li><span style="display:inline-block; width:300px;">{{prettyTitle}}</span>
+        {{#each groups}}
+          <button>Group {{group}}</button>
+        {{/each}}
+        </li>
+      {{/each}}
+    </ul>
+
+    {{#if selectedGroup}}
+      <h4>{{selectedGroup.round.prettyTitle}} - Group {{selectedGroup.group}}</h4>
+      {{#each selectedGroup.scrambles}}
+        <pre>{{this}}</pre>
+      {{/each}}
+    {{/if}}
+  </div>
+</template>

@@ -81,6 +81,9 @@ _.extend(Round.prototype, {
     }
     return true;
   },
+  groups: function() {
+    return Groups.find({roundId: this._id}, { sort: { group: 1 }});
+  },
 });
 
 // The name "Round" is a bit misleading here, as we use Rounds to store
@@ -198,22 +201,6 @@ Rounds.attachSchema({
     type: String,
     allowedValues: _.keys(wca.roundStatuses),
     defaultValue: wca.roundStatuses.unstarted,
-    optional: true,
-  },
-  progress: {
-    type: new SimpleSchema({
-      done: {
-        type: Number,
-        // done is meant to give a sense of how many people are done, and
-        // people can be partway done.
-        decimal: true,
-        min: 0,
-      },
-      total: {
-        type: Number,
-        min: 0,
-      },
-    }),
     optional: true,
   },
 });

@@ -1,4 +1,15 @@
-Groups = new Mongo.Collection("groups");
+// Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
+Group = function(doc) {
+  _.extend(this, doc);
+};
+
+_.extend(Group.prototype, {
+  round: function() {
+    return Rounds.findOne(this.roundId);
+  },
+});
+
+Groups = new Mongo.Collection("groups", { transform: function(doc) { return new Group(doc); } });
 Groups.attachSchema({
   competitionId: {
     type: String,
