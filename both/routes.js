@@ -133,7 +133,6 @@ ViewParticipantController = BaseCompetitionController.extend({
       this.render('participantNotFound');
       return data;
     }
-
     data.user = Meteor.users.findOne(data.registration.userId);
     return data;
   },
