@@ -3,8 +3,8 @@ AutoForm.Utility.dateToNormalizedLocalDateAndTimeString = function dateToNormali
   var m = moment(date);
   // by default, we assume local timezone; add moment-timezone to app and pass timezoneId
   // to use a different timezone
-  if (typeof timezoneId === "string") {
-    if (typeof m.tz !== "function") {
+  if(typeof timezoneId === "string") {
+    if(typeof m.tz !== "function") {
       throw new Error("If you specify a timezoneId, make sure that you've added a moment-timezone package to your app");
     }
     m.tz(timezoneId);
