@@ -109,9 +109,15 @@ Rounds.attachSchema({
     // (1:30 AM) is sometimes ambiguous because sometimes there are multiple
     // 1:30 AMs in a given day.
     type: Number,
+    label: "Start time",
     min: 0,
     max: 24*60,
     optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "timeOfDayMinutes"
+      }
+    }
   },
   durationMinutes: {
     type: Number,
