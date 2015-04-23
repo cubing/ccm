@@ -58,13 +58,20 @@ ScheduleEvents.attachSchema({
   },
 
   startMinutes: {
-    // The time at which the event starts (stored as an offset from midnight in
+    // The time at which the round starts (stored as an offset from midnight in
     // minutes assuming no leap time or DST or anything. This means that 60*1.5
     // (1:30 AM) is sometimes ambiguous because sometimes there are multiple
     // 1:30 AMs in a given day.
     type: Number,
+    label: "Start time",
     min: 0,
     max: moment.duration(1, 'day').asMinutes(),
+    optional: true,
+    autoform: {
+      afFieldInput: {
+        type: "timeOfDayMinutes"
+      }
+    }
   },
   durationMinutes: {
     type: Number,

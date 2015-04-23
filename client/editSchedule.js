@@ -31,7 +31,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
     function timeMinutesToFullCalendarTime(timeMinutes) {
       var duration = moment.duration(timeMinutes, 'minutes');
-      return duration.hours() + ":" + duration.minutes() + ":00";
+      return Math.floor(duration.asHours()) + ":" + duration.minutes() + ":00";
     }
     var compStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
     var compEndMinutes = getCompetitionCalendarEndMinutes(competitionId);

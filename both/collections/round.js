@@ -42,6 +42,9 @@ _.extend(Round.prototype, {
   displayTitle: function() {
       return this.eventName() + ": " + this.properties().name;
   },
+  endMinutes: function() {
+    return this.startMinutes + this.durationMinutes;
+  },
   isScheduled: function() {
     var scheduledEvent = ScheduleEvents.findOne({roundId: this._id});
     return !!scheduledEvent;
