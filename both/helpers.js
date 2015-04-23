@@ -145,7 +145,6 @@ register("competitionEvents", function() {
 
 getCompetitionCalendarStartMinutes = function(competitionId) {
   var calendarStartMinutes = getCompetitionAttribute(competitionId, 'calendarStartMinutes');
-  calendarStartMinutes = calendarStartMinutes || 0;
   return calendarStartMinutes;
 };
 register("competitionCalendarStartMinutes", function() {
@@ -154,7 +153,6 @@ register("competitionCalendarStartMinutes", function() {
 
 getCompetitionCalendarEndMinutes = function(competitionId) {
   var calendarEndMinutes = getCompetitionAttribute(competitionId, 'calendarEndMinutes');
-  calendarEndMinutes = calendarEndMinutes || 23.5*60;
   return calendarEndMinutes;
 };
 register("competitionCalendarEndMinutes", function() {
