@@ -40,7 +40,7 @@ _.extend(Round.prototype, {
     return this.status === wca.roundStatuses.closed;
   },
   displayTitle: function() {
-      return this.eventName() + ": " + this.properties().name;
+    return this.eventName() + ": " + this.properties().name;
   },
   endMinutes: function() {
     return this.startMinutes + this.durationMinutes;
