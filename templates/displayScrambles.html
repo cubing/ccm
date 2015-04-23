@@ -5,7 +5,7 @@
 
     <ul id="scramble-display">
       {{#each allRounds}}
-        <li><span style="display:inline-block; width:300px;">{{prettyTitle}}</span>
+        <li><span style="display:inline-block; width:300px;">{{displayTitle}}</span>
         {{#each groups}}
           <button>Group {{group}}</button>
         {{/each}}
@@ -14,7 +14,7 @@
     </ul>
 
     {{#if selectedGroup}}
-      <h4>{{selectedGroup.round.prettyTitle}} - Group {{selectedGroup.group}}</h4>
+      <h4>{{selectedGroup.round.displayTitle}} - Group {{selectedGroup.group}}</h4>
       {{#each selectedGroup.scrambles}}
         <pre>{{this}}</pre>
       {{/each}}

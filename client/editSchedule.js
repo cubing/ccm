@@ -1,37 +1,27 @@
-var editingRoundReact = new ReactiveVar(null);
+var eventToEditReact = new ReactiveVar(null);  // TODO I don't think this needs to be reactive - Lars
 
 Template.editSchedule.helpers({
   competition: function() {
     return Competitions.findOne(this.competitionId);
   },
   unscheduledRounds: function() {
-    var rounds = getRounds(this.competitionId, { scheduled: false });
-    return rounds;
+    var allRounds = Rounds.find({ competitionId: this.competitionId }).fetch();
+    return _.filter(allRounds, function(round) { return !round.isScheduled(); });
   },
-  editingRound: function() {
-    return editingRoundReact.get();
+  eventToEdit: function() {
+    return eventToEditReact.get();
   },
 });
 
 Template.editSchedule.events({
-  'hidden.bs.modal #addEditSomethingModal': function(e, t) {
-    editingRoundReact.set(null);
+  'hidden.bs.modal #editEventModal': function(e, t) {
+    eventToEditReact.set(null);
   },
 });
 
-function getRounds(competitionId, opts) {
-  var includeScheduled = !!opts.scheduled;
-  var rounds = Rounds.find({ competitionId: competitionId }).fetch();
-  rounds = _.filter(rounds, function(round) {
-    var roundScheduled = round.isScheduled();
-    return roundScheduled == includeScheduled;
-  });
-  return rounds;
-}
-
 // This is global so competitionSchedule.js can use it
 setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
-  var calendarRounds = [];
+  var dbScheduleEvents = [];
 
   template.autorun(function() {
     var data = Template.currentData();
@@ -43,31 +33,20 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       var duration = moment.duration(timeMinutes, 'minutes');
       return duration.hours() + ":" + duration.minutes() + ":00";
     }
-    var calendarStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
-    var calendarEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
+    var compStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
+    var compEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
     var numberOfDays = getCompetitionNumberOfDays(competitionId);
 
-    var startDateMoment = getCompetitionStartDateMoment(competitionId);
-    if(!startDateMoment) {
-      startDateMoment = moment.utc().startOf('day');
-    }
-    var minTime = timeMinutesToFullCalendarTime(calendarStartMinutes);
-    var maxTime = timeMinutesToFullCalendarTime(calendarEndMinutes);
+    var startDateMoment = getCompetitionStartDateMoment(competitionId) || moment.utc().startOf('day');
 
-    var eventChanged = function(calEvent) {
-      var nthDay = calEvent.start.diff(startDateMoment, 'days');
-      var startMinutes = calEvent.start.hour()*60 + calEvent.start.minute();
-
-      var $set = {
-        nthDay: nthDay,
-        startMinutes: startMinutes,
+    var eventChanged = function(event) {
+      var update = {
+        nthDay: event.start.diff(startDateMoment, 'days'),
+        startMinutes: event.start.hour()*60 + event.start.minute(),
+        durationMinutes: event.end.diff(event.start, 'minutes'),
       };
 
-      if(calEvent.end) {
-        $set.durationMinutes = calEvent.end.diff(calEvent.start, 'minutes');
-      }
-
-      Rounds.update({ _id: calEvent.id }, { $set: $set });
+      ScheduleEvents.update(event.id, { $set: update });
     };
 
     $calendarDiv.fullCalendar({
@@ -79,57 +58,47 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       durationDays: numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
-      snapDuration: { minutes: Round.MIN_DURATION.asMinutes() },
-      minTime: minTime,
-      maxTime: maxTime,
+      snapDuration: { minutes: ScheduleEvent.MIN_DURATION.asMinutes() },
+      minTime: timeMinutesToFullCalendarTime(compStartMinutes),
+      maxTime: timeMinutesToFullCalendarTime(compEndMinutes),
       defaultDate: startDateMoment.toISOString(),
-      defaultTimedEventDuration: { minutes: Round.DEFAULT_DURATION.asMinutes() },
+      defaultTimedEventDuration: { minutes: ScheduleEvent.DEFAULT_DURATION.asMinutes() },
       defaultView: 'agendaDays',
       editable: !!$editModal,
       contentHeight: 'auto',
       droppable: true,
-      drop: function(date) {
-        var roundId = $(this).data('round-id');
+      drop: function(date) { // A round / new event was dragged onto the schedule
+        var newEventData = {
+          competitionId: competitionId,
+          startMinutes: date.utc().get('hour')*60 + date.utc().get('minute'),
+          durationMinutes: ScheduleEvent.DEFAULT_DURATION.asMinutes(),
+        };
 
-        if(roundId) {
-          var calEvent = {
-            id: roundId,
-            start: date,
-          };
-          eventChanged(calEvent);
+        var droppedRoundId = $(this).data('round-id');
+        if(droppedRoundId) {
+          Meteor.call('addScheduleEvent', competitionId, newEventData, droppedRoundId);
           $(this).remove();
         } else {
-          var startHour = date.utc().get('hour');
-          var startMinute = date.utc().get('minute');
-
-          var round = {
-            competitionId: competitionId,
-            startMinutes: startHour*60 + startMinute,
-            durationMinutes: Round.DEFAULT_DURATION.asMinutes(),
-          };
-
-          editingRoundReact.set(round);
+          eventToEditReact.set(newEventData);
           $editModal.modal('show');
         }
       },
       events: function(start, end, timezone, callback) {
         var calEvents = [];
 
-        _.each(calendarRounds, function(round) {
+        _.each(dbScheduleEvents, function(dbEvent) {
           // startDateMoment is guaranteed to be in UTC, so there's no
           // weirdness here with adding time to a midnight that is about to
           // experience DST.
-          var day = startDateMoment.clone().add(round.nthDay, 'days');
-          var start = day.clone().add(round.startMinutes, 'minutes');
-          var end = start.clone().add(round.durationMinutes, 'minutes');
-          var title = round.prettyTitle();
-          var color = round.eventCode ? "" : "#aa0000";
+          var day = startDateMoment.clone().add(dbEvent.nthDay, 'days');
+          var start = day.clone().add(dbEvent.startMinutes, 'minutes');
+          var end = start.clone().add(dbEvent.durationMinutes, 'minutes');
           var calEvent = {
-            id: round._id,
-            title: title,
+            id: dbEvent._id,
+            title: dbEvent.title,
             start: start,
             end: end,
-            color: color,
+            color: dbEvent.roundId ? "" : "#aa0000",
           };
           calEvents.push(calEvent);
         });
@@ -137,11 +106,10 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         callback(calEvents);
       },
       eventClick: function(calEvent, jsEvent, view) {
-        var round = Rounds.findOne({ _id: calEvent.id });
-        editingRoundReact.set(round);
+        eventToEditReact.set(ScheduleEvents.findOne(calEvent.id));
         $editModal.modal('show');
       },
-      eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
+      eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) { // Existing entry dragged
         eventChanged(calEvent);
       },
       eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
@@ -152,7 +120,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
 
   template.autorun(function() {
     var data = Template.currentData();
-    calendarRounds = getRounds(data.competitionId, { scheduled: true });
+    dbScheduleEvents = ScheduleEvents.find({ competitionId: data.competitionId }).fetch();
     $calendarDiv.fullCalendar('refetchEvents');
   });
 };
@@ -169,8 +137,8 @@ Template.editSchedule.rendered = function() {
   var template = this;
 
   var $calendar = template.$('#calendar');
-  var $addEditSomethingModal = template.$('#addEditSomethingModal');
-  setupCompetitionCalendar(template, $calendar, $addEditSomethingModal);
+  var $editEventModal = template.$('#editEventModal');
+  setupCompetitionCalendar(template, $calendar, $editEventModal);
   makeDraggable(template.$('#new-calender-entry'));
 };
 
@@ -180,9 +148,9 @@ Template.unscheduledRound.rendered = function() {
   makeDraggable($unscheduledRound);
 };
 
-Template.addEditSomethingModal.helpers({
-  editingRound: function() {
-    return editingRoundReact.get();
+Template.editEventModal.helpers({
+  eventToEdit: function() {
+    return eventToEditReact.get();
   },
   formType: function() {
     return this._id ? "update" : "add";
@@ -190,46 +158,31 @@ Template.addEditSomethingModal.helpers({
 });
 
 AutoForm.hooks({
-  editRoundForm: {
+  editEventForm: {
     onSubmit: function(insertDoc, updateDoc, currentDoc) {
       this.event.preventDefault();
 
       if(currentDoc._id) {
-        // Updating an existing round
-        Rounds.update({
-          _id: currentDoc._id,
-        }, {
-          $set: {
-            title: insertDoc.title,
-            startMinutes: insertDoc.startMinutes,
-            durationMinutes: insertDoc.durationMinutes,
-          }
-        });
-        $('#addEditSomethingModal').modal('hide');
+        delete updateDoc.$set.competitionId; // Don't touch the competitionId field. We don't trust browser input that much.
+        ScheduleEvents.update({ _id: currentDoc._id, }, updateDoc);
       } else {
-        // Adding a new round
-        Meteor.call('addNonEventRound', currentDoc.competitionId, insertDoc, function(error, result) {
-          if(error) {
-            throw error;
-          }
-          $('#addEditSomethingModal').modal('hide');
-        });
+        Meteor.call('addScheduleEvent', currentDoc.competitionId, insertDoc, null);
       }
+      $('#editEventModal').modal('hide');
     }
   },
 });
 
-Template.addEditSomethingModal.events({
-  'click #buttonDeleteRound': function(e, template) {
-    var editingRound = editingRoundReact.get();
-    assert(!editingRound.eventCode);
-    assert(editingRound._id);
-    Meteor.call('removeRound', editingRound._id, function(error, result) {
+Template.editEventModal.events({
+  'click #buttonDeleteEvent': function(e, template) {
+    var eventToEdit = eventToEditReact.get();
+    assert(eventToEdit._id);
+    Meteor.call('removeScheduleEvent', eventToEdit._id, function(error, result) {
       if(error) {
         throw error;
       }
-      template.$('#deleteRoundConfirmModal').modal('hide');
-      template.$('#addEditSomethingModal').modal('hide');
+      template.$('#deleteEventConfirmModal').modal('hide');
+      template.$('#editEventModal').modal('hide');
     });
   },
 });

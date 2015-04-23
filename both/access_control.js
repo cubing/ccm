@@ -221,10 +221,6 @@ if(Meteor.isServer) {
         'hardCutoff',
         'size',
 
-        'nthDay',
-        'startMinutes',
-        'durationMinutes',
-        'title',
         'status',
 
         'updatedAt',
@@ -234,6 +230,21 @@ if(Meteor.isServer) {
       return onlyAllowedFields(fields, allowedFields);
     },
     fetch: [ 'competitionId' ],
+  });
+
+  ScheduleEvents.allow({
+    update: function(userId, scheduleEvent, fields, modifier) {
+      if(getCannotManageCompetitionReason(userId, scheduleEvent.competitionId)) {
+        return false;
+      }
+      var allowedFields = [
+        'nthDay',
+        'startMinutes',
+        'durationMinutes',
+        'title',
+      ];
+      return onlyAllowedFields(fields, allowedFields);
+    },
   });
 
   RoundProgresses.allow({

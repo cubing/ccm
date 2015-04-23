@@ -2,11 +2,6 @@ MochaWeb.testOnly(function() {
   describe('Round', function() {
     var lunch = makeRound({ title: 'lunch' });
 
-    it('CONSTANTS', function() {
-      chai.expect(Round.MIN_DURATION.asMinutes()).to.equal(30);
-      chai.expect(Round.DEFAULT_DURATION.asMinutes()).to.equal(60);
-    });
-
     it('format()', function() {
       chai.expect(makeRound({ formatCode: '2' }).format().name).to.equal("Best of 2");
       chai.expect(makeRound({ formatCode: 'a' }).format().name).to.equal("Average of 5");

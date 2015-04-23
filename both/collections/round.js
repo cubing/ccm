@@ -4,9 +4,6 @@ Round = function(doc) {
   _.extend(this, doc);
 };
 
-Round.MIN_DURATION = moment.duration(30, 'minutes');
-Round.DEFAULT_DURATION = moment.duration(60, 'minutes');
-
 _.extend(Round.prototype, {
 
   format: function() {
@@ -42,53 +39,18 @@ _.extend(Round.prototype, {
   isClosed: function() {
     return this.status === wca.roundStatuses.closed;
   },
-  prettyTitle: function() {
-    var prettyTitle;
-    // Rounds don't necessarily have events, such as Lunch or Registration.
-    if(this.eventCode) {
-      prettyTitle = this.eventName() + ": " + this.properties().name;
-    } else {
-      prettyTitle = this.title;
-    }
-    return prettyTitle;
-  },
-  endMinutes: function() {
-    return this.startMinutes + this.durationMinutes;
+  displayTitle: function() {
+      return this.eventName() + ": " + this.properties().name;
   },
   isScheduled: function() {
-    if(this.nthDay === undefined || this.startMinutes === undefined || this.durationMinutes === undefined) {
-      return false;
-    }
-
-    // Round that are scheduled for times outside of the range shown by our calendar
-    // are considered unscheduled.
-    var competition = Competitions.findOne(this.competitionId, {
-      fields: {
-        numberOfDays: 1,
-        calendarStartMinutes: 1,
-        calendarEndMinutes: 1,
-      }
-    });
-    assert(competition);
-    if(this.nthDay < 0 || this.nthDay >= competition.numberOfDays) {
-      return false;
-    }
-    if(this.endMinutes() < competition.calendarStartMinutes) {
-      return false;
-    }
-    if(this.startMinutes > competition.calendarEndMinutes) {
-      return false;
-    }
-    return true;
+    var scheduledEvent = ScheduleEvents.findOne({roundId: this._id});
+    return !!scheduledEvent;
   },
   groups: function() {
     return Groups.find({roundId: this._id}, { sort: { group: 1 }});
   },
 });
 
-// The name "Round" is a bit misleading here, as we use Rounds to store
-// stuff like "Lunch" and "Registration" in addition to rounds with WCA events.
-// It's basically anything that would show up in the schedule.
 Rounds = new Mongo.Collection("rounds", { transform: function(doc) { return new Round(doc); } });
 
 Rounds.attachSchema({
@@ -96,36 +58,6 @@ Rounds.attachSchema({
     type: String,
   },
 
-  nthDay: {
-    type: Number,
-    min: 0,
-    // should be <= numberOfDays in the corresponding Competition
-    defaultValue: 0,
-  },
-
-  startMinutes: {
-    // The time at which the round starts (stored as an offset from midnight in
-    // minutes assuming no leap time or DST or anything. This means that 60*1.5
-    // (1:30 AM) is sometimes ambiguous because sometimes there are multiple
-    // 1:30 AMs in a given day.
-    type: Number,
-    min: 0,
-    max: 24*60,
-    optional: true,
-  },
-  durationMinutes: {
-    type: Number,
-    min: Round.MIN_DURATION.asMinutes(),
-    defaultValue: Round.DEFAULT_DURATION.asMinutes(),
-  },
-
-  title: {
-    // This is only used by rounds that do *not* correspond to WCA events.
-    type: String,
-    optional: true,
-  },
-
-  // *** Attributes for real rounds for WCA events ***
   nthRound: {
     // Indexed from 1, because humans will see this in urls
     type: Number,

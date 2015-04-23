@@ -121,7 +121,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
-    [Rounds, RoundProgresses, Results, Groups, Registrations].forEach(function(collection) {
+    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(function(collection) {
       collection.remove({ competitionId: competitionId });
     });
   },
@@ -153,15 +153,24 @@ Meteor.methods({
 
     Meteor.call('refreshRoundCodes', competitionId, eventCode);
   },
-  addNonEventRound: function(competitionId, round) {
+  addScheduleEvent: function(competitionId, eventData, roundId) {
     check(competitionId, String);
     throwIfCannotManageCompetition(this.userId, competitionId);
-    return Rounds.insert({
+
+    var round = Rounds.findOne(roundId);
+
+    return ScheduleEvents.insert({
       competitionId: competitionId,
-      title: round.title,
-      startMinutes: round.startMinutes,
-      durationMinutes: round.durationMinutes,
+      roundId: (round ? round._id : null),
+      title: (round ? round.displayTitle() : eventData.title),
+      startMinutes: eventData.startMinutes,
+      durationMinutes: eventData.durationMinutes,
     });
+  },
+  removeScheduleEvent: function(scheduleEventId) {
+    var event = ScheduleEvents.findOne(scheduleEventId);
+    throwIfCannotManageCompetition(this.userId, event.competitionId);
+    ScheduleEvents.remove({ _id: scheduleEventId});
   },
   // TODO - i think this would be a bit cleaner if we just had a
   // removeLastRoundForEvent method or something. This might
@@ -176,8 +185,9 @@ Meteor.methods({
     assert(round); // canRemoveRound checked that roundId is valid
 
     Rounds.remove({ _id: roundId });
-    RoundProgresses.remove({ roundId: roundId });
-    Groups.remove({ roundId: roundId });
+    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
+      collection.remove({ roundId: roundId });
+    });
 
     if(round.eventCode) {
       Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);

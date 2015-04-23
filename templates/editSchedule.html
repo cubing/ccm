@@ -24,7 +24,7 @@
         <div id="calendar"></div>
       </div>
 
-      {{> addEditSomethingModal competitionId=competitionId}}
+      {{> editEventModal competitionId=competitionId}}
 
     </div>
 
@@ -32,30 +32,27 @@
 </template>
 
 <template name="unscheduledRound">
-  <div class="fc-event" data-round-id="{{ _id }}">{{ prettyTitle }}</div>
+  <div class="fc-event" data-round-id="{{ _id }}">{{ displayTitle }}</div>
 </template>
 
-<template name="addEditSomethingModal">
-  <div class="modal fade" id="addEditSomethingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<template name="editEventModal">
+  <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      {{#if editingRound}}
+      {{#if eventToEdit}}
         <div class="modal-content">
-          {{#autoForm id="editRoundForm" doc=editingRound collection="Rounds" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
+          {{#autoForm id="editEventForm" doc=eventToEdit collection="ScheduleEvents" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
             {{> afFieldInput name="competitionId" hidden="true" }}
 
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-              {{#if editingRound._id}}
-                <h4 class="modal-title" id="myModalLabel">Edit event</h4>
-              {{else}}
-                <h4 class="modal-title" id="myModalLabel">Add something to the schedule</h4>
-              {{/if}}
+              <h4 class="modal-title" id="myModalLabel">
+                {{#if eventToEdit._id}} Edit event {{else}} Add something to the schedule {{/if}}
+              </h4>
             </div>
             <div class="modal-body">
-              {{#if editingRound.eventCode}}
-                <p class="form-control-static">
-                  {{eventName editingRound.eventCode}}: {{roundName editingRound.roundCode}}
-                </p>
+              {{#if eventToEdit.roundId}}
+                <p class="form-control-static"> {{eventToEdit.title}} </p>
+                {{> afFieldInput name="title" hidden="true" }}
               {{else}}
                 {{> afQuickField name="title" autofocus='' }}
               {{/if}}
@@ -63,21 +60,14 @@
               {{> afQuickField name="durationMinutes" }}
             </div>
             <div class="modal-footer">
-              {{#if editingRound._id}}
-                {{#unless editingRound.eventCode}}
-                  <button type="button" class="btn btn-danger pull-left"
-                          data-toggle="modal" data-target="#deleteRoundConfirmModal">
-                    <span class="glyphicon glyphicon-trash"></span> Delete
-                  </button>
-                {{/unless}}
+              {{#if eventToEdit._id}}
+                <button type="button" class="btn btn-danger pull-left" data-toggle="modal" data-target="#deleteEventConfirmModal">
+                  <span class="glyphicon glyphicon-trash"></span> Delete
+                </button>
               {{/if}}
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-primary">
-                {{#if editingRound._id}}
-                  Save
-                {{else}}
-                  Add
-                {{/if}}
+                {{#if eventToEdit._id}} Save {{else}} Add {{/if}}
               </button>
             </div>
           {{/autoForm}}
@@ -86,19 +76,19 @@
     </div>
   </div>
 
-  <div id="deleteRoundConfirmModal" class="modal fade">
+  <div id="deleteEventConfirmModal" class="modal fade">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-          <h4 class="modal-title">Are you sure you want to delete this round?</h4>
+          <h4 class="modal-title">Are you sure you want to delete this event?</h4>
         </div>
         <div class="modal-body">
-          <p>Deleting this round is permanent and irreversible.</p>
+          <p>Deleting this event is permanent and irreversible.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger" id="buttonDeleteRound">
+          <button type="button" class="btn btn-danger" id="buttonDeleteEvent">
             <span class="glyphicon glyphicon-trash"></span> Delete
           </button>
         </div>

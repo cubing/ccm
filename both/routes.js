@@ -315,6 +315,9 @@ Router.route('/manage/:competitionUrlId/schedule', {
   name: 'editSchedule',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
+  waitOn: function() {
+    return [subs.subscribe('scheduleEvents', this.params.competitionUrlId, subscriptionError(this))];
+  },
 });
 Router.route('/manage/:competitionUrlId/advance-participants/:eventCode?/:nthRound?', {
   name: 'advanceParticipants',
@@ -346,6 +349,9 @@ Router.route('/:competitionUrlId/schedule', {
   name: 'competitionSchedule',
   controller: 'ViewCompetitionController',
   titlePrefix: 'Schedule',
+  waitOn: function() {
+    return [subs.subscribe('scheduleEvents', this.params.competitionUrlId, subscriptionError(this))];
+  },
 });
 
 Router.route('/:competitionUrlId/results/byname/:participantUniqueName', {
