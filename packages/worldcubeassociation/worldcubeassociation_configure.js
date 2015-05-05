@@ -2,7 +2,7 @@
 //  https://github.com/meteor/meteor/blob/48264ccafdcdfe6ff88b59ea8fc5631210d79818/packages/accounts-ui-unstyled/login_buttons_single.js#L63
 Template.configureLoginServiceDialogForWorldcubeassociation.helpers({
   siteUrl: function () {
-    return Meteor.absoluteUrl();
+    return Meteor.absoluteUrl() + "_oauth/worldcubeassociation";
   }
 });
 
