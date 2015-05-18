@@ -28,7 +28,15 @@ Meteor.publish("roundProgresses", function(competitionUrlId) {
   if(!competitionId) {
     return [];
   }
-  return [RoundProgresses.find({ competitionId: competitionId })];
+  return RoundProgresses.find({ competitionId: competitionId });
+});
+
+Meteor.publish("scheduleEvents", function(competitionUrlId) {
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  return ScheduleEvents.find({ competitionId: competitionId });
 });
 
 Meteor.publish('competitions', function() {
@@ -67,9 +75,7 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
     fields.dob = 1;
     fields.comments = 1;
   }
-  return [
-    Registrations.find({ competitionId: competitionId }, { fields: fields }),
-  ];
+  return Registrations.find({ competitionId: competitionId }, { fields: fields });
 });
 
 Meteor.publish('participantResults', function(competitionUrlId, participantUniqueName) {
@@ -129,9 +135,7 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
     return [];
   }
 
-  return [
-    Groups.find({ competitionId: competitionId })
-  ];
+  return Groups.find({ competitionId: competitionId });
 });
 
 Meteor.publish('allSiteAdmins', function() {
@@ -142,9 +146,7 @@ Meteor.publish('allSiteAdmins', function() {
   if(!siteAdmin) {
     return new Meteor.Error(403, "Must be a site admin");
   }
-  return [
-    Meteor.users.find({ siteAdmin: true }, { fields: userFieldsToPublish }),
-  ];
+  return Meteor.users.find({ siteAdmin: true }, { fields: userFieldsToPublish });
 });
 
 // Copied and modified from https://github.com/mizzao/meteor-autocomplete/blob/master/autocomplete-server.coffee
