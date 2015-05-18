@@ -225,13 +225,9 @@ Meteor.methods({
       // index into rounds as the nthRound. This defragments any missing
       // rounds (not that that's something we expect to ever happen, since
       // removeRound only allows removal of the latest round).
-      var supportedRoundsIndex;
-      if(index == rounds.length - 1) {
-        // The last round for an event is always treated as a final round.
-        supportedRoundsIndex = wca.MAX_ROUNDS_PER_EVENT - 1;
-      } else {
-        supportedRoundsIndex = index;
-      }
+
+      var lastRound = (index == rounds.length - 1);
+      var supportedRoundsIndex = (lastRound ? wca.MAX_ROUNDS_PER_EVENT - 1 : index);
       var roundCodes = wca.supportedRounds[supportedRoundsIndex];
       assert(roundCodes);
       var roundCode = round.softCutoff ? roundCodes.combined : roundCodes.uncombined;

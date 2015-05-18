@@ -34,6 +34,9 @@ _.extend(ScheduleEvent.prototype, {
     }
     return true;
   },
+  displayTitle: function() {
+    return this.roundId ? Rounds.findOne(this.roundId).displayTitle() : this.title;
+  }
 });
 
 ScheduleEvents = new Mongo.Collection("scheduleEvents", { transform: function(doc) { return new ScheduleEvent(doc); } });

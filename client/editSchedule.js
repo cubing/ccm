@@ -1,4 +1,4 @@
-var eventToEditReact = new ReactiveVar(null);  // TODO I don't think this needs to be reactive - Lars
+var eventToEditReact = new ReactiveVar(null);
 
 Template.editSchedule.helpers({
   competition: function() {
@@ -95,7 +95,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
           var end = start.clone().add(dbEvent.durationMinutes, 'minutes');
           var calEvent = {
             id: dbEvent._id,
-            title: dbEvent.title,
+            title: dbEvent.displayTitle(),
             start: start,
             end: end,
             color: dbEvent.roundId ? "" : "#aa0000",
