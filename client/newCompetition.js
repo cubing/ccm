@@ -32,11 +32,9 @@ Template.newCompetition.events({
     Meteor.call("createCompetition", competitionName, getTodayDateNoTime(), function(err, competitionUrlId) {
       if(err) {
         FlashMessages.sendError("Error submitting form: " + err.message, { autoHide: true, hideDelay: 5000 });
-        throw err;
+      } else {
+        Router.go('manageCompetition', { competitionUrlId: competitionUrlId });
       }
-      Router.go('manageCompetition', {
-        competitionUrlId: competitionUrlId
-      });
     });
   },
 
@@ -64,12 +62,9 @@ Template.newCompetition.events({
     Meteor.call('uploadCompetition', wcaCompetition, getTodayDateNoTime(), function(err, competitionUrlId) {
       $form.css('cursor', '');
       $form.find('button').removeClass('disabled');
-      if(err) {
-        throw err;
+      if(!err) {
+        Router.go('manageCompetition', { competitionUrlId: competitionUrlId });
       }
-      Router.go('manageCompetition', {
-        competitionUrlId: competitionUrlId
-      });
     });
   },
 });

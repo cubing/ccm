@@ -63,12 +63,9 @@ Template.layout.helpers({
 Template._loginButtonsLoggedInDropdown.events({
   'click #login-buttons-resend-emailverification': function(e) {
     verificationSendSuccessReact.set(false);
-    Meteor.call('requestVerificationEmail', function(error, value) {
-      verificationSendSuccessReact.set(!error);
+    Meteor.call('requestVerificationEmail', function(err, value) {
+      verificationSendSuccessReact.set(!err);
       $('#modal-verificationsent').modal('show');
-      if(error) {
-        throw error;
-      }
     });
   },
 });

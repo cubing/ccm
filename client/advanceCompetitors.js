@@ -55,11 +55,10 @@ Template.advanceParticipants.events({
     e.preventDefault();
 
     var advanceCount = template.advanceCountReact.get();
-    Meteor.call('advanceParticipantsFromRound', advanceCount, this.roundId, function(err, data) {
-      if(err) {
-        throw err;
+    Meteor.call('advanceParticipantsFromRound', advanceCount, this.roundId, function(err, result) {
+      if(!err) {
+        template.$(".modal").modal('hide');
       }
-      template.$(".modal").modal('hide');
     });
   },
 });

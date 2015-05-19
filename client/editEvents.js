@@ -379,11 +379,10 @@ Template.modalSoftCutoff.events({
     }
 
     var roundId = this._id;
-    Meteor.call('setRoundSoftCutoff', roundId, softCutoff, function(err, res) {
-      if(err) {
-        throw err;
+    Meteor.call('setRoundSoftCutoff', roundId, softCutoff, function(err, result) {
+      if(!err) {
+        template.$(".modal").modal('hide');
       }
-      template.$(".modal").modal('hide');
     });
   },
 });

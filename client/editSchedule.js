@@ -177,12 +177,11 @@ Template.editEventModal.events({
   'click #buttonDeleteEvent': function(e, template) {
     var eventToEdit = eventToEditReact.get();
     assert(eventToEdit._id);
-    Meteor.call('removeScheduleEvent', eventToEdit._id, function(error, result) {
-      if(error) {
-        throw error;
+    Meteor.call('removeScheduleEvent', eventToEdit._id, function(err, result) {
+      if(!err) {
+        template.$('#deleteEventConfirmModal').modal('hide');
+        template.$('#editEventModal').modal('hide');
       }
-      template.$('#deleteEventConfirmModal').modal('hide');
-      template.$('#editEventModal').modal('hide');
     });
   },
 });
