@@ -4,12 +4,11 @@ MochaWeb.testOnly(function() {
     describe('getCompetitionEvents', function() {
       var compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
 
-      it('returns only competition events, in expected format', function() {
+      it('returns events in expected format', function() {
         chai.expect(getCompetitionEvents(null)).to.deep.equal([]);
         chai.expect(getCompetitionEvents(compId)).to.deep.equal([]);
 
         Rounds.insert({ competitionId: compId, eventCode: '333' });
-        Rounds.insert({ competitionId: compId, title: 'not a competition' });
         Rounds.insert({ competitionId: 'other competition', eventCode: '666' });
 
         chai.expect(getCompetitionEvents(compId)).to.deep.equal([{competitionId: compId, eventCode: '333'}]);
