@@ -282,11 +282,12 @@ function jChesterSave($jChester) {
   $tr.addClass('saving');
   var resultId = selectedResultIdReact.get();
   var solveIndex = this.index;
-  Meteor.call('setSolveTime', resultId, solveIndex, solveTime, function(err, res) {
-    if(err) {
-      throw err;
+  Meteor.call('setSolveTime', resultId, solveIndex, solveTime, function(err, result) {
+    if(!err) {
+      $tr.removeClass('saving');
+    } else {
+      console.error("Meteor.call() error: " + err);
     }
-    $tr.removeClass('saving');
   });
   return true;
 }

@@ -196,18 +196,14 @@ Template.editCompetition.events({
     });
     subs.reset();
 
-    var that = this;
     // Note that we navigate away from the competition page first, and wait for the
     // navigation to complete before we actually delete the competition. This
     // avoids a bunch of spurious error messages in the console due to looking
     // up attributes of a competition that no longer exists.
     Router.go('home');
+    var that = this;
     setTimeout(function() {
-      Meteor.call("deleteCompetition", that.competitionId, function(err, data) {
-        if(err) {
-          throw err;
-        }
-      });
+      Meteor.call("deleteCompetition", that.competitionId);
     }, 0);
   },
 });

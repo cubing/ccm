@@ -22,14 +22,15 @@ Template.exportResults.helpers({
 
 Template.exportResults.events({
   'click #buttonGenerateWcaResults': function(e, template) {
-    Meteor.call('exportWcaResults', this.competitionId, this.competitionUrlId, function(err, res) {
+    Meteor.call('exportWcaResults', this.competitionId, this.competitionUrlId, function(err, result) {
       if(err) {
+        console.error("Meteor.call() error: " + err);
         template.wcaResultsReact.set(null);
         template.exportProblemsReact.set([err]);
-        throw err;
+      } else {
+        template.wcaResultsReact.set(result.wcaResults);
+        template.exportProblemsReact.set(result.exportProblems);
       }
-      template.wcaResultsReact.set(res.wcaResults);
-      template.exportProblemsReact.set(res.exportProblems);
     });
   },
 });

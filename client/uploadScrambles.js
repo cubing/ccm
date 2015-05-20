@@ -92,9 +92,9 @@ function findRoundForSheet(competitionId, sheet) {
 }
 
 function extractJsonFromZip(filename, zipId, pw, cb) {
-  Meteor.call("unzipTNoodleZip", zipId, pw, function(error, data) {
-    if(error) {
-      if(error.reason == "invalid-password") {
+  Meteor.call("unzipTNoodleZip", zipId, pw, function(err, data) {
+    if(err) {
+      if(err.reason == "invalid-password") {
         var promptStr = "Enter password for\n" + filename;
         if(pw !== null) {
           promptStr = "Wrong password! " + promptStr;
@@ -105,12 +105,12 @@ function extractJsonFromZip(filename, zipId, pw, cb) {
         } else {
           cb("Wrong password");
         }
-        return;
       } else {
-        throw error;
+        console.error("Meteor.call() error: " + err);
       }
+    } else {
+      cb(null, data);
     }
-    cb(null, data);
   });
 }
 
@@ -166,20 +166,22 @@ Template.uploadScrambles.events({
         if(isJson) {
           addScramblesJsonStr(reader.result);
         } else if(isZip) {
-          Meteor.call('uploadTNoodleZip', reader.result, function(error, zipId) {
-            if(error) {
-              scrambleSet.error = error;
+          Meteor.call('uploadTNoodleZip', reader.result, function(err, zipId) {
+            if(err) {
+              scrambleSet.error = err;
               scrambleSetsReact.set(scrambleSets);
-              throw error;
+              console.error("Meteor.call() error: " + err);
+            } else {
+              extractJsonFromZip(file.name, zipId, null, function(err2, jsonStr) {
+                if(err2) {
+                  scrambleSet.error = err2;
+                  scrambleSetsReact.set(scrambleSets);
+                  console.error("Meteor.call() error: " + err);
+                } else {
+                  addScramblesJsonStr(jsonStr);
+                }
+              });
             }
-            extractJsonFromZip(file.name, zipId, null, function(error, jsonStr) {
-              if(error) {
-                scrambleSet.error = error;
-                scrambleSetsReact.set(scrambleSets);
-                throw error;
-              }
-              addScramblesJsonStr(jsonStr);
-            });
           });
         } else {
           // Should never get here
