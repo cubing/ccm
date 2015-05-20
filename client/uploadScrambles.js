@@ -106,6 +106,7 @@ function extractJsonFromZip(filename, zipId, pw, cb) {
           cb("Wrong password");
         }
       }
+      console.error("Meteor.call() error: " + err);
     } else {
       cb(null, data);
     }
@@ -168,11 +169,13 @@ Template.uploadScrambles.events({
             if(err) {
               scrambleSet.error = err;
               scrambleSetsReact.set(scrambleSets);
+              console.error("Meteor.call() error: " + err);
             } else {
               extractJsonFromZip(file.name, zipId, null, function(err2, jsonStr) {
                 if(err2) {
                   scrambleSet.error = err2;
                   scrambleSetsReact.set(scrambleSets);
+                  console.error("Meteor.call() error: " + err);
                 } else {
                   addScramblesJsonStr(jsonStr);
                 }

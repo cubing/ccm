@@ -58,6 +58,8 @@ Template.advanceParticipants.events({
     Meteor.call('advanceParticipantsFromRound', advanceCount, this.roundId, function(err, result) {
       if(!err) {
         template.$(".modal").modal('hide');
+      } else {
+        console.error("Meteor.call() error: " + err);
       }
     });
   },

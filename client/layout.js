@@ -66,6 +66,9 @@ Template._loginButtonsLoggedInDropdown.events({
     Meteor.call('requestVerificationEmail', function(err, value) {
       verificationSendSuccessReact.set(!err);
       $('#modal-verificationsent').modal('show');
+      if(err) {
+        console.error("Meteor.call() error: " + err);
+      }
     });
   },
 });

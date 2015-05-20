@@ -181,6 +181,8 @@ Template.editEventModal.events({
       if(!err) {
         template.$('#deleteEventConfirmModal').modal('hide');
         template.$('#editEventModal').modal('hide');
+      } else {
+        console.error("Meteor.call() error: " + err);
       }
     });
   },

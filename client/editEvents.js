@@ -382,6 +382,8 @@ Template.modalSoftCutoff.events({
     Meteor.call('setRoundSoftCutoff', roundId, softCutoff, function(err, result) {
       if(!err) {
         template.$(".modal").modal('hide');
+      } else {
+        console.error("Meteor.call() error: " + err);
       }
     });
   },

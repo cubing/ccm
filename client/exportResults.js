@@ -24,6 +24,7 @@ Template.exportResults.events({
   'click #buttonGenerateWcaResults': function(e, template) {
     Meteor.call('exportWcaResults', this.competitionId, this.competitionUrlId, function(err, result) {
       if(err) {
+        console.error("Meteor.call() error: " + err);
         template.wcaResultsReact.set(null);
         template.exportProblemsReact.set([err]);
       } else {

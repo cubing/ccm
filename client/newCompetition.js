@@ -32,6 +32,7 @@ Template.newCompetition.events({
     Meteor.call("createCompetition", competitionName, getTodayDateNoTime(), function(err, competitionUrlId) {
       if(err) {
         FlashMessages.sendError("Error submitting form: " + err.message, { autoHide: true, hideDelay: 5000 });
+        console.error("Meteor.call() error: " + err);
       } else {
         Router.go('manageCompetition', { competitionUrlId: competitionUrlId });
       }
@@ -64,6 +65,8 @@ Template.newCompetition.events({
       $form.find('button').removeClass('disabled');
       if(!err) {
         Router.go('manageCompetition', { competitionUrlId: competitionUrlId });
+      } else {
+        console.error("Meteor.call() error: " + err);
       }
     });
   },

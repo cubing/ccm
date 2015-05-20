@@ -285,6 +285,8 @@ function jChesterSave($jChester) {
   Meteor.call('setSolveTime', resultId, solveIndex, solveTime, function(err, result) {
     if(!err) {
       $tr.removeClass('saving');
+    } else {
+      console.error("Meteor.call() error: " + err);
     }
   });
   return true;
