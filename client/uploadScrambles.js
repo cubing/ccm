@@ -105,8 +105,9 @@ function extractJsonFromZip(filename, zipId, pw, cb) {
         } else {
           cb("Wrong password");
         }
+      } else {
+        console.error("Meteor.call() error: " + err);
       }
-      console.error("Meteor.call() error: " + err);
     } else {
       cb(null, data);
     }
