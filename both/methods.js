@@ -172,38 +172,33 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, event.competitionId);
     ScheduleEvents.remove({ _id: scheduleEventId});
   },
-  // TODO - i think this would be a bit cleaner if we just had a
-  // removeLastRoundForEvent method or something. This might
-  // require pulling non wca-event rounds out into a
-  // separate collection.
-  removeRound: function(roundId) {
+  removeLastRoundForEvent: function(competitionId, eventCode) {
+    var roundId = getLastRoundIdForEvent(competitionId, eventCode);
     if(!canRemoveRound(this.userId, roundId)) {
-      throw new Meteor.Error(400, "Cannot remove round. Make sure it is the last round for this event, and has no times entered.");
+      throw new Meteor.Error(400, "Cannot remove round.");
     }
 
     var round = Rounds.findOne({ _id: roundId });
-    assert(round); // canRemoveRound checked that roundId is valid
+    assert(round);
 
     Rounds.remove({ _id: roundId });
     [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
       collection.remove({ roundId: roundId });
     });
 
-    if(round.eventCode) {
-      Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
+    Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
 
-      // Deleting a round affects the set of people who advanced
-      // from the previous round =)
-      var previousRound = Rounds.findOne({
-        competitionId: round.competitionId,
-        eventCode: round.eventCode,
-        nthRound: round.nthRound - 1,
-      }, {
-        fields: { _id: 1 }
-      });
-      if(previousRound) {
-        Meteor.call('recomputeWhoAdvanced', previousRound._id);
-      }
+    // Deleting a round affects the set of people who advanced
+    // from the previous round =)
+    var previousRound = Rounds.findOne({
+      competitionId: round.competitionId,
+      eventCode: round.eventCode,
+      nthRound: round.nthRound - 1,
+    }, {
+      fields: { _id: 1 }
+    });
+    if(previousRound) {
+      Meteor.call('recomputeWhoAdvanced', previousRound._id);
     }
   },
   refreshRoundCodes: function(competitionId, eventCode) {
