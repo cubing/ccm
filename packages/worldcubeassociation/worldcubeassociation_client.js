@@ -33,7 +33,7 @@ WorldCubeAssociation.requestCredential = function (options, credentialRequestCom
   var loginStyle = OAuth._loginStyle('worldcubeassociation', config, options);
 
   var loginUrl =
-        'http://staging.worldcubeassociation.org/oauth/authorize?client_id=' + config.appId +
+        'https://staging.worldcubeassociation.org/oauth/authorize?client_id=' + config.appId +
         '&redirect_uri=' + OAuth._redirectUri('worldcubeassociation', config) +
         //<<<'&display=' + display + '&scope=' + scope +
         '&state=' + OAuth._stateParam(loginStyle, credentialToken) +
