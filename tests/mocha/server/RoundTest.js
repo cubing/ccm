@@ -49,6 +49,11 @@ MochaWeb.testOnly(function() {
       chai.expect(open.isClosed()).to.be.false;
       chai.expect(closed.isClosed()).to.be.true;
     });
+
+    it('displayTitle()', function() {
+      chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 2}).displayTitle()).to.equal('Skewb: Round 1 of 2');
+      chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 1}).displayTitle()).to.equal('Skewb: Single Round');
+    });
   });
 
   function makeRound(properties) {

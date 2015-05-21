@@ -47,7 +47,8 @@ _.extend(Round.prototype, {
     return this.status === wca.roundStatuses.closed;
   },
   displayTitle: function() {
-    return this.eventName() + ": " + this.properties().name;
+    var words = (this.totalRounds == 1) ? "Single Round" : "Round " + this.nthRound + " of " + this.totalRounds;
+    return this.eventName() + ": " + words;
   },
   endMinutes: function() {
     return this.startMinutes + this.durationMinutes;
