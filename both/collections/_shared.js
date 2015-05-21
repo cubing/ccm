@@ -135,6 +135,6 @@ getUserAttribute = function(userId, attribute) {
   return getDocumentAttribute(Meteor.users, userId, attribute);
 };
 
-getRoundAttribute = function(roundId, attribute) {
-  return getDocumentAttribute(Rounds, roundId, attribute);
+getRound = function(roundId) {
+  return Rounds.findOne(roundId);
 };

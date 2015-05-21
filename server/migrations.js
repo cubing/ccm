@@ -1,26 +1,28 @@
-Migrations.add({
-  version: 1,
-  name: 'Move rounds.progress data to new roundProgresses collection.',
-  up: function() {
-    var allRounds = Rounds.find({}).fetch();
-    allRounds.forEach(function(round) {
-      var done = 0;
-      var total = 0;
-      if(round.progress) {
-        done = round.progress.done;
-        total = round.progress.total;
-      }
-      RoundProgresses.insert({
-        roundId: round._id,
-        competitionId: round.competitionId,
-        done: done,
-        total: total,
+Migrations.add(
+  {
+    version: 2,
+    name: 'Compute rounds.totalCount and remove rounds.roundCode.',
+    up: function() {
+      var counts = {};
+
+      Rounds.find({}).fetch().forEach(function(round) {
+        var key = round.competitionId + ',' + round.eventCode;
+        counts[key] = (counts[key] || 0) + 1;
       });
 
-      Rounds.update({_id: round._id}, { $unset: { progress: 1 } });
-    });
+      Object.keys(counts).forEach(function(key) {
+        ids = key.split(',');
+        Rounds.update(
+          {competitionId: ids[0], eventCode: ids[1]},
+          {$set: {totalRounds: counts[key]}},
+          {multi: true}
+        );
+      });
+
+      Rounds.update({}, {$unset: { roundCode: 1 }}, {multi: true});
+    }
   }
-});
+);
 
 Meteor.startup(function() {
   Migrations.migrateTo('latest');

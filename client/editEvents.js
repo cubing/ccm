@@ -10,12 +10,12 @@ Template.editEvents.events({
     if(progress.total > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
-      Meteor.call('removeLastRoundForEvent', this.competitionId, this.eventCode);
+      Meteor.call('removeLastRound', this.competitionId, this.eventCode);
     }
   },
   'click button[name="buttonReallyRemoveRound"]': function(e, template) {
     $("#modalReallyRemoveRound_" + this.eventCode).modal('hide');
-    Meteor.call('removeLastRoundForEvent', this.competitionId, this.eventCode);
+    Meteor.call('removeLastRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonOpenRound"]': function(e, template) {
     Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.open } });
@@ -257,7 +257,7 @@ Template.editEvents.helpers({
   },
   lastRoundCode: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    return Rounds.findOne(roundId).roundCode;
+    return Rounds.findOne(roundId).roundCode();
   },
   roundPopup: function() {
     return roundPopupReact.get();

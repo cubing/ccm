@@ -90,7 +90,7 @@ Meteor.methods({
         }
 
         var wcaRound = {
-          roundId: round.roundCode,
+          roundId: round.roundCode(),
           formatId: round.formatCode,
           results: wcaResults,
           groups: wcaGroups

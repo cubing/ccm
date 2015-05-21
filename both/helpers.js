@@ -32,13 +32,13 @@ register("competition", function(attribute) {
 });
 
 register("roundEventCode", function() {
-  return getRoundAttribute(this.roundId, 'eventCode');
+  return getRound(this.roundId).eventCode;
 });
 register("roundRoundCode", function() {
-  return getRoundAttribute(this.roundId, 'roundCode');
+  return getRound(this.roundId).roundCode();
 });
 register("roundFormatCode", function() {
-  return getRoundAttribute(this.roundId, 'formatCode');
+  return getRound(this.roundId).formatCode;
 });
 
 register("isSiteAdmin", function() {

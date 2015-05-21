@@ -37,11 +37,6 @@ Template.roundPicker.helpers({
       competitionId: this.competitionId,
       eventCode: template.selectedEventCodeReact.get(),
     }, {
-      fields: {
-        roundCode: 1,
-        eventCode: 1,
-        nthRound: 1,
-      },
       sort: { nthRound: 1 }
     });
     return rounds;
