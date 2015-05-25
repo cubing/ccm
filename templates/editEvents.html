@@ -2,11 +2,10 @@
   <div class="container-fluid">
 
     <div id="editEventsList">
+      {{! ===================== Page Header ===================== }}
       <div class="row">
         <div class="col-xs-5">
-          <h2>
-            Events
-          </h2>
+          <h2>Events</h2>
         </div>
         <div class="col-xs-7 text-right">
           <div class="btn-group" id="expandCollapseAllEvents">
@@ -31,10 +30,12 @@
                   </a>
                 </h3>
               </div>
+
               <div id="collapse{{eventCode}}" class="panel-collapse collapse {{#if showEvent}}in{{/if}}">
                 <div class="panel-body">
                   <div class="table-responsive">
                     <table class="table table-condensed">
+                      {{! ============= Rounds property headers ============= }}
                       <thead>
                         <tr>
                           <th class="tight-cell">#</th>
@@ -61,8 +62,10 @@
                         {{#each rounds}}
                           <tr>
 
+                            {{! ============= Nth Round ============= }}
                             <td class="tight-cell">{{nthRound}}</td>
 
+                            {{! ============= Format ============= }}
                             <td class="tight-cell">
                               <select name="roundFormat" class="form-control input-xs">
                                 {{#each formats}}
@@ -72,6 +75,7 @@
                             </td>
 
                             {{#if eventAllowsCutoffs eventCode}}
+                              {{! ============= Soft Cutoff ============= }}
                               <td class="tight-cell text-center">
                                 <button type="button" name="buttonSoftCutoff"
                                         class="btn {{#if roundSoftCutoffAllowed}}btn-default{{else}}btn-warning{{/if}} btn-xs">
@@ -83,6 +87,7 @@
                                 </button>
                               </td>
 
+                              {{! ============= Hard cutoff ============= }}
                               <td class="tight-cell text-center">
                                 <button type="button" name="buttonHardCutoff"
                                         class="btn btn-default btn-xs">
@@ -95,6 +100,7 @@
                               </td>
                             {{/if}}
 
+                            {{! ============= Progress ============= }}
                             <td class="text-center">
                               {{#if roundProgress.total}}
                                 <a href="{{pathFor 'dataEntry' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
@@ -121,6 +127,7 @@
                               {{/if}}
                             </td>
 
+                            {{! ============= Open/Close Round ============= }}
                             <td class="tight-cell text-center">
                               {{#if canOpenRound}}
                                 <button type="button" name="buttonOpenRound"
@@ -152,6 +159,7 @@
                       </tbody>
                     </table>
 
+                    <!-- ============= Are You Sure Delete Round?  ============= -->
                     {{#if rounds}}
                       <div id="modalReallyRemoveRound_{{eventCode}}" class="modal fade">
                         <div class="modal-dialog">
@@ -177,6 +185,8 @@
                     {{/if}}
 
                   </div>
+
+                  <!-- ============= Delete/Add round buttons ============= -->
                   <div class="btn-group btn-group-justified">
                     <div class="btn-group">
 
@@ -194,6 +204,7 @@
                       </button>
                     </div>
                   </div>
+
                 </div>
               </div>
 

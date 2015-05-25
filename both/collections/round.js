@@ -31,7 +31,7 @@ _.extend(Round.prototype, {
     return wca.eventByCode[this.eventCode].solveTimeFields;
   },
   roundCode: function() {
-    if(this.nthRound === this.totalRounds) {
+    if(this.isLast()) {
       return this.softCutoff ? 'c' : 'f';
     } else {
       return (this.softCutoff ? 'degc' : '123f')[this.nthRound-1];
@@ -45,6 +45,9 @@ _.extend(Round.prototype, {
   },
   isClosed: function() {
     return this.status === wca.roundStatuses.closed;
+  },
+  isLast: function() {
+    return this.nthRound === this.totalRounds;
   },
   displayTitle: function() {
     var words = (this.totalRounds == 1) ? "Single Round" : "Round " + this.nthRound + " of " + this.totalRounds;

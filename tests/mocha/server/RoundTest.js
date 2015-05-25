@@ -54,6 +54,11 @@ MochaWeb.testOnly(function() {
       chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 2}).displayTitle()).to.equal('Skewb: Round 1 of 2');
       chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 1}).displayTitle()).to.equal('Skewb: Single Round');
     });
+
+    it('isLast()', function() {
+      chai.expect(makeRound({nthRound: 1, totalRounds: 2}).isLast()).to.be.false;
+      chai.expect(makeRound({nthRound: 2, totalRounds: 2}).isLast()).to.be.true;
+    });
   });
 
   function makeRound(properties) {

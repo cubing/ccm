@@ -201,10 +201,10 @@ Template.editEvents.helpers({
     return startDate.fromNow() + " (" + rangeStr + ")";
   },
   roundOpen: function() {
-    return this.status == wca.roundStatuses.open;
+    return this.isOpen();
   },
   canCloseRound: function() {
-    return this.status == wca.roundStatuses.open;
+    return this.isClosed();
   },
   canOpenRound: function() {
     var nextRound = Rounds.findOne({
@@ -219,7 +219,7 @@ Template.editEvents.helpers({
       // closed), we can't reopen this round.
       return false;
     }
-    if(this.status == wca.roundStatuses.unstarted) {
+    if(this.isUnstarted()) {
       var progress = RoundProgresses.findOne({roundId: this._id});
       // We always create and delete WCA Rounds and RoundProgresses together,
       // but when deleting a Round, there's a window where this helper gets called,
@@ -230,25 +230,15 @@ Template.editEvents.helpers({
         return progress.total > 0;
       }
     }
-    return this.status == wca.roundStatuses.closed;
+    return this.isClosed();
   },
   canAdvanceRound: function() {
-    if(this.status != wca.roundStatuses.closed) {
+    if(!this.isClosed()) {
       // We only allow advancing from rounds when they are closed
       return false;
     }
-    var nextRound = Rounds.findOne({
-      competitionId: this.competitionId,
-      eventCode: this.eventCode,
-      nthRound: this.nthRound + 1,
-    }, {
-      fields: { status: 1 }
-    });
-    if(!nextRound) {
-      // We can't advance people from the final round
-      return false;
-    }
-    return true;
+    // We can't advance people from the final round
+    return !this.isLast();
   },
   isCurrentRoundFormat: function() {
     var round = Template.parentData(1);
