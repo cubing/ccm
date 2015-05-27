@@ -8,12 +8,12 @@ _.extend(RoundProgress.prototype, {
   percentage: function() {
     return (this.total > 0 ? Math.round(100 * this.done / this.total) : 0);
   },
-  isComplete: function() {
-    return this.done === this.total;
-  },
-  isOverComplete: function() {
-    return this.done > this.total;
-  },
+  completeness: function() {
+    if(this.done === this.total) {
+      return 'complete';
+    }
+    return this.done < this.total ? 'incomplete' : 'overcomplete';
+  }
 });
 
 RoundProgresses = new Mongo.Collection("roundProgresses", { transform: function(doc) { return new RoundProgress(doc); } });

@@ -3,6 +3,11 @@ function register(name, func) {
     Template.registerHelper(name, func);
   }
 }
+
+register("not", function(thing) {
+  return !thing;
+});
+
 register("roundName", function(roundCode) {
   return wca.roundByCode[roundCode].name;
 });

@@ -160,13 +160,13 @@ Template.editEvents.helpers({
     }
     return this.size > maxAllowedRoundSize;
   },
-  roundComplete: function() {
+  progressClasses: function() {
     var progress = RoundProgresses.findOne({roundId: this._id});
-    return progress.isComplete();
-  },
-  roundOvercomplete: function() {
-    var progress = RoundProgresses.findOne({roundId: this._id});
-    return progress.isOverComplete();
+    var classes = "progress-bar-" + {incomplete: "warning", complete: "success", overcomplete: "danger"}[progress.completeness()];
+    if(this.isOpen()) {
+      classes += " progress-bar-striped active";
+    }
+    return classes;
   },
   lastRoundResultsCount: function() {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);

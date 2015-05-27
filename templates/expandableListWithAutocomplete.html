@@ -27,7 +27,7 @@
           <div class="input-group">
             {{> inputAutocomplete name="name" settings=autocompleteSettings class="form-control input-xlarge" placeholder="Enter name..."}}
             <span class="input-group-btn">
-              <button type="submit" name="buttonAddDoc" class="btn btn-default" disabled="{{#unless newDocSelected}}disabled{{/unless}}">
+              <button type="submit" name="buttonAddDoc" class="btn btn-default" disabled={{not newDocSelected}}>
                 <span class="glyphicon glyphicon-plus"></span>
               </button>
             </span>
