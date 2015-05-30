@@ -58,7 +58,7 @@ MochaWeb.testOnly(function() {
     });
 
     it('addRound respects wca.MAX_ROUNDS_PER_EVENT', function() {
-      for(i = 0; i < wca.MAX_ROUNDS_PER_EVENT; i++) {
+      for(var i = 0; i < wca.MAX_ROUNDS_PER_EVENT; i++) {
         Meteor.call('addRound', comp1Id, '333');
       }
       chai.expect(function() {

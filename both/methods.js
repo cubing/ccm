@@ -138,9 +138,9 @@ Meteor.methods({
     });
 
     Rounds.update(
-      {competitionId: competitionId, eventCode: eventCode},
-      {$set: {totalRounds: newCount}},
-      {multi: true}
+      { competitionId: competitionId, eventCode: eventCode },
+      { $set: {totalRounds: newCount } },
+      { multi: true }
     );
 
     RoundProgresses.insert({
@@ -163,9 +163,9 @@ Meteor.methods({
     });
 
     Rounds.update(
-      {competitionId: competitionId, eventCode: eventCode},
-      {$set: {totalRounds: deadRound.totalRounds - 1}},
-      {multi: true}
+      { competitionId: competitionId, eventCode: eventCode },
+      { $set: { totalRounds: deadRound.totalRounds - 1 } },
+      { multi: true }
     );
 
     // Deleting a round affects the set of people who advanced

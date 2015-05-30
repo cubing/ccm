@@ -200,11 +200,8 @@ Template.editEvents.helpers({
     var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
     return startDate.fromNow() + " (" + rangeStr + ")";
   },
-  roundOpen: function() {
-    return this.isOpen();
-  },
   canCloseRound: function() {
-    return this.isClosed();
+    return this.isOpen();
   },
   canOpenRound: function() {
     var nextRound = Rounds.findOne({
