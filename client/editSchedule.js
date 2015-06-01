@@ -143,8 +143,8 @@ Template.editSchedule.rendered = function() {
 };
 
 Template.sortedRound.helpers({
-  draggability: function(alreadyScheduled) {
-    return alreadyScheduled ? "undraggable" : "draggable";
+  draggability: function() {
+    return this.isScheduled() ? "undraggable" : "draggable";
   },
 });
 
