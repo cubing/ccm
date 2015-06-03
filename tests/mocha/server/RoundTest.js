@@ -11,8 +11,8 @@ MochaWeb.testOnly(function() {
     });
 
     it('properties()', function() {
-      chai.expect(makeRound({ roundCode: '1' }).properties().name).to.equal("First round");
-      chai.expect(makeRound({ roundCode: 'g' }).properties().name).to.equal("Combined Third Round");
+      chai.expect(makeRound({ nthRound: 1, totalRounds: 2 }).properties().name).to.equal("First round");
+      chai.expect(makeSoftCutoffRound({ nthRound: 3, totalRounds: 4 }).properties().name).to.equal("Combined Third Round");
     });
 
     it('eventName()', function() {
@@ -22,6 +22,14 @@ MochaWeb.testOnly(function() {
     it('eventSolveTimeFields()', function() {
       chai.expect(makeRound({ eventCode: '333mbf' }).eventSolveTimeFields().join()).to.equal("millis,puzzlesSolvedCount,puzzlesAttemptedCount");
       chai.expect(makeRound({ eventCode: '777' }).eventSolveTimeFields()).to.be.undefined;
+    });
+
+    it('roundCode()', function() {
+      chai.expect(makeRound({ nthRound: 1, totalRounds: 2 }).roundCode()).to.equal('1');
+      chai.expect(makeRound({ nthRound: 2, totalRounds: 2 }).roundCode()).to.equal('f');
+      chai.expect(makeRound({ nthRound: 3, totalRounds: 4 }).roundCode()).to.equal('3');
+      chai.expect(makeSoftCutoffRound({ nthRound: 2, totalRounds: 3 }).roundCode()).to.equal('e');
+      chai.expect(makeSoftCutoffRound({ nthRound: 4, totalRounds: 4 }).roundCode()).to.equal('c');
     });
 
     it('status convenience functions', function() {
@@ -41,9 +49,22 @@ MochaWeb.testOnly(function() {
       chai.expect(open.isClosed()).to.be.false;
       chai.expect(closed.isClosed()).to.be.true;
     });
+
+    it('displayTitle()', function() {
+      chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 2}).displayTitle()).to.equal('Skewb: Round 1 of 2');
+      chai.expect(makeRound({eventCode: 'skewb', nthRound: 1, totalRounds: 1}).displayTitle()).to.equal('Skewb: Single Round');
+    });
+
+    it('isLast()', function() {
+      chai.expect(makeRound({nthRound: 1, totalRounds: 2}).isLast()).to.be.false;
+      chai.expect(makeRound({nthRound: 2, totalRounds: 2}).isLast()).to.be.true;
+    });
   });
 
   function makeRound(properties) {
-    return Rounds.findOne(Rounds.insert(_.extend({ competitionId: 'fake'}, properties)));
+    return Rounds.findOne(Rounds.insert(_.extend({ competitionId: 'fake', nthRound: 1, totalRounds: 1 }, properties)));
+  }
+  function makeSoftCutoffRound(properties) {
+    return makeRound(_.extend({softCutoff: { time: {}, formatCode: '2'} }, properties));
   }
 });

@@ -10,12 +10,12 @@ Template.editEvents.events({
     if(progress.total > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
-      Meteor.call('removeLastRoundForEvent', this.competitionId, this.eventCode);
+      Meteor.call('removeLastRound', this.competitionId, this.eventCode);
     }
   },
   'click button[name="buttonReallyRemoveRound"]': function(e, template) {
     $("#modalReallyRemoveRound_" + this.eventCode).modal('hide');
-    Meteor.call('removeLastRoundForEvent', this.competitionId, this.eventCode);
+    Meteor.call('removeLastRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonOpenRound"]': function(e, template) {
     Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.open } });
@@ -160,13 +160,13 @@ Template.editEvents.helpers({
     }
     return this.size > maxAllowedRoundSize;
   },
-  roundComplete: function() {
+  progressClasses: function() {
     var progress = RoundProgresses.findOne({roundId: this._id});
-    return progress.isComplete();
-  },
-  roundOvercomplete: function() {
-    var progress = RoundProgresses.findOne({roundId: this._id});
-    return progress.isOverComplete();
+    var classes = "progress-bar-" + {incomplete: "warning", complete: "success", overcomplete: "danger"}[progress.completeness()];
+    if(this.isOpen()) {
+      classes += " progress-bar-striped active";
+    }
+    return classes;
   },
   lastRoundResultsCount: function() {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
@@ -200,11 +200,8 @@ Template.editEvents.helpers({
     var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
     return startDate.fromNow() + " (" + rangeStr + ")";
   },
-  roundOpen: function() {
-    return this.status == wca.roundStatuses.open;
-  },
   canCloseRound: function() {
-    return this.status == wca.roundStatuses.open;
+    return this.isOpen();
   },
   canOpenRound: function() {
     var nextRound = Rounds.findOne({
@@ -219,7 +216,7 @@ Template.editEvents.helpers({
       // closed), we can't reopen this round.
       return false;
     }
-    if(this.status == wca.roundStatuses.unstarted) {
+    if(this.isUnstarted()) {
       var progress = RoundProgresses.findOne({roundId: this._id});
       // We always create and delete WCA Rounds and RoundProgresses together,
       // but when deleting a Round, there's a window where this helper gets called,
@@ -230,25 +227,15 @@ Template.editEvents.helpers({
         return progress.total > 0;
       }
     }
-    return this.status == wca.roundStatuses.closed;
+    return this.isClosed();
   },
   canAdvanceRound: function() {
-    if(this.status != wca.roundStatuses.closed) {
+    if(!this.isClosed()) {
       // We only allow advancing from rounds when they are closed
       return false;
     }
-    var nextRound = Rounds.findOne({
-      competitionId: this.competitionId,
-      eventCode: this.eventCode,
-      nthRound: this.nthRound + 1,
-    }, {
-      fields: { status: 1 }
-    });
-    if(!nextRound) {
-      // We can't advance people from the final round
-      return false;
-    }
-    return true;
+    // We can't advance people from the final round
+    return !this.isLast();
   },
   isCurrentRoundFormat: function() {
     var round = Template.parentData(1);
@@ -257,7 +244,7 @@ Template.editEvents.helpers({
   },
   lastRoundCode: function() {
     var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    return Rounds.findOne(roundId).roundCode;
+    return Rounds.findOne(roundId).roundCode();
   },
   roundPopup: function() {
     return roundPopupReact.get();

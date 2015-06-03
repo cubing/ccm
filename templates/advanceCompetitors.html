@@ -9,7 +9,7 @@
       <div class="col-xs-6">
         <form class="form-inline advance-participants-form">
           <input type="number" min="1" max="{{participantsInRound}}" name="advanceCount" class="form-control" value="{{advanceCount}}" />
-          <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
+          <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>
             Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
           </button>
         </form>

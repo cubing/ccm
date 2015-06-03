@@ -2,11 +2,10 @@
   <div class="container-fluid">
 
     <div id="editEventsList">
+      {{! ===================== Page Header ===================== }}
       <div class="row">
         <div class="col-xs-5">
-          <h2>
-            Events
-          </h2>
+          <h2>Events</h2>
         </div>
         <div class="col-xs-7 text-right">
           <div class="btn-group" id="expandCollapseAllEvents">
@@ -31,10 +30,12 @@
                   </a>
                 </h3>
               </div>
+
               <div id="collapse{{eventCode}}" class="panel-collapse collapse {{#if showEvent}}in{{/if}}">
                 <div class="panel-body">
                   <div class="table-responsive">
                     <table class="table table-condensed">
+                      {{! ============= Rounds property headers ============= }}
                       <thead>
                         <tr>
                           <th class="tight-cell">#</th>
@@ -61,17 +62,20 @@
                         {{#each rounds}}
                           <tr>
 
+                            {{! ============= Nth Round ============= }}
                             <td class="tight-cell">{{nthRound}}</td>
 
+                            {{! ============= Format ============= }}
                             <td class="tight-cell">
                               <select name="roundFormat" class="form-control input-xs">
                                 {{#each formats}}
-                                  <option value="{{this}}" selected="{{#if isCurrentRoundFormat}}selected{{/if}}">{{formatShortName this}}</option>
+                                  <option value="{{this}}" selected={{isCurrentRoundFormat}}>{{formatShortName this}}</option>
                                 {{/each}}
                               </select>
                             </td>
 
                             {{#if eventAllowsCutoffs eventCode}}
+                              {{! ============= Soft Cutoff ============= }}
                               <td class="tight-cell text-center">
                                 <button type="button" name="buttonSoftCutoff"
                                         class="btn {{#if roundSoftCutoffAllowed}}btn-default{{else}}btn-warning{{/if}} btn-xs">
@@ -83,6 +87,7 @@
                                 </button>
                               </td>
 
+                              {{! ============= Hard cutoff ============= }}
                               <td class="tight-cell text-center">
                                 <button type="button" name="buttonHardCutoff"
                                         class="btn btn-default btn-xs">
@@ -95,11 +100,12 @@
                               </td>
                             {{/if}}
 
+                            {{! ============= Progress ============= }}
                             <td class="text-center">
                               {{#if roundProgress.total}}
                                 <a href="{{pathFor 'dataEntry' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
                                   <div class="progress">
-                                    <div class="progress-bar {{#if roundComplete}}progress-bar-success{{else}}{{#if roundOvercomplete}}progress-bar-danger{{else}}progress-bar-warning{{/if}}{{/if}} {{#if roundOpen}}progress-bar-striped active{{/if}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundProgress}}%;">
+                                    <div class="progress-bar {{progressClasses}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundProgress}}%;">
                                       {{toAtMostFixed roundProgress.done 1}}/{{roundProgress.total}}
                                     </div>
                                   </div>
@@ -121,6 +127,7 @@
                               {{/if}}
                             </td>
 
+                            {{! ============= Open/Close Round ============= }}
                             <td class="tight-cell text-center">
                               {{#if canOpenRound}}
                                 <button type="button" name="buttonOpenRound"
@@ -152,6 +159,7 @@
                       </tbody>
                     </table>
 
+                    <!-- ============= Are You Sure Delete Round?  ============= -->
                     {{#if rounds}}
                       <div id="modalReallyRemoveRound_{{eventCode}}" class="modal fade">
                         <div class="modal-dialog">
@@ -177,23 +185,26 @@
                     {{/if}}
 
                   </div>
+
+                  <!-- ============= Delete/Add round buttons ============= -->
                   <div class="btn-group btn-group-justified">
                     <div class="btn-group">
 
                       <button type="button" name="buttonRemoveRound"
                               class="btn btn-default btn-xs {{#if lastRoundResultsCount}}btn-danger{{/if}}"
-                              disabled="{{#unless canRemoveRound}}disabled{{/unless}}">
+                              disabled={{not canRemoveRound}}>
                         <span class="glyphicon glyphicon-minus"></span> Delete last round
                       </button>
                     </div>
                     <div class="btn-group">
                       <button type="button" name="buttonAddRound"
                               class="btn btn-default btn-xs"
-                              disabled="{{#unless canAddRound}}disabled{{/unless}}">
+                              disabled={{not canAddRound}}>
                         <span class="glyphicon glyphicon-plus"></span> Add round
                       </button>
                     </div>
                   </div>
+
                 </div>
               </div>
 
@@ -238,7 +249,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>
                 Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
               </button>
             </div>
@@ -268,9 +279,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
-                Save
-              </button>
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>Save</button>
             </div>
           </div><!-- /.modal-content -->
         </form>
@@ -297,21 +306,19 @@
               {{/if}}
               <select name="softCutoffFormatCode" class="form-control input-xs">
                 <!-- will end up selected if nothing else is -->
-                <option value="" selected="">No soft cutoff</option>
+                <option value="" selected>No soft cutoff</option>
 
                 <!-- http://stackoverflow.com/a/23498190 -->
                 <optgroup label="───────────────"></optgroup>
 
                 {{#each softCutoffFormats}}
-                  <option value="{{code}}" selected="{{#if isCurrentSoftCutoffFormat}}selected{{/if}}" disabled="{{#unless isAllowedSoftCutoffFormat}}disabled{{/unless}}">{{name}}</option>
+                  <option value="{{code}}" selected={{isCurrentSoftCutoffFormat}} disabled={{not isAllowedSoftCutoffFormat}}>{{name}}</option>
                 {{/each}}
               </select>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
-                Save
-              </button>
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>Save</button>
             </div>
           </div><!-- /.modal-content -->
         </form>
@@ -337,9 +344,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled="{{#unless isSaveable}}disabled{{/unless}}">
-                Save
-              </button>
+              <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>Save</button>
             </div>
           </div><!-- /.modal-content -->
         </form>

@@ -19,7 +19,7 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary form-control" disabled="{{#unless newCompetitionName}}active{{/unless}}">Create competition</button>
+            <button type="submit" class="btn btn-primary form-control" disabled={{not newCompetitionName}}>Create competition</button>
           </form>
         </div>
       {{/if}}
@@ -33,7 +33,7 @@
                 Upload competition JSON...
               </label>
             </p>
-            <button type="submit" class="btn btn-primary form-control" disabled="{{#unless uploadedCompetition}}active{{/unless}}">
+            <button type="submit" class="btn btn-primary form-control" disabled={{not uploadedCompetition}}>
               Import
               {{#if uploadedCompetition}}
                 {{uploadedCompetition.competitionId}}

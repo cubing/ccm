@@ -50,11 +50,11 @@
           {{> afQuickField name="comments" }}
 
           {{#if userIsRegistered}}
-            <button type="submit" class="btn btn-default" disabled="disabled" id="changeRegistrationButton">
+            <button type="submit" class="btn btn-default" disabled id="changeRegistrationButton">
               <span class="glyphicon glyphicon-floppy-save"></span>
               Change Registration
             </button>
-            <button type="reset" class="btn btn-default" disabled="disabled" id="revertFormButton">Reset Form</button>
+            <button type="reset" class="btn btn-default" disabled id="revertFormButton">Reset Form</button>
 
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmDeregistration">
               <span class="glyphicon glyphicon-floppy-remove"></span> Unregister

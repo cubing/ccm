@@ -20,7 +20,7 @@ _.extend(Round.prototype, {
     }
   },
   properties: function() {
-    return wca.roundByCode[this.roundCode];
+    return wca.roundByCode[this.roundCode()];
   },
   eventName: function() {
     assert(this.eventCode);
@@ -29,6 +29,13 @@ _.extend(Round.prototype, {
   eventSolveTimeFields: function() {
     assert(this.eventCode);
     return wca.eventByCode[this.eventCode].solveTimeFields;
+  },
+  roundCode: function() {
+    if(this.isLast()) {
+      return this.softCutoff ? 'c' : 'f';
+    } else {
+      return (this.softCutoff ? 'degc' : '123f')[this.nthRound-1];
+    }
   },
   isUnstarted: function() {
     return this.status === wca.roundStatuses.unstarted;
@@ -39,8 +46,12 @@ _.extend(Round.prototype, {
   isClosed: function() {
     return this.status === wca.roundStatuses.closed;
   },
+  isLast: function() {
+    return this.nthRound === this.totalRounds;
+  },
   displayTitle: function() {
-    return this.eventName() + ": " + this.properties().name;
+    var words = (this.totalRounds == 1) ? "Single Round" : "Round " + this.nthRound + " of " + this.totalRounds;
+    return this.eventName() + ": " + words;
   },
   endMinutes: function() {
     return this.startMinutes + this.durationMinutes;
@@ -65,7 +76,9 @@ Rounds.attachSchema({
     // Indexed from 1, because humans will see this in urls
     type: Number,
     min: 1,
-    optional: true,
+  },
+  totalRounds: {
+    type: Number,
   },
   size: {
     // How many participants we expect to allow into this round.
@@ -119,15 +132,7 @@ Rounds.attachSchema({
     allowedValues: _.keys(wca.eventByCode),
     optional: true,
   },
-  roundCode: {
-    // A WCA round code (this can be computed from nthRound, softCutoff, and
-    // the total number of rounds for this eventCode). For example, round 1/4
-    // is a "(Combined) First Round", but round 1/1 is a "(Combined) Final".
-    type: String,
-    allowedValues: _.keys(wca.roundByCode),
-    optional: true,
-  },
-  formatCode: {
+  formatCode: { // TODO Replace with function() {return wca.formatsByEventCode[this.eventCode][0]}
     type: String,
     allowedValues: _.keys(wca.formatByCode),
     optional: true,

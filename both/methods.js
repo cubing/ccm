@@ -39,14 +39,7 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   }
   throwIfCannotManageCompetition(this.userId, result.competitionId);
 
-  var round = Rounds.findOne({
-    _id: result.roundId,
-  }, {
-    fields: {
-      formatCode: 1,
-      roundCode: 1,
-    }
-  });
+  var round = Rounds.findOne(result.roundId);
 
   check(solveIndex, Match.Integer);
   if(solveIndex < 0 || solveIndex >= round.format().count) {
@@ -58,7 +51,7 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
     solves: result.solves
   };
 
-  var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode);
+  var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode());
   _.extend($set, statistics);
 
   Results.update(resultId, { $set: $set });
@@ -135,23 +128,58 @@ Meteor.methods({
     // in order, but I don't know if there is any guarantee of such across users
     // See http://docs.meteor.com/#method_unblock.
 
+    var newCount = Rounds.find({competitionId: competitionId, eventCode: eventCode}).count() + 1;
     var newRoundId = Rounds.insert({
       competitionId: competitionId,
       eventCode: eventCode,
       formatCode: wca.formatsByEventCode[eventCode][0],
-
-      // These will be filled in by refreshRoundCodes, but
-      // add valid value so the UI doesn't crap out.
-      roundCode: 'f',
-      nthRound: wca.MAX_ROUNDS_PER_EVENT,
+      nthRound: newCount,
+      totalRounds: newCount,
     });
+
+    Rounds.update(
+      { competitionId: competitionId, eventCode: eventCode },
+      { $set: {totalRounds: newCount } },
+      { multi: true }
+    );
 
     RoundProgresses.insert({
       roundId: newRoundId,
       competitionId: competitionId,
     });
+  },
+  removeLastRound: function(competitionId, eventCode) {
+    var roundId = getLastRoundIdForEvent(competitionId, eventCode);
+    if(!roundId || !canRemoveRound(this.userId, roundId)) {
+      throw new Meteor.Error(400, "Cannot remove round.");
+    }
 
-    Meteor.call('refreshRoundCodes', competitionId, eventCode);
+    var deadRound = Rounds.findOne({ _id: roundId });
+    assert(deadRound);
+
+    Rounds.remove({ _id: roundId });
+    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
+      collection.remove({ roundId: roundId });
+    });
+
+    Rounds.update(
+      { competitionId: competitionId, eventCode: eventCode },
+      { $set: { totalRounds: deadRound.totalRounds - 1 } },
+      { multi: true }
+    );
+
+    // Deleting a round affects the set of people who advanced
+    // from the previous round =)
+    var previousRound = Rounds.findOne({
+      competitionId: deadRound.competitionId,
+      eventCode: deadRound.eventCode,
+      nthRound: deadRound.nthRound - 1,
+    }, {
+      fields: { _id: 1 }
+    });
+    if(previousRound) {
+      Meteor.call('recomputeWhoAdvanced', previousRound._id);
+    }
   },
   addScheduleEvent: function(competitionId, eventData, roundId) {
     check(competitionId, String);
@@ -171,70 +199,6 @@ Meteor.methods({
     var event = ScheduleEvents.findOne(scheduleEventId);
     throwIfCannotManageCompetition(this.userId, event.competitionId);
     ScheduleEvents.remove({ _id: scheduleEventId});
-  },
-  removeLastRoundForEvent: function(competitionId, eventCode) {
-    var roundId = getLastRoundIdForEvent(competitionId, eventCode);
-    if(!canRemoveRound(this.userId, roundId)) {
-      throw new Meteor.Error(400, "Cannot remove round.");
-    }
-
-    var round = Rounds.findOne({ _id: roundId });
-    assert(round);
-
-    Rounds.remove({ _id: roundId });
-    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
-      collection.remove({ roundId: roundId });
-    });
-
-    Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
-
-    // Deleting a round affects the set of people who advanced
-    // from the previous round =)
-    var previousRound = Rounds.findOne({
-      competitionId: round.competitionId,
-      eventCode: round.eventCode,
-      nthRound: round.nthRound - 1,
-    }, {
-      fields: { _id: 1 }
-    });
-    if(previousRound) {
-      Meteor.call('recomputeWhoAdvanced', previousRound._id);
-    }
-  },
-  refreshRoundCodes: function(competitionId, eventCode) {
-    throwIfCannotManageCompetition(this.userId, competitionId);
-    check(eventCode, String);
-
-    var rounds = Rounds.find({
-      competitionId: competitionId,
-      eventCode: eventCode
-    }, {
-      sort: { nthRound: 1 },
-      fields: { softCutoff: 1 }
-    }).fetch();
-    if(rounds.length > wca.MAX_ROUNDS_PER_EVENT) {
-      throw new Meteor.Error(400, "Too many rounds");
-    }
-    rounds.forEach(function(round, index) {
-      // Note that we ignore the actual value of nthRound, and instead use the
-      // index into rounds as the nthRound. This defragments any missing
-      // rounds (not that that's something we expect to ever happen, since
-      // removeRound only allows removal of the latest round).
-
-      var lastRound = (index == rounds.length - 1);
-      var supportedRoundsIndex = (lastRound ? wca.MAX_ROUNDS_PER_EVENT - 1 : index);
-      var roundCodes = wca.supportedRounds[supportedRoundsIndex];
-      assert(roundCodes);
-      var roundCode = round.softCutoff ? roundCodes.combined : roundCodes.uncombined;
-      Rounds.update({
-        _id: round._id,
-      }, {
-        $set: {
-          roundCode: roundCode,
-          nthRound: index + 1,
-        }
-      });
-    });
   },
   addOrUpdateGroup: function(newGroup) {
     throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
@@ -426,10 +390,6 @@ Meteor.methods({
     }
 
     Rounds.update(roundId, toSet);
-
-    // Adding/removing a soft cutoff for a round makes a round a
-    // combined/uncombined round.
-    Meteor.call('refreshRoundCodes', round.competitionId, round.eventCode);
 
     // Changing the softCutoff for a round could affect the rounds progress,
     // so queue up a recomputation of that.
@@ -649,9 +609,9 @@ if(Meteor.isServer) {
           log.l1("adding data for round " + nthRound);
           var roundId = Rounds.insert({
             nthRound: nthRound + 1,
+            totalRounds: wcaEvent.rounds.length,
             competitionId: competition._id,
             eventCode: wcaEvent.eventId,
-            roundCode: wcaRound.roundId,
             formatCode: wcaRound.formatId,
             status: wca.roundStatuses.closed,
           });

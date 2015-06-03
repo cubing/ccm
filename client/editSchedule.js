@@ -4,9 +4,9 @@ Template.editSchedule.helpers({
   competition: function() {
     return Competitions.findOne(this.competitionId);
   },
-  unscheduledRounds: function() {
+  sortedRounds: function() {
     var allRounds = Rounds.find({ competitionId: this.competitionId }).fetch();
-    return _.filter(allRounds, function(round) { return !round.isScheduled(); });
+    return _.sortBy(allRounds, function(round) { return round.displayTitle(); });
   },
   eventToEdit: function() {
     return eventToEditReact.get();
@@ -142,10 +142,15 @@ Template.editSchedule.rendered = function() {
   makeDraggable(template.$('#new-calender-entry'));
 };
 
-Template.unscheduledRound.rendered = function() {
+Template.sortedRound.helpers({
+  draggability: function() {
+    return this.isScheduled() ? "undraggable" : "draggable";
+  },
+});
+
+Template.sortedRound.rendered = function() {
   var template = this;
-  var $unscheduledRound = template.$('.fc-event');
-  makeDraggable($unscheduledRound);
+  makeDraggable(template.$('.draggable'));
 };
 
 Template.editEventModal.helpers({
