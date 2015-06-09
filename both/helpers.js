@@ -115,15 +115,6 @@ register("getCompetitionRegistrationCloseMoment", function() {
   return getCompetitionRegistrationCloseMoment(this.competitionId);
 });
 
-getCompetitionNumberOfDays = function(competitionId) {
-  var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
-  numberOfDays = parseInt(numberOfDays);
-  return numberOfDays || 1;
-};
-register("competitionNumberOfDays", function() {
-  return getCompetitionNumberOfDays(this.competitionId);
-});
-
 getCompetitionEvents = function(competitionId) {
   var rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
 
@@ -146,22 +137,6 @@ getCompetitionEvents = function(competitionId) {
 };
 register("competitionEvents", function() {
   return getCompetitionEvents(this.competitionId);
-});
-
-getCompetitionCalendarStartMinutes = function(competitionId) {
-  var calendarStartMinutes = getCompetitionAttribute(competitionId, 'calendarStartMinutes');
-  return calendarStartMinutes;
-};
-register("competitionCalendarStartMinutes", function() {
-  return getCompetitionCalendarStartMinutes(this.competitionId);
-});
-
-getCompetitionCalendarEndMinutes = function(competitionId) {
-  var calendarEndMinutes = getCompetitionAttribute(competitionId, 'calendarEndMinutes');
-  return calendarEndMinutes;
-};
-register("competitionCalendarEndMinutes", function() {
-  return getCompetitionCalendarEndMinutes(this.competitionId);
 });
 
 register("canManageCompetition", function(userId) {

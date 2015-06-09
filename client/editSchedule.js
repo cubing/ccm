@@ -26,6 +26,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   template.autorun(function() {
     var data = Template.currentData();
     var competitionId = data.competitionId;
+    var competition = Competitions.findOne(competitionId);
 
     $calendarDiv.fullCalendar('destroy');
 
@@ -33,20 +34,20 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       var duration = moment.duration(timeMinutes, 'minutes');
       return Math.floor(duration.asHours()) + ":" + duration.minutes() + ":00";
     }
-    var compStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
-    var compEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
-    var numberOfDays = getCompetitionNumberOfDays(competitionId);
 
     var startDateMoment = getCompetitionStartDateMoment(competitionId) || moment.utc().startOf('day');
 
-    var eventChanged = function(event) {
+    var eventChanged = function(event, revertFunc) {
       var update = {
         nthDay: event.start.diff(startDateMoment, 'days'),
         startMinutes: event.start.hour()*60 + event.start.minute(),
         durationMinutes: event.end.diff(event.start, 'minutes'),
       };
 
-      ScheduleEvents.update(event.id, { $set: update });
+      var successCount = ScheduleEvents.update(event.id, { $set: update });
+      if(!successCount) {
+        revertFunc(); // moves the event back to before the drag
+      }
     };
 
     $calendarDiv.fullCalendar({
@@ -55,12 +56,12 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         center: 'title',
         right: '',
       },
-      durationDays: numberOfDays,
+      durationDays: competition.numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
       snapDuration: { minutes: ScheduleEvent.MIN_DURATION.asMinutes() },
-      minTime: timeMinutesToFullCalendarTime(compStartMinutes),
-      maxTime: timeMinutesToFullCalendarTime(compEndMinutes),
+      minTime: timeMinutesToFullCalendarTime(competition.calendarStartMinutes),
+      maxTime: timeMinutesToFullCalendarTime(competition.calendarEndMinutes),
       defaultDate: startDateMoment.toISOString(),
       defaultTimedEventDuration: { minutes: ScheduleEvent.DEFAULT_DURATION.asMinutes() },
       defaultView: 'agendaDays',
@@ -110,10 +111,10 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         $editModal.modal('show');
       },
       eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) { // Existing entry dragged
-        eventChanged(calEvent);
+        eventChanged(calEvent, revertFunc);
       },
       eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
-        eventChanged(calEvent);
+        eventChanged(calEvent, revertFunc);
       },
     });
   });
@@ -168,7 +169,7 @@ AutoForm.hooks({
       this.event.preventDefault();
 
       if(currentDoc._id) {
-        delete updateDoc.$set.competitionId; // Don't touch the competitionId field. We don't trust browser input that much.
+        delete updateDoc.$set.competitionId; // Don't update the competitionId field. We can't trust browser input.
         ScheduleEvents.update({ _id: currentDoc._id, }, updateDoc);
       } else {
         Meteor.call('addScheduleEvent', currentDoc.competitionId, insertDoc, null);

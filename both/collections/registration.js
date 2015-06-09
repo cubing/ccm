@@ -32,7 +32,7 @@ Registrations.attachSchema({
       });
 
       if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
-        return "notUnique";
+        return "notUnique"; // TODO this has no message?!?
       }
 
     }

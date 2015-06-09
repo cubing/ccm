@@ -185,7 +185,7 @@ Meteor.methods({
     check(competitionId, String);
     throwIfCannotManageCompetition(this.userId, competitionId);
 
-    var round = Rounds.findOne(roundId);
+    var round = Rounds.findOne(roundId); // Will not exist for some events
 
     return ScheduleEvents.insert({
       competitionId: competitionId,

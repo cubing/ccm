@@ -41,7 +41,7 @@ _.extend(ScheduleEvent.prototype, {
 
 ScheduleEvents = new Mongo.Collection("scheduleEvents", { transform: function(doc) { return new ScheduleEvent(doc); } });
 
-ScheduleEvents.attachSchema({
+var schema = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -59,7 +59,6 @@ ScheduleEvents.attachSchema({
     // should be <= numberOfDays in the corresponding Competition
     defaultValue: 0,
   },
-
   startMinutes: {
     // The time at which the round starts (stored as an offset from midnight in
     // minutes assuming no leap time or DST or anything. This means that 60*1.5
@@ -74,6 +73,23 @@ ScheduleEvents.attachSchema({
       afFieldInput: {
         type: "timeOfDayMinutes"
       }
+    },
+    custom: function() {
+      // SimpleSchema has no place to do multi field validations, so we arbitrarily do this here.
+      var obj = validationObject(this, ['nthDay', 'startMinutes', 'durationMinutes', 'competitionId']);
+
+      var compId = obj.competitionId || ScheduleEvents.findOne(this.docId).competitionId; // Needed to work on client and server, for insert and update.
+      var comp = Competitions.findOne(compId);
+
+      if(obj.nthDay >= comp.numberOfDays) {
+        return "tooLateDay";
+      }
+      if(obj.startMinutes < comp.calendarStartMinutes) {
+        return "tooEarly";
+      }
+      if(obj.startMinutes + obj.durationMinutes > comp.calendarEndMinutes) {
+        return "tooLate";
+      }
     }
   },
   durationMinutes: {
@@ -86,6 +102,15 @@ ScheduleEvents.attachSchema({
     type: String,
   },
 });
+
+schema.messages({
+  tooLateDay: "Event scheduled on day after competition ended.",
+  tooEarly:   "Event scheduled before competition day starts.",
+  tooLate:    "Event scheduled after competition day ends.",
+});
+
+ScheduleEvents.attachSchema(schema);
+
 
 if(Meteor.isServer) {
   ScheduleEvents._ensureIndex({

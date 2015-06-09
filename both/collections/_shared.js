@@ -117,6 +117,14 @@ updatedAtSchemaField = {
   },
 };
 
+validationObject = function(simpleSchemaObject, fields) {
+  var result = {};
+  fields.forEach(function(field) {
+    result[field] = simpleSchemaObject.field(field).value;
+  });
+  return result;
+};
+
 var getDocumentAttribute = function(Collection, id, attribute) {
   var fields = {};
   fields[attribute] = 1;

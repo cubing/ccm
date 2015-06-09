@@ -1,7 +1,6 @@
 MochaWeb.testOnly(function() {
-  var comp1Id, comp2Id;
-
   describe('Methods', function() {
+    var comp1Id, comp2Id;
 
     it('deleteCompetition', function() {
       [comp1Id, comp2Id].forEach(function(compId) {
@@ -65,20 +64,19 @@ MochaWeb.testOnly(function() {
         Meteor.call('addRound', comp1Id, '333');
       }).to.throw(Meteor.Error);
     });
-  });
 
+    beforeEach(function() {
+      [Competitions, Rounds, RoundProgresses].forEach(function(collection) {
+        collection.remove({});
+      });
+      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
 
-  beforeEach(function() {
-    [Competitions, Rounds, RoundProgresses].forEach(function(collection) {
-      collection.remove({});
+      comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
+      comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
     });
-    stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
 
-    comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
-    comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
-  });
-
-  afterEach(function() {
-    stubs.restoreAll();
+    afterEach(function() {
+      stubs.restoreAll();
+    });
   });
 });
