@@ -1,7 +1,6 @@
 MochaWeb.testOnly(function() {
 
   describe('ScheduleEvent', function() {
-    var compId;
 
     it('CONSTANTS', function() {
       chai.expect(ScheduleEvent.MIN_DURATION.asMinutes()).to.equal(30);
@@ -9,14 +8,17 @@ MochaWeb.testOnly(function() {
     });
 
     describe('validation', function() {
-      it('validates', function() {
-        comp = Competitions.findOne(compId);
+      var compId;
+
+      it('is within competition', function() {
+        comp = make(Competitions);
+        compId = comp._id;
 
         newEvent(); // valid
 
         chai.expect(function() {
           newEvent({startMinutes: -60});
-        }).to.throw(Meteor.Error('Error: Start time must be at least 0'));
+        }).to.throw(/Start time must be at least 0/);
 
         newEvent({nthDay: 1}); // Day 2 of 2 -  valid
 
@@ -36,15 +38,10 @@ MochaWeb.testOnly(function() {
           newEvent({startMinutes: - 10});
         }).to.throw(/Start time must be at least 0/);
       });
-    });
 
-    beforeEach(function() {
-      compId = Competitions.insert({ competitionName: "Comp One", numberOfDays: 2, calendarStartMinutes: 600, calendarEndMinutes: 1200, listed: false, startDate: new Date() });
+      function newEvent(properties) {
+        make(ScheduleEvents, _.extend({ competitionId: compId }, properties));
+      }
     });
-
-    function newEvent(properties) {
-      return ScheduleEvents.insert(_.extend({ competitionId: compId, roundId: null, title: "whatevs", startMinutes: 900, durationMinutes: 30 }, properties));
-    }
   });
-
 });
