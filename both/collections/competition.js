@@ -34,7 +34,7 @@ var schema = new SimpleSchema({
     custom: function() {
       var obj = validationObject(this, ['calendarStartMinutes']);
       var error = null;
-      ScheduleEvents.find({competitionId: this.docId}).fetch().forEach(function(event) {
+      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
         if(event.startMinutes < obj.calendarStartMinutes) {
           error = "earlierExistingEvents";
         }
@@ -56,7 +56,7 @@ var schema = new SimpleSchema({
       }
 
       var error = null;
-      ScheduleEvents.find({competitionId: this.docId}).fetch().forEach(function(event) {
+      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
         if(event.endMinutes() > obj.calendarEndMinutes) {
           error = "laterExistingEvents";
         }
@@ -81,6 +81,17 @@ var schema = new SimpleSchema({
     type: Number,
     min: 1,
     defaultValue: 1,
+    custom: function() {
+      var obj = validationObject(this, ['numberOfDays']);
+
+      var error = null;
+      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
+        if(event.nthDay >= obj.numberOfDays) {
+          error = "laterDayExistingEvents";
+        }
+      });
+      return error;
+    },
   },
   registrationOpenDate: {
     type: Date,
@@ -234,8 +245,9 @@ schema.messages({
   missingRegistrationOpenDate: "Please enter a registration open date.",
   missingRegistrationCloseDate: "Please enter a registration close date.",
   calendarEndIsNotBeforeStart: "End time must be after start time.",
-  earlierExistingEvents: "Earlier events exist.",
-  laterExistingEvents: "Later events exist.",
+  earlierExistingEvents: "There are events earlier in the day.",
+  laterExistingEvents: "There are events later in the day.",
+  laterDayExistingEvents: "There are events after the last day.",
 });
 Competitions.attachSchema(schema);
 

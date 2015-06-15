@@ -102,7 +102,7 @@ getCannotRegisterReasons = function(competitionId) {
       var registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
       numParticipants = registrationGuestData.count();
       var guestTotalCount = 0;
-      registrationGuestData.fetch().forEach(function(obj) {
+      registrationGuestData.forEach(function(obj) {
         guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
       });
       if(numParticipants + guestTotalCount >= competition.registrationAttendeeLimitCount) {

@@ -11,6 +11,9 @@ Template.editSchedule.helpers({
   eventToEdit: function() {
     return eventToEditReact.get();
   },
+  draggability: function() {
+    return this.isScheduled() ? "undraggable" : "draggable";
+  },
 });
 
 Template.editSchedule.events({
@@ -18,6 +21,19 @@ Template.editSchedule.events({
     eventToEditReact.set(null);
   },
 });
+
+Template.editSchedule.rendered = function() {
+  var template = this;
+  var $calendar = template.$('#calendar');
+  var $editEventModal = template.$('#editEventModal');
+  setupCompetitionCalendar(template, $calendar, $editEventModal);
+
+  template.$('.draggable').draggable({
+    zIndex: 999,
+    revert: true,
+    revertDuration: 0,
+  });
+};
 
 // This is global so competitionSchedule.js can use it
 setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
@@ -71,6 +87,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       drop: function(date) { // A round / new event was dragged onto the schedule
         var newEventData = {
           competitionId: competitionId,
+          nthDay: date.diff(startDateMoment, 'days'),
           startMinutes: date.utc().get('hour')*60 + date.utc().get('minute'),
           durationMinutes: ScheduleEvent.DEFAULT_DURATION.asMinutes(),
         };
@@ -126,40 +143,22 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   });
 };
 
-function makeDraggable($el) {
-  $el.draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
-}
-
-Template.editSchedule.rendered = function() {
-  var template = this;
-
-  var $calendar = template.$('#calendar');
-  var $editEventModal = template.$('#editEventModal');
-  setupCompetitionCalendar(template, $calendar, $editEventModal);
-  makeDraggable(template.$('#new-calender-entry'));
-};
-
-Template.sortedRound.helpers({
-  draggability: function() {
-    return this.isScheduled() ? "undraggable" : "draggable";
-  },
-});
-
-Template.sortedRound.rendered = function() {
-  var template = this;
-  makeDraggable(template.$('.draggable'));
-};
-
 Template.editEventModal.helpers({
   eventToEdit: function() {
     return eventToEditReact.get();
   },
   formType: function() {
     return this._id ? "update" : "add";
+  },
+  multipleDayCompetition: function() {
+    return Competitions.findOne(this.competitionId).numberOfDays > 1;
+  },
+  nthDayOptions: function() {
+    var options = [];
+    for(var i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i += 1) {
+      options.push({label: "Day " + (i+1), value: i});
+    }
+    return options;
   },
 });
 
@@ -170,7 +169,7 @@ AutoForm.hooks({
 
       if(currentDoc._id) {
         delete updateDoc.$set.competitionId; // Don't update the competitionId field. We can't trust browser input.
-        ScheduleEvents.update({ _id: currentDoc._id, }, updateDoc);
+        ScheduleEvents.update(currentDoc._id, updateDoc);
       } else {
         Meteor.call('addScheduleEvent', currentDoc.competitionId, insertDoc, null);
       }

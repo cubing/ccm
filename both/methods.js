@@ -191,6 +191,7 @@ Meteor.methods({
       competitionId: competitionId,
       roundId: (round ? round._id : null),
       title: (round ? round.displayTitle() : eventData.title),
+      nthDay: eventData.nthDay,
       startMinutes: eventData.startMinutes,
       durationMinutes: eventData.durationMinutes,
     });

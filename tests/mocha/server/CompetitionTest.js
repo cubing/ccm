@@ -5,16 +5,20 @@ MochaWeb.testOnly(function() {
       var event, comp;
 
       it('includes existing events', function () {
-        comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100});
-        event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100});
+        comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
+        event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
 
         chai.expect(function() {
           Competitions.update(comp._id,  { $set: { calendarStartMinutes: event.startMinutes + 10 }});
-        }).to.throw(/Earlier events exist/);
+        }).to.throw(/There are events earlier in the day/);
 
         chai.expect(function() {
           Competitions.update(comp._id, { $set: { calendarEndMinutes: event.endMinutes() - 10 }});
-        }).to.throw(/Later events exist./);
+        }).to.throw(/There are events later in the day/);
+
+        chai.expect(function() {
+          Competitions.update(comp._id, { $set: { numberOfDays: 1 }});
+        }).to.throw(/There are events after the last day/);
       });
 
       it('starts before it ends', function () {
