@@ -1,5 +1,13 @@
 var eventToEditReact = new ReactiveVar(null);
 
+function activateDraggable() {
+  $('.draggable').draggable({
+    zIndex: 999,
+    revert: true,
+    revertDuration: 0,
+  });
+}
+
 Template.editSchedule.helpers({
   competition: function() {
     return Competitions.findOne(this.competitionId);
@@ -24,15 +32,8 @@ Template.editSchedule.events({
 
 Template.editSchedule.rendered = function() {
   var template = this;
-  var $calendar = template.$('#calendar');
-  var $editEventModal = template.$('#editEventModal');
-  setupCompetitionCalendar(template, $calendar, $editEventModal);
-
-  template.$('.draggable').draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
+  setupCompetitionCalendar(template, template.$('#calendar'), template.$('#editEventModal'));
+  activateDraggable();
 };
 
 // This is global so competitionSchedule.js can use it
@@ -95,7 +96,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         var droppedRoundId = $(this).data('round-id');
         if(droppedRoundId) {
           Meteor.call('addScheduleEvent', competitionId, newEventData, droppedRoundId);
-          $(this).remove();
+          $(this).draggable({ disabled: true });
         } else {
           eventToEditReact.set(newEventData);
           $editModal.modal('show');
@@ -186,6 +187,7 @@ Template.editEventModal.events({
       if(!err) {
         template.$('#deleteEventConfirmModal').modal('hide');
         template.$('#editEventModal').modal('hide');
+        activateDraggable();
       } else {
         console.error("Meteor.call() error: " + err);
       }
