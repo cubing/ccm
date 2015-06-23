@@ -1,10 +1,10 @@
 MochaWeb.testOnly(function() {
-  describe('Competition', function () {
+  describe('Competition', function() {
 
-    describe('validation', function () {
+    describe('validation', function() {
       var event, comp;
 
-      it('includes existing events', function () {
+      it('includes existing events', function() {
         comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
         event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
 
@@ -21,7 +21,7 @@ MochaWeb.testOnly(function() {
         }).to.throw(/There are events after the last day/);
       });
 
-      it('starts before it ends', function () {
+      it('starts before it ends', function() {
         chai.expect(function() {
           make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 700});
         }).to.throw(/End time must be after start time./);
@@ -29,7 +29,7 @@ MochaWeb.testOnly(function() {
         // Note that this validation does NOT work if only one of the fields are updated
       });
 
-      it('registration interval is consistent', function () {
+      it('registration interval is consistent', function() {
         make(Competitions, {registrationOpenDate: 10, registrationCloseDate: 20});
 
         chai.expect(function() {

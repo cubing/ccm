@@ -17,7 +17,7 @@ MochaWeb.testOnly(function() {
         newEvent(); // valid
 
         chai.expect(function() {
-          newEvent({startMinutes: -60});
+          newEvent({startMinutes: -10});
         }).to.throw(/Start time must be at least 0/);
 
         newEvent({nthDay: 1}); // Day 2 of 2 -  valid
@@ -35,7 +35,7 @@ MochaWeb.testOnly(function() {
         }).to.throw(/Event scheduled after competition day ends/);
 
         chai.expect(function() {
-          newEvent({startMinutes: - 10});
+          newEvent({startMinutes: -10});
         }).to.throw(/Start time must be at least 0/);
       });
 
