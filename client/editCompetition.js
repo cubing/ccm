@@ -181,8 +181,8 @@ Template.editCompetition.events({
     setCompetitionAttribute(this.competitionId, attribute, value);
   },
   'click #competitionAttributes #toggleCompetitionListed': function(e) {
-    var listed = getCompetitionAttribute(this.competitionId, 'listed');
-    setCompetitionAttribute(this.competitionId, 'listed', !listed);
+    var competition = Competitions.findOne(this.competitionId);
+    setCompetitionAttribute(this.competitionId, 'listed', !competition.listed);
   },
   'click button[name="buttonDeleteCompetition"]': function(e) {
     // When deleting a competition, we want to delete any cached subscriptions

@@ -107,10 +107,9 @@ Meteor.methods({
       wcaEvents.push(wcaEvent);
     });
 
-    var wcaCompetitionId = getCompetitionAttribute(competitionId, 'wcaCompetitionId');
     var wcaResults = {
       "formatVersion": "WCA Competition 0.2",
-      "competitionId": wcaCompetitionId,
+      "competitionId": Competitions.findOne(competitionId).wcaCompetitionId,
       "scrambleProgram": scrambleProgram,
       "persons": wcaPersons,
       "events": wcaEvents

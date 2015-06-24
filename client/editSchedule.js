@@ -52,7 +52,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       return Math.floor(duration.asHours()) + ":" + duration.minutes() + ":00";
     }
 
-    var startDateMoment = getCompetitionStartDateMoment(competitionId) || moment.utc().startOf('day');
+    var startDateMoment = competition.startDate ? moment(competition.startDate).utc() : moment.utc().startOf('day');
 
     var eventChanged = function(event, revertFunc) {
       var update = {

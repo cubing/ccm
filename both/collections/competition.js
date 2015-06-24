@@ -3,6 +3,10 @@ Competition = function(doc) {
 };
 
 _.extend(Competition.prototype, {
+
+  endDate: function() {
+    return new Date(this.startDate.getTime() + (this.numberOfDays - 1) * 24*60*60*1000);
+  },
 });
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });

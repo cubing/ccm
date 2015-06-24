@@ -31,7 +31,7 @@ if(Meteor.isClient) {
     var data = Router.current().data && Router.current().data();
     if(data) {
       if(data.competitionId) {
-        titleParts.push(getCompetitionAttribute(data.competitionId, 'competitionName'));
+        titleParts.push(Competitions.findOne(data.competitionId).competitionName);
       }
       if(data.roundId) {
         var round = Rounds.findOne(data.roundId);
