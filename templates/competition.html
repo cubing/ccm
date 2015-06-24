@@ -1,15 +1,15 @@
 <template name="competition">
   <div class="jumbotron">
     <div class="container">
-      <h1>{{competition 'competitionName'}}</h1>
+      <h1>{{competitionAttr 'competitionName'}}</h1>
       <p>
-        {{#unless competitionStartDateMoment}}
-          Unscheduled
-        {{else}}
+        {{#if competitionIsScheduled}}
           <a href="{{pathFor 'competitionSchedule' competitionUrlId=competitionUrlId}}">
-            {{formatMomentDateRange competitionStartDateMoment competitionEndDateMoment}}
+            {{dateInterval}}
           </a>
-        {{/unless}}
+        {{else}}
+          Unscheduled
+        {{/if}}
       </p>
       <p>
         <a href="{{pathFor 'competitionRegistration' competitionUrlId=competitionUrlId}}">

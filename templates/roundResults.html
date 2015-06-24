@@ -3,15 +3,14 @@
   {{> roundPicker competitionId=competitionId competitionUrlId=competitionUrlId eventCode=eventCode roundId=roundId roundTemplate='roundResults'}}
 
   <div class="container">
-    {{#unless roundId}}
-    {{else}}
+    {{#if roundId}}
       <p>
         {{eventName roundEventCode}}: {{roundName roundRoundCode}}
         {{formatName roundFormatCode}}
       </p>
 
       {{> roundResultsList roundId=roundId competitionUrlId=competitionUrlId}}
-    {{/unless}}
+    {{/if}}
   </div>
 </template>
 

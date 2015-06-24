@@ -337,16 +337,14 @@ Meteor.methods({
     Registrations.update({ _id: registration._id }, { $set: { checkedInEvents: registration.registeredEvents } });
   },
   addSiteAdmin: function(newSiteAdminUserId) {
-    var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
-    if(!siteAdmin) {
+    if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
     }
 
     Meteor.users.update({ _id: newSiteAdminUserId }, { $set: { siteAdmin: true } });
   },
   removeSiteAdmin: function(siteAdminToRemoveUserId) {
-    var siteAdmin = getUserAttribute(this.userId, 'siteAdmin');
-    if(!siteAdmin) {
+    if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
     }
 

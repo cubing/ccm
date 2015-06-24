@@ -32,8 +32,8 @@ register("eventAllowsCutoffs", function(eventCode) {
   return wca.eventAllowsCutoffs(eventCode);
 });
 
-register("competition", function(attribute) {
-  return getCompetitionAttribute(this.competitionId, attribute);
+register("competitionAttr", function(attribute) {
+  return Competitions.findOne(this.competitionId)[attribute];
 });
 
 register("roundEventCode", function() {
@@ -46,19 +46,13 @@ register("roundFormatCode", function() {
   return getRound(this.roundId).formatCode;
 });
 
-register("isSiteAdmin", function() {
-  if(!Meteor.user()) {
-    return false;
-  }
-  return Meteor.user().siteAdmin;
+register("userIsSiteAdmin", function() {
+  return Meteor.user() && Meteor.user().siteAdmin;
 });
 
 register("toAtMostFixed", function(n, fixed) {
   // Neat trick from http://stackoverflow.com/a/18358056
   return +(n.toFixed(fixed));
-});
-register("percentage", function(progress) {
-  return progress.percentage();
 });
 
 
@@ -67,52 +61,6 @@ clockFormat = function(solveTime) {
 };
 register("clockFormat", function(solveTime) {
   return clockFormat(solveTime);
-});
-
-getCompetitionStartDateMoment = function(competitionId) {
-  var startDate = getCompetitionAttribute(competitionId, 'startDate');
-  if(!startDate) {
-    return null;
-  }
-  return moment(startDate).utc();
-};
-register("competitionStartDateMoment", function() {
-  return getCompetitionStartDateMoment(this.competitionId);
-});
-
-getCompetitionEndDateMoment = function(competitionId) {
-  var startDateMoment = getCompetitionStartDateMoment(competitionId);
-  if(!startDateMoment) {
-    return null;
-  }
-  var numberOfDays = getCompetitionAttribute(competitionId, 'numberOfDays');
-  var endDate = startDateMoment.clone().add(numberOfDays - 1, 'days');
-  return endDate;
-};
-register("competitionEndDateMoment", function() {
-  return getCompetitionEndDateMoment(this.competitionId);
-});
-
-getCompetitionRegistrationOpenMoment = function(competitionId) {
-  var open = getCompetitionAttribute(competitionId, 'registrationOpenDate');
-  if(!open) {
-    return null;
-  }
-  return moment(open);
-};
-register("getCompetitionRegistrationOpenMoment", function() {
-  return getCompetitionRegistrationOpenMoment(this.competitionId);
-});
-
-getCompetitionRegistrationCloseMoment = function(competitionId) {
-  var close = getCompetitionAttribute(competitionId, 'registrationCloseDate');
-  if(!close) {
-    return null;
-  }
-  return moment(close);
-};
-register("getCompetitionRegistrationCloseMoment", function() {
-  return getCompetitionRegistrationCloseMoment(this.competitionId);
 });
 
 getCompetitionEvents = function(competitionId) {
@@ -198,21 +146,12 @@ formatMomentDateIso8601 = function(m) {
   return iso8601Date;
 };
 
-formatMomentDateRange = function(startMoment, endMoment) {
-  var rangeStr = $.fullCalendar.formatRange(startMoment.utc(), endMoment.utc(), DATE_FORMAT);
-  return rangeStr;
-};
-
 formatMomentDateTime = function(m) {
   return m.tz(LOCAL_TIMEZONE).format(DATETIME_FORMAT);
 };
 
 register("formatMomentDate", function(m) {
   return formatMomentDate(m);
-});
-
-register("formatMomentDateRange", function(startMoment, endMoment) {
-  return formatMomentDateRange(startMoment, endMoment);
 });
 
 register("formatMomentDateTime", function(m) {

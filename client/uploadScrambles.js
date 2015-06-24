@@ -265,10 +265,6 @@ Template.uploadScrambles.helpers({
   generateMissingScramblesUrl: function() {
     var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
 
-    var params = {};
-    params.version = "1.0";
-    params.competitionName = getCompetitionAttribute(this.competitionId, 'competitionName');
-
     var events = [];
     roundsWithoutScrambles.forEach(function(round) {
       var event = {
@@ -280,7 +276,11 @@ Template.uploadScrambles.helpers({
       };
       events.push(event);
     });
-    params.rounds = toURLPretty(events);
+    var params = {
+      version: "1.0",
+      competitionName: Competitions.findOne(this.competitionId).competitionName,
+      rounds: toURLPretty(events),
+    };
 
     // See http://bugs.jquery.com/ticket/3400
     var url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");

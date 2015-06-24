@@ -29,34 +29,31 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
 };
 
 getCannotRegisterReasons = function(competitionId) {
-  var reasons = [];
   var reasonText; // re-usable
 
-  // Check to make sure registration is open
-  // We don't really need to specify any more reasons after this, so
-  // we can immediately return.
-  var open = getCompetitionRegistrationOpenMoment(competitionId);
-  var close = getCompetitionRegistrationCloseMoment(competitionId);
-  if(!open || !close) {
+  var competition = Competitions.findOne(competitionId);
+  if(!competition.registrationOpenDate || !competition.registrationCloseDate) {
     // open / close dates not yet set
-    reasons.push("Competition registration is not open.");
-    return reasons;
-  } else {
-    var now = moment();
-    if(now.isAfter(close)) {
-      reasons.push("Competition registration is now closed!");
-      return reasons;
-    } else if(now.isBefore(open)) {
-      reasonText = "Competition registration is not yet open!";
-      var openStr = formatMomentDateTime(open);
-      reasonText += " Registration is set to open" +
-                    " <strong>" + open.fromNow() + "</strong>" +
-                    " on " + openStr + ".";
-      reasons.push(reasonText);
-      return reasons;
-    }
+    return ["Competition registration is not open."];
   }
 
+  var now = moment();
+  var open = moment(competition.registrationOpenDate);
+  var close = moment(competition.registrationCloseDate);
+
+  if(now.isAfter(close)) {
+    return ["Competition registration is now closed!"];
+  }
+  if(now.isBefore(open)) {
+    reasonText = "Competition registration is not yet open!";
+    var openStr = formatMomentDateTime(open);
+    reasonText += " Registration is set to open" +
+                  " <strong>" + open.fromNow() + "</strong>" +
+                  " on " + openStr + ".";
+    return [reasonText];
+  }
+
+  var reasons = [];
   // Check to make sure profile has appropriate data
   var user = Meteor.user();
   reasonText = "You need to complete your user profile to register!";
@@ -81,12 +78,6 @@ getCannotRegisterReasons = function(competitionId) {
   }
 
   // Registration should close upon hitting capacity;
-  var competition = Competitions.findOne({
-    _id: competitionId
-  }, {
-    registrationParticipantLimitCount: 1,
-    registrationAttendeeLimitCount: 1,
-  });
   // Users already registered should still be able to edit registrations
   if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
     // participant capacity limit
@@ -127,28 +118,14 @@ throwIfCannotManageCompetition = function(userId, competitionId) {
 
 canRemoveRound = function(userId, roundId) {
   check(roundId, String);
-  var round = Rounds.findOne({
-    _id: roundId
-  }, {
-    fields: {
-      competitionId: 1,
-      eventCode: 1,
-    }
-  });
+  var round = Rounds.findOne(roundId);
   if(!round) {
     throw new Meteor.Error(404, "Unrecognized round id");
   }
   throwIfCannotManageCompetition(userId, round.competitionId);
-  if(!round.eventCode) {
-    // Rounds that don't correspond to a wca event are always
-    // available to be deleted, no warnings.
-    return true;
-  }
 
-  var lastRoundId = getLastRoundIdForEvent(round.competitionId, round.eventCode);
-  var isLastRound = lastRoundId == roundId;
   // Only let the user remove the last round for an event.
-  return isLastRound;
+  return round.isLast();
 };
 
 canAddRound = function(userId, competitionId, eventCode) {
@@ -201,8 +178,7 @@ if(Meteor.isServer) {
         'location',
       ];
 
-      var siteAdmin = getUserAttribute(userId, 'siteAdmin');
-      if(siteAdmin) {
+      if(isSiteAdmin(userId)) {
         allowedFields.push('listed', 'wcaCompetitionId');
       }
 
