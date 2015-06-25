@@ -72,23 +72,16 @@
     {{/unless}}
   </div>
 
-  <div id="modalConfirmDeregistration" class="modal fade">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-          <h4 class="modal-title">Are you sure you want to unregister from this competiton?</h4>
-        </div>
-        <div class="modal-body">
-          <p>You can still register later, but you will have to choose your events again.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger" id="unregisterButton">
-            <span class="glyphicon glyphicon-floppy-remove"></span> Unregister
-          </button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+  {{#ccmModal id="modalConfirmDeregistration"}}
+    {{#cmHeader}} Are you sure you want to unregister from this competiton? {{/cmHeader}}
+    <div class="modal-body">
+      <p>You can still register later, but you will have to choose your events again.</p>
+    </div>
+    <div class="modal-footer">
+      {{> cmCancelButton}}
+      <button type="button" class="btn btn-danger" id="unregisterButton">
+        <span class="glyphicon glyphicon-floppy-remove"></span> Unregister
+      </button>
+    </div>
+  {{/ccmModal}}
 </template>

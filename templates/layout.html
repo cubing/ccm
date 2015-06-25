@@ -30,22 +30,18 @@
   {{> connectionBanner}}
 
   <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
-    <div class="modal fade" id="modal-verificationsent">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-body">
-            {{#if verificationSendSuccess}}
-              <p>Verification email sent</p>
-            {{else}}
-              <p>Encountered error while sending verification email.</p>
-            {{/if}}
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div> {{!-- /.modal-content --}}
-      </div> {{!-- /.modal-dialog --}}
-    </div> {{!-- /.modal --}}
+    {{#ccmModal id="modal-verificationsent"}}
+      <div class="modal-body">
+        {{#if verificationSendSuccess}}
+          <p>Verification email sent</p>
+        {{else}}
+          <p>Encountered error while sending verification email.</p>
+        {{/if}}
+      </div>
+      <div class="modal-footer">
+        {{> cmCancelButton}}
+      </div>
+    {{/ccmModal}}
 
     <div class="container-fluid">
       {{!-- Brand and toggle get grouped for better mobile display --}}
