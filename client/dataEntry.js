@@ -31,12 +31,10 @@ Template.dataEntry.helpers({
   },
 
   isSelectedRoundClosed: function() {
-    var round = Rounds.findOne(this.roundId);
-    return round && round.isClosed();
+    return Rounds.findOne(this.roundId).isClosed();
   },
   isSelectedRoundUnstarted: function() {
-    var round = Rounds.findOne(this.roundId);
-    return round && round.isUnstarted();
+    return Rounds.findOne(this.roundId).isUnstarted();
   },
   openRounds: function() {
     var openRounds = Rounds.find({
