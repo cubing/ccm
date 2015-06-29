@@ -8,11 +8,10 @@ MochaWeb.testOnly(function() {
     });
 
     describe('validation', function() {
-      var compId;
+      var comp;
 
       it('is within competition', function() {
         comp = make(Competitions);
-        compId = comp._id;
 
         newEvent(); // valid
 
@@ -40,7 +39,7 @@ MochaWeb.testOnly(function() {
       });
 
       function newEvent(properties) {
-        make(ScheduleEvents, _.extend({ competitionId: compId }, properties));
+        make(ScheduleEvents, _.extend({ competitionId: comp._id }, properties));
       }
     });
   });

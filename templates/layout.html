@@ -25,7 +25,7 @@
 </head>
 
 <template name="layout">
-  {{documentTitle}}
+  {{setDocumentTitle}}
 
   {{> connectionBanner}}
 
@@ -118,7 +118,8 @@
   </footer>
 </template>
 
-<template name="_loginButtonsAdditionalLoggedInDropdownActions"> //TODO This is unused.
+<!-- see https://github.com/ianmartorell/meteor-accounts-ui-bootstrap-3/#add-additional-logged-in-actions -->
+<template name="_loginButtonsAdditionalLoggedInDropdownActions">
   <p class="text-center">
     <a href="{{pathFor 'editProfile'}}">Edit profile</a>
   </p>

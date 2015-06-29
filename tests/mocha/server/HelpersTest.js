@@ -2,8 +2,9 @@ MochaWeb.testOnly(function() {
   describe('helpers', function() {
 
     describe('getCompetitionEvents', function() {
+      var compId;
       beforeEach(function() {
-        this.compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
+        compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
       });
 
       it('returns events in expected format', function() {
