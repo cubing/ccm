@@ -2,11 +2,9 @@ MochaWeb.testOnly(function() {
   describe('Competition', function() {
 
     describe('validation', function() {
-      var event, comp;
-
       it('includes existing events', function() {
-        comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
-        event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
+        var comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
+        var event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
 
         chai.expect(function() {
           Competitions.update(comp._id,  { $set: { calendarStartMinutes: event.startMinutes + 10 }});

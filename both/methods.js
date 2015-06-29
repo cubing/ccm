@@ -187,6 +187,10 @@ Meteor.methods({
 
     var round = Rounds.findOne(roundId); // Will not exist for some events
 
+    if (!round && roundId) {
+      throw new Meteor.Error("Invalid roundId: '" + roundId +"'");
+    }
+
     return ScheduleEvents.insert({
       competitionId: competitionId,
       roundId: (round ? round._id : null),
@@ -205,7 +209,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
     var round = Rounds.findOne({ _id: newGroup.roundId });
     if(!round) {
-      throw new Meteor.Error("Invalid roundId");
+      throw new Meteor.Error("Invalid roundId: '" + newGroup.roundId +"'");
     }
     if(newGroup.competitionId !== round.competitionId) {
       throw new Meteor.Error("Group's competitionId does not match round's competitionId");

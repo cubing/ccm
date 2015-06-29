@@ -25,7 +25,7 @@ if(Meteor.isClient) {
     return Router.current().route.getName() == routeName;
   });
 
-  Template.registerHelper("documentTitle", function() {
+  Template.registerHelper("setDocumentTitle", function() {
     var titleParts = ["live.cubing.net"];
 
     var data = Router.current().data && Router.current().data();

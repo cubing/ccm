@@ -224,6 +224,7 @@ var schema = new SimpleSchema({
     optional: true,
   },
 });
+
 schema.messages({
   registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
   missingRegistrationOpenDate: "Please enter a registration open date.",

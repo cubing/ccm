@@ -15,9 +15,10 @@ function presets(propertyKey) {
 
     case ScheduleEvents:
       return { competitionId: 'fake', roundId: null, title: "whatevs", startMinutes: 900, durationMinutes: 30 };
-  }
 
-  throw new Error("Unknown property key: " + propertyKey);
+    default:
+      throw new Error("Unknown property key: " + propertyKey);
+  }
 }
 
 // Call format:
