@@ -168,6 +168,9 @@ Template.editEvents.helpers({
     }
     return classes;
   },
+  percentage: function(progress) {
+    return progress.percentage();
+  },
   lastRoundResultsCount: function() {
     var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     if(!lastRoundId) {
@@ -188,17 +191,6 @@ Template.editEvents.helpers({
   },
   formats: function() {
     return wca.formatsByEventCode[this.eventCode];
-  },
-  scheduleDescription: function() {
-    var startDate = getCompetitionStartDateMoment(this.competitionId);
-    if(!startDate) {
-      return "Unscheduled";
-    }
-    var endDate = getCompetitionEndDateMoment(this.competitionId);
-    assert(endDate);
-    var formatStr = "MMMM D, YYYY";
-    var rangeStr = $.fullCalendar.formatRange(startDate, endDate, formatStr);
-    return startDate.fromNow() + " (" + rangeStr + ")";
   },
   canCloseRound: function() {
     return this.isOpen();

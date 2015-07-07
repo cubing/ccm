@@ -12,24 +12,24 @@
           <div class="form-group">
             <label for="inputWcaCompetitionId" class="col-sm-3 col-lg-2 control-label">WCA Competition ID</label>
             <div class="col-sm-9 col-lg-10">
-              <input type="text" class="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value="{{competition 'wcaCompetitionId'}}" disabled={{not isSiteAdmin}} />
+              <input type="text" class="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value="{{competitionAttr 'wcaCompetitionId'}}" disabled={{not userIsSiteAdmin}} />
             </div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 col-lg-2 control-label">Visibility</label>
             <div class="col-sm-9 col-lg-10">
-              {{#if isSiteAdmin}}
+              {{#if userIsSiteAdmin}}
                 <div id="toggleCompetitionListed" class="btn-group">
-                  <button type="button" class="btn btn-default {{#if competition 'listed'}}active{{/if}}">
+                  <button type="button" class="btn btn-default {{#if competitionAttr 'listed'}}active{{/if}}">
                     Listed
                   </button>
-                  <button type="button" class="btn btn-default {{#unless competition 'listed'}}active{{/unless}}">
+                  <button type="button" class="btn btn-default {{#unless competitionAttr 'listed'}}active{{/unless}}">
                     Hidden
                   </button>
                 </div>
               {{else}}
                 <p class="form-control-static">
-                  {{#if competition "listed"}}
+                  {{#if competitionAttr "listed"}}
                     Listed
                   {{else}}
                     Hidden
@@ -46,7 +46,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h3 class="panel-title text-capitalize">
-            General settings for competition: {{competition "competitionName"}} 
+            General settings for competition: {{competitionAttr "competitionName"}}
           </h3>
         </div>
 
@@ -67,7 +67,7 @@
           </div>
 
           {{> afQuickField name="competitionName" }}
-          
+
           <div class="form-group">
             <label class="control-label">Location</label>
             {{> competitionLocationMap location=defaultCompetitionDataDocument.location}}
@@ -141,7 +141,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-            <h4 class="modal-title">Are you sure you want to delete this competiton?</h4>
+            <h4 class="modal-title">Are you sure you want to delete this competition?</h4>
           </div>
           <div class="modal-body">
             <p>Deleting this competition is permanent and irreversible.</p>

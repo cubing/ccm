@@ -69,8 +69,8 @@ Template.competitionRegistration.helpers({
   },
 
   registrationCloseMoment: function() {
-    var competitionId = this.competitionId;
-    return getCompetitionRegistrationCloseMoment(competitionId);
+    var closeDate = Competitions.findOne(this.competitionId).registrationCloseDate;
+    return closeDate ? moment(closeDate) : null;
   },
 
   needsUniqueName: function() {

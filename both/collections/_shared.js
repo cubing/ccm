@@ -125,22 +125,9 @@ validationObject = function(simpleSchemaObject, fields) {
   return result;
 };
 
-var getDocumentAttribute = function(Collection, id, attribute) {
-  var fields = {};
-  fields[attribute] = 1;
-  var doc = Collection.findOne({ _id: id }, { fields: fields });
-  attribute.split(".").forEach(function(attr) {
-    doc = doc[attr];
-  });
-  return doc;
-};
-
-getCompetitionAttribute = function(competitionId, attribute) {
-  return getDocumentAttribute(Competitions, competitionId, attribute);
-};
-
-getUserAttribute = function(userId, attribute) {
-  return getDocumentAttribute(Meteor.users, userId, attribute);
+isSiteAdmin = function(userId) {
+  var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
+  return user.siteAdmin;
 };
 
 getRound = function(roundId) {
