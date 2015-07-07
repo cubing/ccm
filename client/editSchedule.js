@@ -156,7 +156,7 @@ Template.editEventModal.helpers({
   },
   nthDayOptions: function() {
     var options = [];
-    for(var i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i += 1) {
+    for(var i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i++) {
       options.push({label: "Day " + (i+1), value: i});
     }
     return options;

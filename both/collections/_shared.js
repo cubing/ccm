@@ -118,7 +118,7 @@ updatedAtSchemaField = {
 };
 
 validationObject = function(simpleSchemaObject, fields) {
-  var result = {};
+  var result = { id: simpleSchemaObject.docId };
   fields.forEach(function(field) {
     result[field] = simpleSchemaObject.field(field).value;
   });
