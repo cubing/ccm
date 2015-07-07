@@ -57,7 +57,7 @@ var schema = new SimpleSchema({
       // SimpleSchema has no place to do multi field validations, so we arbitrarily do this here.
       var obj = validationObject(this, ['nthDay', 'startMinutes', 'durationMinutes', 'competitionId']);
 
-      var compId = obj.competitionId || ScheduleEvents.findOne(this.docId).competitionId; // Needed to work on client and server, for insert and update.
+      var compId = obj.competitionId || ScheduleEvents.findOne(obj.id).competitionId;
       var comp = Competitions.findOne(compId);
 
       if(obj.nthDay >= comp.numberOfDays) {

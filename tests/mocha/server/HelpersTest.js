@@ -2,7 +2,10 @@ MochaWeb.testOnly(function() {
   describe('helpers', function() {
 
     describe('getCompetitionEvents', function() {
-      var compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
+      var compId;
+      beforeEach(function() {
+        compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
+      });
 
       it('returns events in expected format', function() {
         chai.expect(getCompetitionEvents(null)).to.deep.equal([]);

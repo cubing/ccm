@@ -37,13 +37,11 @@ var schema = new SimpleSchema({
     },
     custom: function() {
       var obj = validationObject(this, ['calendarStartMinutes']);
-      var error = null;
-      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
-        if(event.startMinutes < obj.calendarStartMinutes) {
-          error = "earlierExistingEvents";
-        }
-      });
-      return error;
+
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.startMinutes < obj.calendarStartMinutes; })) {
+        return "earlierExistingEvents";
+      }
     },
   },
   calendarEndMinutes: {
@@ -59,13 +57,10 @@ var schema = new SimpleSchema({
         return "calendarEndIsNotBeforeStart";
       }
 
-      var error = null;
-      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
-        if(event.endMinutes() > obj.calendarEndMinutes) {
-          error = "laterExistingEvents";
-        }
-      });
-      return error;
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.endMinutes() > obj.calendarEndMinutes; })) {
+        return "laterExistingEvents";
+      }
     },
     autoform: {
       afFieldInput: {
@@ -88,13 +83,10 @@ var schema = new SimpleSchema({
     custom: function() {
       var obj = validationObject(this, ['numberOfDays']);
 
-      var error = null;
-      ScheduleEvents.find({competitionId: this.docId}).forEach(function(event) {
-        if(event.nthDay >= obj.numberOfDays) {
-          error = "laterDayExistingEvents";
-        }
-      });
-      return error;
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.nthDay >= obj.numberOfDays; })) {
+        return "laterDayExistingEvents";
+      }
     },
   },
   registrationOpenDate: {
@@ -106,25 +98,22 @@ var schema = new SimpleSchema({
       }
     },
     custom: function() {
-      // Require registration open date to be before the close date.
+      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
-      var registrationCloseDate = this.field("registrationCloseDate").value;
-      var registrationOpenDate = this.value;
-
-      if(!registrationCloseDate && !registrationOpenDate) {
+      if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)
         return null;
       }
 
-      if(!registrationCloseDate) {
+      if(!obj.registrationCloseDate) {
         return "missingRegistrationCloseDate";
       }
 
-      if(!registrationOpenDate) {
+      if(!obj.registrationOpenDate) {
         return "missingRegistrationOpenDate";
       }
 
-      if(registrationOpenDate.getTime() >= registrationCloseDate.getTime()) {
+      if(obj.registrationOpenDate.getTime() >= obj.registrationCloseDate.getTime()) {
         return "registrationCloseDateAfterRegistrationOpenDate";
       }
     },
@@ -138,26 +127,21 @@ var schema = new SimpleSchema({
       }
     },
     custom: function() {
-      // require the registration close date to be before the competition starts.
+      // TODO require the registration close date to be before the competition starts?
+      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
-      var competitionStartDate = this.field("startDate").value;
-      var registrationCloseDate = this.value;
-      var registrationOpenDate = this.field("registrationOpenDate").value;
-
-      if(!registrationCloseDate && !registrationOpenDate) {
+      if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)
         return null;
       }
 
-      if(!registrationCloseDate) {
+      if(!obj.registrationCloseDate) {
         return "missingRegistrationCloseDate";
       }
 
-      if(!registrationOpenDate) {
+      if(!obj.registrationOpenDate) {
         return "missingRegistrationOpenDate";
       }
-
-      return null;
     },
   },
   registrationAskAboutGuests: {
@@ -244,6 +228,7 @@ var schema = new SimpleSchema({
     optional: true,
   },
 });
+
 schema.messages({
   registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
   missingRegistrationOpenDate: "Please enter a registration open date.",
