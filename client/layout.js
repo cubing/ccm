@@ -54,9 +54,98 @@ Router.onBeforeAction(function() {
 
 var verificationSendSuccessReact = new ReactiveVar(null);
 
+
+var managerTabs = [
+  {
+    route: 'manageCompetition',
+    title: 'Change competition registration window, competition name, location, organizers, and staff',
+    icon: 'fa fa-cog',
+    text: 'Manage',
+  }, {
+    route: 'editEvents',
+    title: 'Add and remove rounds, change cutoffs, open and close rounds',
+    icon: 'fa fa-cube',
+    text: 'Events',
+  }, {
+    route: 'editSchedule',
+    icon: 'glyphicon glyphicon-calendar',
+    text: 'Schedule',
+  }, {
+    route: 'uploadScrambles',
+    title: 'Generate and upload scrambles from TNoodle',
+    icon: '/img/tnoodle_logo.svg',
+    text: 'Scrambles',
+  }, {
+    route: 'manageCheckin',
+    title: 'Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)',
+    icon: 'fa fa-check-square-o',
+    text: 'Check-in',
+  }, {
+    route: 'dataEntry',
+    icon: 'glyphicon glyphicon-edit',
+    text: 'Data entry',
+    notLeaf: true,
+  }, {
+    route: 'exportResults',
+    title: 'Export results to WCA JSON',
+    icon: '/img/WCAlogo_notext.svg',
+    text: 'Export',
+  },
+];
+var userTabs = [
+  {
+    route: 'competition',
+    icon: 'glyphicon glyphicon-home',
+    text: 'Home',
+    otherClass: 'match-jumbotron',
+  }, {
+    route: 'competitionEvents',
+    icon: 'fa fa-cube',
+    text: 'Events',
+  }, {
+    route: 'competitionSchedule',
+    icon: 'glyphicon glyphicon-calendar',
+    text: 'Schedule',
+  }, {
+    route: 'competitionRegistration',
+    icon: 'fa fa-list',
+    text: 'Registration',
+  }, {
+    route: 'roundResults',
+    icon: 'fa fa-trophy',
+    text: 'Results',
+    notLeaf: true,
+  },
+];
+
 Template.layout.helpers({
   verificationSendSuccess: function() {
     return verificationSendSuccessReact.get();
+  },
+  managerTabs: function() {
+    return managerTabs;
+  },
+  userTabs: function() {
+    return userTabs;
+  },
+  newCompetitionTab: function() {
+    return {
+      route: 'newCompetition',
+      title: 'New competition',
+      icon: 'glyphicon glyphicon-plus',
+    };
+  },
+});
+
+Template.oneTab.helpers({
+  img: function() {
+    return this.icon.charAt(0) === '/';
+  },
+  leaf: function() {
+    return this.notLeaf ? "" : "leaf";
+  },
+  parentData: function() {
+    return Template.parentData();
   },
 });
 
@@ -78,15 +167,9 @@ $.fn.scrollToCenter = function(speed) {
   speed = speed || 200;
   var el = this;
   var elOffset = el.offset().top;
-  var elHeight = el.height();
   var windowHeight = $(window).height();
-  var offset;
+  var offset = elOffset - Math.max((windowHeight - el.height()) / 2, 0);
 
-  if(elHeight < windowHeight) {
-    offset = elOffset - ((windowHeight / 2) - (elHeight / 2));
-  } else {
-    offset = elOffset;
-  }
   $('html, body').animate({ scrollTop: offset }, speed);
 };
 

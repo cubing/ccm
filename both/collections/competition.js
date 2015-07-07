@@ -1,10 +1,3 @@
-SimpleSchema.messages({
-  registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
-  missingRegistrationOpenDate: "Please enter a registration open date.",
-  missingRegistrationCloseDate: "Please enter a registration close date.",
-  calendarEndIsNotBeforeStart: "End time must be after start time.",
-});
-
 Competition = function(doc) {
   _.extend(this, doc);
 };
@@ -13,7 +6,7 @@ _.extend(Competition.prototype, {
 });
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
-Competitions.attachSchema({
+var schema = new SimpleSchema({
   competitionName: {
     type: String,
     label: "Competition name",
@@ -37,7 +30,15 @@ Competitions.attachSchema({
       afFieldInput: {
         type: "timeOfDayMinutes"
       }
-    }
+    },
+    custom: function() {
+      var obj = validationObject(this, ['calendarStartMinutes']);
+
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.startMinutes < obj.calendarStartMinutes; })) {
+        return "earlierExistingEvents";
+      }
+    },
   },
   calendarEndMinutes: {
     type: Number,
@@ -46,13 +47,16 @@ Competitions.attachSchema({
     max: 23.5*60,
     defaultValue: 23.5*60,
     custom: function() {
-      // require the competition calendar end time to be after the start time
-      var calendarStartMinutes = this.field("calendarStartMinutes").value;
-      var calendarEndMinutes = this.value;
-      if(calendarEndMinutes <= calendarStartMinutes) {
+      var obj = validationObject(this, ['calendarStartMinutes', 'calendarEndMinutes']);
+
+      if(obj.calendarEndMinutes <= obj.calendarStartMinutes) {
         return "calendarEndIsNotBeforeStart";
       }
-      return null;
+
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.endMinutes() > obj.calendarEndMinutes; })) {
+        return "laterExistingEvents";
+      }
     },
     autoform: {
       afFieldInput: {
@@ -72,6 +76,14 @@ Competitions.attachSchema({
     type: Number,
     min: 1,
     defaultValue: 1,
+    custom: function() {
+      var obj = validationObject(this, ['numberOfDays']);
+
+      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      if(_.any(events, function(event) { return event.nthDay >= obj.numberOfDays; })) {
+        return "laterDayExistingEvents";
+      }
+    },
   },
   registrationOpenDate: {
     type: Date,
@@ -82,27 +94,22 @@ Competitions.attachSchema({
       }
     },
     custom: function() {
-      // Require registration open date to be before the close date.
+      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
-      var registrationCloseDate = this.field("registrationCloseDate").value;
-      var registrationOpenDate = this.value;
-
-      if(!registrationCloseDate && !registrationOpenDate) {
+      if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)
         return null;
       }
 
-      if(!registrationCloseDate) {
+      if(!obj.registrationCloseDate) {
         return "missingRegistrationCloseDate";
       }
 
-      if(!registrationOpenDate) {
+      if(!obj.registrationOpenDate) {
         return "missingRegistrationOpenDate";
       }
 
-      if(registrationOpenDate.getTime() < registrationCloseDate.getTime()) {
-        return null;
-      } else {
+      if(obj.registrationOpenDate.getTime() >= obj.registrationCloseDate.getTime()) {
         return "registrationCloseDateAfterRegistrationOpenDate";
       }
     },
@@ -116,26 +123,21 @@ Competitions.attachSchema({
       }
     },
     custom: function() {
-      // require the registration close date to be before the competition starts.
+      // TODO require the registration close date to be before the competition starts?
+      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
-      var competitionStartDate = this.field("startDate").value;
-      var registrationCloseDate = this.value;
-      var registrationOpenDate = this.field("registrationOpenDate").value;
-
-      if(!registrationCloseDate && !registrationOpenDate) {
+      if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)
         return null;
       }
 
-      if(!registrationCloseDate) {
+      if(!obj.registrationCloseDate) {
         return "missingRegistrationCloseDate";
       }
 
-      if(!registrationOpenDate) {
+      if(!obj.registrationOpenDate) {
         return "missingRegistrationOpenDate";
       }
-
-      return null;
     },
   },
   registrationAskAboutGuests: {
@@ -222,6 +224,17 @@ Competitions.attachSchema({
     optional: true,
   },
 });
+
+schema.messages({
+  registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
+  missingRegistrationOpenDate: "Please enter a registration open date.",
+  missingRegistrationCloseDate: "Please enter a registration close date.",
+  calendarEndIsNotBeforeStart: "End time must be after start time.",
+  earlierExistingEvents: "There are events earlier in the day.",
+  laterExistingEvents: "There are events later in the day.",
+  laterDayExistingEvents: "There are events after the last day.",
+});
+Competitions.attachSchema(schema);
 
 if(Meteor.isServer) {
   Competitions._ensureIndex({

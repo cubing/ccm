@@ -25,27 +25,26 @@ if(Meteor.isClient) {
     return Router.current().route.getName() == routeName;
   });
 
-  Template.registerHelper("refreshTitle", function() {
-    var title = "live.cubing.net";
+  Template.registerHelper("setDocumentTitle", function() {
+    var titleParts = ["live.cubing.net"];
 
     var data = Router.current().data && Router.current().data();
     if(data) {
       if(data.competitionId) {
-        var competitionName = getCompetitionAttribute(data.competitionId, 'competitionName');
-        title = competitionName + " - " + title;
+        titleParts.push(getCompetitionAttribute(data.competitionId, 'competitionName'));
       }
       if(data.roundId) {
         var round = Rounds.findOne(data.roundId);
-        title = round.eventName() + " " + round.properties().name + " - " + title;
+        titleParts.push(round.eventName() + " " + round.properties().name);
       }
       if(data.user) {
-        title = data.user.profile.name + " - " + title;
+        titleParts.push(data.user.profile.name);
       }
     }
 
     var titlePrefix = Router.current().lookupOption('titlePrefix');
     if(titlePrefix) {
-      title = titlePrefix + " - " + title;
+      titleParts.push(titlePrefix);
     }
 
     // Immediately updating the page title here was causing the title of the
@@ -53,7 +52,7 @@ if(Meteor.isClient) {
     // previous (old) page. Waiting for a little bit before setting the title
     // lets the browser history look sane.
     setTimeout(function() {
-      document.title = title;
+      document.title = titleParts.reverse().join(' - ');
     }, 0);
   });
 }

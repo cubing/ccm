@@ -1,5 +1,13 @@
 var eventToEditReact = new ReactiveVar(null);
 
+function activateDraggable() {
+  $('.draggable').draggable({
+    zIndex: 999,
+    revert: true,
+    revertDuration: 0,
+  });
+}
+
 Template.editSchedule.helpers({
   competition: function() {
     return Competitions.findOne(this.competitionId);
@@ -11,6 +19,9 @@ Template.editSchedule.helpers({
   eventToEdit: function() {
     return eventToEditReact.get();
   },
+  draggability: function() {
+    return this.isScheduled() ? "undraggable" : "draggable";
+  },
 });
 
 Template.editSchedule.events({
@@ -19,6 +30,12 @@ Template.editSchedule.events({
   },
 });
 
+Template.editSchedule.rendered = function() {
+  var template = this;
+  setupCompetitionCalendar(template, template.$('#calendar'), template.$('#editEventModal'));
+  activateDraggable();
+};
+
 // This is global so competitionSchedule.js can use it
 setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   var dbScheduleEvents = [];
@@ -26,6 +43,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   template.autorun(function() {
     var data = Template.currentData();
     var competitionId = data.competitionId;
+    var competition = Competitions.findOne(competitionId);
 
     $calendarDiv.fullCalendar('destroy');
 
@@ -33,20 +51,20 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       var duration = moment.duration(timeMinutes, 'minutes');
       return Math.floor(duration.asHours()) + ":" + duration.minutes() + ":00";
     }
-    var compStartMinutes = getCompetitionCalendarStartMinutes(competitionId);
-    var compEndMinutes = getCompetitionCalendarEndMinutes(competitionId);
-    var numberOfDays = getCompetitionNumberOfDays(competitionId);
 
     var startDateMoment = getCompetitionStartDateMoment(competitionId) || moment.utc().startOf('day');
 
-    var eventChanged = function(event) {
+    var eventChanged = function(event, revertFunc) {
       var update = {
         nthDay: event.start.diff(startDateMoment, 'days'),
         startMinutes: event.start.hour()*60 + event.start.minute(),
         durationMinutes: event.end.diff(event.start, 'minutes'),
       };
 
-      ScheduleEvents.update(event.id, { $set: update });
+      var successCount = ScheduleEvents.update(event.id, { $set: update });
+      if(!successCount) {
+        revertFunc(); // moves the event back to before the drag
+      }
     };
 
     $calendarDiv.fullCalendar({
@@ -55,12 +73,12 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         center: 'title',
         right: '',
       },
-      durationDays: numberOfDays,
+      durationDays: competition.numberOfDays,
       allDaySlot: false,
       slotDuration: { minutes: 30 },
       snapDuration: { minutes: ScheduleEvent.MIN_DURATION.asMinutes() },
-      minTime: timeMinutesToFullCalendarTime(compStartMinutes),
-      maxTime: timeMinutesToFullCalendarTime(compEndMinutes),
+      minTime: timeMinutesToFullCalendarTime(competition.calendarStartMinutes),
+      maxTime: timeMinutesToFullCalendarTime(competition.calendarEndMinutes),
       defaultDate: startDateMoment.toISOString(),
       defaultTimedEventDuration: { minutes: ScheduleEvent.DEFAULT_DURATION.asMinutes() },
       defaultView: 'agendaDays',
@@ -70,6 +88,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       drop: function(date) { // A round / new event was dragged onto the schedule
         var newEventData = {
           competitionId: competitionId,
+          nthDay: date.diff(startDateMoment, 'days'),
           startMinutes: date.utc().get('hour')*60 + date.utc().get('minute'),
           durationMinutes: ScheduleEvent.DEFAULT_DURATION.asMinutes(),
         };
@@ -77,7 +96,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         var droppedRoundId = $(this).data('round-id');
         if(droppedRoundId) {
           Meteor.call('addScheduleEvent', competitionId, newEventData, droppedRoundId);
-          $(this).remove();
+          $(this).draggable({ disabled: true });
         } else {
           eventToEditReact.set(newEventData);
           $editModal.modal('show');
@@ -110,10 +129,10 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         $editModal.modal('show');
       },
       eventDrop: function(calEvent, delta, revertFunc, jsEvent, ui, view) { // Existing entry dragged
-        eventChanged(calEvent);
+        eventChanged(calEvent, revertFunc);
       },
       eventResize: function(calEvent, delta, revertFunc, jsEvent, ui, view) {
-        eventChanged(calEvent);
+        eventChanged(calEvent, revertFunc);
       },
     });
   });
@@ -125,40 +144,22 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   });
 };
 
-function makeDraggable($el) {
-  $el.draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
-}
-
-Template.editSchedule.rendered = function() {
-  var template = this;
-
-  var $calendar = template.$('#calendar');
-  var $editEventModal = template.$('#editEventModal');
-  setupCompetitionCalendar(template, $calendar, $editEventModal);
-  makeDraggable(template.$('#new-calender-entry'));
-};
-
-Template.sortedRound.helpers({
-  draggability: function() {
-    return this.isScheduled() ? "undraggable" : "draggable";
-  },
-});
-
-Template.sortedRound.rendered = function() {
-  var template = this;
-  makeDraggable(template.$('.draggable'));
-};
-
 Template.editEventModal.helpers({
   eventToEdit: function() {
     return eventToEditReact.get();
   },
   formType: function() {
     return this._id ? "update" : "add";
+  },
+  multipleDayCompetition: function() {
+    return Competitions.findOne(this.competitionId).numberOfDays > 1;
+  },
+  nthDayOptions: function() {
+    var options = [];
+    for(var i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i++) {
+      options.push({label: "Day " + (i+1), value: i});
+    }
+    return options;
   },
 });
 
@@ -168,8 +169,8 @@ AutoForm.hooks({
       this.event.preventDefault();
 
       if(currentDoc._id) {
-        delete updateDoc.$set.competitionId; // Don't touch the competitionId field. We don't trust browser input that much.
-        ScheduleEvents.update({ _id: currentDoc._id, }, updateDoc);
+        delete updateDoc.$set.competitionId; // Don't update the competitionId field. We can't trust browser input.
+        ScheduleEvents.update(currentDoc._id, updateDoc);
       } else {
         Meteor.call('addScheduleEvent', currentDoc.competitionId, insertDoc, null);
       }
@@ -186,6 +187,7 @@ Template.editEventModal.events({
       if(!err) {
         template.$('#deleteEventConfirmModal').modal('hide');
         template.$('#editEventModal').modal('hide');
+        activateDraggable();
       } else {
         console.error("Meteor.call() error: " + err);
       }

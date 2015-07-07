@@ -15,7 +15,7 @@
         <div id="sorted-rounds">
           <div class="fc-event draggable" id="new-calender-entry">Add new calendar entry</div>
           {{#each sortedRounds}}
-            {{> sortedRound }}
+            <div class="fc-event {{ draggability }}" data-round-id="{{ _id }}">{{ displayTitle }}</div>
           {{/each}}
         </div>
       </div>
@@ -29,10 +29,6 @@
     </div>
 
   </div>
-</template>
-
-<template name="sortedRound">
-  <div class="fc-event {{ draggability }}" data-round-id="{{ _id }}">{{ displayTitle }}</div>
 </template>
 
 <template name="editEventModal">
@@ -56,6 +52,13 @@
               {{else}}
                 {{> afQuickField name="title" autofocus='' }}
               {{/if}}
+
+              {{#if multipleDayCompetition}}
+                {{> afQuickField name="nthDay" options=nthDayOptions }}
+              {{else}}
+                {{> afFieldInput name="nthDay" hidden="true" }}
+              {{/if}}
+
               {{> afQuickField name="startMinutes" }}
               {{> afQuickField name="durationMinutes" }}
             </div>

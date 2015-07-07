@@ -1,5 +1,5 @@
 Registrations = new Mongo.Collection("registrations");
-Registrations.attachSchema({
+var schema = new SimpleSchema({
   competitionId: {
     type: String,
     autoform: {
@@ -16,25 +16,16 @@ Registrations.attachSchema({
   uniqueName: {
     type: String,
     custom: function() {
-      // this.docId is not available to the client on the first validation check
-      // due to a bug. When the server validation hits then the docId makes it
-      // back to the client.
-      // See: https://github.com/aldeed/meteor-collection2/pull/164
-      // And: https://github.com/aldeed/meteor-simple-schema/issues/208
-      var docId = this.docId;
-      var userId = this.field('userId').value;
-      var compId = this.field('competitionId').value;
-      var uniqueName = this.value;
+      var obj = validationObject(this, ['uniqueName', 'userId', 'competitionId']);
 
       var uniqueMatch = Registrations.findOne({
-        competitionId: compId,
-        uniqueName: uniqueName,
+        competitionId: obj.competitionId,
+        uniqueName: obj.uniqueName,
       });
 
-      if(uniqueMatch && (this.isInsert || docId != uniqueMatch._id)) {
+      if(obj.uniqueMatch && (this.isInsert || obj.id != uniqueMatch._id)) {
         return "notUnique";
       }
-
     }
   },
   wcaId: _.extend({ optional: true }, WcaIdType),
@@ -82,6 +73,13 @@ Registrations.attachSchema({
   createdAt: createdAtSchemaField,
   updatedAt: updatedAtSchemaField,
 });
+
+schema.messages({
+  notUnique: "Someone is already registered with that name.",
+});
+
+Registrations.attachSchema(schema);
+
 if(Meteor.isServer) {
   // The (competitionId, uniqueName) pair should always be unique.
   Registrations._ensureIndex({

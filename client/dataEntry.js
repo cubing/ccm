@@ -31,20 +31,10 @@ Template.dataEntry.helpers({
   },
 
   isSelectedRoundClosed: function() {
-    if(!this.roundId) {
-      // If there's no round selected, then the selected round is definitely
-      // *not* closed =)
-      return false;
-    }
     return Rounds.findOne(this.roundId).isClosed();
   },
   isSelectedRoundUnstarted: function() {
-    if(!this.roundId) {
-      // If there's no round selected, then the selected round is definitely
-      // *not* unstarted =)
-      return false;
-    }
-    return Rounds.findOne(this.roundId).isUnstarted;
+    return Rounds.findOne(this.roundId).isUnstarted();
   },
   openRounds: function() {
     var openRounds = Rounds.find({
