@@ -49,7 +49,7 @@ var getTokenResponse = function (query) {
     // Request an access token
     config.loginStyle = "popup";//<<< force OAuth._redirectUri() to not append ?close >>>
     responseContent = HTTP.post(
-      "http://staging.worldcubeassociation.org/oauth/token", {
+      "https://www.worldcubeassociation.org/oauth/token", {
         params: {
           grant_type: "authorization_code",
           client_id: config.appId,
@@ -89,7 +89,7 @@ var getTokenResponse = function (query) {
 var getIdentity = function (accessToken) {
   try {
     return HTTP.get(
-        "http://staging.worldcubeassociation.org/api/v0/me", {
+        "https://www.worldcubeassociation.org/api/v0/me", {
           params: {access_token: accessToken},
           npmRequestOptions: {
             rejectUnauthorized: false, //<<<
