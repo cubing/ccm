@@ -13,16 +13,14 @@
     <div class="modal-dialog full-screen">
       {{#if this}}
         <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cancel</span></button>
-            <h4 class="modal-title">
-              {{#if _id}}
-                Edit registration for {{uniqueName}}
-              {{else}}
-                Add new competitor
-              {{/if}}
-            </h4>
-          </div>
+          {{#ccmHeader}}
+            {{#if _id}}
+              Edit registration for {{uniqueName}}
+            {{else}}
+              Add new competitor
+            {{/if}}
+          {{/ccmHeader}}
+
           {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
             <div class="modal-body">
               <div class="form-group">
@@ -42,7 +40,7 @@
                 </button>
               {{/if}}
 
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              {{> ccmCancelButton}}
               <button type="reset" class="btn btn-default">Reset Form</button>
               <button type="submit" class="btn btn-success">
                 <span class="glyphicon {{#if _id}}glyphicon-floppy-save{{else}}glyphicon-plus{{/if}}"></span>
