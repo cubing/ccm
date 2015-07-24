@@ -164,14 +164,14 @@
                       <div id="modalReallyRemoveRound_{{eventCode}}" class="modal fade">
                         <div class="modal-dialog">
                           <div class="modal-content">
-                            {{#cmHeader}}
+                            {{#ccmHeader}}
                               Are you sure you want to delete {{eventName eventCode}}: {{roundName lastRoundCode}}?
-                            {{/cmHeader}}
+                            {{/ccmHeader}}
                             <div class="modal-body">
                               <p>It appears that this round contains results. If you delete it, those results will be lost.</p>
                             </div>
                             <div class="modal-footer">
-                              {{> cmCancelButton}}
+                              {{> ccmCancelButton}}
                               <button type="button" class="btn btn-danger" name="buttonReallyRemoveRound">
                                 <span class="glyphicon glyphicon-trash"></span> Delete round
                               </button>
@@ -230,9 +230,9 @@
       {{#if this}}
         <form role="form">
           <div class="modal-content">
-            {{#cmHeader}}
+            {{#ccmHeader}}
               Advance competitors from {{eventName eventCode}}: {{roundName roundCode}}
-            {{/cmHeader}}
+            {{/ccmHeader}}
             <div class="modal-body">
               <div class="form-group">
                 <div id="roundResultsListWrapper">
@@ -242,7 +242,7 @@
               </div>
             </div>
             <div class="modal-footer">
-              {{> cmCancelButton}}
+              {{> ccmCancelButton}}
               <button type="submit" class="btn {{#if isSaveable}}btn-success{{/if}}" disabled={{not isSaveable}}>
                 Advance competitors <span class="glyphicon glyphicon-step-forward"></span>
               </button>
@@ -258,17 +258,17 @@
   {{#ccmModal id="modalSetRoundSize"}}
     {{#if this}}
       <form role="form">
-        {{#cmHeader}}
+        {{#ccmHeader}}
           Change size of {{eventName eventCode}}: {{roundName roundCode}}
-        {{/cmHeader}}
+        {{/ccmHeader}}
         <div class="modal-body">
           <div class="form-group">
             <input type="number" min="1" name="roundSize" class="form-control" value="{{size}}" />
           </div>
         </div>
         <div class="modal-footer">
-          {{> cmCancelButton}}
-          {{> cmSaveButton saveable=isSaveable}}
+          {{> ccmCancelButton}}
+          {{> ccmSaveButton saveable=isSaveable}}
         </div>
       </form>
     {{/if}}
@@ -279,9 +279,9 @@
   {{#ccmModal id="modalSoftCutoff"}}
     {{#if this}}
       <form role="form">
-        {{#cmHeader}}
+        {{#ccmHeader}}
           Change soft cutoff for {{eventName eventCode}}: {{roundName roundCode}}
-        {{/cmHeader}}
+        {{/ccmHeader}}
         <div class="modal-body">
           {{#if showTimeEntry}}
             {{> mjChester solveTime=softCutoff.time name="inputSoftCutoff"}}
@@ -299,8 +299,8 @@
           </select>
         </div>
         <div class="modal-footer">
-          {{> cmCancelButton}}
-          {{> cmSaveButton saveable=isSaveable}}
+          {{> ccmCancelButton}}
+          {{> ccmSaveButton saveable=isSaveable}}
         </div>
       </form>
     {{/if}}
@@ -311,15 +311,15 @@
   {{#ccmModal id="modalHardCutoff"}}
     {{#if this}}
       <form role="form">
-        {{#cmHeader}}
+        {{#ccmHeader}}
           Change hard cutoff for {{eventName eventCode}}: {{roundName roundCode}}
-        {{/cmHeader}}
+        {{/ccmHeader}}
         <div class="modal-body">
           {{> mjChester solveTime=hardCutoff.time name="inputHardCutoff"}}
         </div>
         <div class="modal-footer">
-          {{> cmCancelButton}}
-          {{> cmSaveButton saveable=isSaveable}}
+          {{> ccmCancelButton}}
+          {{> ccmSaveButton saveable=isSaveable}}
         </div>
       </form>
     {{/if}}

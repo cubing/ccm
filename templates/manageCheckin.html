@@ -9,17 +9,17 @@
 </template>
 
 <template name="modalEditRegistration">
-  <div id="modalEditRegistration" class="modal fade" data-keyboard="false">  {{! TODO }}
+  <div id="modalEditRegistration" class="modal fade" data-keyboard="false">
     <div class="modal-dialog full-screen">
       {{#if this}}
         <div class="modal-content">
-          {{#cmHeader}}
+          {{#ccmHeader}}
             {{#if _id}}
               Edit registration for {{uniqueName}}
             {{else}}
               Add new competitor
             {{/if}}
-          {{/cmHeader}}
+          {{/ccmHeader}}
 
           {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
             <div class="modal-body">
@@ -40,7 +40,7 @@
                 </button>
               {{/if}}
 
-              {{> cmCancelButton}}
+              {{> ccmCancelButton}}
               <button type="reset" class="btn btn-default">Reset Form</button>
               <button type="submit" class="btn btn-success">
                 <span class="glyphicon {{#if _id}}glyphicon-floppy-save{{else}}glyphicon-plus{{/if}}"></span>

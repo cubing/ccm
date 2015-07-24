@@ -32,16 +32,16 @@
 </template>
 
 <template name="editEventModal">
-  <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-hidden="true"> {{! TODO }}
+  <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
       {{#if eventToEdit}}
         <div class="modal-content">
           {{#autoForm id="editEventForm" doc=eventToEdit collection="ScheduleEvents" template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
             {{> afFieldInput name="competitionId" hidden="true" }}
 
-            {{#cmHeader}}
+            {{#ccmHeader}}
               {{#if eventToEdit._id}} Edit event {{else}} Add something to the schedule {{/if}}
-            {{/cmHeader}}
+            {{/ccmHeader}}
             <div class="modal-body">
               {{#if eventToEdit.roundId}}
                 <p class="form-control-static"> {{eventToEdit.title}} </p>
@@ -65,7 +65,7 @@
                   <span class="glyphicon glyphicon-trash"></span> Delete
                 </button>
               {{/if}}
-              {{> cmCancelButton}}
+              {{> ccmCancelButton}}
               <button type="submit" class="btn btn-primary">
                 {{#if eventToEdit._id}} Save {{else}} Add {{/if}}
               </button>
@@ -77,12 +77,12 @@
   </div>
 
   {{#ccmModal id="deleteEventConfirmModal"}}
-    {{#cmHeader}} Are you sure you want to delete this event? {{/cmHeader}}
+    {{#ccmHeader}} Are you sure you want to delete this event? {{/ccmHeader}}
     <div class="modal-body">
       <p>Deleting this event is permanent and irreversible.</p>
     </div>
     <div class="modal-footer">
-      {{> cmCancelButton}}
+      {{> ccmCancelButton}}
       <button type="button" class="btn btn-danger" id="buttonDeleteEvent">
         <span class="glyphicon glyphicon-trash"></span> Delete
       </button>

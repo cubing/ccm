@@ -1,4 +1,4 @@
-Template.cmSaveButton.helpers({
+Template.ccmSaveButton.helpers({
   btn_success: function(saveable) {
     // treat saveable as true by default (not passed in)
     return (saveable || _.isUndefined(saveable)) ? "btn-success" : "";
