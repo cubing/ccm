@@ -18,7 +18,7 @@ if(Meteor.isServer) {
           dob: new Date(),
         }
       });
-      var develUser = Meteor.users.findOne({ _id: develUserId });
+      var develUser = Meteor.users.findOne(develUserId);
       assert(develUser);
       // Mark email as verified, and user as a site admin
       Meteor.users.update({

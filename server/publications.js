@@ -20,7 +20,7 @@ Meteor.publish(null, function() {
   if(!this.userId) {
     return [];
   }
-  return Meteor.users.find({ _id: this.userId }, { fields: userFieldsToPublish });
+  return Meteor.users.find(this.userId, { fields: userFieldsToPublish });
 });
 
 Meteor.publish("roundProgresses", function(competitionUrlId) {
@@ -51,7 +51,7 @@ Meteor.publish('competition', function(competitionUrlId) {
   }
 
   var cursors = [
-    Competitions.find({ _id: competitionId }),
+    Competitions.find(competitionId),
     Rounds.find({ competitionId: competitionId }),
   ];
   if(this.userId) {
@@ -94,7 +94,7 @@ Meteor.publish('participantResults', function(competitionUrlId, participantUniqu
   }
   return [
     Registrations.find({competitionId: competitionId, uniqueName: participantUniqueName, }, { fields: registrationFieldsToPublish }),
-    Meteor.users.find({ _id: registration.userId }, { fields: { 'profile.name': 1 } }),
+    Meteor.users.find(registration.userId, { fields: { 'profile.name': 1 } }),
 
     // TODO - does this need a db index?
     Results.find({ competitionId: competitionId, userId: registration.userId, }),

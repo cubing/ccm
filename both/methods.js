@@ -5,7 +5,7 @@ var throwIfNotVerifiedUser = function(userId) {
     throw new Meteor.Error(401, "Must log in");
   }
 
-  var user = Meteor.users.findOne({ _id: userId });
+  var user = Meteor.users.findOne(userId);
   if(!user.emails[0].verified) {
     throw new Meteor.Error(401, "Must verify email");
   }
@@ -16,7 +16,7 @@ var throwIfNotSiteAdmin = function(userId) {
     throw new Meteor.Error(401, "Must log in");
   }
 
-  var user = Meteor.users.findOne({ _id: userId });
+  var user = Meteor.users.findOne(userId);
   if(!user.siteAdmin) {
     throw new Meteor.Error(401, "Must be a site admin");
   }
@@ -71,7 +71,7 @@ Meteor.methods({
     }
     throwIfNotVerifiedUser(this.userId);
 
-    var user = Meteor.users.findOne({ _id: this.userId });
+    var user = Meteor.users.findOne(this.userId);
     if(!user.profile) {
       throw new Meteor.Error(400, "Must set up user profile");
     }
@@ -154,10 +154,10 @@ Meteor.methods({
       throw new Meteor.Error(400, "Cannot remove round.");
     }
 
-    var deadRound = Rounds.findOne({ _id: roundId });
+    var deadRound = Rounds.findOne(roundId);
     assert(deadRound);
 
-    Rounds.remove({ _id: roundId });
+    Rounds.remove(roundId);
     [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
       collection.remove({ roundId: roundId });
     });
@@ -203,11 +203,11 @@ Meteor.methods({
   removeScheduleEvent: function(scheduleEventId) {
     var event = ScheduleEvents.findOne(scheduleEventId);
     throwIfCannotManageCompetition(this.userId, event.competitionId);
-    ScheduleEvents.remove({ _id: scheduleEventId});
+    ScheduleEvents.remove(scheduleEventId);
   },
   addOrUpdateGroup: function(newGroup) {
     throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
-    var round = Rounds.findOne({ _id: newGroup.roundId });
+    var round = Rounds.findOne(newGroup.roundId);
     if(!round) {
       throw new Meteor.Error("Invalid roundId: '" + newGroup.roundId +"'");
     }
@@ -221,7 +221,7 @@ Meteor.methods({
     });
     if(existingGroup) {
       log.l0("Clobbering existing group", existingGroup);
-      Groups.update({ _id: existingGroup._id }, { $set: newGroup });
+      Groups.update(existingGroup._id, { $set: newGroup });
     } else {
       Groups.insert(newGroup);
     }
@@ -292,9 +292,9 @@ Meteor.methods({
     // or to update their check-in because the set of events they are registered for
     // changed. The latter may involve deleting results with data entered, so
     // be sure before you call this method =).
-    var registration = Registrations.findOne({
-      _id: registrationId,
-    }, {
+    var registration = Registrations.findOne(
+      registrationId,
+    {
       fields: {
         competitionId: 1,
         registeredEvents: 1,
@@ -338,14 +338,14 @@ Meteor.methods({
       // Update round progress
       RoundSorter.addRoundToSort(round._id);
     });
-    Registrations.update({ _id: registration._id }, { $set: { checkedInEvents: registration.registeredEvents } });
+    Registrations.update(registration._id, { $set: { checkedInEvents: registration.registeredEvents } });
   },
   addSiteAdmin: function(newSiteAdminUserId) {
     if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
     }
 
-    Meteor.users.update({ _id: newSiteAdminUserId }, { $set: { siteAdmin: true } });
+    Meteor.users.update(newSiteAdminUserId, { $set: { siteAdmin: true } });
   },
   removeSiteAdmin: function(siteAdminToRemoveUserId) {
     if(!isSiteAdmin(this.userId)) {
@@ -357,7 +357,7 @@ Meteor.methods({
       throw new Meteor.Error(403, "Site admins may not unresign themselves!");
     }
 
-    Meteor.users.update({ _id: siteAdminToRemoveUserId }, { $set: { siteAdmin: false } });
+    Meteor.users.update(siteAdminToRemoveUserId, { $set: { siteAdmin: false } });
   },
   setSolveTime: setSolveTime,
   setRoundSoftCutoff: function(roundId, softCutoff) {
@@ -561,7 +561,7 @@ if(Meteor.isServer) {
         newCompetition.wcaCompetitionId = wcaCompetitionId;
       }
       var competitionId = Competitions.insert(newCompetition);
-      var competition = Competitions.findOne({ _id: competitionId });
+      var competition = Competitions.findOne(competitionId);
       assert(competition);
 
       var registrationByWcaJsonId = {};
@@ -593,7 +593,7 @@ if(Meteor.isServer) {
           registeredEvents: [],
           checkedInEvents: [],
         });
-        var registration = Registrations.findOne({ _id: registrationId });
+        var registration = Registrations.findOne(registrationId);
 
         assert(!registrationByWcaJsonId[wcaPerson.id]);
         registrationByWcaJsonId[wcaPerson.id] = registration;
@@ -706,7 +706,7 @@ if(Meteor.isServer) {
               softCutoff.time.moveCount -= 1;
             }
             log.l0("Setting soft cutoff for", wcaEvent.eventId, "round", nthRound + 1, "to", softCutoff);
-            Rounds.update({ _id: roundId }, { $set: { softCutoff: softCutoff } });
+            Rounds.update(roundId, { $set: { softCutoff: softCutoff } });
           }
 
           // We don't actually need to resort, but we do want to recompute
@@ -737,9 +737,9 @@ if(Meteor.isServer) {
       for(var jsonId in registrationByWcaJsonId) {
         if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
           var registration = registrationByWcaJsonId[jsonId];
-          var registrationId = Registrations.update({
-            _id: registration._id,
-          }, {
+          var registrationId = Registrations.update(
+            registration._id,
+          {
             $set: {
               registeredEvents: _.keys(registration.registeredEvents),
               checkedInEvents: _.keys(registration.checkedInEvents),
@@ -753,7 +753,7 @@ if(Meteor.isServer) {
     recomputeWhoAdvanced: function(roundId) {
       check(roundId, String);
 
-      var round = Rounds.findOne({ _id: roundId });
+      var round = Rounds.findOne(roundId);
       var nextRound = Rounds.findOne({
         competitionId: round.competitionId,
         eventCode: round.eventCode,
@@ -778,7 +778,7 @@ if(Meteor.isServer) {
           // advanced.
           advanced = false;
         }
-        Results.update({ _id: result._id }, { $set: { advanced: advanced } });
+        Results.update(result._id, { $set: { advanced: advanced } });
       });
     },
   });

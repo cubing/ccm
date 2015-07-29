@@ -7,9 +7,9 @@ Template.roundResultsList.rendered = function() {
   // a small subset of all the results for this round, and then
   // render the rest later.
   var resultsListLimitReact = new ReactiveVar(25);
-  setTimeout(function() {
+  Meteor.defer(function() {
     resultsListLimitReact.set(0);
-  }, 0);
+  });
 
   template.autorun(function() {
     var data = Template.currentData();

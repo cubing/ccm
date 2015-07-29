@@ -47,7 +47,7 @@ Template.manageCheckin.events({
     var confirmStr = "Are you sure you want to delete the registration for " + this.uniqueName + "?";
     bootbox.confirm(confirmStr, function(confirm) {
       if(confirm) {
-        Registrations.remove({ _id: that._id });
+        Registrations.remove(that._id);
         $("#modalEditRegistration").modal('hide');
       }
     });
@@ -123,7 +123,7 @@ var CheckinList = React.createClass({
         }
       };
     }
-    Registrations.update({ _id: registration._id }, update);
+    Registrations.update(registration._id, update);
   },
   checkInClicked: function(registration, e) {
     var eventsToUncheckinFor = _.difference(registration.checkedInEvents, registration.registeredEvents);

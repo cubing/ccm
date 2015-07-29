@@ -51,9 +51,9 @@ if(Meteor.isClient) {
     // current (new) page to get put in the history as the title of the
     // previous (old) page. Waiting for a little bit before setting the title
     // lets the browser history look sane.
-    setTimeout(function() {
+    Meteor.defer(function() {
       document.title = titleParts.reverse().join(' - ');
-    }, 0);
+    });
   });
 }
 

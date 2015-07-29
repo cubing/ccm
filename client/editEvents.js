@@ -18,16 +18,16 @@ Template.editEvents.events({
     Meteor.call('removeLastRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonOpenRound"]': function(e, template) {
-    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.open } });
+    Rounds.update(this._id, { $set: { status: wca.roundStatuses.open } });
   },
   'click button[name="buttonCloseRound"]': function(e, template) {
-    Rounds.update({ _id: this._id }, { $set: { status: wca.roundStatuses.closed } });
+    Rounds.update(this._id, { $set: { status: wca.roundStatuses.closed } });
   },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
     var formatCode = select.value;
     var roundId = this._id;
-    Rounds.update({ _id: roundId }, { $set: { formatCode: formatCode } });
+    Rounds.update(roundId, { $set: { formatCode: formatCode } });
   },
   'click button[name="buttonSetRoundSize"]': function(e, template) {
     roundPopupReact.set({ setRoundSize: this });
@@ -281,7 +281,7 @@ Template.modalSetRoundSize.events({
     } else {
       toSet.$unset = { size: 1 };
     }
-    Rounds.update({ _id: this._id }, toSet);
+    Rounds.update(this._id, toSet);
     template.$(".modal").modal('hide');
   },
 });
@@ -389,9 +389,9 @@ Template.modalHardCutoff.events({
     var $inputHardCutoff = template.$('[name="inputHardCutoff"]');
     var time = $inputHardCutoff.jChester('getSolveTime');
 
-    Rounds.update({
-      _id: this._id,
-    }, {
+    Rounds.update(
+      _this._id,
+    {
       $set: {
         // Explicitly listing all the fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202

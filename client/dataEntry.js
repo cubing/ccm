@@ -190,7 +190,7 @@ Template.roundDataEntry.helpers({
   },
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
-    var result = Results.findOne({ _id: selectedResultId }, { fields: { solves: 1 } });
+    var result = Results.findOne(selectedResultId, { fields: { solves: 1 } });
     var round = Rounds.findOne(this.roundId);
     var solves = result.solves || [];
     while(solves.length < round.format().count) {
@@ -244,13 +244,13 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   }
 
   selectedResultIdReact.set(result._id);
-  setTimeout(function() {
+  Meteor.defer(function() {
     var $jChesters = template.$('.jChester');
     if(jChesterToFocusIndex < 0) {
       jChesterToFocusIndex = $jChesters.length + jChesterToFocusIndex;
     }
     $jChesters.eq(jChesterToFocusIndex).focus();
-  }, 0);
+  });
 }
 
 function jChesterSave($jChester) {
@@ -287,10 +287,10 @@ Template.roundDataEntry.events({
     var $row = $(e.currentTarget);
     var resultId = $row.data('result-id');
 
-    var result = Results.findOne({ _id: resultId }, { fields: { registrationId: 1 } });
+    var result = Results.findOne(resultId, { fields: { registrationId: 1 } });
     assert(result);
 
-    var registration = Registrations.findOne({ _id: result.registrationId }, { fields: { uniqueName: 1 } });
+    var registration = Registrations.findOne(result.registrationId, { fields: { uniqueName: 1 } });
     assert(registration);
 
     var $inputParticipantName = template.$('#inputParticipantName');

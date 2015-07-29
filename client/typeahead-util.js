@@ -96,7 +96,7 @@ $.fn.typeahead = function(method) {
           // This fixes https://github.com/cubing/ccm/issues/112.
           return;
         }
-        setTimeout(function() {
+        Meteor.defer(function() {
           var ttTypeahead = $typeahead.data('ttTypeahead');
           var dropdown = ttTypeahead.dropdown;
           if(dropdown._getCursor().length > 0) {
@@ -104,7 +104,7 @@ $.fn.typeahead = function(method) {
           }
           var silent = true; // prevent updating the text field
           dropdown._setCursor(dropdown._getSuggestions().first(), silent);
-        }, 0);
+        });
       });
     }
   }
