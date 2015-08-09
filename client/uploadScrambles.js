@@ -52,7 +52,7 @@ var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 var tnoodleStatusPoller = null;
 function startPollingTNoodleStatus() {
   if(tnoodleStatusPoller === null) {
-    tnoodleStatusPoller = setTimeout(pollTNoodleStatus, 0);
+    tnoodleStatusPoller = Meteor.defer(pollTNoodleStatus);
   }
 }
 function stopPollingTNoodleStatus() {

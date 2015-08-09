@@ -104,7 +104,7 @@ Template.competitionRegistration.helpers({
 
   registrationAskAboutGuests: function() {
     var competitionId = this.competitionId;
-    var competition = Competitions.findOne({ _id: competitionId }, { fields: { registrationAskAboutGuests: 1 } });
+    var competition = Competitions.findOne(competitionId, { fields: { registrationAskAboutGuests: 1 } });
     return competition.registrationAskAboutGuests;
   }
 });
@@ -123,7 +123,7 @@ Template.competitionRegistration.events({
     var competitionId = this.competitionId;
     var userId = Meteor.userId();
     var registration = getUserRegistration(userId, competitionId);
-    Registrations.remove({ _id: registration._id });
+    Registrations.remove(registration._id);
 
     $('#modalConfirmDeregistration').modal('hide');
   },

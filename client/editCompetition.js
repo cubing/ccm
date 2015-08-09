@@ -11,7 +11,7 @@ setCompetitionAttribute = function(competitionId, attribute, value) {
     toSet[attribute] = value;
     update = { $set: toSet };
   }
-  Competitions.update({ _id: competitionId }, update);
+  Competitions.update(competitionId, update);
 };
 
 var setCompetitionLocationMap = function() {
@@ -130,12 +130,12 @@ function getExpandableListSettings(competitionId, registrationAttribute) {
     addDoc: function(registrationId) {
       var $toSet = {};
       $toSet[registrationAttribute] = true;
-      Registrations.update({ _id: registrationId }, { $set: $toSet });
+      Registrations.update(registrationId, { $set: $toSet });
     },
     removeDoc: function(registrationId) {
       var $toSet = {};
       $toSet[registrationAttribute] = false;
-      Registrations.update({ _id: registrationId }, { $set: $toSet });
+      Registrations.update(registrationId, { $set: $toSet });
     },
     docCriteria: criteria,
     isDeletable: function(registration) {
@@ -147,7 +147,7 @@ function getExpandableListSettings(competitionId, registrationAttribute) {
 Template.editCompetition.helpers({
   defaultCompetitionDataDocument: function() {
     var competitionId = this.competitionId;
-    var competition = Competitions.findOne({ _id: competitionId });
+    var competition = Competitions.findOne(competitionId);
 
     if(competition) {
       return competition;
@@ -202,9 +202,9 @@ Template.editCompetition.events({
     // up attributes of a competition that no longer exists.
     Router.go('home');
     var that = this;
-    setTimeout(function() {
+    Meteor.defer(function() {
       Meteor.call("deleteCompetition", that.competitionId);
-    }, 0);
+    });
   },
 });
 

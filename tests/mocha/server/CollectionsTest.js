@@ -23,7 +23,7 @@ MochaWeb.testOnly(function() {
         chai.expect(inserted.updatedAt).to.not.exist;
 
         this.clock.tick(99);
-        Gizmos.update({_id: gid}, { $set: {name: "Sven"}});
+        Gizmos.update(gid, { $set: {name: "Sven"}});
         var updated = Gizmos.findOne(gid);
 
         chai.expect(updated.name).to.equal("Sven");

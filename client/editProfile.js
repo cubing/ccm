@@ -1,7 +1,7 @@
 Template.editProfile.helpers({
   defaultProfileData: function() {
     var userId = Meteor.userId();
-    var profile = Meteor.users.findOne({_id: userId});
+    var profile = Meteor.users.findOne(userId);
     if(profile) {
       return profile;
     } else {
