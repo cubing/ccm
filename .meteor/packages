@@ -34,10 +34,10 @@ yogiben:autoform-map
 mizzao:autocomplete
 mrt:moment-timezone
 sewdn:highlightjs
-nemo64:bootstrap
 okgrow:analytics
 percolate:migrations
 mike:mocha
 practicalmeteor:sinon
 accounts-worldcubeassociation
 ian:accounts-ui-bootstrap-3
+nemo64:bootstrap
