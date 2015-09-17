@@ -1,8 +1,9 @@
+sudo: false
 language: node_js
 node_js:
   - "0.10"
 before_install:
   - (cd tests; npm install)
+  - curl https://install.meteor.com | /bin/sh
 script:
   - (cd tests; npm run-script lint)
-  - (cd tests; npm test)
