@@ -1,5 +1,7 @@
 <template name="newCompetition">
   <div class="container">
+    {{> flashMessages}}
+
     {{#ifLoggedInAndVerified}}
 
       <ul class="nav nav-tabs">
