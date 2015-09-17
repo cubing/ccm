@@ -194,18 +194,23 @@ var CheckinList = React.createClass({
                   </td>
                 );
               });
-              var checkinButton = null;
-              if(needsCheckinButton) {
-                var checkinButtonText = registration.checkedInEvents.length ? "Check-in" : "Check-in";
-                var onClick = that.checkInClicked.bind(null, registration);
-                checkinButton = (
-                  <button type="button"
-                          className="btn btn-default btn-xs"
-                          onClick={onClick}>
-                    {checkinButtonText}
-                  </button>
-                );
+
+              var checkinButtonText = registration.checkedInEvents.length ? "Check-in" : "Check-in";
+              var onClick = that.checkInClicked.bind(null, registration);
+              var style = {};
+              if(!needsCheckinButton) {
+                // We don't want the table to shift around as these buttons appear and
+                // disappear, so just set it to be invisible, but still take up space.
+                style.visibility = 'hidden';
               }
+              var checkinButton = (
+                <button type="button"
+                        className="btn btn-default btn-xs"
+                        style={style}
+                        onClick={onClick}>
+                  {checkinButtonText}
+                </button>
+              );
 
               var handleEditRegistration = that.handleEditRegistration.bind(null, registration);
               var gender = registration.gender ? wca.genderByValue[registration.gender].label : '';
