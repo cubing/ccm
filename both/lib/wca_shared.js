@@ -89,6 +89,7 @@ SolveTime = new SimpleSchema({
   },
 });
 
+console.log("INSIDE _SHARED YO");//<<<
 // Force value to be current date (on server) upon insert
 // and prevent updates thereafter.
 createdAtSchemaField = {
