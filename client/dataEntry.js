@@ -173,7 +173,7 @@ Template.roundDataEntry.helpers({
 
     var parentData = Template.parentData(1);
     var round = Rounds.findOne(parentData.roundId);
-    var violatesHardCutoff = round.hardCutoff && this.solveTime && wca.compareSolveTimes(this.solveTime, round.hardCutoff.time) > 0 && !jChester.solveTimeIsDN(this.solveTime);
+    var violatesHardCutoff = round.hardCutoff && this.solveTime && !jChester.solveTimeIsDN(this.solveTime) && this.solveTime.millis > round.hardCutoff.time.millis;
     if(violatesHardCutoff) {
       warnings.push('Greater than hard cutoff');
     }
