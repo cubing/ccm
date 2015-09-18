@@ -96,7 +96,7 @@ MochaWeb.testOnly(function() {
       result1 = Results.findOne(result1._id);
       result2 = Results.findOne(result2._id);
       chai.expect(result2.position).to.equal(1);
-      chai.expect(result1.position).to.be.undefined;
+      chai.expect(result1.position).to.not.exist;
     });
   });
 });
