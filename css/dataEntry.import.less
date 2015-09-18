@@ -9,7 +9,7 @@
 }
 
 .results-sidebar {
-  width: 250px;
+  width: 350px;
 }
 
 .results-sidebar.affix {
@@ -34,15 +34,20 @@ tr:not(.solve-skipped-due-to-cutoff) + tr.solve-skipped-due-to-cutoff {
 .jChesterTable {
   tr {
     &.has-warnings {
-      td:first-child i.fa::before{
-        content: "\f06a"; /* fa-exclamation-circle */
-        color: red;
+      td:first-child i.fa {
+        cursor: pointer;
+        &::before {
+          content: "\f06a"; /* fa-exclamation-circle */
+          color: red;
+        }
       }
     }
 
     &.unsaved {
-      td:first-child i.fa::before {
-        content: "\f10c"; /* fa-circle-o */
+      td:first-child i.fa {
+        &::before {
+          content: "\f10c"; /* fa-circle-o */
+        }
       }
     }
 
@@ -60,6 +65,7 @@ tr:not(.solve-skipped-due-to-cutoff) + tr.solve-skipped-due-to-cutoff {
 
     td {
       i.fa {
+        cursor: auto;
         position: relative;
         top: 7px;
         left: 7px;
@@ -69,5 +75,13 @@ tr:not(.solve-skipped-due-to-cutoff) + tr.solve-skipped-due-to-cutoff {
         content: "\f111"; /* fa-circle */
       }
     }
+  }
+}
+
+.solve-time-warning-icon + .popover {
+  background-color: @state-danger-bg;
+  color: @state-danger-text;
+  & > .arrow:after {
+    border-top-color: @state-danger-bg;
   }
 }

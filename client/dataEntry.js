@@ -115,8 +115,9 @@ Template.roundDataEntry.destroyed = function() {
 };
 Template.roundDataEntry.rendered = function() {
   var template = this;
+
+  // Highlight the currently selected result row.
   template.autorun(function() {
-    // Highlight the currently selected result row.
     var selectedResultId = selectedResultIdReact.get();
     var $resultRows = template.$('tr.result');
     $resultRows.removeClass('selectedResult');
@@ -161,6 +162,27 @@ Template.roundDataEntry.rendered = function() {
   });
 };
 
+function getSolveWarnings(resultId, solveIndex) {
+  var warnings = [];
+
+  var result = Results.findOne(resultId);
+  var round = Rounds.findOne(result.roundId);
+  var solveTime = result.solves[solveIndex];
+  var violatesHardCutoff = round.hardCutoff && solveTime && !jChester.solveTimeIsDN(solveTime) && solveTime.millis > round.hardCutoff.time.millis;
+  if(violatesHardCutoff) {
+    warnings.push('Greater than hard cutoff');
+  }
+
+  var expectedSolveCount = result.getExpectedSolveCount();
+  var missedCutoff = expectedSolveCount != round.format().count;
+  if(missedCutoff && solveIndex >= expectedSolveCount && solveTime) {
+    // There's a SolveTime at this index and the user didn't make the cutoff.
+    // Complain!
+    warnings.push("Did not make soft cutoff");
+  }
+  return warnings;
+}
+
 Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
@@ -168,30 +190,13 @@ Template.roundDataEntry.helpers({
   round: function() {
     return Rounds.findOne(this.roundId);
   },
-  solveWarnings: function() {
-    var warnings = [];
-
-    var parentData = Template.parentData(1);
-    var round = Rounds.findOne(parentData.roundId);
-    var violatesHardCutoff = round.hardCutoff && this.solveTime && !jChester.solveTimeIsDN(this.solveTime) && this.solveTime.millis > round.hardCutoff.time.millis;
-    if(violatesHardCutoff) {
-      warnings.push('Greater than hard cutoff');
-    }
-
-    var result = Results.findOne(this.resultId);
-    var expectedSolveCount = result.getExpectedSolveCount();
-    var missedCutoff = expectedSolveCount != round.format().count;
-    if(missedCutoff && this.index >= expectedSolveCount && this.solveTime) {
-      // There's a SolveTime at this index and the user didn't make the cutoff.
-      // Complain!
-      warnings.push("Did not make soft cutoff");
-    }
-    return warnings;
-  },
   selectedSolves: function() {
     var selectedResultId = selectedResultIdReact.get();
-    var result = Results.findOne(selectedResultId, { fields: { solves: 1 } });
-    var round = Rounds.findOne(this.roundId);
+    if(!selectedResultId) {
+      return null;
+    }
+    var result = Results.findOne(selectedResultId, { fields: { solves: 1, roundId: 1 } });
+    var round = Rounds.findOne(result.roundId);
     var solves = result.solves || [];
     while(solves.length < round.format().count) {
       solves.push(null);
@@ -203,6 +208,12 @@ Template.roundDataEntry.helpers({
         resultId: selectedResultId,
       };
     });
+  },
+});
+
+Template.solveTimeEditor.helpers({
+  solveWarnings: function() {
+    return getSolveWarnings(selectedResultIdReact.get(), this.index);
   },
   editableSolveTimeFields: function() {
     var data = Template.parentData(1);
@@ -225,6 +236,29 @@ Template.roundDataEntry.helpers({
     return index >= expectedSolveCount;
   },
 });
+
+Template.solveTimeEditor.rendered = function() {
+  var template = this;
+
+  // Keep warning popup contents up to date.
+  template.autorun(function() {
+    var data = Template.currentData();
+    var selectedResultId = selectedResultIdReact.get();
+    var warnings = getSolveWarnings(selectedResultId, data.index);
+    var $warningIcon = template.$('.solve-time-warning-icon');
+    var popover = $warningIcon.popover().data('bs.popover');
+    popover.options.content = warnings.join("<br>");
+
+    var $focusedJChester = $(document.activeElement).closest('.jChester');
+    var $jChester = template.find(".jChester");
+    if(warnings.length > 0 && $focusedJChester[0] == $jChester[0]) {
+      // Only show warnings if there are warnings and this jChester is focused.
+      $warningIcon.popover('show');
+    } else {
+      $warningIcon.popover('hide');
+    }
+  });
+};
 
 function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   jChesterToFocusIndex = jChesterToFocusIndex || 0;
@@ -329,9 +363,20 @@ Template.roundDataEntry.events({
     var $target = $(e.currentTarget);
     $target.closest('tr').addClass('unsaved');
   },
+  'focus .jChester[name="inputSolve"]': function(e) {
+    var $jChester = $(e.currentTarget);
+    var $warningIcon = $jChester.parents("tr").find('i[data-toggle="popover"]');
+    // Hide all other popovers first.
+    $('[data-toggle="popover"]').not($warningIcon).popover('hide');
+    setTimeout(function() {
+      $warningIcon.popover('show');
+    }, 100); // Nasty hack to make popup show up, sometimes it doesn't show up.
+  },
   'blur .jChester[name="inputSolve"]': function(e) {
+    // Save when the user leaves the currently focused jChester.
     var $jChester = $(e.currentTarget);
     jChesterSave.call(this, $jChester);
+
     // The impending DOM update will deselect the selected text in the next
     // jChester's focused input, so explicitly select it here.
     Tracker.afterFlush(function() {
@@ -339,6 +384,8 @@ Template.roundDataEntry.events({
       if($jChesterNew[0] !== $jChester[0]) {
         $jChesterNew.focus();
       }
+      var $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
+      $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
     });
   },
   'keydown .jChester[name="inputSolve"]': function(e) {

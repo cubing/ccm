@@ -79,22 +79,10 @@
         {{/with}}
 
         {{#if selectedResultId}}
-          <table class="table jChesterTable">
+          <table class="table table-condensed jChesterTable">
             <tbody>
               {{#each selectedSolves}}
-              <tr class="{{#if solveWarnings}}has-warnings{{/if}} {{#if solveSkippedDueToCutoff}}solve-skipped-due-to-cutoff{{/if}}">
-                  <td>
-                    <i class="fa fa-fw" title="{{solveWarnings}}"></i>
-                  </td>
-                  <td>
-                    {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
-                  </td>
-                  <td>
-                    {{#each solveWarnings}}
-                      <span class="label label-danger">{{this}}</span>
-                    {{/each}}
-                  </td>
-                </tr>
+                {{> solveTimeEditor}}
               {{/each}}
             </tbody>
           </table>
@@ -108,4 +96,15 @@
     </div>
 
   </div>
+</template>
+
+<template name="solveTimeEditor">
+  <tr class="{{#if solveWarnings}}has-warnings{{/if}} {{#if solveSkippedDueToCutoff}}solve-skipped-due-to-cutoff{{/if}}">
+    <td>
+      <i class="fa fa-fw solve-time-warning-icon" data-placement="top" data-toggle="popover" data-trigger="hover" data-html="true"></i>
+    </td>
+    <td>
+      {{> mjChester solveTime=solveTime index=index name="inputSolve" editableSolveTimeFields=editableSolveTimeFields}}
+    </td>
+  </tr>
 </template>
