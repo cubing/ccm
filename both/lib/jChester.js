@@ -1,5 +1,5 @@
 /*
- *  jChester - v0.7.1
+ *  jChester - v0.7.2
  *  A time entry component for speedcubing solves.
  *  https://github.com/jfly/jChester
  *
@@ -14,8 +14,9 @@
     return;
   }
 
-  var INPUT_WIDTH_PIXELS = 80;
+  var INPUT_WIDTH_PIXELS = 90;
   var INTEGER_INPUT_WIDTH_PIXELS = 45; // Enough for 3 digits, which is *plenty*
+  var MAX_TIME_CHARACTERS = "1:00:00.00".length;
 
   $.fn.jChester = function(method, _settings) {
     if(!this.is('div')) {
@@ -31,10 +32,10 @@
     var that = this;
     var settings = $.extend({}, $.fn.jChester.defaults, _settings);
 
-    var data = this.data('datepicker');
+    var data = this.data('jChesterData');
     if(!data) {
       data = {};
-      this.data('datepicker', data);
+      this.data('jChesterData', data);
 
       data.$form = $('<form class="form-inline" role="form">');
       that.append(data.$form);
@@ -53,6 +54,7 @@
         fontFamily: 'monospace',
         textAlign: 'right',
       });
+      data.$form.find('input[name="millis"]').attr("maxlength", MAX_TIME_CHARACTERS);
 
       // Create moveCount field
       data.$form.append($('<div class="form-group"><input name="moveCount" type="text" class="form-control"></input></div>'));
@@ -416,11 +418,11 @@ jChester = {
         of puzzles not solved, where a greater difference is better.
         If the difference is less than 0, or if only 1 puzzle is
         solved, the attempt is considered unsolved (DNF). If
-        participants achieve the same result, rankings are assessed
+        competitors achieve the same result, rankings are assessed
         based on total time, where the shorter recorded time is
-        better. If participants achieve the same result and the same
+        better. If competitors achieve the same result and the same
         time, rankings are assessed based on the number of puzzles
-        the participants failed to solve, where fewer unsolved
+        the competitors failed to solve, where fewer unsolved
         puzzles is better.
         */
         var puzzleUnsolved = solveTime.puzzlesAttemptedCount - solveTime.puzzlesSolvedCount;
