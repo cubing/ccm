@@ -1,3 +1,4 @@
+var log = logging.handle("round");
 
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
 Round = function(doc) {
@@ -5,7 +6,6 @@ Round = function(doc) {
 };
 
 _.extend(Round.prototype, {
-
   format: function() {
     return wca.formatByCode[this.formatCode];
   },
@@ -62,6 +62,52 @@ _.extend(Round.prototype, {
   },
   groups: function() {
     return Groups.find({roundId: this._id}, { sort: { group: 1 }});
+  },
+  sortResults: function() {
+    var that = this;
+    var results = Results.find({ roundId: this._id }, { sort: this.resultSortOrder() }).fetch();
+    var position = 0;
+    var doneSolves = 0;
+    var totalSolves = 0;
+    results.forEach(function(result, i) {
+      var tied = false;
+      var previousResult = results[i - 1];
+      if(previousResult) {
+        var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
+        switch(that.format().sortBy) {
+        case "best":
+          tied = tiedBest;
+          break;
+        case "average":
+          var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
+          tied = tiedAverage && tiedBest;
+          break;
+        default:
+          // uh-oh, unrecognized roundFormat, give up
+          assert(false);
+        }
+      }
+      if(!tied) {
+        position++;
+      }
+
+      totalSolves += result.getExpectedSolveCount();
+      result.solves.forEach(function(solve) {
+        if(solve) {
+          doneSolves++;
+        }
+      });
+
+      log.l3("Setting resultId", result._id, "to position", position);
+      Results.update(result._id, { $set: { position: result.sortableBestValue == wca.MAX_INT && result.sortableAverageValue == wca.MAX_INT ? null : position } });
+    });
+
+    // Normalize done and total to the number of participants
+    var total = results.length;
+    var done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
+
+    log.l2(this._id, " updating progress - done: " + done + ", total: " + total);
+    RoundProgresses.update({ roundId: this._id }, { $set: { done: done, total: total }});
   },
 });
 
@@ -135,13 +181,13 @@ Rounds.attachSchema({
   formatCode: { // TODO Replace with function() {return wca.formatsByEventCode[this.eventCode][0]}
     type: String,
     allowedValues: _.keys(wca.formatByCode),
-    optional: true,
+    //<<<optional: true,
   },
   status: {
     type: String,
     allowedValues: _.keys(wca.roundStatuses),
     defaultValue: wca.roundStatuses.unstarted,
-    optional: true,
+    //<<<optional: true,
   },
 });
 

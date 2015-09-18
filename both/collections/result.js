@@ -64,7 +64,7 @@ Results.attachSchema({
   sortableBestValue: {
     type: Number,
     min: 0,
-    optional: true,
+    defaultValue: wca.MAX_INT,
   },
 
   worstIndex: {
@@ -81,7 +81,7 @@ Results.attachSchema({
   sortableAverageValue: {
     type: Number,
     min: 0,
-    optional: true,
+    defaultValue: wca.MAX_INT,
   },
 
   createdAt: createdAtSchemaField,

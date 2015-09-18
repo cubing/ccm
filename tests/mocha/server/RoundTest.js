@@ -1,5 +1,13 @@
 MochaWeb.testOnly(function() {
   describe('Round', function() {
+
+    beforeEach(function() {
+      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
+    });
+    afterEach(function() {
+      stubs.restoreAll();
+    });
+
     it('format()', function() {
       chai.expect(make(Rounds, { formatCode: '2' }).format().name).to.equal("Best of 2");
       chai.expect(make(Rounds, { formatCode: 'a' }).format().name).to.equal("Average of 5");
@@ -58,6 +66,37 @@ MochaWeb.testOnly(function() {
     it('isLast()', function() {
       chai.expect(make(Rounds, {nthRound: 1, totalRounds: 2}).isLast()).to.be.false;
       chai.expect(make(Rounds, {nthRound: 2, totalRounds: 2}).isLast()).to.be.true;
+    });
+
+    it('updates sortableBestValue and sortableAverageValue when times are cleared', function() {
+      var comp = make(Competitions);
+      var round = make(Rounds, { competitionId: comp._id });
+      var registration1 = make(Registrations, { competitionId: comp._id });
+      var result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
+      setSolveTime(result1._id, 0, { millis: 3333 });
+      setSolveTime(result1._id, 0, null);
+      result1 = Results.findOne(result1._id);
+      chai.expect(result1.sortableBestValue).to.equal(wca.MAX_INT);
+      chai.expect(result1.sortableAverageValue).to.equal(wca.MAX_INT);
+    });
+
+    it('sortResults()', function() {
+      var comp = make(Competitions);
+      var round = make(Rounds, { competitionId: comp._id });
+      var registration1 = make(Registrations, { competitionId: comp._id });
+      var result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
+      var registration2 = make(Registrations, { competitionId: comp._id });
+      var result2 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration2._id });
+      setSolveTime(result2._id, 0, { millis: 3333 });
+      setSolveTime(result2._id, 1, { millis: 2222 });
+      setSolveTime(result2._id, 2, { millis: 4444 });
+      setSolveTime(result2._id, 3, { millis: 3333 });
+      setSolveTime(result2._id, 4, { millis: 3333 });
+      round.sortResults();
+      result1 = Results.findOne(result1._id);
+      result2 = Results.findOne(result2._id);
+      chai.expect(result2.position).to.equal(1);
+      chai.expect(result1.position).to.be.undefined;
     });
   });
 });

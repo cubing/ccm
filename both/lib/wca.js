@@ -1,4 +1,5 @@
 wca = {};
+wca.MAX_INT = Math.pow(2, 32) - 1;
 
 /* From https://www.worldcubeassociation.org/results/misc/export.html
 
@@ -149,9 +150,8 @@ wca.wcaValueToSolveTime = function(wcaValue, eventId) {
 };
 
 function solveTimePerfectOrderedHash(solveTime) {
-  var MAX_INT = Math.pow(2, 32) - 1;
   if(!solveTime) {
-    return MAX_INT;
+    return wca.MAX_INT;
   }
 
   var wcaValue = wca.solveTimeToWcaValue(solveTime);
@@ -160,10 +160,10 @@ function solveTimePerfectOrderedHash(solveTime) {
   // treated as impossibly large positive values
   // Note that we treat DNS as even worse than DNF.
   if(wcaValue == wca.DNS_VALUE) {
-    return MAX_INT - 1;
+    return wca.MAX_INT - 1;
   }
   if(wcaValue == wca.DNF_VALUE) {
-    return MAX_INT - 2;
+    return wca.MAX_INT - 2;
   }
   return wcaValue;
 }

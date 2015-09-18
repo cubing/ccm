@@ -423,57 +423,8 @@ RoundSorter = {
   _handleSortTimer: function(roundId) {
     log.l1("RoundSorter._handleSortTimer(", roundId, ")");
     delete this._roundsToSortById[roundId];
-
-    var round = Rounds.findOne(roundId, {
-      fields: {
-        formatCode: 1,
-        softCutoff: 1,
-      }
-    });
-
-    var results = Results.find({ roundId: roundId }, { sort: round.resultSortOrder() }).fetch();
-    var position = 0;
-    var doneSolves = 0;
-    var totalSolves = 0;
-    results.forEach(function(result, i) {
-      var tied = false;
-      var previousResult = results[i - 1];
-      if(previousResult) {
-        var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
-        switch(round.format().sortBy) {
-        case "best":
-          tied = tiedBest;
-          break;
-        case "average":
-          var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
-          tied = tiedAverage && tiedBest;
-          break;
-        default:
-          // uh-oh, unrecognized roundFormat, give up
-          assert(false);
-        }
-      }
-      if(!tied) {
-        position++;
-      }
-
-      totalSolves += result.getExpectedSolveCount();
-      result.solves.forEach(function(solve) {
-        if(solve) {
-          doneSolves++;
-        }
-      });
-
-      log.l3("Setting resultId", result._id, "to position", position);
-      Results.update(result._id, { $set: { position: position } });
-    });
-
-    // Normalize done and total to the number of participants
-    var total = results.length;
-    var done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
-
-    log.l2(roundId, " updating progress - done: " + done + ", total: " + total);
-    RoundProgresses.update({ roundId: round._id }, { $set: { done: done, total: total }});
+    var round = Rounds.findOne(roundId);
+    round.sortResults();
   },
 };
 

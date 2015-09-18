@@ -1,9 +1,11 @@
 // Factories to create valid customizable sample objects in the DB
 
+var uniqueNumber = 0;
 function presets(propertyKey) {
   switch(propertyKey) {
     case Rounds:
-      return { competitionId: 'fake', nthRound: 1, totalRounds: 1 };
+      return { competitionId: 'fake', nthRound: 1, totalRounds: 1, formatCode: 'a' };
+
     case 'softCutoff':
       return { softCutoff: { time: {}, formatCode: '2'} };
 
@@ -16,6 +18,12 @@ function presets(propertyKey) {
     case ScheduleEvents:
       return { competitionId: 'fake', roundId: null, title: "whatevs", startMinutes: 900, durationMinutes: 30 };
 
+    case Results:
+      return {};
+
+    case Registrations:
+      return { uniqueName: "Jane" + (uniqueNumber++), countryId: "US", gender: "m", dob: new Date() };
+
     default:
       throw new Error("Unknown property key: " + propertyKey);
   }
@@ -24,7 +32,7 @@ function presets(propertyKey) {
 // Call format:
 //   make(collection, [0 or more variants], [optional override object])
 make = function(collection, otherArgs) {
-  var lastArg  = arguments[arguments.length - 1];
+  var lastArg = arguments[arguments.length - 1];
   var hasOverrides = _.isObject(lastArg) && arguments.length > 1;
 
   var properties = {};

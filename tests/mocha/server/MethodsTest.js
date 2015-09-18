@@ -4,7 +4,7 @@ MochaWeb.testOnly(function() {
 
     it('deleteCompetition', function() {
       [comp1Id, comp2Id].forEach(function(compId) {
-        var roundId = Rounds.insert({ competitionId: compId, eventCode: '333', nthRound: 1, totalRounds: 1 });
+        var roundId = make(Rounds, { competitionId: compId, eventCode: '333', nthRound: 1, totalRounds: 1 })._id;
         RoundProgresses.insert({ competitionId: compId, roundId: roundId });
       });
 
