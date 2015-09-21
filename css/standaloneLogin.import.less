@@ -1,0 +1,25 @@
+#login-with-redirect {
+  width: 100%;
+  height: 100%;
+  background-image: url(/img/WCAlogo_notext.svg);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center; /* align horizontal */
+  align-items: center; /* align vertical */
+
+  font-size: 3em;
+  text-align: center;
+  color: white;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+html[data-mobile-login] {
+  height: 100%;
+  body {
+    height: 100%;
+    margin-bottom: 0px;
+  }
+}

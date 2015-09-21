@@ -1,4 +1,7 @@
 Template.standaloneLogin.events({
+  'click #login-with-redirect': function() {
+    Meteor.loginWithWorldcubeassociation({ loginStyle: "redirect" });
+  },
 });
 
 Template.standaloneLogin.rendered = function() {
@@ -8,4 +11,6 @@ Template.standaloneLogin.rendered = function() {
       AndroidFunction.jsSetToken(Accounts._storedLoginToken());
     }
   });
+  // Dirty hack to style things differently on this page.
+  $('html').attr('data-mobile-login', 'true');
 };
