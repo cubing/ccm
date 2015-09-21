@@ -1,3 +1,9 @@
 <template name="standaloneLogin">
-  <div id="login-with-redirect">Tap to login</div>
+  <div id="login-with-redirect">
+    {{#if currentUser}}
+      You are already logged in
+    {{else}}
+      Tap to login
+    {{/if}}
+  </div>
 </template>
