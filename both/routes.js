@@ -366,4 +366,5 @@ Router.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
 
 Router.route('/api/v0/login', {
   name: 'standaloneLogin',
+  layoutTemplate: "",
 });

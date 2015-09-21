@@ -1,7 +1,11 @@
 Template.standaloneLogin.events({
-  'click button': function() {
-    var vars = Object.keys(window).join(",");
-    console.log("HIYA " + vars);//<<<
-    AndroidFunction.log('HELLO ' + vars);//<<<
-  },
 });
+
+Template.standaloneLogin.rendered = function() {
+  var template = this;
+  template.autorun(function() {
+    if(Meteor.userId() && typeof(AndroidFunction) !== "undefined") {
+      AndroidFunction.jsSetToken(Accounts._storedLoginToken());
+    }
+  });
+};
