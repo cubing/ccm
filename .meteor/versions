@@ -26,6 +26,7 @@ chhib:selectize-bootstrap-3@0.0.1
 chuangbo:cookie@1.1.0
 coffeescript@1.0.10
 comerc:autoform-selectize@2.2.2
+cosmos:browserify@0.4.0
 cwohlman:bootboxjs@4.4.0
 dandv:caret-position@2.1.1
 ddp@1.2.2
@@ -56,12 +57,14 @@ iron:middleware-stack@1.0.9
 iron:router@1.0.9
 iron:url@1.0.9
 jquery@1.11.4
+jsx@0.2.1
 launch-screen@1.0.4
 less@2.5.0_3
 linto:fontawesome@4.2.6
 livedata@1.0.15
 localstorage@1.0.5
 logging@1.0.8
+maxharris9:classnames@0.0.1
 meteor@1.1.9
 meteor-base@1.0.1
 meteorhacks:async@1.0.0
@@ -107,7 +110,11 @@ practicalmeteor:sinon@1.14.1_2
 promise@0.5.0
 random@1.0.4
 rate-limit@1.0.0
-react@0.1.0
+react@0.1.13
+react-meteor-data@0.1.9
+react-runtime@0.13.3_7
+react-runtime-dev@0.13.3_7
+react-runtime-prod@0.13.3_6
 reactive-dict@1.1.2
 reactive-var@1.0.6
 reload@1.1.4

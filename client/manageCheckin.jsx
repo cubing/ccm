@@ -71,9 +71,9 @@ AutoForm.addHooks('editRegistrationForm', {
 });
 
 var CheckinList = React.createClass({
-  mixins: [ReactMeteor.Mixin],
+  mixins: [ReactMeteorData],
 
-  getMeteorState: function() {
+  getMeteorData: function() {
     var competitionId = this.props.competitionId;
     var registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } });
 
@@ -160,7 +160,7 @@ var CheckinList = React.createClass({
               <th className="text-nowrap">WCA Id</th>
               <th>Gender</th>
               <th>Birthday</th>
-              {that.state.competitionEvents.map(function(event) {
+              {that.data.competitionEvents.map(function(event) {
                 return (
                   <th key={event.eventCode} className="text-center">
                     <span className={"cubing-icon icon-" + event.eventCode} alt={event.eventCode}></span><br />
@@ -172,17 +172,17 @@ var CheckinList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {that.state.registrations.map(function(registration) {
+            {that.data.registrations.map(function(registration) {
               var needsCheckinButton = false;
               var eventTds = [];
-              that.state.competitionEvents.forEach(function(event) {
+              that.data.competitionEvents.forEach(function(event) {
                 var registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
                 var checkedInForEvent = _.contains(registration.checkedInEvents, event.eventCode);
                 if(registeredForEvent != checkedInForEvent) {
                   needsCheckinButton = true;
                 }
 
-                var classes = React.addons.classSet({
+                var classes = classNames({
                   'text-center': true,
                   'registered-for-event': registeredForEvent,
                   'checkedin-for-event': checkedInForEvent,

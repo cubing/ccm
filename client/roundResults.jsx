@@ -77,19 +77,19 @@ var ResultRow = React.createClass({
 
     var roundFormat = this.props.roundFormat;
     var sortByField = roundFormat.sortBy.toLowerCase();
-    var averageClasses = React.addons.classSet({
+    var averageClasses = classNames({
       'results-average': true,
       'text-right': true,
       'results-primary-sort-field': (sortByField == 'average'),
     });
 
-    var bestClasses = React.addons.classSet({
+    var bestClasses = classNames({
       'results-best': true,
       'text-right': true,
       'results-primary-sort-field': (sortByField == 'best'),
     });
 
-    var rowClasses = React.addons.classSet({
+    var rowClasses = classNames({
       'result': true,
       'participant-advanced': result.advanced,
       'last-participant-to-advance': this.props.drawLine,
@@ -104,7 +104,7 @@ var ResultRow = React.createClass({
         <td className={averageClasses}>{clockFormat(result.average)}</td>
         <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
         {(result.solves || []).map(function(solve, i) {
-          var solveClasses = React.addons.classSet({
+          var solveClasses = classNames({
             'results-solve': true,
             'results-solve-dropped': (trimBestAndWorst && (i === result.bestIndex || i === result.worstIndex)),
 
@@ -120,9 +120,9 @@ var ResultRow = React.createClass({
 });
 
 var ResultsList = React.createClass({
-  mixins: [ReactMeteor.Mixin],
+  mixins: [ReactMeteorData],
 
-  getMeteorState: function() {
+  getMeteorData: function() {
     var roundId = this.props.roundId;
 
     // https://github.com/cubing/ccm/issues/75
@@ -178,7 +178,7 @@ var ResultsList = React.createClass({
   render: function() {
     var that = this;
     var roundId = that.props.roundId;
-    var format = wca.formatByCode[that.state.formatCode];
+    var format = wca.formatByCode[that.data.formatCode];
 
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
@@ -195,8 +195,8 @@ var ResultsList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {that.state.results.map(function(result, i) {
-              var prevResult = i > 0 ? that.state.results[i - 1] : null;
+            {that.data.results.map(function(result, i) {
+              var prevResult = i > 0 ? that.data.results[i - 1] : null;
               var drawLine = that.props.configurableAdvanceCount && that.props.advanceCount == i + 1;
               return (
                 <ResultRow key={result._id}
