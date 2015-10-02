@@ -1,6 +1,8 @@
 Template.standaloneLogin.events({
   'click #login-with-redirect': function() {
-    Meteor.loginWithWorldcubeassociation({ loginStyle: "redirect" });
+    Meteor.loginWithWorldcubeassociation({ loginStyle: "redirect" }, function(error) {
+      console.error(error);
+    });
   },
 });
 
