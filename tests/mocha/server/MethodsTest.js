@@ -1,6 +1,18 @@
 MochaWeb.testOnly(function() {
   describe('Methods', function() {
     var comp1Id, comp2Id;
+    beforeEach(function() {
+      [Competitions, Rounds, RoundProgresses, Registrations].forEach(function(collection) {
+        collection.remove({});
+      });
+      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
+
+      comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
+      comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
+    });
+    afterEach(function() {
+      stubs.restoreAll();
+    });
 
     it('deleteCompetition', function() {
       [comp1Id, comp2Id].forEach(function(compId) {
@@ -65,18 +77,53 @@ MochaWeb.testOnly(function() {
       }).to.throw(Meteor.Error);
     });
 
-    beforeEach(function() {
-      [Competitions, Rounds, RoundProgresses].forEach(function(collection) {
-        collection.remove({});
+    describe('manage check-in', function() {
+      var registration;
+      var firstRound333;
+      beforeEach(function() {
+        Meteor.call('addRound', comp1Id, '333');
+        firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
+        registration = make(Registrations, {competitionId: comp1Id});
       });
-      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
 
-      comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
-      comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
-    });
+      describe('when not checked in', function() {
+        it('toggleEventRegistration', function() {
+          Meteor.call('toggleEventRegistration', registration._id, '333');
+          chai.expect(Results.find({registrationId: registration._id, eventCode: '333', nthRound: 1}).count()).to.equal(0);
+          chai.expect(Registrations.findOne(registration._id).registeredEvents).to.deep.equal(['333']);
+        });
+      });
 
-    afterEach(function() {
-      stubs.restoreAll();
+      describe('when checked in for 333', function() {
+        var result;
+        beforeEach(function() {
+          Meteor.call('checkInRegistration', registration._id, true);
+          Meteor.call('toggleEventRegistration', registration._id, '333');
+          var results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
+          chai.expect(results.length).to.equal(1);
+          result = results[0];
+        });
+
+        it('created a Result', function() {
+          chai.expect(Registrations.findOne(registration._id).checkedIn).to.equal(true);
+          chai.expect(Registrations.findOne(registration._id).registeredEvents).to.deep.equal(['333']);
+        });
+
+        it('unregistering without times works', function() {
+          Meteor.call('checkInRegistration', registration._id, false);
+          chai.expect(Results.findOne(result._id)).to.not.exist;
+          chai.expect(Registrations.findOne(registration._id).checkedIn).to.equal(false);
+        });
+
+        it('unregistering with times throws an exception', function() {
+          Meteor.call('setSolveTime', result._id, 0, { millis: 3333 });
+          chai.expect(function() {
+            Meteor.call('checkInRegistration', registration._id, false);
+          }).to.throw(Meteor.Error);
+          chai.expect(Results.findOne(result._id)).to.exist;
+          chai.expect(Registrations.findOne(registration._id).checkedIn).to.equal(true);
+        });
+      });
     });
   });
 });

@@ -2,3 +2,4 @@ tests/node_modules
 packages
 client/components
 both/lib
+.meteor

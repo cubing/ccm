@@ -17,7 +17,6 @@ HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/registrations'}, fun
       countryId: 1,
       gender: 1,
       registeredEvents: 1,
-      checkedInEvents: 1,
       uniqueName: 1,
     }
   });

@@ -287,59 +287,6 @@ Meteor.methods({
     // and its progress.
     RoundSorter.addRoundToSort(nextRound);
   },
-  checkInRegistration: function(registrationId) {
-    // This method is called to either check-in a participant for the first time,
-    // or to update their check-in because the set of events they are registered for
-    // changed. The latter may involve deleting results with data entered, so
-    // be sure before you call this method =).
-    var registration = Registrations.findOne(
-      registrationId,
-    {
-      fields: {
-        competitionId: 1,
-        registeredEvents: 1,
-        checkedInEvents: 1,
-      }
-    });
-    throwIfCannotManageCompetition(this.userId, registration.competitionId);
-
-    function getFirstRoundForEvent(eventCode) {
-      return Rounds.findOne({
-        competitionId: registration.competitionId,
-        eventCode: eventCode,
-        nthRound: 1,
-      }, {
-        fields: { _id: 1 }
-      });
-    }
-    var toUnCheckInTo = _.difference(registration.checkedInEvents, registration.registeredEvents);
-    toUnCheckInTo.forEach(function(eventCode) {
-      var round = getFirstRoundForEvent(eventCode);
-      assert(round);
-      Results.remove({
-        roundId: round._id,
-        registrationId: registration._id,
-      });
-
-      // Update round progress
-      RoundSorter.addRoundToSort(round._id);
-    });
-
-    var toCheckInTo = _.difference(registration.registeredEvents, registration.checkedInEvents);
-    toCheckInTo.forEach(function(eventCode) {
-      var round = getFirstRoundForEvent(eventCode);
-      assert(round);
-      Results.insert({
-        competitionId: registration.competitionId,
-        roundId: round._id,
-        registrationId: registration._id,
-      });
-
-      // Update round progress
-      RoundSorter.addRoundToSort(round._id);
-    });
-    Registrations.update(registration._id, { $set: { checkedInEvents: registration.registeredEvents } });
-  },
   addSiteAdmin: function(newSiteAdminUserId) {
     if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
@@ -378,8 +325,8 @@ Meteor.methods({
         // Explicitly listing all the relevant fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202
         //softCutoff: {
-          //time: time,
-          //formatCode: formatCode,
+        //  time: time,
+        //  formatCode: formatCode,
         //}
         'softCutoff.time.millis': softCutoff.time.millis,
         'softCutoff.time.decimals': softCutoff.time.decimals,
@@ -397,6 +344,43 @@ Meteor.methods({
     // Changing the softCutoff for a round could affect the rounds progress,
     // so queue up a recomputation of that.
     RoundSorter.addRoundToSort(roundId);
+  },
+  toggleEventRegistration: function(registrationId, eventCode) {
+    var registration = Registrations.findOne(registrationId);
+    throwIfCannotManageCompetition(this.userId, registration.competitionId);
+    var registeredForEvent = _.contains(registration.registeredEvents, eventCode);
+    var update;
+    if(registeredForEvent) {
+      // if registered, then unregister
+      update = {
+        $pull: {
+          registeredEvents: eventCode
+        }
+      };
+      var index = registration.registeredEvents.indexOf(eventCode);
+      if(index >= 0) {
+        registration.registeredEvents.splice(index, 1);
+      }
+    } else {
+      // if not registered, then register
+      update = {
+        $addToSet: {
+          registeredEvents: eventCode
+        }
+      };
+      registration.registeredEvents.push(eventCode);
+    }
+    // If this registrant is already checked in, then we need to synchronize the
+    // set of first rounds they have Results for. This may not be possible if it
+    // requires deleting a Result that has data (see checkInRegistration).
+    if(registration.checkedIn) {
+      checkInRegistration(registration, true);
+    }
+
+    // Wait to actually update update the Registration until checkInRegistration
+    // succeeds (it will throw an exception if we're not allowed to remove the
+    // registrants Result).
+    Registrations.update(registration._id, update);
   },
 });
 
@@ -439,6 +423,72 @@ if(Meteor.isServer) {
     var tmpdir = os.tmpdir();
     var filename = path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
     return filename;
+  };
+
+  var checkInRegistration = function(registration, toCheckIn) {
+    // This method is called to check-in a participant for the first time,
+    // to update their check-in because the set of events they are registered for
+    // changed, or to uncheck them in from the competition. If accomplishing this
+    // would require deleting results with data, we throw an error and do nothing.
+    var firstRounds = Rounds.find({
+      competitionId: registration.competitionId,
+      nthRound: 1,
+    }, {
+      fields: { _id: 1, eventCode: 1 }
+    }).fetch();
+
+    [true, false].forEach(function(simulate) {
+      firstRounds.forEach(function(round) {
+        var result = Results.findOne({
+          roundId: round._id,
+          registrationId: registration._id,
+        });
+        var registeredForEvent = _.contains(registration.registeredEvents, round.eventCode);
+        var shouldHaveResultForRound = toCheckIn && registeredForEvent;
+        var hasResultForRound = !!result;
+
+        if(hasResultForRound == shouldHaveResultForRound) {
+          // Nothing to do.
+          return;
+        }
+        if(shouldHaveResultForRound) {
+          // Need to register for round.
+          if(!simulate) {
+            log.l1("Creating result for registration", registration._id, "in", round.eventCode, "round 1");
+            Results.insert({
+              competitionId: registration.competitionId,
+              roundId: round._id,
+              registrationId: registration._id,
+            });
+          }
+        } else {
+          // Need to unregister for round. First check if it's safe to delete
+          // their results.
+          if(simulate) {
+            if(result) {
+              // This registrant has a result for this round that we no longer want them
+              // in. If they actually have results for this round, throw an exception
+              // rather than deleting data irreversibly.
+              var hasSolves = _.filter(result.solves, s => s !== null).length > 0;
+              if(hasSolves) {
+                var reason = "Cannot unregister " + registration.uniqueName + " for " + round.eventCode + " round 1 because they already have results in that round.";
+                throw new Meteor.Error(403, reason);
+              }
+            }
+          } else {
+            log.l1("Removing result for registration", registration._id, "in", round.eventCode, "round 1");
+            Results.remove({
+              roundId: round._id,
+              registrationId: registration._id,
+            });
+          }
+        }
+
+        // Update round progress
+        RoundSorter.addRoundToSort(round._id);
+      });
+    });
+    Registrations.update(registration._id, { $set: { checkedIn: toCheckIn } });
   };
 
   Meteor.methods({
@@ -542,7 +592,6 @@ if(Meteor.isServer) {
           gender: wcaPerson.gender,
           dob: dobMoment.toDate(),
           registeredEvents: [],
-          checkedInEvents: [],
         });
         var registration = Registrations.findOne(registrationId);
 
@@ -590,8 +639,6 @@ if(Meteor.isServer) {
               // information via the WCA competition JSON format.
               return;
             }
-
-            registration.checkedInEvents[wcaEvent.eventId] = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.wcaValueToSolveTime(wcaValue, wcaEvent.eventId);
@@ -693,7 +740,6 @@ if(Meteor.isServer) {
           {
             $set: {
               registeredEvents: _.keys(registration.registeredEvents),
-              checkedInEvents: _.keys(registration.checkedInEvents),
             }
           });
         }
@@ -731,6 +777,11 @@ if(Meteor.isServer) {
         }
         Results.update(result._id, { $set: { advanced: advanced } });
       });
+    },
+    checkInRegistration: function(registrationId, toCheckIn) {
+      var registration = Registrations.findOne(registrationId);
+      throwIfCannotManageCompetition(this.userId, registration.competitionId);
+      checkInRegistration(registration, toCheckIn);
     },
   });
 }

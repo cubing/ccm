@@ -16,7 +16,7 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 - Analytics are handled by [okgrow:analytics](https://github.com/okgrow/analytics#configuration).
 
 ## To test
-- `(cd tests; npm test)`
+- `meteor --test`
 
 ## To lint
 - `(cd tests; npm run-script lint)`

@@ -164,7 +164,7 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   // Expand each result to also contain the uniqueName for that participant
   var registrations = Registrations.find({
     competitionId: round.competitionId,
-    checkedInEvents: round.eventCode,
+    registeredEvents: round.eventCode,
   }, {
     fields: { uniqueName: 1 }
   });
@@ -178,8 +178,8 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
     var registration = registrationById[result.registrationId];
     if(!registration) {
       // The registration  for this result may not have been found by our earlier
-      // query because checkedInEvents hasn't been populated yet. Just silently
-      // continue here, knowing we'll get recalled when the data has arrived.
+      // query because registeredEvents hasn't been populated yet. Just silently
+      // continue here, knowing we'll get called again when the data has arrived.
       return;
     }
     result.uniqueName = registration.uniqueName;

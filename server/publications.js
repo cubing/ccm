@@ -13,7 +13,7 @@ var registrationFieldsToPublish = {
   gender: 1,
   guestCount: 1,
   registeredEvents: 1,
-  checkedInEvents: 1,
+  checkedIn: 1,
 };
 
 Meteor.publish(null, function() {
@@ -120,7 +120,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
     return [];
   }
   return [
-    Registrations.find({ competitionId: competitionId, checkedInEvents: eventCode }, { fields: registrationFieldsToPublish }),
+    Registrations.find({ competitionId: competitionId, registeredEvents: eventCode }, { fields: registrationFieldsToPublish }),
     Results.find({ roundId: round._id, }),
   ];
 });

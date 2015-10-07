@@ -48,11 +48,6 @@ var schema = new SimpleSchema({
       type: "select-checkbox",
     },
   },
-  checkedInEvents: {
-    type: [String],
-    defaultValue: [],
-    allowedValues: _.keys(wca.eventByCode),
-  },
   guestCount: {
     // Number of guests a participant is bringing
     // (in case the venue has a size limit)
@@ -69,6 +64,10 @@ var schema = new SimpleSchema({
         type: "textarea"
       }
     },
+  },
+  checkedIn: {
+    type: Boolean,
+    defaultValue: false,
   },
   createdAt: createdAtSchemaField,
   updatedAt: updatedAtSchemaField,

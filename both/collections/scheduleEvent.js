@@ -27,8 +27,8 @@ var schema = new SimpleSchema({
   roundId: {
     type: String,
     optional: true,
-//    index: true, // Bug reported: https://github.com/aldeed/meteor-collection2/issues/212
-//    unique: true,
+    //index: true, // Bug reported: https://github.com/aldeed/meteor-collection2/issues/212
+    //unique: true,
   },
 
   nthDay: {
