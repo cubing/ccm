@@ -14,7 +14,7 @@
   },
   "scripts": {
     "run": "meteor",
-    "lint": "(jshint .. && jscs ..)",
+    "lint": "(jshint --exclude-path ../.jshintignore --config ../.jshintrc .. && jscs ..)",
     "validate": "npm ls"
   },
   "config": {
