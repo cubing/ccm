@@ -60,7 +60,7 @@
 <template name="roundDataEntry">
   <div class="row">
 
-    <div class="results-sidebar-container col-xs-12 col-sm-4">
+    <div class="results-sidebar-container col-xs-12 col-sm-6 col-md-5 col-lg-4">
       <div class="results-sidebar">
         <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
@@ -91,7 +91,7 @@
       </div>
     </div>
 
-    <div id="selectableResults" class="col-xs-12 col-sm-8">
+    <div id="selectableResults" class="col-xs-12 col-sm-6 col-md-7 col-lg-8">
       {{> roundResultsList roundId=roundId selectParticipant=true selectParticipantListener=selectParticipantListener}}
     </div>
 
