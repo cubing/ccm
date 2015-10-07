@@ -3,6 +3,8 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 
 ## Setup
 - `curl https://install.meteor.com/ | sh` - Install [Meteor](https://www.meteor.com/)
+
+### Optional setup (useful for development)
 - Install nodejs.
 - `(cd tests; npm install)` - Install linting tools and setup pre-commit hook.
 
