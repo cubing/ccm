@@ -100,7 +100,7 @@ var ResultRow = React.createClass({
     return (
       <tr className={rowClasses} data-result-id={result._id}>
         <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
-        <td>{participantNameNode}</td>
+        <td className="participant-name">{participantNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average)}</td>
         <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
         {(result.solves || []).map(function(solve, i) {
@@ -182,11 +182,11 @@ var ResultsList = React.createClass({
 
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
-        <table className="table table-striped table-hover table-results" ref="resultsTable">
+        <table className="table table-striped table-hover table-results" ref="resultsTable" id="resultsTable">
           <thead>
             <tr>
               <th></th>
-              <th>Name</th>
+              <th className="participant-name">Name</th>
               <th className="results-average text-right">
                 {format.averageName}
               </th>
