@@ -287,15 +287,15 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   });
 }
 
-function jChesterSave($jChester) {
+function jChesterSave(solveIndex, $jChester, doneCallback) {
   var $tr = $jChester.closest('tr');
   var validationErrors = $jChester.jChester('getValidationErrors');
   if(validationErrors.length) {
-    return false;
+    return;
   }
   if(!$tr.hasClass("unsaved")) {
     // Don't bother saving unless something has actually changed.
-    return true;
+    return;
   }
   var solveTime = $jChester.jChester('getSolveTime');
   // For now, we unconditionally force everything that has decimals to 2.
@@ -305,15 +305,16 @@ function jChesterSave($jChester) {
   $tr.removeClass('unsaved');
   $tr.addClass('saving');
   var resultId = selectedResultIdReact.get();
-  var solveIndex = this.index;
   Meteor.call('setSolveTime', resultId, solveIndex, solveTime, function(err, result) {
     if(!err) {
       $tr.removeClass('saving');
     } else {
       console.error("Meteor.call() error: " + err);
     }
+    if(doneCallback) {
+      doneCallback(err);
+    }
   });
-  return true;
 }
 
 Template.roundDataEntry.events({
@@ -373,27 +374,35 @@ Template.roundDataEntry.events({
     }, 100); // Nasty hack to make popup show up, sometimes it doesn't show up.
   },
   'blur .jChester[name="inputSolve"]': function(e) {
-    // Save when the user leaves the currently focused jChester.
+    // We save when the user leaves the currently focused jChester.
     var $jChester = $(e.currentTarget);
-    jChesterSave.call(this, $jChester);
 
-    // The impending DOM update will deselect the selected text in the next
-    // jChester's focused input, so explicitly select it here.
-    Tracker.afterFlush(function() {
-      var $jChesterNew = $(document.activeElement).closest('.jChester');
-      if($jChesterNew[0] !== $jChester[0]) {
-        $jChesterNew.focus();
-      }
-      var $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
-      $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
-    });
+    var focusNewJChester = function() {
+      Tracker.afterFlush(function() {
+        var $jChesterNew = $(document.activeElement).closest('.jChester');
+        if($jChesterNew[0] !== $jChester[0]) {
+          $jChesterNew.focus();
+          var $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
+          $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
+        }
+      });
+    };
+
+    // Focus the new jChester. If we do this immediately, document.activeElement is still
+    // the body, which isn't useful.
+    focusNewJChester();
+
+    // Save the time. Note that the impending does a Meteor.call which will
+    // deselect the text we just tried to select above (hand wavy explanation, sorry).
+    // It works to wait for the server to respond and then focus again.
+    jChesterSave(this.index, $jChester, focusNewJChester);
   },
   'keydown .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) { // enter
       var $jChester = $(e.currentTarget);
 
-      var saved = jChesterSave.call(this, $jChester);
-      if(!saved) {
+      var validationErrors = $jChester.jChester('getValidationErrors');
+      if(validationErrors.length) {
         return;
       }
 
@@ -407,6 +416,8 @@ Template.roundDataEntry.events({
       if($prev.length === 0) {
         $prev = $focusables.first();
       }
+      // Note that we don't actually save here. That's because the following
+      // will cause a blur, which will cause the actual save.
       if(e.shiftKey) {
         $prev.focus();
       } else {
