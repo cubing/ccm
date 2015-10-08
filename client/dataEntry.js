@@ -122,6 +122,10 @@ Template.roundDataEntry.rendered = function() {
     var $resultRows = template.$('tr.result');
     $resultRows.removeClass('selectedResult');
     if(selectedResultId) {
+      // Query for the selected Result's position just so we recenter whenever its
+      // position changes.
+      var result = Results.findOne(selectedResultId, { fields: { position: 1 } });
+      log.l3("Result", selectedResultId, "changed position to", result.position, "... recentering");
       var $selectedRow = $resultRows.filter('[data-result-id="' + selectedResultId + '"]');
       $selectedRow.addClass('selectedResult');
       $selectedRow.scrollToCenter();
