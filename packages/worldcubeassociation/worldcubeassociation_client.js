@@ -21,21 +21,12 @@ WorldCubeAssociation.requestCredential = function (options, credentialRequestCom
   }
 
   var credentialToken = Random.secret();
-  //<<<var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
-  //<<<var display = mobile ? 'touch' : 'popup';
-
-  var scope = "email";
-  if (options && options.requestPermissions)
-    scope = options.requestPermissions.join(',');
-
-  config.loginStyle = "popup";//<<< force OAuth._redirectUri() to not append ?close >>>
 
   var loginStyle = OAuth._loginStyle('worldcubeassociation', config, options);
 
   var loginUrl =
         'https://www.worldcubeassociation.org/oauth/authorize?client_id=' + config.appId +
         '&redirect_uri=' + OAuth._redirectUri('worldcubeassociation', config) +
-        //<<<'&display=' + display + '&scope=' + scope +
         '&state=' + OAuth._stateParam(loginStyle, credentialToken) +
         '&response_type=code';
 

@@ -94,9 +94,9 @@ function getData(paramValues) {
     this.queryParams.forEach(function(param) {
       if(paramValues[param]) {
         var value = paramValues[param];
-        if(param == "solveIndex") {//<<<
+        if(param == "solveIndex") {
           value = parseInt(value);
-        } else if(param == "solveTime") {//<<<
+        } else if(param == "solveTime") {
           try {
             value = JSON.parse(value);
           } catch(e) {

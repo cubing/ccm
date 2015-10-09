@@ -33,7 +33,6 @@ mrt:moment-timezone
 sewdn:highlightjs
 okgrow:analytics
 percolate:migrations
-mike:mocha
 practicalmeteor:sinon
 accounts-worldcubeassociation
 ian:accounts-ui-bootstrap-3
@@ -58,3 +57,5 @@ check
 react
 maxharris9:classnames
 ecmascript
+msavin:mongol
+mike:mocha

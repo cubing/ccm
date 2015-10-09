@@ -1,5 +1,13 @@
 WorldCubeAssociation = {};
 
+WorldCubeAssociation.whitelistedFields = [
+  'id',
+  'wca_id',
+  'email',
+  'name',
+  'created_at',
+];
+
 var querystring = Npm.require('querystring');
 
 
@@ -14,10 +22,7 @@ OAuth.registerService('worldcubeassociation', 2, null, function(query) {
     expiresAt: (+new Date) + (1000 * response.expiresIn)
   };
 
-  // include all fields from wca
-  var whitelisted = ['id', 'email', 'name', 'created_at', 'updated_at' ];
-
-  var fields = _.pick(identity, whitelisted);
+  var fields = _.pick(identity, WorldCubeAssociation.whitelistedFields);
   _.extend(serviceData, fields);
 
   return {
@@ -47,7 +52,6 @@ var getTokenResponse = function (query) {
   var responseContent;
   try {
     // Request an access token
-    config.loginStyle = "popup";//<<< force OAuth._redirectUri() to not append ?close >>>
     responseContent = HTTP.post(
       "https://www.worldcubeassociation.org/oauth/token", {
         params: {
@@ -57,16 +61,13 @@ var getTokenResponse = function (query) {
           client_secret: OAuth.openSecret(config.secret),
           code: query.code
         },
-        npmRequestOptions: {
-          rejectUnauthorized: false, //<<<
-        },
       }).content;
   } catch (err) {
     throw _.extend(new Error("Failed to complete OAuth handshake with worldcubeassociation.org. " + err.message),
                    {response: err.response});
   }
 
-  parsedResponse = tryParseJson(responseContent);
+  var parsedResponse = tryParseJson(responseContent);
   if (!parsedResponse) {
     throw new Error("Failed to complete OAuth handshake with worldcubeassociation.org. " + responseContent);
   }
@@ -91,9 +92,6 @@ var getIdentity = function (accessToken) {
     return HTTP.get(
         "https://www.worldcubeassociation.org/api/v0/me", {
           params: {access_token: accessToken},
-          npmRequestOptions: {
-            rejectUnauthorized: false, //<<<
-          },
         }).data.me;
   } catch (err) {
     throw _.extend(new Error("Failed to fetch identity from worldcubeassociation.org. " + err.message),

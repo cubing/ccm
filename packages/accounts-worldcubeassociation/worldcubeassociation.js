@@ -14,16 +14,15 @@ if (Meteor.isClient) {
     WorldCubeAssociation.requestCredential(options, credentialRequestCompleteCallback);
   };
 } else {
-  //<<< TODO >>>
   Accounts.addAutopublishFields({
     // publish all fields including access token, which can legitimately
     // be used from the client (if transmitted over ssl or on
-    // localhost). https://developers.facebook.com/docs/concepts/login/access-tokens-and-types/,
-    // "Sharing of Access Tokens"
-    forLoggedInUser: ['services.facebook'],
+    // localhost).
+    forLoggedInUser: ['services.worldcubeassociation'],
     forOtherUsers: [
-      // https://www.facebook.com/help/167709519956542
-      'services.facebook.id', 'services.facebook.username', 'services.facebook.gender'
+      'services.worldcubeassociation.id',
+      'services.worldcubeassociation.name',
+      'services.worldcubeassociation.wca_id',
     ]
   });
 }

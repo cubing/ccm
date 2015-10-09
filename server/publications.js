@@ -2,6 +2,8 @@ var userFieldsToPublish = {
   emails: 1,
   profile: 1,
   siteAdmin: 1,
+  name: 1,
+  'services.worldcubeassociation': 1,
 };
 
 var registrationFieldsToPublish = {

@@ -9,6 +9,7 @@ Package.onUse(function(api) {
   api.imply('accounts-base', ['client', 'server']);
   api.use('accounts-oauth', ['client', 'server']);
   api.use('worldcubeassociation', ['client', 'server']);
+  api.use('underscore', 'server');
 
   api.addFiles('worldcubeassociation_login_button.css', 'client');
 

@@ -181,13 +181,11 @@ Rounds.attachSchema({
   formatCode: { // TODO Replace with function() {return wca.formatsByEventCode[this.eventCode][0]}
     type: String,
     allowedValues: _.keys(wca.formatByCode),
-    //<<<optional: true,
   },
   status: {
     type: String,
     allowedValues: _.keys(wca.roundStatuses),
     defaultValue: wca.roundStatuses.unstarted,
-    //<<<optional: true,
   },
 });
 
