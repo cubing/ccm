@@ -18,7 +18,8 @@ var registrationFieldsToPublish = {
   checkedIn: 1,
 };
 
-Meteor.publish(null, function() {
+
+Meteor.publish('userData', function() {
   if(!this.userId) {
     return [];
   }

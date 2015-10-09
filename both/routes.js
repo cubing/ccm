@@ -8,6 +8,9 @@ Router.configure({
   loadingTemplate: "loading",
   notFoundTemplate: "notFound",
   progressSpinner: false,
+  waitOn: function() {
+    return Meteor.subscribe('userData');
+  },
 });
 
 if(Meteor.isClient) {
