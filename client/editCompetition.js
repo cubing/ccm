@@ -167,13 +167,10 @@ Template.editCompetition.helpers({
 });
 
 Template.editCompetition.events({
-  'input #competitionAttributes input[type="text"]': function(e) {
-    if($(e.currentTarget).hasClass("typeahead")) {
-      return;
-    }
-    var attribute = e.currentTarget.name;
-    var value = e.currentTarget.value;
-    setCompetitionAttribute(this.competitionId, attribute, value);
+  'change #competitionAttributes input[name="wcaCompetitionId"]': function(e) {
+    var newWcaCompetitionId = e.currentTarget.value;
+    setCompetitionAttribute(this.competitionId, 'wcaCompetitionId', newWcaCompetitionId);
+    Router.go('manageCompetition', { competitionUrlId: newWcaCompetitionId }, { replaceState: true });
   },
   'change #competitionAttributes input[type="checkbox"]': function(e) {
     var attribute = e.currentTarget.name;

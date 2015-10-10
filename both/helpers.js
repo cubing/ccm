@@ -33,7 +33,8 @@ register("eventAllowsCutoffs", function(eventCode) {
 });
 
 register("competitionAttr", function(attribute) {
-  return Competitions.findOne(this.competitionId)[attribute];
+  var competition = Competitions.findOne(this.competitionId);
+  return competition ? competition[attribute] : null;
 });
 
 register("roundEventCode", function() {
