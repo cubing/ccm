@@ -19,7 +19,7 @@ var registrationFieldsToPublish = {
 };
 
 
-Meteor.publish('userData', function() {
+Meteor.publish(null, function() {
   if(!this.userId) {
     return [];
   }
