@@ -33,7 +33,6 @@ mrt:moment-timezone
 sewdn:highlightjs
 percolate:migrations
 practicalmeteor:sinon
-accounts-worldcubeassociation
 ian:accounts-ui-bootstrap-3
 nemo64:bootstrap
 
@@ -59,3 +58,4 @@ ecmascript
 msavin:mongol
 mike:mocha
 okgrow:analytics
+jfly:accounts-worldcubeassociation
