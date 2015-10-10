@@ -72,22 +72,6 @@ Meteor.methods({
     throwIfNotVerifiedUser(this.userId);
 
     var user = Meteor.users.findOne(this.userId);
-    if(!user.profile) {
-      throw new Meteor.Error(400, "Must set up user profile");
-    }
-    if(!user.profile.name) {
-      throw new Meteor.Error(400, "Name must be nonempty");
-    }
-    if(!user.profile.dob) {
-      throw new Meteor.Error(400, "DOB must be nonemtpy");
-    }
-    if(!user.profile.countryId) {
-      throw new Meteor.Error(400, "Country must be nonemtpy");
-    }
-    if(!user.profile.gender) {
-      throw new Meteor.Error(400, "Gender must be nonemtpy");
-    }
-
     var uniqueName = user.profile.name;
 
     var competitionId = Competitions.insert({

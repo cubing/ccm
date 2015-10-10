@@ -29,9 +29,9 @@ var schema = new SimpleSchema({
     }
   },
   wcaId: _.extend({ optional: true }, WcaIdType),
-  countryId: CountryIdType,
-  gender: GenderType,
-  dob: DobType,
+  countryId: _.extend({ optional: true }, CountryIdType),
+  gender: _.extend({optional: true }, GenderType),
+  dob: _.extend({ optional: true }, DobType),
   staff: {
     type: Boolean,
     optional: true,
