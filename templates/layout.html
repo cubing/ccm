@@ -83,7 +83,20 @@
               {{> oneTab}}
             {{/with}}
           {{/if}}
-          {{> loginButtons }}
+          {{#if currentUser}}
+            {{> loginButtons}}
+          {{else}}
+            <li>
+              {{> loginButtons}}
+            </li>
+            {{!-- Modified version of Template._loginButtonsLoggedOutDropdown --}}
+            <li id="login-dropdown-list" class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></a>
+              <div class="dropdown-menu">
+                {{> _loginButtonsLoggedOutAllServices}}
+              </div>
+            </li>
+          {{/if}}
         </ul>
       </div> {{!-- /.navbar-collapse --}}
     </div> {{!-- /.container-fluid --}}
@@ -117,7 +130,7 @@
 <!-- see https://github.com/ianmartorell/meteor-accounts-ui-bootstrap-3/#add-additional-logged-in-actions -->
 <template name="_loginButtonsAdditionalLoggedInDropdownActions">
   <p class="text-center">
-    <a href="{{pathFor 'editProfile'}}">Edit profile</a>
+    <a href="{{pathFor 'editProfile'}}">Your profile</a>
   </p>
   {{#if currentUser.siteAdmin}}
     <p class="text-center">

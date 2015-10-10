@@ -1,23 +1,28 @@
 <template name="editProfile">
   <div class="container">
-    {{> flashMessages}}
-
-    <h4>Edit profile</h4>
+    <h4>
+      Your profile
+      <small>
+        {{#if currentUser}}
+          (We got this information from your account on
+          <a href="https://www.worldcubeassociation.org" target="_blank">worldcubeassociation.org</a>.
+          If any of it looks wrong,
+          <a href="https://www.worldcubeassociation.org/users/edit" target="_blank">edit your WCA account</a>,
+          and <button class="btn btn-sm" id="logout-button">log out</button> and log right back in.)
+        {{else}}
+          Ok, now log back in!
+        {{/if}}
+      </small>
+    </h4>
     <hr />
-    {{#autoForm id="profileForm" type="update" doc=defaultProfileData collection="Meteor.users"}}
 
-      {{> afQuickField name="profile.name" }}
-      {{> afQuickField name="profile.wcaId" }}
-      {{> afQuickField name="profile.countryId" }}
-      {{> afQuickField name="profile.gender" }}
-      {{> afQuickField name="profile.dob" }}
-
-      <button type="submit" class="btn btn-default" id="changeRegistrationButton">
-        <span class="glyphicon glyphicon-floppy-save"></span>
-        Submit Changes
-      </button>
-      <button type="reset" class="btn btn-default" id="revertFormButton">Reset Form</button>
-
-    {{/autoForm}}
+    <p class="text-center">
+      <h1>{{currentUser.profile.name}}</h1>
+      <h2>{{currentUser.profile.wcaId}}</h2>
+      {{#if currentUser.services.worldcubeassociation.avatar}}
+        <img src="{{currentUser.services.worldcubeassociation.avatar.thumb_url}}">
+      {{/if}}
+      <br>
+    </p>
   </div>
 </template>

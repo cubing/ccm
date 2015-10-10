@@ -162,6 +162,36 @@ Template._loginButtonsLoggedInDropdown.events({
   },
 });
 
+Template._loginButtonsLoggedInDropdown.helpers({
+  user_profile_picture: function() {
+    let user = Meteor.user();
+    if(user && user.services.worldcubeassociation && user.services.worldcubeassociation.avatar) {
+      return user.services.worldcubeassociation.avatar.thumb_url;
+    } else {
+      return null;
+    }
+  },
+});
+
+// Only show the password service behind a tiny caret.
+// Make the WCA OAuth big and obvious.
+Template._loginButtonsLoggedOutAllServices.helpers({
+  hasOtherServices: function() {
+    return false;
+  },
+  services: function() {
+    return [ { name: "password" } ];
+  },
+});
+Template._loginButtonsLoggedOut.helpers({
+  dropdown: function() {
+    return false;
+  },
+  singleService: function() {
+    return { name: "worldcubeassociation" };
+  },
+});
+
 // Adopted from http://stackoverflow.com/a/21778615
 $.fn.scrollToCenter = function(speed) {
   speed = speed || 200;

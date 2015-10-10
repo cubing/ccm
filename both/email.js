@@ -37,4 +37,8 @@ if(Meteor.isServer) {
 
 Accounts.config({
   sendVerificationEmail: true,
+
+  // We don't want to let users create accounts, they should be using
+  // WCA OAuth instead. (this isn't the best filename for this setting)
+  forbidClientAccountCreation: true,
 });

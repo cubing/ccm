@@ -250,7 +250,7 @@ Router.route('/api', {
 
 Router.route('/settings/profile', {
   name: 'editProfile',
-  titlePrefix: 'Edit profile',
+  titlePrefix: 'Your profile',
 });
 
 Router.route('/settings/administration', {

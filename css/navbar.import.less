@@ -1,3 +1,6 @@
+@wca-logo-size: 50px;
+@navbar-img-height: 32px;
+
 .navbar {
   img {
     height: 18px;
@@ -11,11 +14,44 @@
   .navbar-brand img {
     margin-top: -7px;
     margin-bottom: -7px;
-    height: 32px;
+    height: @navbar-img-height;
+  }
+
+  // Style the user's profile picture
+  #login-dropdown-list img.img-circle {
+    width: @navbar-img-height;
+    height: @navbar-img-height;
+    margin-top: -7px;
+    margin-bottom: -7px;
+  }
+
+  .btn-Worldcubeassociation {
+    &::before {
+      content: '';
+      background-image: url(/img/WCAlogo_notext.svg);
+      background-position: center;
+      background-size: cover;
+      position: absolute;
+
+      width: @wca-logo-size;
+      height: @wca-logo-size;
+      top: -(@wca-logo-size - @navbar-img-height) / 2;
+      left: 5px;
+    }
+
+    padding-left: @wca-logo-size + 10px;
+    border: none;
+    overflow: hidden;
+    position: relative;
+    background-color: rgba(48, 74, 150, 0.8); // WCA logo blue
+    color: white;
+    &:hover {
+      background-color: rgb(48, 74, 150); // WCA logo blue
+    }
   }
 
   .cubing-icon {
-    font-size: 32px;
+    font-size: @navbar-img-height;
     vertical-align: middle;
   }
 
