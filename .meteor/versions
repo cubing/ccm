@@ -103,7 +103,7 @@ npm-mongo@1.4.39_1
 oauth@1.1.6
 oauth2@1.1.5
 observe-sequence@1.0.7
-okgrow:analytics@0.3.0
+okgrow:analytics@0.4.2
 ordered-dict@1.0.4
 package-version-parser@3.0.4
 peerlibrary:assert@0.2.5

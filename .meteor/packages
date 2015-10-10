@@ -31,7 +31,6 @@ yogiben:autoform-map
 mizzao:autocomplete
 mrt:moment-timezone
 sewdn:highlightjs
-okgrow:analytics
 percolate:migrations
 practicalmeteor:sinon
 accounts-worldcubeassociation
@@ -59,3 +58,4 @@ maxharris9:classnames
 ecmascript
 msavin:mongol
 mike:mocha
+okgrow:analytics
