@@ -143,10 +143,10 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
 
 Meteor.publish('allSiteAdmins', function() {
   if(!this.userId) {
-    return new Meteor.Error(403, "Must sign in");
+    return [];
   }
   if(!isSiteAdmin(this.userId)) {
-    return new Meteor.Error(403, "Must be a site admin");
+    return [];
   }
   return Meteor.users.find({ siteAdmin: true }, { fields: userFieldsToPublish });
 });

@@ -1,0 +1,13 @@
+<template name="notSiteAdmin">
+  <div class="container">
+    {{#if currentUser}}
+      {{#if currentUser.siteAdmin}}
+        Hmm... you *are* a site admin.
+      {{else}}
+        You are not a site admin.
+      {{/if}}
+    {{else}}
+      Please log in.
+    {{/if}}
+  </div>
+</template>

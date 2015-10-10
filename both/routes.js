@@ -68,6 +68,26 @@ var subscriptionError = function(that) {
   };
 };
 
+SiteAdminController = RouteController.extend({
+  fastRender: true,
+  data: function() {
+    if(!this.ready()) {
+      // We explicitly render *NotFound templates based on what's missing, and
+      // that steps on the toes of iron-router's loading hook. If we're not
+      // ready, just do nothing and let the loading hook render our
+      // loadingTemplate.
+      return;
+    }
+    if(!isSiteAdmin(Meteor.userId())) {
+      this.render('notSiteAdmin');
+      return;
+    }
+
+    var data = (this.buildData ? this.buildData(competitionId) : {});
+    return data;
+  },
+});
+
 BaseCompetitionController = RouteController.extend({
   fastRender: true,
   waitOn: function() {
@@ -255,6 +275,7 @@ Router.route('/settings/profile', {
 
 Router.route('/settings/administration', {
   name: 'administerSite',
+  controller: 'SiteAdminController',
   titlePrefix: 'Administer site',
   waitOn: function() {
     return [

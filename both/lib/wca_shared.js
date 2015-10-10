@@ -127,7 +127,7 @@ validationObject = function(simpleSchemaObject, fields) {
 
 isSiteAdmin = function(userId) {
   var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
-  return user.siteAdmin;
+  return user && user.siteAdmin;
 };
 
 getRound = function(roundId) {
