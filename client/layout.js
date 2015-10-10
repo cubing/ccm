@@ -49,6 +49,14 @@ Router.onBeforeAction(function() {
   // As the page changes, remove any leftover tooltips that might get
   // abandoned because they were set to data-container="body"
   $('.tooltip').remove();
+
+  // Also remove any modal backdrops that didn't get cleared.
+  // This is kind of gross, because as far as I can tell, Bootstrap doesn't
+  // provide a way to clear modals that are now gone.
+  $('body').css({ paddingRight: 0 });
+  $('body').removeClass('modal-open');
+  $('.modal-backdrop').remove();
+
   this.next();
 });
 
