@@ -197,11 +197,11 @@ var CheckinList = React.createClass({
           <div className="container"></div>
         </template>
 
-        <table id="checkinTable" className="table table-striped" ref="checkinTable">
+        <table id="checkinTable" className="table table-striped table-hover" ref="checkinTable">
           <thead>
             <tr>
               <th>Name</th>
-              <th className="text-nowrap">WCA Id</th>
+              <th className="text-nowrap">WCA id</th>
               <th>Gender</th>
               <th>Birthday</th>
               {that.data.competitionEvents.map(function(event) {
@@ -257,10 +257,10 @@ var CheckinList = React.createClass({
               var gender = registration.gender ? wca.genderByValue[registration.gender].label : '';
               return (
                 <tr key={registration._id}>
-                  <td>{registration.uniqueName}</td>
-                  <td>{registration.wcaId}</td>
-                  <td>{gender}</td>
-                  <td className="text-nowrap">
+                  <td className="uniqueName">{registration.uniqueName}</td>
+                  <td className="wcaId">{registration.wcaId}</td>
+                  <td className="gender">{gender}</td>
+                  <td className="dob text-nowrap">
                     {formatMomentDateIso8601(moment(registration.dob))}
                   </td>
                   {eventTds}

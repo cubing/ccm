@@ -6,6 +6,21 @@
     max-width: @eventColumnWidth;
   }
 
+  tbody {
+    td.wcaId {
+      font-family: monospace;
+    }
+
+    // Shrink the table columns as much as possible, and give all
+    // available space to the last column.
+    td:not(:last-child) {
+      white-space: nowrap;
+    }
+    td:last-child {
+      width: 100%;
+    }
+  }
+
   button {
     margin-right: 3px;
   }
