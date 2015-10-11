@@ -1,6 +1,7 @@
 var log = logging.handle("manageCheckin");
 
 var selectedRegistrationReact = new ReactiveVar(null);
+var wcaCompetitionDataReact = new ReactiveVar(null);
 Template.manageCheckin.created = function() {
   var template = this;
   selectedRegistrationReact.set(null);
@@ -16,6 +17,18 @@ Template.manageCheckin.rendered = function() {
       <CheckinList competitionId={data.competitionId} />,
       template.$(".reactRenderArea")[0]
     );
+  });
+
+  template.autorun(function() {
+    var data = Template.currentData();
+    var competition = Competitions.findOne(data.competitionId, { fields: { wcaCompetitionId: 1 } });
+    var pendingWcaAjax = $.get("https://www.worldcubeassociation.org/api/v0/competitions/" + encodeURIComponent(competition.wcaCompetitionId));
+    pendingWcaAjax.done(data => {
+      wcaCompetitionDataReact.set(data);
+    });
+    pendingWcaAjax.fail(data => {
+      wcaCompetitionDataReact.set(_.extend({ error: true }, data.responseJSON));
+    });
   });
 };
 
@@ -70,6 +83,53 @@ AutoForm.addHooks('editRegistrationForm', {
   },
 });
 
+Template.modalImportRegistrations.helpers({
+  registrationJson: function() {
+    return registrationJsonReact.get();
+  },
+  registrationJsonParseError: function() {
+    return registrationJsonParseErrorReact.get();
+  },
+  cusaJsonUrl: function() {
+    var wcaCompetitionData = wcaCompetitionDataReact.get();
+    if(wcaCompetitionData && !wcaCompetitionData.error) {
+      if(wcaCompetitionData.website.indexOf("cubingusa.com") >= 0) {
+        if(wcaCompetitionData.website[wcaCompetitionData.website.length - 1] !== "/") {
+          wcaCompetitionData.website += "/";
+        }
+        return wcaCompetitionData.website + "admin/json.php";
+      }
+    }
+    return null;
+  },
+});
+
+var registrationJsonReact = new ReactiveVar(null);
+var registrationJsonParseErrorReact = new ReactiveVar(null);
+Template.modalImportRegistrations.events({
+  'input textarea[name="registrationJson"]': function(e) {
+    try {
+      registrationJsonReact.set(JSON.parse(e.currentTarget.value));
+      registrationJsonParseErrorReact.set(null);
+    } catch(error) {
+      registrationJsonReact.set(null);
+      registrationJsonParseErrorReact.set(e.currentTarget.value.length > 0 ? error : "");
+    }
+  },
+  'click button[type="submit"]': function(e) {
+    var registrationJson = registrationJsonReact.get();
+    assert(registrationJson);
+    var data = Template.parentData(1);
+    Meteor.call('importRegistrations', data.competitionId, registrationJson, function(error) {
+      if(error) {
+        bootbox.alert(`Error importing registrations: ${error.reason}`);
+      } else {
+        $('#modalImportRegistrations').modal('hide');
+      }
+    });
+  },
+});
+
 var CheckinList = React.createClass({
   mixins: [ReactMeteorData],
 
@@ -95,9 +155,14 @@ var CheckinList = React.createClass({
   },
   componentWillUpdate(nextProps, nextState) {
     log.l1("component will update");
+    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    $checkinTable.find('thead tr th').css({ minWidth: "", maxWidth: "" });
+    makeTableNotSticky($checkinTable);
   },
   componentDidUpdate(prevProps, prevState) {
     log.l1("component did update");
+    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    makeTableSticky($checkinTable);
   },
   componentWillUnmount: function() {
     log.l1("component will unmount");

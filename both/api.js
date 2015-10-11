@@ -8,10 +8,7 @@ api = {
     }, {
       fields: { _id: 1 }
     });
-    if(!competition) {
-      return null;
-    }
-    return competition._id;
+    return competition ? competition._id : null;
   },
   getCompetitions: function() {
     // TODO - someday when we're rich and successful, we'll have to paginate this

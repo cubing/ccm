@@ -125,5 +125,172 @@ MochaWeb.testOnly(function() {
         });
       });
     });
+
+    describe('importRegistrations', function() {
+      it('works', function() {
+        var competitionJson = {
+          "formatVersion": "WCA Competition 0.2",
+          "competitionId": "PleaseBeQuiet2015",
+          "persons": [
+            {
+              "id": "1",
+              "name": "Jeremy Fleischman",
+              "wcaId": "2005FLEI01",
+              "dob": "2014-10-11"
+            },
+            {
+              "id": "2",
+              "name": "Patricia Li",
+              "wcaId": "2009LIPA01",
+              "dob": "2015-09-04"
+            }
+          ],
+          "events": [
+            {
+              "eventId": "333",
+              "rounds": [
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [
+                    { "personId": "1" },
+                    { "personId": "2" },
+                  ],
+                  "groups": []
+                }
+              ]
+            },
+            {
+              "eventId": "333oh",
+              "rounds": [
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [
+                    { "personId": "1" },
+                  ],
+                  "groups": []
+                }
+              ]
+            },
+            {
+              "eventId": "222",
+              "rounds": [
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [],
+                  "groups": []
+                }
+              ]
+            },
+          ]
+        };
+
+        Meteor.call('importRegistrations', comp1Id, competitionJson);
+        let registrations = _.sortBy(Registrations.find({ competitionId: comp1Id }).fetch(), registration => registration.uniqueName);
+
+        chai.expect(registrations.length).to.equal(2);
+
+        chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
+        chai.expect(registrations[0].registeredEvents).to.deep.equal(["333", "333oh"]);
+
+        chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");
+        chai.expect(registrations[1].registeredEvents).to.deep.equal(["333"]);
+
+        // Remove Jeremy from 333 round 1.
+        competitionJson.events[0].rounds[0].results.shift();
+        // Add Patricia to round 333oh round 1.
+        competitionJson.events[1].rounds[0].results.push({ personId: 2 });
+        // Import the JSON again, Patricia should now be signed up for 333oh, and
+        // Jeremy should be removed from 333 round 1, since neither of them was
+        // checked in.
+        Meteor.call('importRegistrations', comp1Id, competitionJson);
+        registrations = _.sortBy(Registrations.find({ competitionId: comp1Id }).fetch(), registration => registration.uniqueName);
+
+        chai.expect(registrations.length).to.equal(2);
+
+        chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
+        chai.expect(registrations[0].registeredEvents).to.deep.equal(["333oh"]);
+
+        chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");
+        chai.expect(registrations[1].registeredEvents).to.deep.equal(["333", "333oh"]);
+
+        // Check Patricia in.
+        Meteor.call('checkInRegistration', registrations[1], true);
+        // Remove Patricia from 333oh round 1.
+        competitionJson.events[1].rounds[0].results.pop();
+        // And add her to 222 round 1.
+        competitionJson.events[2].rounds[0].results.push({ personId: "2" });
+        // Reimporting should not change her events, because she's already
+        // checked in.
+        Meteor.call('importRegistrations', comp1Id, competitionJson);
+        registrations = _.sortBy(Registrations.find({ competitionId: comp1Id }).fetch(), registration => registration.uniqueName);
+
+        chai.expect(registrations.length).to.equal(2);
+
+        chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
+        chai.expect(registrations[0].registeredEvents).to.deep.equal(["333oh"]);
+
+        chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");
+        chai.expect(registrations[1].registeredEvents).to.deep.equal(["333", "333oh"]);
+      });
+
+      it('adds missing events', function() {
+        var competitionJson = {
+          "formatVersion": "WCA Competition 0.2",
+          "competitionId": "PleaseBeQuiet2015",
+          "persons": [
+          ],
+          "events": [
+            {
+              "eventId": "333",
+              "rounds": [
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [],
+                  "groups": []
+                },
+              ]
+            },
+            {
+              "eventId": "333oh",
+              "rounds": [
+                {
+                  "roundId": "1",
+                  "formatId": "a",
+                  "results": [],
+                  "groups": []
+                },
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [],
+                  "groups": []
+                },
+              ]
+            },
+            {
+              "eventId": "222",
+              "rounds": [
+                {
+                  "roundId": "f",
+                  "formatId": "a",
+                  "results": [],
+                  "groups": []
+                },
+              ]
+            },
+          ]
+        };
+
+        Meteor.call('importRegistrations', comp1Id, competitionJson);
+        chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "333" }).count()).to.equal(1);
+        chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "333oh" }).count()).to.equal(2);
+        chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "222" }).count()).to.equal(1);
+      });
+    });
+
   });
 });

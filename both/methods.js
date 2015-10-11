@@ -527,6 +527,104 @@ if(Meteor.isServer) {
         throw new Meteor.Error('unzip', e.message);
       }
     },
+    importRegistrations: function(competitionId, wcaCompetition) {
+      // We use the WCA Competition JSON Format to encode registration information. See:
+      //  https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format
+      // We don't want this method to silently delete any data, so we only add missing
+      // registrations, and we only change the events a person is registered for if
+      // they are not checked in.
+      throwIfCannotManageCompetition(this.userId, competitionId);
+
+      var registrationByWcaJsonId = {};
+      var uniqueNames = {};
+      wcaCompetition.persons.forEach(wcaPerson => {
+        // Pick a uniqueName for this participant
+        var suffix = 0;
+        var uniqueName;
+        var uniqueNameTaken; // grrr...jshint
+        do {
+          suffix++;
+          uniqueName = wcaPerson.name;
+          if(suffix > 1) {
+            uniqueName += " " + suffix;
+          }
+          uniqueNameTaken = !!uniqueNames[uniqueName];
+        } while(uniqueNameTaken);
+        assert(!uniqueNames[uniqueName]);
+        uniqueNames[uniqueName] = true;
+
+        var dobMoment = moment.utc(wcaPerson.dob);
+        var registration = Registrations.findOne({
+          competitionId: competitionId,
+          uniqueName: uniqueName,
+        });
+        if(!registration) {
+          let registrationId = Registrations.insert({
+            competitionId: competitionId,
+            uniqueName: uniqueName,
+            wcaId: wcaPerson.wcaId,
+            countryId: wcaPerson.countryId,
+            gender: wcaPerson.gender,
+            dob: dobMoment.toDate(),
+          });
+          registration = Registrations.findOne(registrationId);
+        }
+        // Clear the list of events this person is registered for.
+        // We'll only go on to update their registration if they're not checked in.
+        registration.registeredEvents = [];
+
+        assert(!registrationByWcaJsonId[wcaPerson.id]);
+        registrationByWcaJsonId[wcaPerson.id] = registration;
+      });
+
+      wcaCompetition.events.forEach(wcaEvent => {
+        var hasEvent = !!Rounds.findOne({
+          competitionId: competitionId,
+          eventCode: wcaEvent.eventId,
+        });
+        if(!hasEvent) {
+          // Create the rounds for this event!
+          wcaEvent.rounds.forEach((wcaRound, nthRound) => {
+            var roundId = Rounds.insert({
+              competitionId: competitionId,
+              eventCode: wcaEvent.eventId,
+              nthRound: nthRound + 1,
+              totalRounds: wcaEvent.rounds.length,
+              formatCode: wcaRound.formatId,
+              status: wca.roundStatuses.closed,
+            });
+
+            RoundProgresses.insert({
+              roundId: roundId,
+              competitionId: competitionId,
+            });
+          });
+        }
+
+        // Now that we've created the Rounds for this event, look at who
+        // is in the very first round of the JSON and mark them as registered
+        // for this event.
+        wcaEvent.rounds[0].results.forEach(wcaResult => {
+          // wcaResult.personId refers to the personId in the wca json
+          var registration = registrationByWcaJsonId[wcaResult.personId];
+          registration.registeredEvents[wcaEvent.eventId] = true;
+        });
+      });
+      // Update the registrations to reflect the events they signed up for.
+      for(var jsonId in registrationByWcaJsonId) {
+        if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
+          var registration = registrationByWcaJsonId[jsonId];
+          if(!registration.checkedIn) {
+            Registrations.update(registration._id, {
+              $set: {
+                registeredEvents: _.keys(registration.registeredEvents),
+                //<<<checkedIn: registration.checkedIn,
+              }
+            });
+          }
+        }
+      }
+    },
     uploadCompetition: function(wcaCompetition, startDate) {
       startDate = stripTimeFromDate(startDate);
       throwIfNotSiteAdmin(this.userId);
@@ -619,10 +717,11 @@ if(Meteor.isServer) {
             if(!wcaResult.results) {
               // If the results field isn't defined, then the user isn't
               // checked in for this event. This is a little trick to
-              // allow registration sites such as cubingusa to export registration
+              // allow registration sites such as CubingUSA to export registration
               // information via the WCA competition JSON format.
               return;
             }
+            registration.checkedIn = true;
 
             var solves = _.map(wcaResult.results, function(wcaValue) {
               return wca.wcaValueToSolveTime(wcaValue, wcaEvent.eventId);
@@ -714,8 +813,7 @@ if(Meteor.isServer) {
         log.l0("finished adding data for " + wcaEvent.eventId);
       });
 
-      // Update the registrations to reflect the events they signed up for
-      // and checked in for.
+      // Update the registrations to reflect the events they signed up for.
       for(var jsonId in registrationByWcaJsonId) {
         if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
           var registration = registrationByWcaJsonId[jsonId];
@@ -724,6 +822,7 @@ if(Meteor.isServer) {
           {
             $set: {
               registeredEvents: _.keys(registration.registeredEvents),
+              checkedIn: registration.checkedIn,
             }
           });
         }

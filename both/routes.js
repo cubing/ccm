@@ -1,3 +1,5 @@
+var log = logging.handle("routes");
+
 subs = new SubsManager({
   cacheLimit: 10,
   expireIn: 5, // minutes
@@ -108,8 +110,22 @@ BaseCompetitionController = RouteController.extend({
       // loadingTemplate.
       return;
     }
+
     var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+    var oldCompetitionId = this.oldCompetitionId;
+    this.oldCompetitionId = competitionId;
     if(!competitionId) {
+      // We cannot find a competition for the given competitionUrlId. There may simply
+      // be no such competition, or the wcaCompetitionId for the competition we were
+      // viewing may have just changed. Determine if we had a competition previously,
+      // and if so, redirect to this same route with competitionUrlId set to the new
+      // wcaCompetitionId.
+      if(oldCompetitionId) {
+        var newWcaCompetitionId = Competitions.findOne(oldCompetitionId).wcaCompetitionId;
+        log.l0("It looks like the WCA competition id for", oldCompetitionId, "has changed to", newWcaCompetitionId, "... redirecting");
+        Router.go(Router.current().route.getName(), _.extend({}, this.params, { competitionUrlId: newWcaCompetitionId }), { replaceState: true });
+        return;
+      }
       this.render('competitionNotFound');
       return;
     }

@@ -2,10 +2,46 @@
   <div class="container-fluid">
     <div class="reactRenderArea"></div>
 
-    <span class="addParticipant"></span>
+    <span class="extraCheckInButtons">
+      <span data-toggle="modal" data-target="#modalImportRegistrations">
+        <span class="extraCheckInButton importRegistrations" data-toggle="tooltip" data-placement="top" title="Import registrations"></span>
+      </span>
+      <span class="extraCheckInButton addParticipant" data-toggle="tooltip" data-placement="top" title="Add new competitor"></span>
+    </span>
 
     {{> modalEditRegistration selectedRegistration}}
+    {{> modalImportRegistrations}}
   </div>
+</template>
+
+<template name="modalImportRegistrations">
+  {{#ccmModal id="modalImportRegistrations"}}
+    {{#ccmHeader}}
+      Import registrations
+    {{/ccmHeader}}
+    <div class="modal-body">
+      <p>
+        Import registration data conforming to the <a href="https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format" rel="external" target="_blank">WCA Competition JSON Format</a>.
+      </p>
+      {{#if cusaJsonUrl}}
+        <div class="alert alert-info">
+          We've detected that you're using CubingUSA for registration! Click
+          <a href="{{cusaJsonUrl}}" rel="external" target="_blank">here</a> to access a JSON
+          dump of registration information for this competition.
+        </div>
+      {{/if}}
+      <textarea name="registrationJson" class="form-control" rows="10" placeholder="Registration JSON here"></textarea>
+      {{#if registrationJsonParseError}}
+        <div class="alert alert-danger">
+          {{registrationJsonParseError}}
+        </div>
+      {{/if}}
+    </div>
+    <div class="modal-footer">
+      {{> ccmCancelButton}}
+      {{> ccmSaveButton saveable=registrationJson text="Import"}}
+    </div>
+  {{/ccmModal}}
 </template>
 
 <template name="modalEditRegistration">
