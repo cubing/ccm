@@ -58,8 +58,13 @@ span.extraCheckInButtons {
     }
 
     &:hover {
-      transform: rotate(360deg);
-      transition: all 0.3s ease-in-out 0s;
+      transform: scale(1.1);
+      transition: all 0.1s ease-in-out 0s;
+    }
+
+    &:active {
+      transform: scale(0.9);
+      transition: all 0.1s ease-in-out 0s;
     }
   }
 }
