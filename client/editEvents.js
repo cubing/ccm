@@ -21,7 +21,10 @@ Template.editEvents.events({
     Rounds.update(this._id, { $set: { status: wca.roundStatuses.open } });
   },
   'click button[name="buttonCloseRound"]': function(e, template) {
-    Rounds.update(this._id, { $set: { status: wca.roundStatuses.closed } });
+    var roundProgress = RoundProgresses.findOne({roundId: this._id});
+    // When closing a round, set it to unstarted if nobody has any results yet.
+    var newRoundStatus = roundProgress.done === 0 ? wca.roundStatuses.unstarted : wca.roundStatuses.closed;
+    Rounds.update(this._id, { $set: { status: newRoundStatus } });
   },
   'change select[name="roundFormat"]': function(e) {
     var select = e.currentTarget;
@@ -196,6 +199,17 @@ Template.editEvents.helpers({
     return this.isOpen();
   },
   canOpenRound: function() {
+    var previousRound = Rounds.findOne({
+      competitionId: this.competitionId,
+      eventCode: this.eventCode,
+      nthRound: this.nthRound - 1,
+    }, {
+      fields: { status: 1 }
+    });
+    if(previousRound && !previousRound.isClosed()) {
+      // If the previous round is not closed, we can't open this round.
+      return false;
+    }
     var nextRound = Rounds.findOne({
       competitionId: this.competitionId,
       eventCode: this.eventCode,
