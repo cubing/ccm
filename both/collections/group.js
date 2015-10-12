@@ -14,6 +14,10 @@ Groups.attachSchema({
   competitionId: {
     type: String,
   },
+  open: {
+    type: Boolean,
+    defaultValue: false,
+  },
   roundId: {
     type: String,
   },

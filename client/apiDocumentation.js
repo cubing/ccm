@@ -30,6 +30,10 @@ Template.apiDocumentation.helpers({
         queryParams: [ 'registrationId' ],
       },
       {
+        method: "GET",
+        path: "/api/v0/competitions/:competitionUrlId/groups?token=:token",
+      },
+      {
         method: "PUT",
         path: "/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results?token=:token",
         queryParams: [ 'registrationId', 'solveIndex', 'solveTime' ],
@@ -41,7 +45,9 @@ Template.apiDocumentation.helpers({
 
 Template.apiEndpoint.created = function() {
   var template = this;
-  template.paramValuesReact = new ReactiveVar({});
+  template.paramValuesReact = new ReactiveVar({
+    token: Accounts._storedLoginToken(),
+  });
 };
 
 Template.apiEndpoint.helpers({
@@ -55,13 +61,19 @@ Template.apiEndpoint.helpers({
     });
     return params;
   },
+  initialValue: function() {
+    var param = this.toString();
+    var template = Template.instance();
+    var paramValues = template.paramValuesReact.get();
+    return paramValues[param];
+  },
   paramDescription: function() {
     return descriptionByParam[this];
   },
   jsCode: function() {
     var template = Template.instance();
-
     var paramValues = template.paramValuesReact.get();
+
     var pathStr = replaceParameters(this.path, paramValues);
     var pathStrRepr = JSON.stringify(pathStr);
 

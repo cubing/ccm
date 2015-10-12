@@ -103,3 +103,42 @@ HTTP.methods({
     },
   }
 });
+
+HTTP.methods({
+  '/api/v0/competitions/:competitionUrlId/groups': {
+    get: function(data) {
+      var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+
+      if(!this.userId) {
+        throw new Meteor.Error(401, "Please specify a valid token");
+      }
+      throwIfCannotManageCompetition(this.userId, competitionId);
+
+
+      var closedGroupFields = {
+        competitionId: 1,
+        roundId: 1,
+        group: 1,
+        open: 1,
+      };
+      var openGroups = Groups.find({
+        competitionId: competitionId,
+        open: true,
+      }, {
+        fields: _.extend({ scrambles: 1, extraScrambles: 1 }, closedGroupFields),
+      }).fetch();
+
+      var closedGroups = Groups.find({
+        competitionId: competitionId,
+        open: { $ne: true },
+      }, {
+        fields: closedGroupFields,
+      }).fetch();
+
+      var allGroups = openGroups.concat(closedGroups);
+
+      this.setContentType('application/json');
+      return JSON.stringify(allGroups);
+    },
+  }
+});
