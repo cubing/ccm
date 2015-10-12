@@ -351,7 +351,7 @@ Router.route('/manage/:competitionUrlId/check-in', {
 Router.route('/manage/:competitionUrlId/scrambles', {
   name: 'scrambles',
   controller: 'ManageCompetitionScramblesController',
-  buildData: function() {
+  onBeforeAction: function() {
     Router.go('uploadScrambles', this.params);
   },
 });
