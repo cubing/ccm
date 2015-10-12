@@ -222,7 +222,7 @@ MochaWeb.testOnly(function() {
         chai.expect(registrations[1].registeredEvents).to.deep.equal(["333", "333oh"]);
 
         // Check Patricia in.
-        Meteor.call('checkInRegistration', registrations[1], true);
+        Meteor.call('checkInRegistration', registrations[1]._id, true);
         // Remove Patricia from 333oh round 1.
         competitionJson.events[1].rounds[0].results.pop();
         // And add her to 222 round 1.
@@ -294,6 +294,32 @@ MochaWeb.testOnly(function() {
         chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "333" }).count()).to.equal(1);
         chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "333oh" }).count()).to.equal(2);
         chai.expect(Rounds.find({ competitionId: comp1Id, eventCode: "222" }).count()).to.equal(1);
+      });
+    });
+
+    describe('advanceParticipantsFromRound', function() {
+      it('works', function() {
+        Meteor.call('addRound', comp1Id, '333');
+        Meteor.call('addRound', comp1Id, '333');
+
+        var rounds = Rounds.find({
+          competitionId: comp1Id,
+          eventCode: '333',
+        }, {
+          sort: {
+            nthRound: 1,
+          }
+        }).fetch();
+
+        var registration1 = make(Registrations, {competitionId: comp1Id});
+        var result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
+        var registration2 = make(Registrations, {competitionId: comp1Id});
+        var result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
+        Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
+
+        var results = Results.find({ roundId: rounds[1]._id }).fetch();
+        chai.expect(results.length).to.equal(1);
+        chai.expect(results[0].registrationId).to.equal(registration1._id);
       });
     });
 

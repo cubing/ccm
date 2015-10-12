@@ -249,7 +249,7 @@ Meteor.methods({
     // shouldn't be.
     _.each(registrationIdsToRemove, function(registrationId) {
       Results.remove({
-        competitionId: competitionId,
+        competitionId: round.competitionId,
         roundId: nextRound._id,
         registrationId: registrationId,
       });
@@ -259,7 +259,7 @@ Meteor.methods({
     // round.
     _.each(registrationIdsToAdd, function(registrationId) {
       Results.insert({
-        competitionId: competitionId,
+        competitionId: round.competitionId,
         roundId: nextRound._id,
         registrationId: registrationId,
       });
