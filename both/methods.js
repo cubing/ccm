@@ -559,16 +559,20 @@ if(Meteor.isServer) {
           uniqueName: uniqueName,
         });
         if(!registration) {
-          let registrationId = Registrations.insert({
+          registration = Registrations.findOne(Registrations.insert({
             competitionId: competitionId,
             uniqueName: uniqueName,
+          }));
+        }
+        Registrations.update(registration._id, {
+          $set: {
             wcaId: wcaPerson.wcaId,
             countryId: wcaPerson.countryId,
             gender: wcaPerson.gender,
             dob: dobMoment.toDate(),
-          });
-          registration = Registrations.findOne(registrationId);
-        }
+          },
+        });
+        registration = Registrations.findOne(registration._id);
         // Clear the list of events this person is registered for.
         // We'll only go on to update their registration if they're not checked in.
         registration.registeredEvents = [];
@@ -618,7 +622,6 @@ if(Meteor.isServer) {
             Registrations.update(registration._id, {
               $set: {
                 registeredEvents: _.keys(registration.registeredEvents),
-                //<<<checkedIn: registration.checkedIn,
               }
             });
           }

@@ -135,6 +135,7 @@ MochaWeb.testOnly(function() {
             {
               "id": "1",
               "name": "Jeremy Fleischman",
+              "countryId": "US",
               "wcaId": "2005FLEI01",
               "dob": "2014-10-11"
             },
@@ -193,6 +194,7 @@ MochaWeb.testOnly(function() {
         chai.expect(registrations.length).to.equal(2);
 
         chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
+        chai.expect(registrations[0].countryId).to.equal("US");
         chai.expect(registrations[0].registeredEvents).to.deep.equal(["333", "333oh"]);
 
         chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");
@@ -200,6 +202,8 @@ MochaWeb.testOnly(function() {
 
         // Remove Jeremy from 333 round 1.
         competitionJson.events[0].rounds[0].results.shift();
+        // Change Jeremy's country to Israel
+        competitionJson.persons[0].countryId = "IL";
         // Add Patricia to round 333oh round 1.
         competitionJson.events[1].rounds[0].results.push({ personId: 2 });
         // Import the JSON again, Patricia should now be signed up for 333oh, and
@@ -211,6 +215,7 @@ MochaWeb.testOnly(function() {
         chai.expect(registrations.length).to.equal(2);
 
         chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
+        chai.expect(registrations[0].countryId).to.equal("IL");
         chai.expect(registrations[0].registeredEvents).to.deep.equal(["333oh"]);
 
         chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");

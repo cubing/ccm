@@ -23,6 +23,13 @@
       <p>
         Import registration data conforming to the <a href="https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format" rel="external" target="_blank">WCA Competition JSON Format</a>.
       </p>
+      <p>
+        Importing data when you already have people registered will be very careful to not
+        delete data: we update everyone's registration information (say if
+        their birthday changed), but we won't unregister people for events if
+        they're already checked in, and we certainly won't delete their results
+        if they already have results.
+      </p>
       {{#if cusaJsonUrl}}
         <div class="alert alert-info">
           We've detected that you're using CubingUSA for registration! Click

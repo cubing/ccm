@@ -170,7 +170,6 @@ Template.editCompetition.events({
   'change #competitionAttributes input[name="wcaCompetitionId"]': function(e) {
     var newWcaCompetitionId = e.currentTarget.value;
     setCompetitionAttribute(this.competitionId, 'wcaCompetitionId', newWcaCompetitionId);
-    //<<<Router.go('manageCompetition', { competitionUrlId: newWcaCompetitionId }, { replaceState: true });
   },
   'change #competitionAttributes input[type="checkbox"]': function(e) {
     var attribute = e.currentTarget.name;
