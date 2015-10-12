@@ -65,7 +65,7 @@ var verificationSendSuccessReact = new ReactiveVar(null);
 
 var managerTabs = [
   {
-    route: 'manageCompetition',
+    route: 'manageCompetitionHome',
     title: 'Change competition registration window, competition name, location, organizers, and staff',
     icon: 'fa fa-cog',
     text: 'Manage',
@@ -79,10 +79,11 @@ var managerTabs = [
     icon: 'glyphicon glyphicon-calendar',
     text: 'Schedule',
   }, {
-    route: 'uploadScrambles',
-    title: 'Generate and upload scrambles from TNoodle',
+    route: 'scrambles',
+    title: 'Generate scrambles, manage groups, and view scrambles for open groups',
     icon: '/img/tnoodle_logo.svg',
     text: 'Scrambles',
+    notLeaf: true,
   }, {
     route: 'manageCheckin',
     title: 'Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)',
@@ -125,6 +126,25 @@ var userTabs = [
     notLeaf: true,
   },
 ];
+var scrambleTabs = [
+  {
+    route: 'uploadScrambles',
+    title: 'Generate scrambles with TNoodle and upload them',
+    icon: 'fa fa-upload',
+    //<<<icon: '/img/tnoodle_logo.svg',
+    text: 'Upload Scrambles',
+  }, {
+    route: 'manageScrambleGroups',
+    title: 'Open and close scramble groups for ongoing rounds',
+    icon: 'fa fa-group',
+    text: 'Manage Scramble Groups',
+  }, {
+    route: 'viewScrambles',
+    title: 'View scrambles for open groups',
+    icon: 'fa fa-eye',
+    text: 'View Scrambles',
+  },
+];
 
 Template.layout.helpers({
   verificationSendSuccess: function() {
@@ -135,6 +155,9 @@ Template.layout.helpers({
   },
   userTabs: function() {
     return userTabs;
+  },
+  scrambleTabs: function() {
+    return scrambleTabs;
   },
   newCompetitionTab: function() {
     return {

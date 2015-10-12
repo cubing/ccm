@@ -145,6 +145,17 @@ ManageCompetitionController = BaseCompetitionController.extend({
   ccmManage: true,
 });
 
+ManageCompetitionScramblesController = ManageCompetitionController.extend({
+  extraSubscriptions: function() {
+    return [
+      subs.subscribe('competitionScrambles',
+                     this.params.competitionUrlId,
+                     subscriptionError(this)),
+    ];
+  }
+});
+
+
 ViewCompetitionController = BaseCompetitionController.extend({
   ccmManage: false,
 });
@@ -313,6 +324,12 @@ Router.route('/new/import', {
 
 Router.route('/manage/:competitionUrlId', {
   name: 'manageCompetition',
+  onBeforeAction: function() {
+    Router.go('manageCompetitionHome', this.params);
+  },
+});
+Router.route('/manage/:competitionUrlId/general', {
+  name: 'manageCompetitionHome',
   template: 'editCompetition',
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
@@ -321,7 +338,7 @@ Router.route('/manage/:competitionUrlId/events', {
   name: 'editEvents',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit events",
-  waitOn: function() {
+  extraSubscriptions: function() {
     return [subs.subscribe('roundProgresses', this.params.competitionUrlId, subscriptionError(this))];
   },
 });
@@ -330,18 +347,30 @@ Router.route('/manage/:competitionUrlId/check-in', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Check-in",
 });
-Router.route('/manage/:competitionUrlId/uploadScrambles', {
-  name: 'uploadScrambles',
-  controller: 'ManageCompetitionController',
-  titlePrefix: "Upload scrambles",
-  waitOn: function() {
-    var waitOn = this.constructor.prototype.waitOn.call(this);
-    waitOn.push(subs.subscribe('competitionScrambles',
-                               this.params.competitionUrlId,
-                               subscriptionError(this)));
-    return waitOn;
+
+Router.route('/manage/:competitionUrlId/scrambles', {
+  name: 'scrambles',
+  controller: 'ManageCompetitionScramblesController',
+  buildData: function() {
+    Router.go('uploadScrambles', this.params);
   },
 });
+Router.route('/manage/:competitionUrlId/scrambles/upload', {
+  name: 'uploadScrambles',
+  controller: 'ManageCompetitionScramblesController',
+  titlePrefix: "Upload Scrambles",
+});
+Router.route('/manage/:competitionUrlId/scrambles/groups', {
+  name: 'manageScrambleGroups',
+  controller: 'ManageCompetitionScramblesController',
+  titlePrefix: "Scramble Groups",
+});
+Router.route('/manage/:competitionUrlId/scrambles/view', {
+  name: 'viewScrambles',
+  controller: 'ManageCompetitionScramblesController',
+  titlePrefix: "View Scrambles",
+});
+
 Router.route('/manage/:competitionUrlId/exportResults', {
   name: 'exportResults',
   controller: 'ManageCompetitionController',
@@ -351,7 +380,7 @@ Router.route('/manage/:competitionUrlId/schedule', {
   name: 'editSchedule',
   controller: 'ManageCompetitionController',
   titlePrefix: "Edit schedule",
-  waitOn: function() {
+  extraSubscriptions: function() {
     return [subs.subscribe('scheduleEvents', this.params.competitionUrlId, subscriptionError(this))];
   },
 });

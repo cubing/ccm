@@ -195,6 +195,9 @@ Template.editEvents.helpers({
   formats: function() {
     return wca.formatsByEventCode[this.eventCode];
   },
+  canManageGroupsForRound: function() {
+    return this.isOpen();
+  },
   canCloseRound: function() {
     return this.isOpen();
   },

@@ -1,6 +1,6 @@
 var selectedGroupReact = new ReactiveVar(null);
 
-Template.displayScrambles.helpers({
+Template.viewScrambles.helpers({
   allRounds: function() {
     return Rounds.find({competitionId: this.competitionId}, { sort: { eventCode: 1, nthRound: 1 }});
   },
@@ -9,7 +9,7 @@ Template.displayScrambles.helpers({
   },
 });
 
-Template.displayScrambles.events({
+Template.viewScrambles.events({
   'click #scramble-display button': function() {
     selectedGroupReact.set(this);
   },

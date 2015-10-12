@@ -153,6 +153,14 @@
                                   <i class="fa fa-step-forward"></i>
                                 </a>
                               {{/if}}
+                              {{#if canManageGroupsForRound}}
+                                <a
+                                  href="{{pathFor 'manageScrambleGroups' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                                  data-toggle="tooltip" data-placement="left" data-original-title="Open and close scramble groups" data-container="body"
+                                >
+                                  <i class="fa fa-group"></i>
+                                </a>
+                              {{/if}}
                             </td>
 
                           </tr>

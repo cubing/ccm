@@ -239,12 +239,6 @@ Template.uploadScrambles.events({
   }
 });
 
-Template.uploadScrambles.rendered = function() {
-  // Bootstrap's tooltips are opt in, so just enable it on all elements with a
-  // title.
-  this.$('[title]').tooltip();
-};
-
 Template.uploadScrambles.helpers({
   tnoodleVersionUrl: TNOODLE_VERSION_URL,
   tnoodleStatus: function() {
