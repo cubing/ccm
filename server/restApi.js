@@ -114,6 +114,14 @@ HTTP.methods({
       }
       throwIfCannotManageCompetition(this.userId, competitionId);
 
+      var openRounds = Rounds.find({
+        competitionId: competitionId,
+        status: wca.roundStatuses.open,
+      }, {
+        fields: {
+          _id: 1,
+        }
+      }).fetch();
 
       var closedGroupFields = {
         competitionId: 1,
@@ -124,13 +132,18 @@ HTTP.methods({
       var openGroups = Groups.find({
         competitionId: competitionId,
         open: true,
+        // Only consider a group open if it's for a round that is open.
+        roundId: { $in: _.pluck(openRounds, '_id') },
       }, {
         fields: _.extend({ scrambles: 1, extraScrambles: 1 }, closedGroupFields),
       }).fetch();
 
       var closedGroups = Groups.find({
         competitionId: competitionId,
-        open: { $ne: true },
+        $or: [
+          { open: { $ne: true } },
+          { roundId: { $nin: _.pluck(openRounds, '_id') } },
+        ]
       }, {
         fields: closedGroupFields,
       }).fetch();
