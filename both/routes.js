@@ -145,17 +145,6 @@ ManageCompetitionController = BaseCompetitionController.extend({
   ccmManage: true,
 });
 
-ManageCompetitionScramblesController = ManageCompetitionController.extend({
-  extraSubscriptions: function() {
-    return [
-      subs.subscribe('competitionScrambles',
-                     this.params.competitionUrlId,
-                     subscriptionError(this)),
-    ];
-  }
-});
-
-
 ViewCompetitionController = BaseCompetitionController.extend({
   ccmManage: false,
 });
@@ -277,6 +266,20 @@ ManageRoundResultsController = BaseRoundController.extend({
   },
 });
 
+ManageCompetitionScramblesController = BaseRoundController.extend({
+  ccmManage: true,
+  extraSubscriptions: function() {
+    return [
+      subs.subscribe('competitionScrambles',
+                     this.params.competitionUrlId,
+                     subscriptionError(this)),
+    ];
+  },
+  buildData: function(competitionId) {
+    return this.buildRoundData(competitionId);
+  },
+});
+
 RegistrationController = ViewCompetitionController.extend({
   extraSubscriptions: function() {
     return [subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this))];
@@ -362,7 +365,7 @@ Router.route('/manage/:competitionUrlId/scrambles/upload', {
   controller: 'ManageCompetitionScramblesController',
   titlePrefix: "Upload Scrambles",
 });
-Router.route('/manage/:competitionUrlId/scrambles/groups', {
+Router.route('/manage/:competitionUrlId/scrambles/groups/:eventCode?/:nthRound?', {
   name: 'manageScrambleGroups',
   controller: 'ManageCompetitionScramblesController',
   titlePrefix: "Scramble Groups",

@@ -6,7 +6,7 @@
         <ul class="nav navbar-nav">
           {{#each competitionEvents}}
             <li class="{{#if isCurrentEvent}}active{{/if}}">
-              <a href="{{pathFor ../roundTemplate competitionUrlId=../competitionUrlId eventCode=eventCode}}"
+              <a href="{{pathFor ../roundRouteName competitionUrlId=../competitionUrlId eventCode=eventCode}}"
                  class="brand"
                  data-toggle="tooltip" data-placement="bottom" data-container="body"
                  title="{{eventName eventCode}}">
@@ -32,7 +32,7 @@
             </li>
             {{#each roundsForEvent}}
               <li class="{{#if isCurrentRound}}active{{/if}} leaf">
-                <a href="{{pathFor ../roundTemplate competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
+                <a href="{{pathFor ../roundRouteName competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}">
                   {{roundName roundCode}}
                 </a>
               </li>
@@ -43,4 +43,46 @@
     </nav>
   {{/if}}
 
+</template>
+
+<template name="openRoundPicker">
+  <nav class="navbar navbar-default navbar-plain-rectangle" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-collapse collapse-buttons">
+        <ul class="nav navbar-nav">
+          {{#each openRounds}}
+            <li class="{{#if isSelectedRound}}active{{/if}} leaf">
+              <a href="{{pathFor ../roundRouteName competitionUrlId=../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                 class="brand">
+                <span class="cubing-icon icon-{{eventCode}}" alt="{{eventCode}}"></span>
+                {{eventName eventCode}}: {{roundName roundCode}}
+              </a>
+            </li>
+          {{else}}
+            <p class="navbar-text">
+              No rounds currently open
+            </p>
+          {{/each}}
+          {{#if allowChosingClosedRounds}}
+            <li class="{{#if showAllRounds}}active{{/if}}">
+              <a href="#" class="brand" id="showAllRoundsLink"
+                 data-toggle="tooltip" data-placement="bottom" data-container="body"
+                 title="If you really need to edit a round that isn't open, click here.">
+                All rounds
+                {{#if showAllRounds}}
+                  <span class="glyphicon glyphicon-chevron-down"></span>
+                {{else}}
+                  <span class="glyphicon glyphicon-chevron-right"></span>
+                {{/if}}
+              </a>
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {{#if showAllRounds}}
+    {{> roundPicker competitionId=competitionId competitionUrlId=competitionUrlId roundId=roundId eventCode=eventCode roundRouteName=roundRouteName}}
+  {{/if}}
 </template>

@@ -131,13 +131,13 @@ var scrambleTabs = [
     route: 'uploadScrambles',
     title: 'Generate scrambles with TNoodle and upload them',
     icon: 'fa fa-upload',
-    //<<<icon: '/img/tnoodle_logo.svg',
     text: 'Upload Scrambles',
   }, {
     route: 'manageScrambleGroups',
     title: 'Open and close scramble groups for ongoing rounds',
     icon: 'fa fa-group',
     text: 'Manage Scramble Groups',
+    notLeaf: true,
   }, {
     route: 'viewScrambles',
     title: 'View scrambles for open groups',

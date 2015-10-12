@@ -1,5 +1,16 @@
 <template name="manageScrambleGroups">
+
+  {{> openRoundPicker competitionId=competitionId competitionUrlId=competitionUrlId eventCode=eventCode roundId=roundId allowChosingClosedRounds=false roundRouteName='manageScrambleGroups'}}
+
   <div class="container">
-    TODO - lets manage some groups for some rounds!
+    {{#unless roundId}}
+      Choose an open round!
+    {{else}}
+      <ul>
+        {{#each groups}}
+          <li>{{group}}</li>
+        {{/each}}
+      </ul>
+    {{/unless}}
   </div>
 </template>
