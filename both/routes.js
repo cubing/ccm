@@ -334,13 +334,15 @@ Router.route('/manage/:competitionUrlId/general', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
 });
-Router.route('/manage/:competitionUrlId/events', {
-  name: 'editEvents',
-  controller: 'ManageCompetitionController',
-  titlePrefix: "Edit events",
+ManageCompetitionEventsController = ManageCompetitionController.extend({
   extraSubscriptions: function() {
     return [subs.subscribe('roundProgresses', this.params.competitionUrlId, subscriptionError(this))];
   },
+});
+Router.route('/manage/:competitionUrlId/events', {
+  name: 'editEvents',
+  controller: 'ManageCompetitionEventsController',
+  titlePrefix: "Edit events",
 });
 Router.route('/manage/:competitionUrlId/check-in', {
   name: 'manageCheckin',
@@ -376,13 +378,16 @@ Router.route('/manage/:competitionUrlId/exportResults', {
   controller: 'ManageCompetitionController',
   titlePrefix: "Export results",
 });
-Router.route('/manage/:competitionUrlId/schedule', {
-  name: 'editSchedule',
-  controller: 'ManageCompetitionController',
-  titlePrefix: "Edit schedule",
+
+ManageScheduleController = ManageCompetitionController.extend({
   extraSubscriptions: function() {
     return [subs.subscribe('scheduleEvents', this.params.competitionUrlId, subscriptionError(this))];
   },
+});
+Router.route('/manage/:competitionUrlId/schedule', {
+  name: 'editSchedule',
+  controller: 'ManageScheduleController',
+  titlePrefix: "Edit schedule",
 });
 Router.route('/manage/:competitionUrlId/advance-participants/:eventCode?/:nthRound?', {
   name: 'advanceParticipants',
