@@ -209,13 +209,17 @@ BaseRoundController = BaseCompetitionController.extend({
       eventCode: this.params.eventCode,
       nthRound: nthRound,
     }, {
-      fields: { _id: 1 }
+      fields: {
+        _id: 1,
+        nthRound: 1,
+      }
     });
     if(!round) {
       this.render('roundNotFound');
       return data;
     }
     data.roundId = round._id;
+    data.nthRound = round.nthRound;
     return data;
   }
 });
