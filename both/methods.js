@@ -366,6 +366,14 @@ Meteor.methods({
     // registrants Result).
     Registrations.update(registration._id, update);
   },
+  toggleGroupOpen: function(groupId) {
+    var group = Groups.findOne(groupId);
+    if(!group) {
+      throw new Meteor.Error(404, "Group not found");
+    }
+    throwIfCannotManageCompetition(this.userId, group.competitionId);
+    Groups.update(group._id, { $set: { open: !group.open } });
+  },
 });
 
 /*

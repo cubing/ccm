@@ -8,7 +8,17 @@
     {{else}}
       <ul>
         {{#each groups}}
-          <li>{{group}}</li>
+          <li>
+            <span class="btn-group js-toggle-group-open">
+              <button type="button" class="btn btn-default {{#if open}}active{{/if}}">
+                Open
+              </button>
+              <button type="button" class="btn btn-default {{#unless open}}active{{/unless}}">
+                Closed
+              </button>
+            </span>
+            Group <code>{{group}}</code>
+          </li>
         {{/each}}
       </ul>
     {{/unless}}
