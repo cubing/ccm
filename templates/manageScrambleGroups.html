@@ -19,6 +19,8 @@
             </span>
             Group <code>{{group}}</code>
           </li>
+        {{else}}
+        No scrambles found! Generate scrambles <a href="{{pathFor 'uploadScrambles'}}">here</a>.
         {{/each}}
       </ul>
     {{/unless}}
