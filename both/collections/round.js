@@ -6,6 +6,17 @@ Round = function(doc) {
 };
 
 _.extend(Round.prototype, {
+  prettyStringNoFormat: function() {
+    return this.prettyString(false);
+  },
+  prettyString: function(showFormat=true) {
+    var str = wca.eventByCode[this.eventCode].name;
+    str += ": " + wca.roundByCode[this.roundCode()].name;
+    if(showFormat) {
+      str += wca.formatByCode[this.formatCode].name;
+    }
+    return str;
+  },
   format: function() {
     return wca.formatByCode[this.formatCode];
   },

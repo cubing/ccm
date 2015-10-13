@@ -5,8 +5,7 @@
   <div class="container">
     {{#if roundId}}
       <p>
-        {{eventName roundEventCode}}: {{roundName roundRoundCode}}
-        {{formatName roundFormatCode}}
+        {{round.prettyString}}
       </p>
 
       {{> roundResultsList roundId=roundId competitionUrlId=competitionUrlId}}
