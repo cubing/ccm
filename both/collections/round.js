@@ -13,7 +13,7 @@ _.extend(Round.prototype, {
     var str = wca.eventByCode[this.eventCode].name;
     str += ": " + wca.roundByCode[this.roundCode()].name;
     if(showFormat) {
-      str += wca.formatByCode[this.formatCode].name;
+      str += " " + wca.formatByCode[this.formatCode].name;
     }
     return str;
   },
