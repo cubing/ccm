@@ -15,17 +15,20 @@ Router.configure({
 if(Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
 
-  Template.registerHelper("isActiveOrAncestorRoute", function(routeName) {
+  isActiveOrAncestorRoute = function(routeName) {
     var currentParams = Router.current().params;
     var route = Router.routes[routeName];
     var routePath = route.path(currentParams);
     // Check if our current path begins with the given route
     var currentPath = Iron.Location.get().path;
     return currentPath.indexOf(routePath) === 0;
-  });
-  Template.registerHelper("isActiveRoute", function(routeName) {
+  };
+  Template.registerHelper("isActiveOrAncestorRoute", isActiveOrAncestorRoute);
+
+  isActiveRoute = function(routeName) {
     return Router.current().route.getName() == routeName;
-  });
+  };
+  Template.registerHelper("isActiveRoute", isActiveRoute);
 
   Template.registerHelper("setDocumentTitle", function() {
     var titleParts = ["live.cubing.net"];
@@ -327,12 +330,6 @@ Router.route('/new/import', {
 
 Router.route('/manage/:competitionUrlId', {
   name: 'manageCompetition',
-  onBeforeAction: function() {
-    Router.go('manageCompetitionHome', this.params);
-  },
-});
-Router.route('/manage/:competitionUrlId/general', {
-  name: 'manageCompetitionHome',
   template: 'editCompetition',
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",

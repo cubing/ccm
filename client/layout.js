@@ -65,7 +65,7 @@ var verificationSendSuccessReact = new ReactiveVar(null);
 
 var managerTabs = [
   {
-    route: 'manageCompetitionHome',
+    route: 'manageCompetition',
     title: 'Change competition registration window, competition name, location, organizers, and staff',
     icon: 'fa fa-cog',
     text: 'Manage',
@@ -177,6 +177,19 @@ Template.oneTab.helpers({
   },
   parentData: function() {
     return Template.parentData();
+  },
+  active: function() {
+    if(isActiveRoute(this.route)) {
+      return "active";
+    } else if(isActiveOrAncestorRoute(this.route)) {
+      if(this.notLeaf) {
+        // We only consider ancestors to be active if they're supposed to be
+        // non leafs.
+        // This deals with the competition and the manageCompetition routes.
+        return "active";
+      }
+    }
+    return "";
   },
 });
 

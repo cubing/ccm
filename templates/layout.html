@@ -170,7 +170,7 @@
 </template>
 
 <template name="oneTab">
-  <li class="{{#if isActiveOrAncestorRoute route}}active{{/if}} {{otherClass}} {{leaf}}">
+  <li class="{{active}} {{otherClass}} {{leaf}}">
     <a href="{{pathFor route=route data=parentData}}"
        data-toggle="tooltip" data-placement="bottom" data-container="body" title="{{title}}">
       {{#if img}}
