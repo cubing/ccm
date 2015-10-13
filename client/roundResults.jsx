@@ -103,13 +103,18 @@ var ResultRow = React.createClass({
 
     var trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
     var tiedPrevious = this.props.tiedPrevious;
+    var format = wca.formatByCode[this.props.formatCode];
+    var solves = result.solves || [];
+    while(solves.length < format.count) {
+      solves.push(null);
+    }
     return (
       <tr className={rowClasses} data-result-id={result._id}>
         <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
         <td className="participant-name">{participantNameNode}</td>
         <td className={averageClasses}>{clockFormat(result.average)}</td>
         <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
-        {(result.solves || []).map(function(solve, i) {
+        {solves.map(function(solve, i) {
           var solveClasses = classNames({
             'results-solve': true,
             'results-solve-dropped': (trimBestAndWorst && (i === result.bestIndex || i === result.worstIndex)),
@@ -182,9 +187,8 @@ var ResultsList = React.createClass({
     $resultsTable.data('plugin_stickyTableHeaders').toggleHeaders();
   },
   render: function() {
-    var that = this;
-    var roundId = that.props.roundId;
-    var format = wca.formatByCode[that.data.formatCode];
+    var roundId = this.props.roundId;
+    var format = wca.formatByCode[this.data.formatCode];
 
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
@@ -201,12 +205,13 @@ var ResultsList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {that.data.results.map(function(result, i) {
-              var prevResult = i > 0 ? that.data.results[i - 1] : null;
-              var drawLine = that.props.configurableAdvanceCount && that.props.advanceCount == i + 1;
+            {this.data.results.map((result, i) => {
+              var prevResult = i > 0 ? this.data.results[i - 1] : null;
+              var drawLine = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
               return (
                 <ResultRow key={result._id}
-                           competitionUrlId={that.props.competitionUrlId}
+                           formatCode={this.data.formatCode}
+                           competitionUrlId={this.props.competitionUrlId}
                            result={result}
                            roundFormat={format}
                            drawLine={drawLine}
