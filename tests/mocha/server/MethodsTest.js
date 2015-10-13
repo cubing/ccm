@@ -323,5 +323,32 @@ MochaWeb.testOnly(function() {
       });
     });
 
+    describe("toggleGroupOpen", function() {
+      var roundId;
+      var groupId;
+      beforeEach(function() {
+        var round = make(Rounds, { status: wca.roundStatuses.open });
+        roundId = round._id;
+        groupId = make(Groups, { group: "A", roundId: round._id })._id;
+      });
+
+      it("works", function() {
+        chai.expect(Groups.findOne(groupId).open).to.equal(false);
+        Meteor.call('toggleGroupOpen', groupId);
+        chai.expect(Groups.findOne(groupId).open).to.equal(true);
+      });
+
+      it("doesn't allow opening groups for closed rounds", function() {
+        chai.expect(Groups.findOne(groupId).open).to.equal(false);
+
+        Rounds.update(roundId, { $set: { status: wca.roundStatuses.closed } });
+        chai.expect(function() {
+          Meteor.call('toggleGroupOpen', groupId);
+        }).to.throw(Meteor.Error);
+
+        chai.expect(Groups.findOne(groupId).open).to.equal(false);
+      });
+    });
+
   });
 });

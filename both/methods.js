@@ -371,6 +371,13 @@ Meteor.methods({
     if(!group) {
       throw new Meteor.Error(404, "Group not found");
     }
+    var round = Rounds.findOne(group.roundId);
+    if(!round) {
+      throw new Meteor.Error(404, "Round not found");
+    }
+    if(!round.isOpen()) {
+      throw new Meteor.Error(404, "Group's round is not open");
+    }
     throwIfCannotManageCompetition(this.userId, group.competitionId);
     Groups.update(group._id, { $set: { open: !group.open } });
   },
@@ -400,7 +407,11 @@ RoundSorter = {
     log.l1("RoundSorter._handleSortTimer(", roundId, ")");
     delete this._roundsToSortById[roundId];
     var round = Rounds.findOne(roundId);
-    round.sortResults();
+    if(round) {
+      // There's no guarantee that this round still exists by the time we
+      // decide to sort it. We seem to be hitting this race in tests.
+      round.sortResults();
+    }
   },
 };
 

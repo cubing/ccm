@@ -1,5 +1,11 @@
 var log = logging.handle("roundResults");
 
+Template.roundResults.helpers({
+  round: function() {
+    return Rounds.findOne(this.roundId);
+  },
+});
+
 Template.roundResultsList.rendered = function() {
   var template = this;
 

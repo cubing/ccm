@@ -4,7 +4,7 @@ var uniqueNumber = 0;
 function presets(propertyKey) {
   switch(propertyKey) {
     case Rounds:
-      return { competitionId: 'fake', nthRound: 1, totalRounds: 1, formatCode: 'a' };
+      return { competitionId: 'fake', nthRound: 1, totalRounds: 1, formatCode: 'a', eventCode: '333' };
 
     case 'softCutoff':
       return { softCutoff: { time: {}, formatCode: '2'} };
@@ -23,6 +23,9 @@ function presets(propertyKey) {
 
     case Registrations:
       return { uniqueName: "Jane" + (uniqueNumber++), countryId: "US", gender: "m", dob: new Date() };
+
+    case Groups:
+      return { competitionId: 'fake', group: "A" + (uniqueNumber++), scrambles: [ "R U2 R'" ], extraScrambles: [ "F U2" ], scrambleProgram: "TNoodle 42" };
 
     default:
       throw new Error("Unknown property key: " + propertyKey);
