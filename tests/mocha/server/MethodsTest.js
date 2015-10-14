@@ -350,5 +350,70 @@ MochaWeb.testOnly(function() {
       });
     });
 
+    describe("setSolveTime", function() {
+      var firstRound333;
+      var registration;
+      var result;
+      beforeEach(function() {
+        Meteor.call('addRound', comp1Id, '333');
+        firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
+        registration = make(Registrations, {competitionId: comp1Id});
+
+        Meteor.call('checkInRegistration', registration._id, true);
+        Meteor.call('toggleEventRegistration', registration._id, '333');
+        var results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
+        chai.expect(results.length).to.equal(1);
+        result = results[0];
+      });
+
+      it("can add times", function() {
+        for(var i = 0; i < firstRound333.format().count; i++) {
+          Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
+        }
+        result = Results.findOne(result._id);
+        chai.expect(result.solves.length).to.equal(5);
+        chai.expect(result.solves[0].millis).to.equal(3333);
+        chai.expect(result.solves[1].millis).to.equal(3334);
+        chai.expect(result.solves[2].millis).to.equal(3335);
+        chai.expect(result.solves[3].millis).to.equal(3336);
+        chai.expect(result.solves[4].millis).to.equal(3337);
+      });
+
+      it("can't add more times than round allows", function() {
+        var i;
+        for(i = 0; i < firstRound333.format().count; i++) {
+          Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
+        }
+        chai.expect(function() {
+          Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
+        }).to.throw(Meteor.Error);
+      });
+
+      it("can remove extra times", function() {
+        // Add all 5 allowed solves for this round format.
+        for(i = 0; i < firstRound333.format().count; i++) {
+          Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
+        }
+        // Change this round to a mean of 3, which means we have too many
+        // solves in our result. We should be allowed to change and delete
+        // these extra solves because they were grandfathered in.
+        Rounds.update(firstRound333._id, { $set: { formatCode: "3" } });
+        Meteor.call('setSolveTime', result._id, 3, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(5);
+        Meteor.call('setSolveTime', result._id, 3, { millis: 4242 });
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(5);
+        Meteor.call('setSolveTime', result._id, 4, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(4);
+        Meteor.call('setSolveTime', result._id, 3, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(3);
+
+        // Now that we're down to the maximum of 3 solves, we should not be
+        // allowed to add a 4th.
+        chai.expect(function() {
+          Meteor.call('setSolveTime', result._id, 3, { millis: 2323 });
+        }).to.throw(Meteor.Error);
+      });
+    });
+
   });
 });

@@ -42,10 +42,24 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   var round = Rounds.findOne(result.roundId);
 
   check(solveIndex, Match.Integer);
-  if(solveIndex < 0 || solveIndex >= round.format().count) {
-    throw new Meteor.Error(400, "Invalid solve index for round");
+  if(solveIndex < 0) {
+    throw new Meteor.Error(400, "Cannot have a negative solve index");
+  }
+  if(solveIndex >= result.solves.length) {
+    // If we add this solveTime, we'll be expanding the solves list.
+    // We only want to let the user expand the solves list so long as they
+    // stay within the round solve limit.
+    if(solveIndex >= round.format().count) {
+      throw new Meteor.Error(400, `Round ${round._id} does not allow a solve at index ${solveIndex}`);
+    }
   }
   result.solves[solveIndex] = solveTime;
+
+  // If the solves array is too large for this round, trim null solves from the
+  // end of the solves array until it fits, or we're out of null solves.
+  while(result.solves.length >= round.format().count && !result.solves[result.solves.length - 1]) {
+    result.solves.pop();
+  }
 
   var $set = {
     solves: result.solves
