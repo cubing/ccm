@@ -48,10 +48,10 @@ Template.editEvents.events({
     roundPopupReact.set(null);
   },
   'show.bs.collapse .collapse': function(e) {
-    localStorage[this.eventCode + "visible"] = true;
+    localStorage[this.competitionId + this.eventCode + "visible"] = true;
   },
   'hide.bs.collapse .collapse': function(e) {
-    delete localStorage[this.eventCode + "visible"];
+    delete localStorage[this.competitionId + this.eventCode + "visible"];
   },
   'click #collapseAllEvents': function() {
     // While it looks weird to method chain collapse, I couldn't get it to work
@@ -259,7 +259,7 @@ Template.editEvents.helpers({
     return roundPopupReact.get();
   },
   showEvent: function() {
-    return !!localStorage[this.eventCode + "visible"];
+    return !!localStorage[this.competitionId + this.eventCode + "visible"];
   },
 });
 
