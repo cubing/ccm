@@ -53,6 +53,10 @@ Results.attachSchema({
     min: 0,
     optional: true,
   },
+  noShow: {
+    type: Boolean,
+    optional: true,
+  },
   advanced: {
     type: Boolean,
     optional: true,

@@ -146,6 +146,10 @@ Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
   },
+  noShow: function() {
+    var result = Results.findOne(selectedResultIdReact.get(), { fields: { noShow: 1 } });
+    return result && result.noShow;
+  },
   round: function() {
     return Rounds.findOne(this.roundId);
   },
@@ -300,6 +304,11 @@ Template.roundDataEntry.events({
     }
 
     userResultMaybeSelected(template, this.roundId, jChesterToFocusIndex);
+  },
+  'change input[name="noShow"]': function(e) {
+    var noShow = e.currentTarget.checked;
+    var resultId = selectedResultIdReact.get();
+    Meteor.call("setResultNoShow", resultId, noShow);
   },
   'typeahead:selected .typeahead': function(e, template, suggestion, datasetName) {
     userResultMaybeSelected(template, this.roundId);

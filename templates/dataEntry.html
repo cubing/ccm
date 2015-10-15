@@ -28,6 +28,13 @@
       <div class="results-sidebar">
         <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
+        {{#if selectedResultId}}
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="noShow" checked="{{noShow}}"> No show
+            </label>
+          </div>
+        {{/if}}
 
         {{#with round}}
           {{#if softCutoff}}

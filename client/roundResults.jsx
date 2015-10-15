@@ -99,6 +99,7 @@ var ResultRow = React.createClass({
       'result': true,
       'participant-advanced': result.advanced,
       'last-participant-to-advance': this.props.drawLine,
+      'no-show': result.noShow,
     });
 
     var trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
@@ -142,7 +143,13 @@ var ResultsList = React.createClass({
     // it ourselves. So here we go.
     results.sort(function(a, b) {
       // position may be undefined if no times have been entered yet.
-      // We intentionally sort so that unentered rows are on the bottom.
+      // We intentionally sort so that unentered rows (results without a position)
+      // are on the bottom, with noShows even lower than them.
+      if(a.noShow && !b.noShow) {
+        return 1;
+      } else if(!a.noShow && b.noShow) {
+        return -1;
+      }
       if(!a.position && !b.position) {
         // Both of these results do not have a position yet, so sort them
         // by how they did in the previous round.
@@ -200,7 +207,31 @@ var ResultsList = React.createClass({
   render: function() {
     var roundId = this.props.roundId;
     var format = wca.formatByCode[this.data.formatCode];
+    var columnCount = 4 + format.count;
 
+    var withResultsCount = _.select(this.data.results, result => !result.noShow && result.position).length;
+    var incompleteCount = _.select(this.data.results, result => !result.noShow && !result.position).length;
+    var competitorsCount = _.select(this.data.results, result => !result.noShow).length;
+    var footerText = `${withResultsCount} with results + ${incompleteCount} awaiting results = ${competitorsCount} competitors`;
+    var footer = (
+      <tr>
+        <td colSpan={columnCount}>
+          {withResultsCount} with results + {incompleteCount} incomplete = {competitorsCount} competitors
+        </td>
+      </tr>
+    );
+
+    var extraFooter = null;
+    var noShowCount = _.select(this.data.results, result => result.noShow).length;
+    if(noShowCount > 0) {
+      extraFooter = (
+        <tr>
+          <td colSpan={columnCount}>
+            {noShowCount} did not show up
+          </td>
+        </tr>
+      );
+    }
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
         <table className="table table-striped table-hover table-results" ref="resultsTable" id="resultsTable">
@@ -231,6 +262,10 @@ var ResultsList = React.createClass({
               );
             })}
           </tbody>
+          <tfoot>
+            {footer}
+            {extraFooter}
+          </tfoot>
         </table>
       </div>
     );
