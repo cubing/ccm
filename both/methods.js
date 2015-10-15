@@ -281,6 +281,8 @@ Meteor.methods({
       });
     });
 
+    Rounds.update(nextRound._id, { $set: { size: participantsToAdvance } });
+
     Meteor.call('recomputeWhoAdvancedAndPreviousPosition', roundId);
 
     // Advancing people to nextRound means we need to update positions
@@ -487,8 +489,7 @@ if(Meteor.isServer) {
 
   var zipIdToFilename = function(zipId, userId) {
     var tmpdir = os.tmpdir();
-    var filename = path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
-    return filename;
+    return path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
   };
 
   var checkInRegistration = function(registration, toCheckIn) {
@@ -734,7 +735,7 @@ if(Meteor.isServer) {
 
       var registrationByWcaJsonId = {};
       var uniqueNames = {};
-      wcaCompetition.persons.forEach((wcaPerson, i) => {
+      wcaCompetition.persons.forEach(wcaPerson => {
         // Pick a uniqueName for this participant
         var suffix = 0;
         var uniqueName;

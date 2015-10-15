@@ -316,6 +316,7 @@ MochaWeb.testOnly(function() {
         var registration2 = make(Registrations, {competitionId: comp1Id});
         var result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
         Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
 
         var results = Results.find({ roundId: rounds[1]._id }).fetch();
         chai.expect(results.length).to.equal(1);
