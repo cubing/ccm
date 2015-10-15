@@ -46,6 +46,13 @@ Results.attachSchema({
     min: 0,
     optional: true,
   },
+  // This person's position in the previous round, if there was one. This
+  // lets us sort the unentered results for this round in a sane order.
+  previousPosition: {
+    type: Number,
+    min: 0,
+    optional: true,
+  },
   advanced: {
     type: Boolean,
     optional: true,

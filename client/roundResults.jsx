@@ -143,6 +143,17 @@ var ResultsList = React.createClass({
     results.sort(function(a, b) {
       // position may be undefined if no times have been entered yet.
       // We intentionally sort so that unentered rows are on the bottom.
+      if(!a.position && !b.position) {
+        // Both of these results do not have a position yet, so sort them
+        // by how they did in the previous round.
+        if(!a.previousPosition) {
+          return 1;
+        }
+        if(!b.previousPosition) {
+          return -1;
+        }
+        return a.previousPosition - b.previousPosition;
+      }
       if(!a.position) {
         return 1;
       }

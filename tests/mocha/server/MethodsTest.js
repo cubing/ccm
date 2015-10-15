@@ -320,6 +320,9 @@ MochaWeb.testOnly(function() {
         var results = Results.find({ roundId: rounds[1]._id }).fetch();
         chai.expect(results.length).to.equal(1);
         chai.expect(results[0].registrationId).to.equal(registration1._id);
+        chai.expect(results[0].previousPosition).to.equal(1);
+        chai.expect(Results.findOne(result1._id).advanced).to.equal(true);
+        chai.expect(Results.findOne(result2._id).advanced).to.equal(false);
       });
     });
 

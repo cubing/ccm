@@ -112,7 +112,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
-    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(function(collection) {
+    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {
       collection.remove({ competitionId: competitionId });
     });
   },
@@ -156,7 +156,7 @@ Meteor.methods({
     assert(deadRound);
 
     Rounds.remove(roundId);
-    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(function(collection) {
+    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(collection => {
       collection.remove({ roundId: roundId });
     });
 
@@ -176,7 +176,7 @@ Meteor.methods({
       fields: { _id: 1 }
     });
     if(previousRound) {
-      Meteor.call('recomputeWhoAdvanced', previousRound._id);
+      Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
     }
   },
   addScheduleEvent: function(competitionId, eventData, roundId) {
@@ -228,7 +228,7 @@ Meteor.methods({
     var round = Rounds.findOne(roundId);
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var results = Results.find({ roundId: roundId }, { sort: { position: 1 }, fields: { registrationId: 1 } }).fetch();
+    var results = Results.find({ roundId: roundId }, { sort: { position: 1 } }).fetch();
     if(participantsToAdvance < 0) {
       throw new Meteor.Error(400, 'Cannot advance a negative number of competitors');
     }
@@ -261,7 +261,7 @@ Meteor.methods({
 
     // First, remove any results that are currently in the next round that
     // shouldn't be.
-    _.each(registrationIdsToRemove, function(registrationId) {
+    registrationIdsToRemove.forEach(registrationId => {
       Results.remove({
         competitionId: round.competitionId,
         roundId: nextRound._id,
@@ -271,7 +271,7 @@ Meteor.methods({
 
     // Now copy participantsToAdvance results from the current round to the next
     // round.
-    _.each(registrationIdsToAdd, function(registrationId) {
+    registrationIdsToAdd.forEach(registrationId => {
       Results.insert({
         competitionId: round.competitionId,
         roundId: nextRound._id,
@@ -279,7 +279,7 @@ Meteor.methods({
       });
     });
 
-    Meteor.call('recomputeWhoAdvanced', roundId);
+    Meteor.call('recomputeWhoAdvancedAndPreviousPosition', roundId);
 
     // Advancing people to nextRound means we need to update positions
     // and its progress.
@@ -454,8 +454,8 @@ if(Meteor.isServer) {
       fields: { _id: 1, eventCode: 1 }
     }).fetch();
 
-    [true, false].forEach(function(simulate) {
-      firstRounds.forEach(function(round) {
+    [true, false].forEach(simulate => {
+      firstRounds.forEach(round => {
         var result = Results.findOne({
           roundId: round._id,
           registrationId: registration._id,
@@ -685,7 +685,7 @@ if(Meteor.isServer) {
 
       var registrationByWcaJsonId = {};
       var uniqueNames = {};
-      wcaCompetition.persons.forEach(function(wcaPerson, i) {
+      wcaCompetition.persons.forEach((wcaPerson, i) => {
         // Pick a uniqueName for this participant
         var suffix = 0;
         var uniqueName;
@@ -718,7 +718,7 @@ if(Meteor.isServer) {
       });
 
       // Add data for rounds, results, and groups
-      wcaCompetition.events.forEach(function(wcaEvent) {
+      wcaCompetition.events.forEach(wcaEvent => {
         log.l0("adding data for " + wcaEvent.eventId);
         // Sort rounds according to the order in which they must have occurred.
         wcaEvent.rounds.sort(function(r1, r2) {
@@ -726,7 +726,7 @@ if(Meteor.isServer) {
                    wca.roundByCode[r2.roundId].supportedRoundIndex );
         });
         var newRoundIds = [];
-        wcaEvent.rounds.forEach(function(wcaRound, nthRound) {
+        wcaEvent.rounds.forEach((wcaRound, nthRound) => {
           log.l1("adding data for round " + nthRound);
           var roundId = Rounds.insert({
             nthRound: nthRound + 1,
@@ -744,7 +744,7 @@ if(Meteor.isServer) {
           });
 
           var softCutoff = null;
-          wcaRound.results.forEach(function(wcaResult) {
+          wcaRound.results.forEach(wcaResult => {
             log.l2("adding data for personId " + wcaResult.personId);
             // wcaResult.personId refers to the personId in the wca json
             var registration = registrationByWcaJsonId[wcaResult.personId];
@@ -830,7 +830,7 @@ if(Meteor.isServer) {
           // how far we've progressed in the round.
           RoundSorter.addRoundToSort(roundId);
 
-          wcaRound.groups.forEach(function(wcaGroup) {
+          wcaRound.groups.forEach(wcaGroup => {
             Groups.insert({
               competitionId: competition._id,
               roundId: roundId,
@@ -842,8 +842,8 @@ if(Meteor.isServer) {
           });
         });
 
-        newRoundIds.forEach(function(roundId) {
-          Meteor.call('recomputeWhoAdvanced', roundId);
+        newRoundIds.forEach(roundId => {
+          Meteor.call('recomputeWhoAdvancedAndPreviousPosition', roundId);
         });
 
         log.l0("finished adding data for " + wcaEvent.eventId);
@@ -866,7 +866,7 @@ if(Meteor.isServer) {
 
       return competition.wcaCompetitionId || competition._id;
     },
-    recomputeWhoAdvanced: function(roundId) {
+    recomputeWhoAdvancedAndPreviousPosition: function(roundId) {
       check(roundId, String);
 
       var round = Rounds.findOne(roundId);
@@ -878,16 +878,21 @@ if(Meteor.isServer) {
         fields: { size: 1 }
       });
 
-      var results = Results.find({ roundId: roundId }, { fields: { registrationId: 1 } });
+      var results = Results.find({ roundId: roundId });
 
-      results.forEach(function(result) {
+      results.forEach(result => {
         var advanced;
         if(nextRound) {
-          // If the registrationId for this result is present in the next round,
-          // then they advanced!
-          advanced = !!Results.findOne({
+          // Update the previousPosition field of the corresponding Result in
+          // the next round. If we found a Result to update, then they must
+          // have advanced!
+          advanced = !!Results.update({
             roundId: nextRound._id,
             registrationId: result.registrationId,
+          }, {
+            $set: {
+              previousPosition: result.position,
+            }
           });
         } else {
           // If there is no next round, then this result cannot possibly have
