@@ -12,6 +12,16 @@
   width: 350px;
 }
 
+#js-no-show-button {
+  width: 100%;
+
+  // Enable tooltip on disabled button.
+  // https://github.com/angular-ui/bootstrap/issues/1025#issuecomment-60536946
+  &[disabled] {
+    pointer-events: all;
+  }
+}
+
 .results-sidebar.affix {
   top: 50px;
 

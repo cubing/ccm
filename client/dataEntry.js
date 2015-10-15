@@ -148,7 +148,18 @@ Template.roundDataEntry.helpers({
   },
   noShow: function() {
     var result = Results.findOne(selectedResultIdReact.get(), { fields: { noShow: 1 } });
-    return result && result.noShow;
+    return !!(result && result.noShow);
+  },
+  disableNoShow: function() {
+    var result = Results.findOne(selectedResultIdReact.get(), { fields: { solves: 1 } });
+    return result.solves && result.solves.length > 0;
+  },
+  noShowTooltip: function() {
+    var result = Results.findOne(selectedResultIdReact.get(), { fields: { solves: 1 } });
+    if(result.solves && result.solves.length > 0) {
+      return "Cannot mark someone as a no show if they have results";
+    }
+    return "";
   },
   round: function() {
     return Rounds.findOne(this.roundId);
@@ -305,10 +316,18 @@ Template.roundDataEntry.events({
 
     userResultMaybeSelected(template, this.roundId, jChesterToFocusIndex);
   },
-  'change input[name="noShow"]': function(e) {
-    var noShow = e.currentTarget.checked;
+  'click #js-no-show-button': function(e) {
     var resultId = selectedResultIdReact.get();
-    Meteor.call("setResultNoShow", resultId, noShow);
+    var result = Results.findOne(resultId);
+    if(result.solves && result.solves.length > 0) {
+      // Don't bother trying to set noShow for a result with solves.
+      return;
+    }
+    Meteor.call("toggleResultNoShow", resultId, function(error) {
+      if(error) {
+        bootbox.alert(`Error! ${error.reason}`);
+      }
+    });
   },
   'typeahead:selected .typeahead': function(e, template, suggestion, datasetName) {
     userResultMaybeSelected(template, this.roundId);

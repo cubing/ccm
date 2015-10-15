@@ -29,11 +29,9 @@
         <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
         {{#if selectedResultId}}
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" name="noShow" checked="{{noShow}}"> No show
-            </label>
-          </div>
+          <a type="button" id="js-no-show-button" class="btn btn-default {{#if noShow}}active{{/if}}" disabled={{disableNoShow}} data-toggle="tooltip" data-placement="top" data-original-title="{{noShowTooltip}}" data-container="body">
+            No show
+          </a>
         {{/if}}
 
         {{#with round}}
@@ -50,14 +48,16 @@
         {{/with}}
 
         {{#if selectedResultId}}
-          <table class="table table-condensed jChesterTable">
-            <tbody>
-              {{#each selectedSolves}}
-                {{> solveTimeEditor}}
-              {{/each}}
-            </tbody>
-          </table>
-          <div class="focusguard focusguard-bottom" tabindex="0"></div>
+          {{#unless noShow}}
+            <table class="table table-condensed jChesterTable">
+              <tbody>
+                {{#each selectedSolves}}
+                  {{> solveTimeEditor}}
+                {{/each}}
+              </tbody>
+            </table>
+            <div class="focusguard focusguard-bottom" tabindex="0"></div>
+          {{/unless}}
         {{/if}}
       </div>
     </div>

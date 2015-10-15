@@ -415,6 +415,13 @@ MochaWeb.testOnly(function() {
         chai.expect(function() {
           Meteor.call('setSolveTime', result._id, 3, { millis: 2323 });
         }).to.throw(Meteor.Error);
+
+        Meteor.call('setSolveTime', result._id, 2, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(2);
+        Meteor.call('setSolveTime', result._id, 1, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(1);
+        Meteor.call('setSolveTime', result._id, 0, null);
+        chai.expect(Results.findOne(result._id).solves.length).to.equal(0);
       });
     });
 

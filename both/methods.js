@@ -40,6 +40,9 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   throwIfCannotManageCompetition(this.userId, result.competitionId);
 
   var round = Rounds.findOne(result.roundId);
+  if(!round) {
+    throw new Meteor.Error(404, "Round not found");
+  }
 
   check(solveIndex, Match.Integer);
   if(solveIndex < 0) {
@@ -55,9 +58,8 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   }
   result.solves[solveIndex] = solveTime;
 
-  // If the solves array is too large for this round, trim null solves from the
-  // end of the solves array until it fits, or we're out of null solves.
-  while(result.solves.length >= round.format().count && !result.solves[result.solves.length - 1]) {
+  // Trim null solves from the end of the solves array until it fits.
+  while(result.solves.length > 0 && !result.solves[result.solves.length - 1]) {
     result.solves.pop();
   }
 
@@ -395,7 +397,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, group.competitionId);
     Groups.update(group._id, { $set: { open: !group.open } });
   },
-  setResultNoShow: function(resultId, noShow) {
+  toggleResultNoShow: function(resultId) {
     var result = Results.findOne(resultId);
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
@@ -406,9 +408,13 @@ Meteor.methods({
       throw new Meteor.Error(404, "Round not found");
     }
 
-    var noShowWas = result.noShow;
-    Results.update(resultId, { $set: { noShow: noShow } });
-    if(!noShowWas && noShow) {
+    var newNoShow = !result.noShow;
+    if(newNoShow && result.solves && result.solves.length > 0) {
+      throw new Meteor.Error(404, "Cannot mark someone with results as a no show");
+    }
+
+    Results.update(resultId, { $set: { noShow: newNoShow } });
+    if(newNoShow) {
       // We just marked someone as a no show. See if we can find a person
       // from the previous round to advance.
       var previousRound = Rounds.findOne({
