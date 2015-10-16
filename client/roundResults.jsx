@@ -26,6 +26,7 @@ Template.roundResultsList.rendered = function() {
                    roundId={data.roundId}
                    advanceCount={data.advanceCount}
                    configurableAdvanceCount={data.configurableAdvanceCount}
+                   selectedResultId={data.selectedResultId}
                    limit={limit}
       />,
       template.$(".reactRenderArea")[0]
@@ -253,6 +254,7 @@ let ResultsList = React.createClass({
                                    competitionUrlId={this.props.competitionUrlId}
                                    result={result}
                                    drawLine={drawLine}
+                                   selected={result._id == this.props.selectedResultId}
                                    tiedPrevious={prevResult && prevResult.position == result.position}
                                    onNameClick={this.onNameClick}
                 />

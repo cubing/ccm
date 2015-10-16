@@ -399,52 +399,92 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, group.competitionId);
     Groups.update(group._id, { $set: { open: !group.open } });
   },
-  toggleResultNoShow: function(resultId) {
+  advanceResultIdFromRoundPreviousToThisOne: function(resultId, roundId) {
+    var round = Rounds.findOne(roundId);
+    if(!round) {
+      throw new Meteor.Error(404, "Round not found");
+    }
+    throwIfCannotManageCompetition(this.userId, round.competitionId);
+
+    var bestNotAdvancedResult = Results.findOne(resultId);
+    if(!bestNotAdvancedResult) {
+      throw new Meteor.Error(404, "Result not found");
+    }
+
+    var previousRound = Rounds.findOne({
+      competitionId: round.competitionId,
+      eventCode: round.eventCode,
+      nthRound: round.nthRound - 1,
+    }, {
+      fields: { _id: 1 }
+    });
+    if(!previousRound) {
+      throw new Meteor.Error(404, "No previous round found");
+    }
+
+    if(bestNotAdvancedResult.roundId !== previousRound._id) {
+      throw new Meteor.Error(400, "Given result is not in previous round");
+    }
+
+    // We found the best result from the previous round that did not advance.
+    // Copy them into this round.
+    var result = Results.findOne({
+      competitionId: round.competitionId,
+      roundId: round._id,
+      registrationId: bestNotAdvancedResult.registrationId,
+    });
+    if(result) {
+      let registration = Registrations.findOne(bestNotAdvancedResult.registrationId);
+      throw new Meteor.Error(400, `${registration.uniqueName} is already present in this round`);
+    }
+    Results.insert({
+      competitionId: round.competitionId,
+      roundId: round._id,
+      registrationId: bestNotAdvancedResult.registrationId,
+    });
+    Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
+  },
+  getBestNotAdvancedResultFromRoundPreviousToThisOne: function(roundId) {
+    var round = Rounds.findOne(roundId);
+    if(!round) {
+      throw new Meteor.Error(404, "Round not found");
+    }
+    throwIfCannotManageCompetition(this.userId, round.competitionId);
+
+    var previousRound = Rounds.findOne({
+      competitionId: round.competitionId,
+      eventCode: round.eventCode,
+      nthRound: round.nthRound - 1,
+    }, {
+      fields: { _id: 1 }
+    });
+    if(previousRound) {
+      var bestResultThatDidNotAdvance = Results.findOne({
+        roundId: previousRound._id,
+        advanced: { $ne: true },
+      }, {
+        sort: { position: 1 }
+      });
+      return bestResultThatDidNotAdvance;
+    }
+  },
+  setResultNoShow: function(resultId, newNoShow) {
     var result = Results.findOne(resultId);
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
     }
     throwIfCannotManageCompetition(this.userId, result.competitionId);
+
     var round = Rounds.findOne(result.roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
 
-    var newNoShow = !result.noShow;
     if(newNoShow && result.solves && result.solves.length > 0) {
       throw new Meteor.Error(404, "Cannot mark someone with results as a no show");
     }
 
     Results.update(resultId, { $set: { noShow: newNoShow } });
-    if(newNoShow) {
-      // We just marked someone as a no show. See if we can find a person
-      // from the previous round to advance.
-      var previousRound = Rounds.findOne({
-        competitionId: round.competitionId,
-        eventCode: round.eventCode,
-        nthRound: round.nthRound - 1,
-      }, {
-        fields: { _id: 1 }
-      });
-      if(previousRound) {
-        var bestResultThatDidNotAdvance = Results.findOne({
-          roundId: previousRound._id,
-          advanced: { $ne: true },
-        }, {
-          sort: { position: 1 }
-        });
-        if(bestResultThatDidNotAdvance) {
-          // We found the best result from the previous round that did not advance.
-          // Copy them into this round.
-          Results.insert({
-            competitionId: round.competitionId,
-            roundId: round._id,
-            registrationId: bestResultThatDidNotAdvance.registrationId,
-          });
-          Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
-        }
-      }
-    }
   },
 });
 

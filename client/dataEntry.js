@@ -71,18 +71,15 @@ Template.roundDataEntry.destroyed = function() {
 Template.roundDataEntry.rendered = function() {
   var template = this;
 
-  // Highlight the currently selected result row.
+  // Center the currently selected result row.
   template.autorun(function() {
     var selectedResultId = selectedResultIdReact.get();
-    var $resultRows = template.$('tr.result');
-    $resultRows.removeClass('selectedResult');
     if(selectedResultId) {
       // Query for the selected Result's position just so we recenter whenever its
       // position changes.
       var result = Results.findOne(selectedResultId, { fields: { position: 1 } });
       log.l3("Result", selectedResultId, "changed position to", result.position, "... recentering");
-      var $selectedRow = $resultRows.filter('[data-result-id="' + selectedResultId + '"]');
-      $selectedRow.addClass('selectedResult');
+      var $resultRows = template.$('tr.result[data-result-id="' + selectedResultId + '"]');
       $selectedRow.scrollToCenter();
     }
   });
@@ -323,9 +320,48 @@ Template.roundDataEntry.events({
       // Don't bother trying to set noShow for a result with solves.
       return;
     }
-    Meteor.call("toggleResultNoShow", resultId, function(error) {
+    var newNoShow = !result.noShow;
+    Meteor.call("setResultNoShow", resultId, newNoShow, error => {
       if(error) {
         bootbox.alert(`Error! ${error.reason}`);
+        return;
+      }
+      if(newNoShow) {
+        Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', this.roundId, (error, luckyResult) => {
+          if(error) {
+            bootbox.alert(`Error! ${error.reason}`);
+            return;
+          }
+          if(!luckyResult) {
+            // We didn't find any lucky people to possibly advance.
+            return;
+          }
+          var noShowRegistration = Registrations.findOne(result.registrationId);
+          var luckyNewRegistration = Registrations.findOne(luckyResult.registrationId);
+          bootbox.dialog({
+            message: `Just marked ${noShowRegistration.uniqueName} as a no show. Would you like to advance ${luckyNewRegistration.uniqueName} (#${luckyResult.position} from the previous round)?`,
+            buttons: {
+              "Yes": {
+                className: 'btn-success',
+                callback: () => {
+                  Meteor.call('advanceResultIdFromRoundPreviousToThisOne', luckyResult._id, this.roundId, error => {
+                    if(error) {
+                      bootbox.alert(`Error! ${error.reason}`);
+                      return;
+                    }
+                  });
+                }
+              },
+              "No": {
+                className: 'btn-default',
+              }
+            },
+            closeButton: false,
+            callback: function() {
+              console.log("arguments");
+            }
+          });
+        });
       }
     });
   },

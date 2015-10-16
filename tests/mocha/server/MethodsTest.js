@@ -426,5 +426,47 @@ MochaWeb.testOnly(function() {
       });
     });
 
+    describe("advancing extra participants", function() {
+      let firstRound333, secondRound333;
+      let registration1, registration2;
+      let result1, result2;
+      beforeEach(function() {
+        Meteor.call('addRound', comp1Id, '333');
+        Meteor.call('addRound', comp1Id, '333');
+        firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
+        secondRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 2});
+
+        registration1 = make(Registrations, {competitionId: comp1Id});
+        result1 = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: firstRound333._id, registrationId: registration1._id, position: 1 }));
+
+        registration2 = make(Registrations, {competitionId: comp1Id});
+        result2 = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: firstRound333._id, registrationId: registration2._id, position: 2 }));
+
+        Meteor.call('advanceParticipantsFromRound', 1, firstRound333._id);
+      });
+
+      it("getBestNotAdvancedResultIdFromRoundPreviousToThisOne", function() {
+        var resultId = Meteor.call('getBestNotAdvancedResultIdFromRoundPreviousToThisOne', secondRound333._id);
+        chai.expect(resultId).to.equal(result2._id);
+      });
+
+      it("advanceResultIdFromRoundPreviousToThisOne", function() {
+        chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.not.exist;
+        Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
+        chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.exist;
+
+        // Trying to advance someone who is already advanced should not work.
+        chai.expect(function() {
+          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
+        }).to.throw(Meteor.Error);
+      });
+      it("advanceResultIdFromRoundPreviousToThisOne requires result from previous round ", function() {
+        let randomResult = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: "FOO", registrationId: registration1._id, position: 1 }));
+        chai.expect(function() {
+          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', randomResult._id, secondRound333._id);
+        }).to.throw(Meteor.Error);
+      });
+    });
+
   });
 });

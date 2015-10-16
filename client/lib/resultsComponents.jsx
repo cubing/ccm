@@ -23,6 +23,7 @@ ResultRow = function(ResultIdentifierTd) {
         'participant-advanced': result.advanced,
         'last-participant-to-advance': this.props.drawLine,
         'no-show': result.noShow,
+        'selected-result': this.props.selected,
       });
 
       let trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
