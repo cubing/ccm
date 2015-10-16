@@ -259,6 +259,25 @@ Meteor.methods({
     var registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
     var registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
 
+    // Before we actually advance participants to the next round, lets check that it
+    // wouldn't require deleting any Results with data entered.
+    let resultsToRemoveWithSolves = [];
+    registrationIdsToRemove.forEach(registrationId => {
+      let result = Results.findOne({
+        competitionId: round.competitionId,
+        roundId: nextRound._id,
+        registrationId: registrationId,
+      });
+      if(result && result.solves && result.solves.length > 0) {
+        let registration = Registrations.findOne(registrationId);
+        resultsToRemoveWithSolves.push({ result, registration });
+      }
+    });
+    if(resultsToRemoveWithSolves.length > 0) {
+      let names = resultsToRemoveWithSolves.map(({result, registration}) => registration.uniqueName).join(", ");
+      throw new Meteor.Error(400, `Advancing ${participantsToAdvance} people would require removing ${resultsToRemoveWithSolves.length} results with solves entered already. Please delete the solves for ${names} and try again.`);
+    }
+
     // We're ready to actually advance participants to the next round!
 
     // First, remove any results that are currently in the next round that

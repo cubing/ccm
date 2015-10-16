@@ -313,17 +313,39 @@ MochaWeb.testOnly(function() {
 
         var registration1 = make(Registrations, {competitionId: comp1Id});
         var result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
+
         var registration2 = make(Registrations, {competitionId: comp1Id});
         var result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
-        Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
-        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
 
-        var results = Results.find({ roundId: rounds[1]._id }).fetch();
-        chai.expect(results.length).to.equal(1);
+        var registration3 = make(Registrations, {competitionId: comp1Id});
+        var result3 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 3, registrationId: registration3._id});
+
+        Meteor.call('advanceParticipantsFromRound', 2, rounds[0]._id);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(2);
+
+        var results = Results.find({ roundId: rounds[1]._id }, { sort: { previousPosition: 1 } } ).fetch();
+        chai.expect(results.length).to.equal(2);
         chai.expect(results[0].registrationId).to.equal(registration1._id);
         chai.expect(results[0].previousPosition).to.equal(1);
         chai.expect(Results.findOne(result1._id).advanced).to.equal(true);
-        chai.expect(Results.findOne(result2._id).advanced).to.equal(false);
+        chai.expect(Results.findOne(result2._id).advanced).to.equal(true);
+        chai.expect(Results.findOne(result3._id).advanced).to.equal(false);
+
+        // Add a time for the slowest person in round 2
+        Meteor.call('setSolveTime', results[results.length - 1]._id, 0, { millis: 3333 });
+        // Now try to readvance with only 1 person, it should refuse to delete
+        // the undesired result with data entered.
+        chai.expect(function() {
+          Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
+        }).to.throw(Meteor.Error);
+        chai.expect(Results.find({ roundId: rounds[1]._id }).count()).to.equal(2);
+
+        // Clear the solve time for the problematic user.
+        Meteor.call('setSolveTime', results[results.length - 1]._id, 0, null);
+        // Now we should be able to readvance with only 1 person, which should
+        // delete a result.
+        Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
+        chai.expect(Results.find({ roundId: rounds[1]._id }).count()).to.equal(1);
       });
     });
 
@@ -445,9 +467,9 @@ MochaWeb.testOnly(function() {
         Meteor.call('advanceParticipantsFromRound', 1, firstRound333._id);
       });
 
-      it("getBestNotAdvancedResultIdFromRoundPreviousToThisOne", function() {
-        var resultId = Meteor.call('getBestNotAdvancedResultIdFromRoundPreviousToThisOne', secondRound333._id);
-        chai.expect(resultId).to.equal(result2._id);
+      it("getBestNotAdvancedResultFromRoundPreviousToThisOne", function() {
+        var result = Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', secondRound333._id);
+        chai.expect(result._id).to.equal(result2._id);
       });
 
       it("advanceResultIdFromRoundPreviousToThisOne", function() {
