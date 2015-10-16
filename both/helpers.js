@@ -160,14 +160,12 @@ register("formatMomentDateTime", function(m) {
 });
 
 
-getResultsWithUniqueNamesForRound = function(roundId, limit) {
+getResultsWithRegistrations = function(roundId, limit) {
   var round = Rounds.findOne(roundId);
-  // Expand each result to also contain the uniqueName for that participant
+  // Join each Result its Registration.
   var registrations = Registrations.find({
     competitionId: round.competitionId,
     registeredEvents: round.eventCode,
-  }, {
-    fields: { uniqueName: 1 }
   });
   var registrationById = {};
   registrations.forEach(function(registration) {
@@ -178,12 +176,12 @@ getResultsWithUniqueNamesForRound = function(roundId, limit) {
   results.forEach(function(result) {
     var registration = registrationById[result.registrationId];
     if(!registration) {
-      // The registration  for this result may not have been found by our earlier
+      // The registration for this result may not have been found by our earlier
       // query because registeredEvents hasn't been populated yet. Just silently
       // continue here, knowing we'll get called again when the data has arrived.
       return;
     }
-    result.uniqueName = registration.uniqueName;
+    result.registration = registration;
   });
 
   return results;

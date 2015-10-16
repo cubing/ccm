@@ -42,8 +42,8 @@ if(Meteor.isClient) {
         var round = Rounds.findOne(data.roundId);
         titleParts.push(round.eventName() + " " + round.properties().name);
       }
-      if(data.user) {
-        titleParts.push(data.user.profile.name);
+      if(data.registration) {
+        titleParts.push(data.registration.uniqueName);
       }
     }
 
@@ -171,8 +171,6 @@ ViewParticipantController = BaseCompetitionController.extend({
       this.render('participantNotFound');
       return data;
     }
-
-    data.user = Meteor.users.findOne(data.registration.userId);
     return data;
   },
 });

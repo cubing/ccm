@@ -1,17 +1,5 @@
 <template name="participantResults">
   <div class="container">
-
-    <ul>
-      {{#each results}}
-        <li>
-          {{! TODO - perhaps combine this and the code in roundResults into a template? }}
-          {{#each solves}}
-            {{clockFormat this}}
-          {{/each}}
-          best: {{clockFormat best}}
-        </li> 
-      {{/each}}
-    </ul>
-
+    <div class="reactRenderArea"></div>
   </div>
 </template>

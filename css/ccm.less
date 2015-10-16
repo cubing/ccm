@@ -100,6 +100,24 @@ thead.tableFloatingHeaderOriginal {
   font-size: 22px;
 }
 
+.wca-profile-link {
+  position: relative;
+  padding-left: @wca-logo-size + 10px;
+
+  &::before {
+    content: '';
+    background-image: url(/img/WCAlogo_notext.svg);
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+
+    width: @wca-logo-size;
+    height: @wca-logo-size;
+    top: -(@wca-logo-size - @navbar-img-height) / 2;
+    left: 5px;
+  }
+}
+
 @import "navbar.import.less";
 @import "layout.import.less";
 @import "advanceParticipants.import.less";

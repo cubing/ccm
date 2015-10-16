@@ -105,7 +105,7 @@ Template.roundDataEntry.rendered = function() {
   var results = [];
   template.autorun(function() {
     var data = Template.currentData();
-    results = getResultsWithUniqueNamesForRound(data.roundId);
+    results = getResultsWithRegistrations(data.roundId);
   });
 
   this.$('.typeahead').typeahead({

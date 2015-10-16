@@ -26,6 +26,22 @@ Result.prototype.getExpectedSolveCount = function() {
   return expectedSolveCount;
 };
 
+// Sanitize the solves array to contain all current and future solves.
+Result.prototype.allSolves = function() {
+  var round = Rounds.findOne(this.roundId, {
+    fields: {
+      formatCode: 1,
+      softCutoff: 1,
+    }
+  });
+
+  var solves = this.solves || [];
+  while(solves.length < round.format().count) {
+    solves.push(null);
+  }
+  return solves;
+};
+
 Results = new Mongo.Collection("results", {
   transform: function(doc) {
     return new Result(doc);
