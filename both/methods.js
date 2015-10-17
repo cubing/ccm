@@ -170,13 +170,7 @@ Meteor.methods({
 
     // Deleting a round affects the set of people who advanced
     // from the previous round =)
-    var previousRound = Rounds.findOne({
-      competitionId: deadRound.competitionId,
-      eventCode: deadRound.eventCode,
-      nthRound: deadRound.nthRound - 1,
-    }, {
-      fields: { _id: 1 }
-    });
+    var previousRound = deadRound.getPreviousRound();
     if(previousRound) {
       Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
     }
@@ -237,13 +231,7 @@ Meteor.methods({
     if(participantsToAdvance > results.length) {
       throw new Meteor.Error(400, 'Cannot advance more people than there are in round');
     }
-    var nextRound = Rounds.findOne({
-      competitionId: round.competitionId,
-      eventCode: round.eventCode,
-      nthRound: round.nthRound + 1,
-    }, {
-      fields: { _id: 1 }
-    });
+    var nextRound = round.getNextRound();
     if(!nextRound) {
       throw new Meteor.Error(404, 'No next round found for roundId ' + roundId);
     }
@@ -428,13 +416,7 @@ Meteor.methods({
       throw new Meteor.Error(404, "Result not found");
     }
 
-    var previousRound = Rounds.findOne({
-      competitionId: round.competitionId,
-      eventCode: round.eventCode,
-      nthRound: round.nthRound - 1,
-    }, {
-      fields: { _id: 1 }
-    });
+    var previousRound = round.getPreviousRound();
     if(!previousRound) {
       throw new Meteor.Error(404, "No previous round found");
     }
@@ -469,13 +451,7 @@ Meteor.methods({
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var previousRound = Rounds.findOne({
-      competitionId: round.competitionId,
-      eventCode: round.eventCode,
-      nthRound: round.nthRound - 1,
-    }, {
-      fields: { _id: 1 }
-    });
+    var previousRound = round.getPreviousRound();
     if(previousRound) {
       var bestResultThatDidNotAdvance = Results.findOne({
         roundId: previousRound._id,
@@ -984,13 +960,7 @@ if(Meteor.isServer) {
       check(roundId, String);
 
       var round = Rounds.findOne(roundId);
-      var nextRound = Rounds.findOne({
-        competitionId: round.competitionId,
-        eventCode: round.eventCode,
-        nthRound: round.nthRound + 1,
-      }, {
-        fields: { size: 1 }
-      });
+      var nextRound = round.getNextRound();
 
       var results = Results.find({ roundId: roundId });
 

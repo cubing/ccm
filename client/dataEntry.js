@@ -9,12 +9,9 @@ Router.onBeforeAction(function() {
 });
 
 Template.dataEntry.helpers({
-  isSelectedRoundClosed: function() {
-    return Rounds.findOne(this.roundId).isClosed();
-  },
-  isSelectedRoundUnstarted: function() {
-    return Rounds.findOne(this.roundId).isUnstarted();
-  },
+  round: function() {
+    return Rounds.findOne(this.roundId);
+  }
 });
 
 function keydown(e) {
@@ -79,7 +76,7 @@ Template.roundDataEntry.rendered = function() {
       // position changes.
       var result = Results.findOne(selectedResultId, { fields: { position: 1 } });
       log.l3("Result", selectedResultId, "changed position to", result.position, "... recentering");
-      var $resultRows = template.$('tr.result[data-result-id="' + selectedResultId + '"]');
+      var $selectedRow = template.$('tr.result[data-result-id="' + selectedResultId + '"]');
       $selectedRow.scrollToCenter();
     }
   });

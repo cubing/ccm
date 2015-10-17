@@ -4,7 +4,6 @@ RoundProgress = function(doc) {
 };
 
 _.extend(RoundProgress.prototype, {
-
   percentage: function() {
     return (this.total > 0 ? Math.round(100 * this.done / this.total) : 0);
   },

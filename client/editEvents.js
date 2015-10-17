@@ -71,25 +71,6 @@ var eventCountPerRowByDeviceSize = {
   lg: 3,
 };
 
-function getMaxAllowedSize(round) {
-  var prevRound = Rounds.findOne({
-    competitionId: round.competitionId,
-    eventCode: round.eventCode,
-    nthRound: round.nthRound - 1,
-  }, {
-    fields: {
-      status: 1,
-      size: 1,
-    }
-  });
-  if(!prevRound || !prevRound.size) {
-    return null;
-  }
-
-  var maxAllowedRoundSize = Math.floor(prevRound.size*(1-wca.MINIMUM_CUTOFF_PERCENTAGE/100.0));
-  return maxAllowedRoundSize;
-}
-
 Template.editEvents.helpers({
   events: function() {
     var that = this;
@@ -152,12 +133,8 @@ Template.editEvents.helpers({
   roundProgress: function() {
     return RoundProgresses.findOne({roundId: this._id});
   },
-  maxAllowedRoundSize: function() {
-    var maxAllowedRoundSize = getMaxAllowedSize(this);
-    return maxAllowedRoundSize;
-  },
   roundSizeWarning: function() {
-    var maxAllowedRoundSize = getMaxAllowedSize(this);
+    var maxAllowedRoundSize = this.getMaxAllowedSize();
     if(maxAllowedRoundSize === null) {
       return false;
     }
@@ -202,24 +179,12 @@ Template.editEvents.helpers({
     return this.isOpen();
   },
   canOpenRound: function() {
-    var previousRound = Rounds.findOne({
-      competitionId: this.competitionId,
-      eventCode: this.eventCode,
-      nthRound: this.nthRound - 1,
-    }, {
-      fields: { status: 1 }
-    });
+    var previousRound = this.getPreviousRound();
     if(previousRound && !previousRound.isClosed()) {
       // If the previous round is not closed, we can't open this round.
       return false;
     }
-    var nextRound = Rounds.findOne({
-      competitionId: this.competitionId,
-      eventCode: this.eventCode,
-      nthRound: this.nthRound + 1,
-    }, {
-      fields: { status: 1 }
-    });
+    var nextRound = this.getNextRound();
     if(nextRound && !nextRound.isUnstarted()) {
       // If there's a next round that is already opened (or
       // closed), we can't reopen this round.

@@ -123,6 +123,56 @@ _.extend(Round.prototype, {
     log.l2(this._id, " updating progress - done: " + done + ", total: " + total);
     RoundProgresses.update({ roundId: this._id }, { $set: { done: done, total: total }});
   },
+  getPreviousRound: function() {
+    return Rounds.findOne({
+      competitionId: this.competitionId,
+      eventCode: this.eventCode,
+      nthRound: this.nthRound - 1,
+    });
+  },
+  getNextRound: function() {
+    return Rounds.findOne({
+      competitionId: this.competitionId,
+      eventCode: this.eventCode,
+      nthRound: this.nthRound + 1,
+    });
+  },
+  getMaxAllowedToAdvanceCount: function() {
+    if(!this.size) {
+      return null;
+    }
+    return Math.floor(this.size*(1 - wca.MINIMUM_CUTOFF_PERCENTAGE/100.0));
+  },
+  getMaxAllowedSize: function() {
+    let previousRound = this.getPreviousRound();
+    if(!previousRound) {
+      return null;
+    }
+    return previousRound.getMaxAllowedToAdvanceCount();
+  },
+  getAlerts: function() {
+    let alerts = [];
+    if(this.isClosed()) {
+      alerts.push({
+        severity: "warning",
+        message: "You're entering times for a closed round. This could create inconsistencies in the set of people who advanced to the next round.",
+      });
+    }
+    if(this.isUnstarted()) {
+      alerts.push({
+        severity: "warning",
+        message: "You're entering times for a round that has not yet started.",
+      });
+    }
+    let maxAllowed = this.getMaxAllowedSize();
+    if(maxAllowed !== null && this.size > maxAllowed) {
+      alerts.push({
+        severity: "danger",
+        message: `According to <a href='https://www.worldcubeassociation.org/regulations/#9p1' target='_blank' rel='external'>9p1</a>, this round should not have more than ${maxAllowed} people in it.`,
+      });
+    }
+    return alerts;
+  },
 });
 
 Rounds = new Mongo.Collection("rounds", { transform: function(doc) { return new Round(doc); } });

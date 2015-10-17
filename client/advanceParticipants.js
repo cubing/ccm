@@ -1,32 +1,26 @@
 Template.advanceParticipants.created = function() {
-  var template = this;
+  let template = this;
 
   template.advanceCountReact = new ReactiveVar(null);
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     if(!data) {
       template.advanceCountReact.set(null);
       return;
     }
 
-    var nextRound = Rounds.findOne({
-      competitionId: data.competitionId,
-      eventCode: data.eventCode,
-      nthRound: data.nthRound + 1,
-    }, {
-      fields: { size: 1 }
-    });
-    if(nextRound) {
-      var participantsInRound = Results.find({ roundId: nextRound._id }, { fields: { _id: 1 } }).count();
-      template.advanceCountReact.set(nextRound.size || participantsInRound || null);
-    } else {
-      template.advanceCountReact.set(null);
-    }
+    let round = Rounds.findOne(data.roundId);
+    let nextRound = round.getNextRound();
+    let actuallyAdvancedCount = Results.find({
+      roundId: round._id,
+      advanced: true,
+    }).count();
+    template.advanceCountReact.set(actuallyAdvancedCount || nextRound.size);
   });
 
   template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     if(!data) {
       template.isSaveableReact.set(null);
       return;
@@ -41,11 +35,11 @@ Template.advanceParticipants.events({
     template.$('input').filter(':visible:first').select();
   },
   'input input[name="advanceCount"]': function(e, template) {
-    var $input = $(e.currentTarget);
-    var advanceCountStr = $input.val();
-    var isNonNegInt = String.isNonNegInt(advanceCountStr);
+    let $input = $(e.currentTarget);
+    let advanceCountStr = $input.val();
+    let isNonNegInt = String.isNonNegInt(advanceCountStr);
     if(isNonNegInt) {
-      var advanceCount = parseInt(advanceCountStr);
+      let advanceCount = parseInt(advanceCountStr);
       template.advanceCountReact.set(advanceCount);
     } else {
       template.advanceCountReact.set(null);
@@ -54,7 +48,7 @@ Template.advanceParticipants.events({
   'submit form': function(e, template) {
     e.preventDefault();
 
-    var advanceCount = template.advanceCountReact.get();
+    let advanceCount = template.advanceCountReact.get();
     Meteor.call('advanceParticipantsFromRound', advanceCount, this.roundId, function(error, result) {
       if(!error) {
         template.$(".modal").modal('hide');
@@ -64,17 +58,40 @@ Template.advanceParticipants.events({
     });
   },
 });
+
 Template.advanceParticipants.helpers({
   isSaveable: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.isSaveableReact.get();
+  },
+  btnClass: function() {
+    let template = Template.instance();
+    let toAdvanceCount = template.advanceCountReact.get();
+    let round = Rounds.findOne(this.roundId);
+    let maxAllowed = round.getMaxAllowedToAdvanceCount();
+    if(toAdvanceCount > maxAllowed) {
+      return "btn-warning";
+    } else if(template.isSaveableReact.get()) {
+      return "btn-success";
+    }
+    return "";
+  },
+  tooltip: function() {
+    let template = Template.instance();
+    let toAdvanceCount = template.advanceCountReact.get();
+    let round = Rounds.findOne(this.roundId);
+    let maxAllowed = round.getMaxAllowedToAdvanceCount();
+    if(toAdvanceCount > maxAllowed) {
+      return `According to regulation 9p1, you should not advance more than ${maxAllowed} competitors from this round.`;
+    } else {
+      return "";
+    }
   },
   participantsInRound: function() {
     return Results.find({ roundId: this.roundId }).count();
   },
   advanceCount: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.advanceCountReact.get();
   },
 });
-

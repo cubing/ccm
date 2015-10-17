@@ -231,6 +231,7 @@ let ResultsList = React.createClass({
         </div>
       );
     }
+    let maxAllowedToAdvanceCount = this.data.round.getMaxAllowedToAdvanceCount();
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
         <table className="table table-striped table-hover table-results" ref="resultsTable" id="resultsTable">
@@ -248,12 +249,14 @@ let ResultsList = React.createClass({
           <tbody>
             {this.data.results.map((result, i) => {
               let prevResult = i > 0 ? this.data.results[i - 1] : null;
-              let drawLine = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
+              let lastToAdvance = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
+              let lastAllowedToAdvance = this.props.configurableAdvanceCount && maxAllowedToAdvanceCount == i + 1;
               return (
                 <ResultRowWithName key={result._id}
                                    competitionUrlId={this.props.competitionUrlId}
                                    result={result}
-                                   drawLine={drawLine}
+                                   drawLastToAdvanceLine={lastToAdvance}
+                                   drawLastAllowedToAdvanceLine={lastAllowedToAdvance}
                                    selected={result._id == this.props.selectedResultId}
                                    tiedPrevious={prevResult && prevResult.position == result.position}
                                    onNameClick={this.onNameClick}

@@ -118,7 +118,7 @@
                                 {{else}}
                                   <button type="button" name="buttonSetRoundSize"
                                           class="btn {{#if roundSizeWarning}}btn-warning{{else}}btn-default{{/if}} btn-xs btn-block"
-                                          data-toggle="tooltip" data-placement="left" data-original-title="{{#if roundSizeWarning}}Round cannot be larger than {{maxAllowedRoundSize}}{{/if}}" data-container="body">
+                                          data-toggle="tooltip" data-placement="left" data-original-title="{{#if roundSizeWarning}}Round cannot be larger than {{getMaxAllowedSize}}{{/if}}" data-container="body">
                                     {{#if size}}
                                       Size: {{size}}
                                     {{else}}

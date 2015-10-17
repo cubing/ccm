@@ -21,7 +21,8 @@ ResultRow = function(ResultIdentifierTd) {
       let rowClasses = classNames({
         'result': true,
         'participant-advanced': result.advanced,
-        'last-participant-to-advance': this.props.drawLine,
+        'last-participant-to-advance': this.props.drawLastToAdvanceLine,
+        'last-participant-allowed-to-advance': this.props.drawLastAllowedToAdvanceLine,
         'no-show': result.noShow,
         'selected-result': this.props.selected,
       });

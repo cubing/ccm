@@ -3,19 +3,11 @@
 
   <div class="container-fluid">
     {{#if roundId}}
-      {{#if isSelectedRoundClosed}}
-        <div class="alert alert-warning" role="alert">
-          <strong>Warning!</strong> You're entering times for a closed round.
-          This could create inconsistencies in the set of people who
-          advanced to the next round.
+      {{#each round.getAlerts}}
+        <div class="alert alert-{{severity}}" role="alert">
+          <strong style="text-transform: capitalize;">{{severity}}!</strong> {{{message}}}
         </div>
-      {{/if}}
-      {{#if isSelectedRoundUnstarted}}
-        <div class="alert alert-warning" role="alert">
-          <strong>Warning!</strong> You're entering times for a round that has
-          not yet started.
-        </div>
-      {{/if}}
+      {{/each}}
       {{> roundDataEntry roundId=roundId}}
     {{/if}}
   </div>
