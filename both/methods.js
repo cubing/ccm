@@ -300,8 +300,6 @@ Meteor.methods({
       });
     });
 
-    Rounds.update(nextRound._id, { $set: { size: participantsToAdvance } });
-
     Meteor.call('recomputeWhoAdvancedAndPreviousPosition', roundId);
 
     // Advancing people to nextRound means we need to update positions
@@ -462,6 +460,7 @@ Meteor.methods({
       registrationId: bestNotAdvancedResult.registrationId,
     });
     Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
+    RoundSorter.addRoundToSort(roundId);
   },
   getBestNotAdvancedResultFromRoundPreviousToThisOne: function(roundId) {
     var round = Rounds.findOne(roundId);
@@ -504,6 +503,7 @@ Meteor.methods({
     }
 
     Results.update(resultId, { $set: { noShow: newNoShow } });
+    RoundSorter.addRoundToSort(round._id);
   },
 });
 
@@ -524,7 +524,12 @@ RoundSorter = {
       return;
     }
     if(!this._roundsToSortById[roundId]) {
-      this._roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
+      if(this.COALESCE_MILLIS === 0) {
+        // Tests set RoundSorter.COALESCE_MILLIS to 0 so they can run synchronously.
+        this._handleSortTimer(roundId);
+      } else {
+        this._roundsToSortById[roundId] = Meteor.setTimeout(this._handleSortTimer.bind(this, roundId), this.COALESCE_MILLIS);
+      }
     }
   },
   _handleSortTimer: function(roundId) {

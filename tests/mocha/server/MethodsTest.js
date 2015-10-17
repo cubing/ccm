@@ -1,7 +1,11 @@
 MochaWeb.testOnly(function() {
   describe('Methods', function() {
     var comp1Id, comp2Id;
+    var oldCoalesceMillis;
     beforeEach(function() {
+      oldCoalesceMillis = RoundSorter.COALESCE_MILLIS;
+      RoundSorter.COALESCE_MILLIS = 0;
+
       [Competitions, Rounds, RoundProgresses, Registrations].forEach(function(collection) {
         collection.remove({});
       });
@@ -11,6 +15,7 @@ MochaWeb.testOnly(function() {
       comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
     });
     afterEach(function() {
+      RoundSorter.COALESCE_MILLIS = oldCoalesceMillis;
       stubs.restoreAll();
     });
 
@@ -339,6 +344,7 @@ MochaWeb.testOnly(function() {
           Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
         }).to.throw(Meteor.Error);
         chai.expect(Results.find({ roundId: rounds[1]._id }).count()).to.equal(2);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(2);
 
         // Clear the solve time for the problematic user.
         Meteor.call('setSolveTime', results[results.length - 1]._id, 0, null);
@@ -346,6 +352,7 @@ MochaWeb.testOnly(function() {
         // delete a result.
         Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
         chai.expect(Results.find({ roundId: rounds[1]._id }).count()).to.equal(1);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
       });
     });
 
@@ -452,6 +459,7 @@ MochaWeb.testOnly(function() {
       let firstRound333, secondRound333;
       let registration1, registration2;
       let result1, result2;
+      let secondResult1;
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
         Meteor.call('addRound', comp1Id, '333');
@@ -465,6 +473,9 @@ MochaWeb.testOnly(function() {
         result2 = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: firstRound333._id, registrationId: registration2._id, position: 2 }));
 
         Meteor.call('advanceParticipantsFromRound', 1, firstRound333._id);
+        secondResult1 = Results.findOne({ roundId: secondRound333._id, registrationId: registration1._id });
+        chai.expect(Results.find({ roundId: secondRound333._id }).count()).to.equal(1);
+        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
       });
 
       it("getBestNotAdvancedResultFromRoundPreviousToThisOne", function() {
@@ -472,16 +483,32 @@ MochaWeb.testOnly(function() {
         chai.expect(result._id).to.equal(result2._id);
       });
 
+      it("setResultNoShow", function() {
+        Meteor.call('setResultNoShow', secondResult1._id, true);
+        chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(true);
+        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(0);
+
+        Meteor.call('setResultNoShow', secondResult1._id, false);
+        chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(false);
+        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
+      });
+
       it("advanceResultIdFromRoundPreviousToThisOne", function() {
         chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.not.exist;
+        chai.expect(Results.findOne({ roundId: firstRound333._id, registrationId: registration2._id }).advanced).to.equal(false);
+        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
+
         Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
         chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.exist;
+        chai.expect(Results.findOne({ roundId: firstRound333._id, registrationId: registration2._id }).advanced).to.equal(true);
+        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(2);
 
         // Trying to advance someone who is already advanced should not work.
         chai.expect(function() {
           Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
         }).to.throw(Meteor.Error);
       });
+
       it("advanceResultIdFromRoundPreviousToThisOne requires result from previous round ", function() {
         let randomResult = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: "FOO", registrationId: registration1._id, position: 1 }));
         chai.expect(function() {

@@ -113,8 +113,11 @@ _.extend(Round.prototype, {
       Results.update(result._id, { $set: { position: result.sortableBestValue == wca.MAX_INT && result.sortableAverageValue == wca.MAX_INT ? null : position } });
     });
 
+    let newRoundSize = _.select(results, result => !result.noShow).length;
+    Rounds.update(this._id, { $set: { size: newRoundSize } });
+
     // Normalize done and total to the number of participants
-    var total = results.length;
+    var total = newRoundSize;
     var done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
 
     log.l2(this._id, " updating progress - done: " + done + ", total: " + total);

@@ -1,46 +1,42 @@
+// Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
 var Result = function(doc) {
   _.extend(this, doc);
 };
 
-Result.prototype.getExpectedSolveCount = function() {
-  // This transform trick came from
-  //  https://www.eventedmind.com/feed/meteor-transforming-collection-documents
-  // However, it doesn't address the fact that callers shouldn't need to know
-  // what attributes we need in the Result. Here we just assert that
-  // we've got the fields we need. Anyone who wants to call this method will
-  // need to be changed to query for the right fields beforehand.
-  assert(this.hasOwnProperty('roundId'));
-  assert(this.hasOwnProperty('solves'));
-
-  var round = Rounds.findOne(this.roundId, {
-    fields: {
-      formatCode: 1,
-      softCutoff: 1,
+_.extend(Result.prototype, {
+  getExpectedSolveCount: function() {
+    if(this.noShow) {
+      return 0;
     }
-  });
-  if(!round.softCutoff) {
-    return round.format().count;
-  }
-  var softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
-  var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
-  return expectedSolveCount;
-};
-
-// Sanitize the solves array to contain all current and future solves.
-Result.prototype.allSolves = function() {
-  var round = Rounds.findOne(this.roundId, {
-    fields: {
-      formatCode: 1,
-      softCutoff: 1,
+    var round = Rounds.findOne(this.roundId, {
+      fields: {
+        formatCode: 1,
+        softCutoff: 1,
+      }
+    });
+    if(!round.softCutoff) {
+      return round.format().count;
     }
-  });
+    var softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
+    var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
+    return expectedSolveCount;
+  },
+  allSolves: function() {
+    // Sanitize the solves array to contain all current and future solves.
+    var round = Rounds.findOne(this.roundId, {
+      fields: {
+        formatCode: 1,
+        softCutoff: 1,
+      }
+    });
 
-  var solves = this.solves || [];
-  while(solves.length < round.format().count) {
-    solves.push(null);
-  }
-  return solves;
-};
+    var solves = this.solves || [];
+    while(solves.length < round.format().count) {
+      solves.push(null);
+    }
+    return solves;
+  },
+});
 
 Results = new Mongo.Collection("results", {
   transform: function(doc) {
