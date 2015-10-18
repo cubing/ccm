@@ -115,8 +115,6 @@ var setCompetitionLocationMap = function() {
 
 
 function getExpandableListSettings(competitionId, registrationAttribute) {
-  var criteria = {};
-  criteria[registrationAttribute] = true;
   return {
     collectionName: 'Registrations',
     field: 'uniqueName',
@@ -137,7 +135,9 @@ function getExpandableListSettings(competitionId, registrationAttribute) {
       $toSet[registrationAttribute] = false;
       Registrations.update(registrationId, { $set: $toSet });
     },
-    docCriteria: criteria,
+    docCriteria: {
+      [registrationAttribute]: true,
+    },
     isDeletable: function(registration) {
       return registration.userId != Meteor.userId();
     },
