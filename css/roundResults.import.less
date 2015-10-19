@@ -1,18 +1,31 @@
-tr.participant-advanced td:first-child {
-  font-weight: bold;
-  background-color: @alert-success-bg;
-}
+@push-right-amount: 3px;
+@trophy-size: 30px;
+.ccm-trophy(@color, @text) {
+  position: relative;
+  color: rgba(0, 0, 0, 0); /* hide the existing text */
+  &:before {
+    content: '\f091'; /* fa-trophy */
+    color: @color;
+    font-family: 'FontAwesome';
+    font-size: @trophy-size;
 
-tr.last-participant-allowed-to-advance {
-  border-bottom: 10px solid @state-danger-text;
-}
+    position: absolute;
+    top: 0;
+    left: @push-right-amount;
+    width: 100%;
+    text-align: center;
+  }
+  &:after {
+    content: @text;
+    color: black;
+    font-weight: bold;
 
-tr.last-participant-to-advance {
-  border-bottom: 10px solid @state-success-text;
-}
-
-tr.no-show {
-  .text-muted();
+    position: absolute;
+    top: 5px;
+    left: @push-right-amount;
+    width: 100%;
+    text-align: center;
+  }
 }
 
 table.table-results {
@@ -31,6 +44,42 @@ table.table-results {
   }
   td:last-child {
     width: 100%;
+  }
+
+  td:first-child {
+    // Ensure there's always enough space for trophies
+    min-width: @trophy-size;
+  }
+
+  tr.result {
+    &.participant-advanced td:first-child {
+      font-weight: bold;
+      background-color: @alert-success-bg;
+    }
+
+    &.bronze td:first-child {
+      .ccm-trophy(#CD7F32; "3");
+    }
+
+    &.silver td:first-child {
+      .ccm-trophy(#C0C0C0; "2");
+    }
+
+    &.gold td:first-child {
+      .ccm-trophy(#FFD700; "1");
+    }
+  }
+
+  tr.last-participant-allowed-to-advance {
+    border-bottom: 10px solid @state-danger-text;
+  }
+
+  tr.last-participant-to-advance {
+    border-bottom: 10px solid @state-success-text;
+  }
+
+  tr.no-show {
+    .text-muted();
   }
 }
 

@@ -979,9 +979,8 @@ if(Meteor.isServer) {
             }
           });
         } else {
-          // If there is no next round, then we consider the top 3 people (aka:
-          // podiumers) to have advanced.
-          advanced = 1 <= result.position && result.position <= 3;
+          // If there is no next round, then nobody advanced.
+          advanced = false;
         }
         Results.update(result._id, { $set: { advanced: advanced } });
       });

@@ -23,10 +23,18 @@ ResultRow = function(ResultIdentifierTd) {
       let rowClasses = classNames({
         'result': true,
         'participant-advanced': result.advanced,
+        'bronze': result.round.isLast() && result.position === 3,
+        'silver': result.round.isLast() && result.position === 2,
+        'gold': result.round.isLast() && result.position === 1,
         'last-participant-to-advance': this.props.drawLastToAdvanceLine,
         'last-participant-allowed-to-advance': this.props.drawLastAllowedToAdvanceLine,
         'no-show': result.noShow,
         'selected-result': this.props.selected,
+      });
+
+      let positionClasses = classNames({
+        'results-solve-tied': tiedPrevious,
+        'text-right': true,
       });
 
       let trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
@@ -34,7 +42,7 @@ ResultRow = function(ResultIdentifierTd) {
       let solves = result.allSolves();
       return (
         <tr className={rowClasses} data-result-id={result._id}>
-          <td className={tiedPrevious ? 'results-solve-tied' : ''}>{result.position}</td>
+          <td className={positionClasses}>{result.position}</td>
           <ResultIdentifierTd competitionUrlId={competitionUrlId} result={result} onNameClick={this.props.onNameClick} />
           <td className={averageClasses}>{clockFormat(result.average)}</td>
           <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
