@@ -271,6 +271,28 @@ ManageRoundResultsController = BaseRoundController.extend({
   },
 });
 
+PodiumsController = BaseCompetitionController.extend({
+  ccmManage: true,
+  extraSubscriptions: function() {
+    return [
+      subs.subscribe('competitionPodiumResults',
+                     this.params.competitionUrlId,
+                     subscriptionError(this)),
+    ];
+  },
+  buildData: function(competitionId) {
+    let data = {};
+    let nthRound = parseInt(this.params.nthRound);
+    let allRounds = Rounds.find({
+      competitionId: competitionId,
+    }).fetch();
+    let finalRounds = _.filter(allRounds, round => round.nthRound === round.totalRounds);
+    finalRounds = _.sortBy(finalRounds, round => wca.eventByCode[round.eventCode].index);
+    data.finalRounds = finalRounds;
+    return data;
+  },
+});
+
 ManageCompetitionScramblesController = BaseRoundController.extend({
   ccmManage: true,
   extraSubscriptions: function() {
@@ -400,6 +422,11 @@ Router.route('/manage/:competitionUrlId/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
   controller: 'ManageRoundResultsController',
   titlePrefix: "Data entry",
+});
+Router.route('/manage/:competitionUrlId/podiums', {
+  name: 'podiums',
+  controller: 'PodiumsController',
+  titlePrefix: "Podiums",
 });
 
 Router.route('/:competitionUrlId', {

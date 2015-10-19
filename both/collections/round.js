@@ -75,17 +75,16 @@ _.extend(Round.prototype, {
     return Groups.find({roundId: this._id}, { sort: { group: 1 }});
   },
   sortResults: function() {
-    var that = this;
     var results = Results.find({ roundId: this._id }, { sort: this.resultSortOrder() }).fetch();
     var position = 0;
     var doneSolves = 0;
     var totalSolves = 0;
-    results.forEach(function(result, i) {
+    results.forEach((result, i) => {
       var tied = false;
       var previousResult = results[i - 1];
       if(previousResult) {
         var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
-        switch(that.format().sortBy) {
+        switch(this.format().sortBy) {
         case "best":
           tied = tiedBest;
           break;
@@ -110,7 +109,13 @@ _.extend(Round.prototype, {
       });
 
       log.l3("Setting resultId", result._id, "to position", position);
-      Results.update(result._id, { $set: { position: result.sortableBestValue == wca.MAX_INT && result.sortableAverageValue == wca.MAX_INT ? null : position } });
+      let isPodium = i <= 3;
+      Results.update(result._id, {
+        $set: {
+          position: result.sortableBestValue == wca.MAX_INT && result.sortableAverageValue == wca.MAX_INT ? null : position,
+          isPodium: isPodium,
+        }
+      });
     });
 
     let newRoundSize = _.select(results, result => !result.noShow).length;

@@ -141,6 +141,22 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
   return Groups.find({ competitionId: competitionId });
 });
 
+Meteor.publish('competitionPodiumResults', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  if(getCannotManageCompetitionReason(this.userId, competitionId)) {
+    return [];
+  }
+
+  return Results.find({
+    competitionId: competitionId,
+    position: { $in: [1, 2, 3] },
+  });
+});
+
 Meteor.publish('allSiteAdmins', function() {
   if(!this.userId) {
     return [];

@@ -137,4 +137,11 @@ if(Meteor.isServer) {
   }, {
     unique: true,
   });
+
+  // We want to be able to query for all the best results from the competition
+  // for generating the podium page.
+  Results._ensureIndex({
+    competitionId: 1,
+    position: 1,
+  });
 }

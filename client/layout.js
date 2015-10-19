@@ -95,6 +95,10 @@ var managerTabs = [
     text: 'Data entry',
     notLeaf: true,
   }, {
+    route: 'podiums',
+    icon: 'fa fa-trophy',
+    text: 'Podiums',
+  }, {
     route: 'exportResults',
     title: 'Export results to WCA JSON',
     icon: '/img/WCAlogo_notext.svg',

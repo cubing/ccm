@@ -61,7 +61,7 @@ ResultRowWithName = ResultRow(React.createClass({
     let uniqueNameNode;
     if(this.props.competitionUrlId) {
       uniqueNameNode = (
-        <a href="#" onClick={this.props.onNameClick.bind(null, result)}>
+        <a href="#" onClick={this.props.onNameClick ? this.props.onNameClick.bind(null, result) : null}>
           {result.registration.uniqueName}
         </a>
       );
