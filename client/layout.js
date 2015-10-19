@@ -62,106 +62,117 @@ Router.onBeforeAction(function() {
 
 var verificationSendSuccessReact = new ReactiveVar(null);
 
-
-var managerTabs = [
-  {
-    route: 'manageCompetition',
-    title: 'Change competition registration window, competition name, location, organizers, and staff',
-    icon: 'fa fa-cog',
-    text: 'Manage',
-  }, {
-    route: 'editEvents',
-    title: 'Add and remove rounds, change cutoffs, open and close rounds',
-    icon: 'fa fa-cube',
-    text: 'Events',
-  }, {
-    route: 'editSchedule',
-    icon: 'glyphicon glyphicon-calendar',
-    text: 'Schedule',
-  }, {
-    route: 'scrambles',
-    title: 'Generate scrambles, manage groups, and view scrambles for open groups',
-    icon: '/img/tnoodle_logo.svg',
-    text: 'Scrambles',
-    notLeaf: true,
-  }, {
-    route: 'manageCheckin',
-    title: 'Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)',
-    icon: 'fa fa-check-square-o',
-    text: 'Check-in',
-  }, {
-    route: 'dataEntry',
-    icon: 'glyphicon glyphicon-edit',
-    text: 'Data entry',
-    notLeaf: true,
-  }, {
-    route: 'podiums',
-    icon: 'fa fa-trophy',
-    text: 'Podiums',
-  }, {
-    route: 'exportResults',
-    title: 'Export results to WCA JSON',
-    icon: '/img/WCAlogo_notext.svg',
-    text: 'Export',
-  },
-];
-var userTabs = [
-  {
-    route: 'competition',
-    icon: 'glyphicon glyphicon-home',
-    text: 'Home',
-    otherClass: 'match-jumbotron',
-  }, {
-    route: 'competitionEvents',
-    icon: 'fa fa-cube',
-    text: 'Events',
-  }, {
-    route: 'competitionSchedule',
-    icon: 'glyphicon glyphicon-calendar',
-    text: 'Schedule',
-  }, {
-    route: 'competitionRegistration',
-    icon: 'fa fa-list',
-    text: 'Registration',
-  }, {
-    route: 'roundResults',
-    icon: 'fa fa-trophy',
-    text: 'Results',
-    notLeaf: true,
-  },
-];
-var scrambleTabs = [
-  {
-    route: 'uploadScrambles',
-    title: 'Generate scrambles with TNoodle and upload them',
-    icon: 'fa fa-upload',
-    text: 'Upload Scrambles',
-  }, {
-    route: 'manageScrambleGroups',
-    title: 'Open and close scramble groups for ongoing rounds',
-    icon: 'fa fa-group',
-    text: 'Manage Scramble Groups',
-    notLeaf: true,
-  }, {
-    route: 'viewScrambles',
-    title: 'View scrambles for open groups',
-    icon: 'fa fa-eye',
-    text: 'View Scrambles',
-  },
-];
-
 Template.layout.helpers({
   verificationSendSuccess: function() {
     return verificationSendSuccessReact.get();
   },
   managerTabs: function() {
-    return managerTabs;
+    return [
+      {
+        route: 'manageCompetition',
+        title: 'Change competition registration window, competition name, location, organizers, and staff',
+        icon: 'fa fa-cog',
+        text: 'Manage',
+      }, {
+        route: 'editEvents',
+        title: 'Add and remove rounds, change cutoffs, open and close rounds',
+        icon: 'fa fa-cube',
+        text: 'Events',
+      }, {
+        route: 'editSchedule',
+        icon: 'glyphicon glyphicon-calendar',
+        text: 'Schedule',
+      }, {
+        route: 'scrambles',
+        title: 'Generate scrambles, manage groups, and view scrambles for open groups',
+        icon: '/img/tnoodle_logo.svg',
+        text: 'Scrambles',
+        notLeaf: true,
+      }, {
+        route: 'manageCheckin',
+        title: 'Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)',
+        icon: 'fa fa-check-square-o',
+        text: 'Check-in',
+      }, {
+        route: 'dataEntry',
+        icon: 'glyphicon glyphicon-edit',
+        text: 'Data entry',
+        notLeaf: true,
+      }, {
+        route: 'podiums',
+        icon: 'fa fa-trophy',
+        text: 'Podiums',
+        notLeaf: true,
+      }, {
+        route: 'exportResults',
+        title: 'Export results to WCA JSON',
+        icon: '/img/WCAlogo_notext.svg',
+        text: 'Export',
+      },
+    ];
   },
   userTabs: function() {
-    return userTabs;
+    return [
+      {
+        route: 'competition',
+        icon: 'glyphicon glyphicon-home',
+        text: 'Home',
+        otherClass: 'match-jumbotron',
+      }, {
+        route: 'competitionEvents',
+        icon: 'fa fa-cube',
+        text: 'Events',
+      }, {
+        route: 'competitionSchedule',
+        icon: 'glyphicon glyphicon-calendar',
+        text: 'Schedule',
+      }, {
+        route: 'competitionRegistration',
+        icon: 'fa fa-list',
+        text: 'Registration',
+      }, {
+        route: 'roundResults',
+        icon: 'fa fa-trophy',
+        text: 'Results',
+        notLeaf: true,
+      },
+    ];
   },
   scrambleTabs: function() {
-    return scrambleTabs;
+    return [
+      {
+        route: 'uploadScrambles',
+        title: 'Generate scrambles with TNoodle and upload them',
+        icon: 'fa fa-upload',
+        text: 'Upload Scrambles',
+      }, {
+        route: 'manageScrambleGroups',
+        title: 'Open and close scramble groups for ongoing rounds',
+        icon: 'fa fa-group',
+        text: 'Manage Scramble Groups',
+        notLeaf: true,
+      }, {
+        route: 'viewScrambles',
+        title: 'View scrambles for open groups',
+        icon: 'fa fa-eye',
+        text: 'View Scrambles',
+      },
+    ];
+  },
+  podiumTabs: function() {
+    return [
+      {
+        route: 'podiums',
+        title: 'Show everyone who podiumed, grouped by event',
+        icon: 'fa fa-trophy',
+        text: 'Podiums By Event',
+      }, {
+        route: 'podiumsByPerson',
+        title: 'Show everyone who podiumed, grouped by person',
+        icon: 'fa fa-group',
+        text: 'Podiums By Person',
+      },
+    ];
   },
   newCompetitionTab: function() {
     return {

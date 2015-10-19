@@ -289,6 +289,16 @@ PodiumsController = BaseCompetitionController.extend({
     let finalRounds = _.filter(allRounds, round => round.nthRound === round.totalRounds);
     finalRounds = _.sortBy(finalRounds, round => wca.eventByCode[round.eventCode].index);
     data.finalRounds = finalRounds;
+
+    let finalResults = Results.find({
+      position: { $in: [1, 2, 3] },
+      roundId: { $in: _.pluck(finalRounds, '_id') },
+    }).fetch();
+    finalResults.forEach(result => {
+      result.round = Rounds.findOne(result.roundId);
+      result.registration = Registrations.findOne(result.registrationId);
+    });
+    data.finalResults = finalResults;
     return data;
   },
 });
@@ -427,6 +437,11 @@ Router.route('/manage/:competitionUrlId/podiums', {
   name: 'podiums',
   controller: 'PodiumsController',
   titlePrefix: "Podiums",
+});
+Router.route('/manage/:competitionUrlId/podiums/by-person', {
+  name: 'podiumsByPerson',
+  controller: 'PodiumsController',
+  titlePrefix: "Podiums By Person",
 });
 
 Router.route('/:competitionUrlId', {

@@ -126,6 +126,14 @@
     {{/navBar}}
   {{/if}}
 
+  {{#if isActiveOrAncestorRoute 'podiums'}}
+    {{#navBar}}
+      {{#each podiumTabs}}
+        {{> oneTab}}
+      {{/each}}
+    {{/navBar}}
+  {{/if}}
+
   {{> yield}}
 
   <footer class="footer">

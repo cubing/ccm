@@ -1,4 +1,4 @@
-var log = logging.handle("round");
+let log = logging.handle("round");
 
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
 Round = function(doc) {
@@ -10,12 +10,16 @@ _.extend(Round.prototype, {
     return this.prettyString(false);
   },
   prettyString: function(showFormat=true) {
-    var str = wca.eventByCode[this.eventCode].name;
-    str += ": " + wca.roundByCode[this.roundCode()].name;
+    let str = this.eventName();
+    str += ": " + this.properties().name;
     if(showFormat) {
-      str += " " + wca.formatByCode[this.formatCode].name;
+      str += " " + this.format().name;
     }
     return str;
+  },
+  displayTitle: function() {
+    let words = (this.totalRounds == 1) ? "Final Round" : `Round ${this.nthRound} of ${this.totalRounds}`;
+    return `${this.eventName()}: ${words}`;
   },
   format: function() {
     return wca.formatByCode[this.formatCode];
@@ -27,7 +31,7 @@ _.extend(Round.prototype, {
     case "average":
       return {sortableAverageValue: 1, sortableBestValue: 1};
     default:
-      throw new Error("Unknown format sortBy '" + sortBy + "'");
+      throw new Error(`Unknown format sortBy '${sortBy}'`);
     }
   },
   properties: function() {
@@ -60,36 +64,32 @@ _.extend(Round.prototype, {
   isLast: function() {
     return this.nthRound === this.totalRounds;
   },
-  displayTitle: function() {
-    var words = (this.totalRounds == 1) ? "Single Round" : "Round " + this.nthRound + " of " + this.totalRounds;
-    return this.eventName() + ": " + words;
-  },
   endMinutes: function() {
     return this.startMinutes + this.durationMinutes;
   },
   isScheduled: function() {
-    var scheduledEvent = ScheduleEvents.findOne({roundId: this._id});
+    let scheduledEvent = ScheduleEvents.findOne({roundId: this._id});
     return !!scheduledEvent;
   },
   groups: function() {
     return Groups.find({roundId: this._id}, { sort: { group: 1 }});
   },
   sortResults: function() {
-    var results = Results.find({ roundId: this._id }, { sort: this.resultSortOrder() }).fetch();
-    var position = 0;
-    var doneSolves = 0;
-    var totalSolves = 0;
+    let results = Results.find({ roundId: this._id }, { sort: this.resultSortOrder() }).fetch();
+    let position = 0;
+    let doneSolves = 0;
+    let totalSolves = 0;
     results.forEach((result, i) => {
-      var tied = false;
-      var previousResult = results[i - 1];
+      let tied = false;
+      let previousResult = results[i - 1];
       if(previousResult) {
-        var tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
+        let tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
         switch(this.format().sortBy) {
         case "best":
           tied = tiedBest;
           break;
         case "average":
-          var tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
+          let tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
           tied = tiedAverage && tiedBest;
           break;
         default:
@@ -109,11 +109,9 @@ _.extend(Round.prototype, {
       });
 
       log.l3("Setting resultId", result._id, "to position", position);
-      let isPodium = i <= 3;
       Results.update(result._id, {
         $set: {
           position: result.sortableBestValue == wca.MAX_INT && result.sortableAverageValue == wca.MAX_INT ? null : position,
-          isPodium: isPodium,
         }
       });
     });
@@ -122,8 +120,8 @@ _.extend(Round.prototype, {
     Rounds.update(this._id, { $set: { size: newRoundSize } });
 
     // Normalize done and total to the number of participants
-    var total = newRoundSize;
-    var done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
+    let total = newRoundSize;
+    let done = (totalSolves === 0 ? 0 : (doneSolves / totalSolves) * total);
 
     log.l2(this._id, " updating progress - done: " + done + ", total: " + total);
     RoundProgresses.update({ roundId: this._id }, { $set: { done: done, total: total }});
@@ -226,9 +224,9 @@ Rounds.attachSchema({
             // If time is already set, don't overwrite it with the default.
             return;
           }
-          var eventCodeField = this.field("eventCode");
+          let eventCodeField = this.field("eventCode");
           if(eventCodeField.isSet) {
-            var eventCode = eventCodeField.value;
+            let eventCode = eventCodeField.value;
             if(wca.eventAllowsCutoffs(eventCode)) {
               return {
                 millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCode],

@@ -15,19 +15,23 @@ tr.no-show {
   .text-muted();
 }
 
-// Shrink the field right after participant name as much as possible, because
-// the names to its left are going to leave a lot of random whitespace.
-// See: http://stackoverflow.com/a/11267268
-table#resultsTable th.participant-name + th {
-  width: 1px;
-  white-space: nowrap;
-}
+table.table-results {
+  td:nth-child(2),
+  th:nth-child(2) {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-table#resultsTable td.participant-name {
-  max-width: 100px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  // Shrink the table columns as much as possible, and give all
+  // available space to the last column.
+  th:not(:last-child),
+  td:not(:last-child) {
+    white-space: nowrap;
+  }
+  td:last-child {
+    width: 100%;
+  }
 }
 
 .results-best {
