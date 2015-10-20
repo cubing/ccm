@@ -40,6 +40,9 @@ ResultRow = function(ResultIdentifierTd) {
       let trimBestAndWorst = result.average && roundFormat.trimBestAndWorst;
       let tiedPrevious = this.props.tiedPrevious;
       let solves = result.allSolves();
+      while(solves.length < this.props.maxSolveCountInResults) {
+        solves.push(null);
+      }
       return (
         <tr className={rowClasses} data-result-id={result._id}>
           <td className={positionClasses}>{result.position}</td>
@@ -138,7 +141,7 @@ ResultsList = React.createClass({
     $resultDetailsModal.modal('show');
 	},
   render: function() {
-    let maxSolveCountInResults = _.max(this.props.results.map(result => result.round.format().count));
+    let maxSolveCountInResults = _.max(this.props.results.map(result => result.allSolves().length));
     let averageNames = _.unique(_.map(this.props.results, result => result.round.format().averageName).sort()).join("/");
 
     let footerRows = [];
@@ -264,6 +267,7 @@ ResultsList = React.createClass({
                 return (
                   <ResultRowWithRound key={result._id}
                                       competitionUrlId={this.props.competitionUrlId}
+                                      maxSolveCountInResults={maxSolveCountInResults}
                                       result={result}
                   />
                 );
@@ -271,6 +275,7 @@ ResultsList = React.createClass({
                 return (
                   <ResultRowWithName key={result._id}
                                      competitionUrlId={this.props.competitionUrlId}
+                                     maxSolveCountInResults={maxSolveCountInResults}
                                      result={result}
                                      drawLastToAdvanceLine={lastToAdvance}
                                      drawLastAllowedToAdvanceLine={lastAllowedToAdvance}

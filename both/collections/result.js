@@ -23,15 +23,9 @@ _.extend(Result.prototype, {
   },
   allSolves: function() {
     // Sanitize the solves array to contain all current and future solves.
-    var round = Rounds.findOne(this.roundId, {
-      fields: {
-        formatCode: 1,
-        softCutoff: 1,
-      }
-    });
-
+    var expectedSolveCount = this.getExpectedSolveCount();
     var solves = this.solves || [];
-    while(solves.length < round.format().count) {
+    while(solves.length < expectedSolveCount) {
       solves.push(null);
     }
     return solves;
