@@ -46,7 +46,11 @@ ResultRow = function(ResultIdentifierTd) {
       return (
         <tr className={rowClasses} data-result-id={result._id}>
           <td className={positionClasses}>{result.position}</td>
-          <ResultIdentifierTd competitionUrlId={competitionUrlId} result={result} onNameClick={this.props.onNameClick} />
+          <ResultIdentifierTd competitionUrlId={competitionUrlId}
+                              result={result}
+                              prettyStringOpts={this.props.prettyStringOpts}
+                              onNameClick={this.props.onNameClick}
+          />
           <td className={averageClasses}>{clockFormat(result.average)}</td>
           <td className={bestClasses}>{clockFormat(result.solves[result.bestIndex])}</td>
           {solves.map(function(solve, i) {
@@ -97,7 +101,7 @@ ResultRowWithRound = ResultRow(React.createClass({
       nthRound: result.round.nthRound,
     });
     return (
-      <td><a href={roundPath}>{result.round.eventName()}</a></td>
+      <td><a href={roundPath}>{result.round.prettyString(this.props.prettyStringOpts)}</a></td>
     );
   },
 }));
@@ -142,7 +146,14 @@ ResultsList = React.createClass({
 	},
   render: function() {
     let maxSolveCountInResults = _.max(this.props.results.map(result => result.allSolves().length));
-    let averageNames = _.unique(_.map(this.props.results, result => result.round.format().averageName).sort()).join("/");
+    let averageNames = ( _.chain(this.props.results)
+      .map(result => result.round.format().averageName)
+      .unique()
+      .compact()
+      .sortBy()
+      .value()
+      .join("/")
+    );
 
     let footerRows = [];
     if(this.props.showFooter) {
@@ -177,13 +188,17 @@ ResultsList = React.createClass({
         participantUniqueName: this.props.registration.uniqueName,
       });
       secondHeader = (<th><a href={registrationPath}>{this.props.registration.uniqueName}</a></th>);
-    } else if(this.props.showEventInHeader) {
-      let roundPath = Router.routes.roundResults.path({
-        competitionUrlId: this.props.competitionUrlId,
-        eventCode: this.props.round.eventCode,
-        nthRound: this.props.round.nthRound,
-      });
-      secondHeader = (<th><a href={roundPath}>{this.props.round.eventName()}</a></th>);
+    } else if(this.props.eventToShowInHeader) {
+      if(this.props.round) {
+        let roundPath = Router.routes.roundResults.path({
+          competitionUrlId: this.props.competitionUrlId,
+          eventCode: this.props.round.eventCode,
+          nthRound: this.props.round.nthRound,
+        });
+        secondHeader = (<th><a href={roundPath}>{this.props.round.eventName()}</a></th>);
+      } else {
+        secondHeader = (<th>{wca.eventByCode[this.props.eventToShowInHeader].name}</th>);
+      }
     } else {
       secondHeader = (<th>Name</th>);
     }
@@ -263,12 +278,13 @@ ResultsList = React.createClass({
               let prevResult = i > 0 ? this.props.results[i - 1] : null;
               let lastToAdvance = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
               let lastAllowedToAdvance = this.props.configurableAdvanceCount && this.props.maxAllowedToAdvanceCount == i + 1;
-              if(this.props.byPerson) {
+              if(this.props.prettyStringOpts) {
                 return (
                   <ResultRowWithRound key={result._id}
                                       competitionUrlId={this.props.competitionUrlId}
                                       maxSolveCountInResults={maxSolveCountInResults}
                                       result={result}
+                                      prettyStringOpts={this.props.prettyStringOpts}
                   />
                 );
               } else {

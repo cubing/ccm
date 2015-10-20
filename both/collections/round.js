@@ -7,13 +7,24 @@ Round = function(doc) {
 
 _.extend(Round.prototype, {
   prettyStringNoFormat: function() {
-    return this.prettyString(false);
+    return this.prettyString({showFormat: false});
   },
-  prettyString: function(showFormat=true) {
-    let str = this.eventName();
-    str += ": " + this.properties().name;
+  prettyString: function({showEventName=true, showName=true, showFormat=true}={}) { // jshint ignore:line
+    let str = "";
+    if(showEventName) {
+      str += this.eventName();
+    }
+    if(showName) {
+      if(str.length > 0) {
+        str += ": ";
+      }
+      str += this.properties().name;
+    }
     if(showFormat) {
-      str += " " + this.format().name;
+      if(str.length > 0) {
+        str += " ";
+      }
+      str += this.format().name;
     }
     return str;
   },

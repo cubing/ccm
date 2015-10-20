@@ -2,7 +2,7 @@ Template.participantResults.rendered = function() {
   let template = this;
 
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     React.render(<ParticipantResults competitionId={data.competitionId}
                                      competitionUrlId={data.competitionUrlId}
                                      registration={data.registration}/>,
@@ -10,9 +10,8 @@ Template.participantResults.rendered = function() {
     );
   });
 };
-
 Template.participantResults.destroyed = function() {
-  var template = this;
+  let template = this;
   React.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
@@ -58,10 +57,17 @@ const ParticipantResults = React.createClass({
     }).fetch();
     results.forEach(result => {
       result.round = Rounds.findOne(result.roundId);
+      result.registration = Registrations.findOne(result.registrationId);
     });
-    let resultsByEvent = _.groupBy(results, result => result.round.eventCode);
+    let eventAndResults = ( _.chain(results)
+      .groupBy(result => result.round.eventCode)
+      .pairs()
+      .map(([eventCode, results]) => [ eventCode, _.sortBy(results, result => -result.round.nthRound) ])
+      .sortBy(([eventCode, results]) => wca.eventByCode[eventCode].index)
+      .value()
+    );
     return {
-      resultsByEvent: resultsByEvent,
+      eventAndResults: eventAndResults,
     };
   },
   render: function() {
@@ -78,11 +84,15 @@ const ParticipantResults = React.createClass({
           {this.props.registration.uniqueName} {wcaProfileLink}
         </h1>
 
-        {Object.keys(this.data.resultsByEvent).sort().map(eventCode => {
-          return <SingleEventResults key={eventCode}
-                                     eventCode={eventCode}
-                                     competitionUrlId={this.props.competitionUrlId}
-                                     results={this.data.resultsByEvent[eventCode]} />;
+        {this.data.eventAndResults.map(([eventCode, results]) => {
+          return (
+            <ResultsList key={eventCode}
+                         competitionUrlId={this.props.competitionUrlId}
+                         results={results}
+                         eventToShowInHeader={eventCode}
+                         prettyStringOpts={{ showEventName: false, showName: true, showFormat: false }}
+            />
+          );
         })}
       </div>
     );
