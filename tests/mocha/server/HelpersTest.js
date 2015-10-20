@@ -21,7 +21,7 @@ MochaWeb.testOnly(function() {
         ['333', '222', '333mbf', '777', 'clock'].forEach(function(code) {
           make(Rounds, {competitionId: compId, eventCode: code});
         });
-        chai.expect(_.pluck(getCompetitionEvents(compId), 'eventCode').join()).to.equal('222,333,777,clock,333mbf');
+        chai.expect(_.pluck(getCompetitionEvents(compId), 'eventCode').join()).to.equal('333,222,clock,777,333mbf');
       });
     });
   });

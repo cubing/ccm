@@ -60,7 +60,7 @@ MochaWeb.testOnly(function() {
 
     it('displayTitle()', function() {
       chai.expect(make(Rounds, {eventCode: 'skewb', nthRound: 1, totalRounds: 2}).displayTitle()).to.equal('Skewb: Round 1 of 2');
-      chai.expect(make(Rounds, {eventCode: 'skewb', nthRound: 1, totalRounds: 1}).displayTitle()).to.equal('Skewb: Single Round');
+      chai.expect(make(Rounds, {eventCode: 'skewb', nthRound: 1, totalRounds: 1}).displayTitle()).to.equal('Skewb: Final Round');
     });
 
     it('isLast()', function() {
