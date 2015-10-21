@@ -1,6 +1,6 @@
 // Dirty workaround for https://github.com/aldeed/meteor-autoform/issues/867
 AutoForm.Utility.dateToNormalizedLocalDateAndTimeString = function dateToNormalizedLocalDateAndTimeString(date, timezoneId) {
-  var m = moment(date);
+  let m = moment(date);
   // by default, we assume local timezone; add moment-timezone to app and pass timezoneId
   // to use a different timezone
   if(typeof timezoneId === "string") {

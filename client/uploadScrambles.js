@@ -1,12 +1,12 @@
-var scrambleSetsReact = new ReactiveVar(null);
-var tnoodleStatusReact = new ReactiveVar(null);
+let scrambleSetsReact = new ReactiveVar(null);
+let tnoodleStatusReact = new ReactiveVar(null);
 
 function getWarningForSheet(competitionId, sheet) {
-  var round = findRoundForSheet(competitionId, sheet);
+  let round = findRoundForSheet(competitionId, sheet);
   if(!round) {
     return "Could not find round for sheet";
   }
-  var existingGroup = Groups.findOne({
+  let existingGroup = Groups.findOne({
     roundId: round._id,
     group: sheet.group
   });
@@ -17,19 +17,19 @@ function getWarningForSheet(competitionId, sheet) {
 }
 
 function getUploadButtonState(competitionId) {
-  var scrambleSets = scrambleSetsReact.get();
+  let scrambleSets = scrambleSetsReact.get();
   if(!scrambleSets || scrambleSets.length === 0) {
     return "disabled";
   }
 
-  var error = _.some(scrambleSets, function(scrambleSet) {
+  let error = _.some(scrambleSets, function(scrambleSet) {
     return scrambleSet.error;
   });
   if(error) {
     return "error";
   }
 
-  var warnings = _.some(scrambleSets, function(scrambleSet) {
+  let warnings = _.some(scrambleSets, function(scrambleSet) {
 
     if(!scrambleSet.tnoodleScrambles) {
       return false;
@@ -45,11 +45,11 @@ function getUploadButtonState(competitionId) {
   return "";
 }
 
-var TNOODLE_ROOT_URL = "http://localhost:2014";
-var TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
-var TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
+let TNOODLE_ROOT_URL = "http://localhost:2014";
+let TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
+let TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
 
-var tnoodleStatusPoller = null;
+let tnoodleStatusPoller = null;
 function startPollingTNoodleStatus() {
   if(tnoodleStatusPoller === null) {
     tnoodleStatusPoller = Meteor.defer(pollTNoodleStatus);
@@ -73,8 +73,8 @@ function pollTNoodleStatus() {
 }
 
 function getRoundsWithoutScrambles(competitionId) {
-  var groups = Groups.find({ competitionId: competitionId }, { fields: { roundId: 1 } }).fetch();
-  var rounds = Rounds.find({
+  let groups = Groups.find({ competitionId: competitionId }, { fields: { roundId: 1 } }).fetch();
+  let rounds = Rounds.find({
     competitionId: competitionId,
     _id: { $nin: _.pluck(groups, "roundId") },
     eventCode: { $exists: true },
@@ -83,7 +83,7 @@ function getRoundsWithoutScrambles(competitionId) {
 }
 
 function findRoundForSheet(competitionId, sheet) {
-  var round = Rounds.findOne({
+  let round = Rounds.findOne({
     competitionId: competitionId,
     eventCode: sheet.event,
     nthRound: (sheet.round - 1)
@@ -95,11 +95,11 @@ function extractJsonFromZip(filename, zipId, pw, cb) {
   Meteor.call("unzipTNoodleZip", zipId, pw, function(err, data) {
     if(err) {
       if(err.reason == "invalid-password") {
-        var promptStr = "Enter password for\n" + filename;
+        let promptStr = "Enter password for\n" + filename;
         if(pw !== null) {
           promptStr = "Wrong password! " + promptStr;
         }
-        var newPw = prompt(promptStr);
+        let newPw = prompt(promptStr);
         if(newPw !== null) {
           extractJsonFromZip(filename, zipId, newPw, cb);
         } else {
@@ -124,21 +124,21 @@ Template.uploadScrambles.destroyed = function() {
 
 Template.uploadScrambles.events({
   'change input[type="file"]': function(e, t) {
-    var fileInput = e.currentTarget;
+    let fileInput = e.currentTarget;
     // Convert FileList to javascript array
-    var files = _.map(fileInput.files, _.identity);
-    var scrambleSets = [];
+    let files = Array.from(fileInput.files);
+    let scrambleSets = [];
 
-    files.forEach(function(file, index) {
-      var scrambleSet = {
+    files.forEach(file, index => {
+      let scrambleSet = {
         index: index,
         file: file,
         error: null
       };
       scrambleSets.push(scrambleSet);
 
-      var addScramblesJsonStr = function(jsonStr) {
-        var scrambleData;
+      let addScramblesJsonStr = function(jsonStr) {
+        let scrambleData;
         try {
           scrambleData = JSON.parse(jsonStr);
           scrambleSet.tnoodleScrambles = scrambleData;
@@ -158,10 +158,10 @@ Template.uploadScrambles.events({
       // by invoking "unzip". Later on, this could be changed to
       // invoke a bundled java program so this can work when
       // the server is running on windows.
-      var extension = file.name.toLowerCase().split('.').pop();
-      var isJson = extension == "json";
-      var isZip = extension == "zip";
-      var reader = new FileReader();
+      let extension = file.name.toLowerCase().split('.').pop();
+      let isJson = extension == "json";
+      let isZip = extension == "zip";
+      let reader = new FileReader();
       reader.onload = function() {
         if(isJson) {
           addScramblesJsonStr(reader.result);
@@ -203,24 +203,22 @@ Template.uploadScrambles.events({
     $(fileInput).val('');
   },
   'click #buttonUploadScrambles': function(e, t) {
-    var that = this;
+    let scrambleSets = scrambleSetsReact.get();
 
-    var scrambleSets = scrambleSetsReact.get();
-
-    scrambleSets.forEach(function(scrambleSet) {
+    scrambleSets.forEach(scrambleSet => {
       if(!scrambleSet.tnoodleScrambles) {
         return;
       }
-      var tnoodleScrambles = scrambleSet.tnoodleScrambles;
-      tnoodleScrambles.sheets.forEach(function(sheet) {
-        var round = findRoundForSheet(that.competitionId, sheet);
+      let tnoodleScrambles = scrambleSet.tnoodleScrambles;
+      tnoodleScrambles.sheets.forEach(sheet => {
+        let round = findRoundForSheet(this.competitionId, sheet);
         if(!round) {
-          console.warn("No round found for competitionId: " + that.competitionId);
+          console.warn("No round found for competitionId: " + this.competitionId);
           console.warn(sheet);
           return;
         }
 
-        var newGroup = {
+        let newGroup = {
           competitionId: round.competitionId,
           roundId: round._id,
           group: sheet.group,
@@ -232,7 +230,7 @@ Template.uploadScrambles.events({
       });
     });
 
-    var $fileInput = $('input[type="file"]');
+    let $fileInput = $('input[type="file"]');
     // Clear selected files and fire change event to update ui
     $fileInput.val('');
     $fileInput.change();
@@ -245,7 +243,7 @@ Template.uploadScrambles.helpers({
     return tnoodleStatusReact.get();
   },
   tnoodleRunningVersionAllowed: function() {
-    var tnoodleStatus = tnoodleStatusReact.get();
+    let tnoodleStatus = tnoodleStatusReact.get();
     if(!tnoodleStatus) {
       return false;
     }
@@ -253,15 +251,15 @@ Template.uploadScrambles.helpers({
   },
 
   roundsWithoutScrambles: function() {
-    var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
+    let roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
     return roundsWithoutScrambles;
   },
   generateMissingScramblesUrl: function() {
-    var roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
+    let roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
 
-    var events = [];
-    roundsWithoutScrambles.forEach(function(round) {
-      var event = {
+    let events = [];
+    roundsWithoutScrambles.forEach(round => {
+      let event = {
         eventID: round.eventCode,
         round: 1 + round.nthRound,
         //groupCount: '1',
@@ -270,27 +268,27 @@ Template.uploadScrambles.helpers({
       };
       events.push(event);
     });
-    var params = {
+    let params = {
       version: "1.0",
       competitionName: Competitions.findOne(this.competitionId).competitionName,
       rounds: toURLPretty(events),
     };
 
     // See http://bugs.jquery.com/ticket/3400
-    var url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");
+    let url = TNOODLE_ROOT_URL + "/scramble/#" + $.param(params).replace(/\+/g, "%20");
     return url;
   },
   uploadedScrambleSets: function() {
     return scrambleSetsReact.get();
   },
   warningForUploadedSheet: function() {
-    var competitionId = Template.parentData(2).competitionId;
-    var sheet = this;
-    var warning = getWarningForSheet(competitionId, sheet);
+    let competitionId = Template.parentData(2).competitionId;
+    let sheet = this;
+    let warning = getWarningForSheet(competitionId, sheet);
     return warning;
   },
   uploadWarning: function() {
-    var uploadButtonState = getUploadButtonState(this.competitionId);
+    let uploadButtonState = getUploadButtonState(this.competitionId);
     if(uploadButtonState == "error") {
       return "Errors detected, see above for details";
     } else if(uploadButtonState == "warning") {
@@ -302,7 +300,7 @@ Template.uploadScrambles.helpers({
     }
   },
   classForUploadButton: function() {
-    var uploadButtonState = getUploadButtonState(this.competitionId);
+    let uploadButtonState = getUploadButtonState(this.competitionId);
     if(uploadButtonState == "error") {
       return "btn-danger";
     } else if(uploadButtonState == "warning") {

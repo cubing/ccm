@@ -1,7 +1,7 @@
 Template.mjChester.rendered = function() {
-  var template = this;
+  let template = this;
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     template.$("div.jChester").jChester({
       solveTime: data.solveTime,
       editableSolveTimeFields: data.editableSolveTimeFields,

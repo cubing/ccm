@@ -1,4 +1,4 @@
-var log = logging.handle("routes");
+const log = logging.handle("routes");
 
 subs = new SubsManager({
   cacheLimit: 10,
@@ -16,11 +16,11 @@ if(Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
 
   isActiveOrAncestorRoute = function(routeName) {
-    var currentParams = Router.current().params;
-    var route = Router.routes[routeName];
-    var routePath = route.path(currentParams);
+    let currentParams = Router.current().params;
+    let route = Router.routes[routeName];
+    let routePath = route.path(currentParams);
     // Check if our current path begins with the given route
-    var currentPath = Iron.Location.get().path;
+    let currentPath = Iron.Location.get().path;
     return currentPath.indexOf(routePath) === 0;
   };
   Template.registerHelper("isActiveOrAncestorRoute", isActiveOrAncestorRoute);
@@ -31,15 +31,15 @@ if(Meteor.isClient) {
   Template.registerHelper("isActiveRoute", isActiveRoute);
 
   Template.registerHelper("setDocumentTitle", function() {
-    var titleParts = ["live.cubing.net"];
+    let titleParts = ["live.cubing.net"];
 
-    var data = Router.current().data && Router.current().data();
+    let data = Router.current().data && Router.current().data();
     if(data) {
       if(data.competitionId) {
         titleParts.push(Competitions.findOne(data.competitionId).competitionName);
       }
       if(data.roundId) {
-        var round = Rounds.findOne(data.roundId);
+        let round = Rounds.findOne(data.roundId);
         titleParts.push(round.eventName() + " " + round.properties().name);
       }
       if(data.registration) {
@@ -47,7 +47,7 @@ if(Meteor.isClient) {
       }
     }
 
-    var titlePrefix = Router.current().lookupOption('titlePrefix');
+    let titlePrefix = Router.current().lookupOption('titlePrefix');
     if(titlePrefix) {
       titleParts.push(titlePrefix);
     }
@@ -64,7 +64,7 @@ if(Meteor.isClient) {
 
 // It appears that iron-router does nothing useful when a subscription throws
 // an error. We explicitly catch that error, log it, and then render 'notFound'
-var subscriptionError = function(that) {
+let subscriptionError = function(that) {
   return {
     onError: function(err) {
       console.error(err);
@@ -88,7 +88,7 @@ SiteAdminController = RouteController.extend({
       return;
     }
 
-    var data = (this.buildData ? this.buildData(competitionId) : {});
+    let data = (this.buildData ? this.buildData(competitionId) : {});
     return data;
   },
 });
@@ -96,7 +96,7 @@ SiteAdminController = RouteController.extend({
 BaseCompetitionController = RouteController.extend({
   fastRender: true,
   waitOn: function() {
-    var subscriptions = [subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this))];
+    let subscriptions = [subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this))];
     if(this.ccmManage) {
       subscriptions.push(subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this)));
     }
@@ -114,8 +114,8 @@ BaseCompetitionController = RouteController.extend({
       return;
     }
 
-    var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
-    var oldCompetitionId = this.oldCompetitionId;
+    let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+    let oldCompetitionId = this.oldCompetitionId;
     this.oldCompetitionId = competitionId;
     if(!competitionId) {
       // We cannot find a competition for the given competitionUrlId. There may simply
@@ -124,7 +124,7 @@ BaseCompetitionController = RouteController.extend({
       // and if so, redirect to this same route with competitionUrlId set to the new
       // wcaCompetitionId.
       if(oldCompetitionId) {
-        var newWcaCompetitionId = Competitions.findOne(oldCompetitionId).wcaCompetitionId;
+        let newWcaCompetitionId = Competitions.findOne(oldCompetitionId).wcaCompetitionId;
         log.l0("It looks like the WCA competition id for", oldCompetitionId, "has changed to", newWcaCompetitionId, "... redirecting");
         Router.go(Router.current().route.getName(), _.extend({}, this.params, { competitionUrlId: newWcaCompetitionId }), { replaceState: true });
         return;
@@ -137,7 +137,7 @@ BaseCompetitionController = RouteController.extend({
       return;
     }
 
-    var data = (this.buildData ? this.buildData(competitionId) : {});
+    let data = (this.buildData ? this.buildData(competitionId) : {});
     data.competitionUrlId = this.params.competitionUrlId;
     data.competitionId = competitionId;
     return data;
@@ -161,7 +161,7 @@ ViewParticipantController = BaseCompetitionController.extend({
                            subscriptionError(this))];
   },
   buildData: function(competitionId) {
-    var data = {};
+    let data = {};
 
     data.registration = Registrations.findOne({
       competitionId: competitionId,
@@ -180,7 +180,7 @@ BaseRoundController = BaseCompetitionController.extend({
     if(!this.params.eventCode || !this.params.nthRound) {
       return [];
     }
-    var nthRound = parseInt(this.params.nthRound);
+    let nthRound = parseInt(this.params.nthRound);
     return [subs.subscribe('roundResults',
       this.params.competitionUrlId,
       this.params.eventCode,
@@ -188,7 +188,7 @@ BaseRoundController = BaseCompetitionController.extend({
       subscriptionError(this))];
   },
   buildRoundData: function(competitionId) {
-    var data = {};
+    let data = {};
     if(this.params.eventCode && !wca.eventByCode[this.params.eventCode]) {
       this.render('eventNotFound');
       return data;
@@ -201,8 +201,8 @@ BaseRoundController = BaseCompetitionController.extend({
       this.render('roundNotFound');
       return data;
     }
-    var nthRound = parseInt(this.params.nthRound);
-    var round = Rounds.findOne({
+    let nthRound = parseInt(this.params.nthRound);
+    let round = Rounds.findOne({
       competitionId: competitionId,
       eventCode: this.params.eventCode,
       nthRound: nthRound,
@@ -228,14 +228,14 @@ ViewRoundController = BaseRoundController.extend({
     if(!this.params.eventCode) {
       // TODO - https://github.com/cubing/ccm/issues/119
     } else if(!this.params.nthRound) {
-      var newParams = _.extend({}, this.params);
+      let newParams = _.extend({}, this.params);
       // If the user didn't specify a specific round for the given event,
       // try to be useful and redirect them a round they're likely to be interested in.
       // Lets go with an open round, or if none are open, the latest round for this event.
 
-      var round;
+      let round;
 
-      var openRound = Rounds.findOne({
+      let openRound = Rounds.findOne({
         competitionId: competitionId,
         eventCode: this.params.eventCode,
         status: wca.roundStatuses.open,
@@ -245,7 +245,7 @@ ViewRoundController = BaseRoundController.extend({
       if(openRound) {
         round = openRound;
       } else {
-        var latestRound = Rounds.findOne({
+        let latestRound = Rounds.findOne({
           competitionId: competitionId,
           eventCode: this.params.eventCode,
         }, {

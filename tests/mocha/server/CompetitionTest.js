@@ -2,14 +2,14 @@ MochaWeb.testOnly(function() {
   describe('Competition', function() {
 
     it('endDate()', function() {
-      var comp = make(Competitions, {startDate: new Date("2015 Jun 23"), numberOfDays: 3});
+      let comp = make(Competitions, {startDate: new Date("2015 Jun 23"), numberOfDays: 3});
       chai.expect(comp.endDate().getTime()).to.equal(new Date("2015 Jun 25").getTime());
     });
 
     describe('validation', function() {
       it('includes existing events', function() {
-        var comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
-        var event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
+        let comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
+        let event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
 
         chai.expect(function() {
           Competitions.update(comp._id,  { $set: { calendarStartMinutes: event.startMinutes + 10 }});

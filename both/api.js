@@ -1,6 +1,6 @@
 api = {
   competitionUrlIdToId: function(competitionUrlId) {
-    var competition = Competitions.findOne({
+    let competition = Competitions.findOne({
       $or: [
         { _id: competitionUrlId },
         { wcaCompetitionId: competitionUrlId },

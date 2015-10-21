@@ -1,6 +1,6 @@
 // Factories to create valid customizable sample objects in the DB
 
-var uniqueNumber = 0;
+let uniqueNumber = 0;
 function presets(propertyKey) {
   switch(propertyKey) {
     case Rounds:
@@ -35,11 +35,11 @@ function presets(propertyKey) {
 // Call format:
 //   make(collection, [0 or more variants], [optional override object])
 make = function(collection, otherArgs) {
-  var lastArg = arguments[arguments.length - 1];
-  var hasOverrides = _.isObject(lastArg) && arguments.length > 1;
+  let lastArg = arguments[arguments.length - 1];
+  let hasOverrides = _.isObject(lastArg) && arguments.length > 1;
 
-  var properties = {};
-  for(var i = 0; i < arguments.length - (hasOverrides ? 1 : 0); i++) {
+  let properties = {};
+  for(let i = 0; i < arguments.length - (hasOverrides ? 1 : 0); i++) {
     _.extend(properties, presets(arguments[i]));
   }
   return collection.findOne(collection.insert(_.extend(properties, hasOverrides ? lastArg : {})));

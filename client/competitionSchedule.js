@@ -1,6 +1,6 @@
 Template.competitionSchedule.rendered = function() {
-  var template = this;
-  var $calendar = template.$('#calendar');
-  var editable = false;
+  let template = this;
+  let $calendar = template.$('#calendar');
+  let editable = false;
   setupCompetitionCalendar(template, $calendar, editable);
 };

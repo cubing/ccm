@@ -1,4 +1,4 @@
-let log = logging.handle("resultsComponents");
+const log = logging.handle("resultsComponents");
 
 ResultRow = function(ResultIdentifierTd) {
   return React.createClass({

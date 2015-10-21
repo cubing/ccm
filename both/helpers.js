@@ -33,7 +33,7 @@ register("eventAllowsCutoffs", function(eventCode) {
 });
 
 register("competitionAttr", function(attribute) {
-  var competition = Competitions.findOne(this.competitionId);
+  let competition = Competitions.findOne(this.competitionId);
   return competition ? competition[attribute] : null;
 });
 
@@ -65,13 +65,13 @@ register("clockFormat", function(solveTime) {
 });
 
 getCompetitionEvents = function(competitionId) {
-  var rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
+  let rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
 
-  var eventCodes = {};
-  rounds.forEach(function(round) {
+  let eventCodes = {};
+  rounds.forEach(round => {
     eventCodes[round.eventCode] = true;
   });
-  var events = _.chain(wca.events)
+  let events = _.chain(wca.events)
     .filter(function(e) {
       return eventCodes[e.code];
     })
@@ -89,12 +89,12 @@ register("competitionEvents", function() {
 });
 
 register("canManageCompetition", function(userId) {
-  var cannotManageReason = getCannotManageCompetitionReason(userId, this.competitionId);
+  let cannotManageReason = getCannotManageCompetitionReason(userId, this.competitionId);
   return !cannotManageReason;
 });
 
 isRegisteredForCompetition = function(userId, competitionId) {
-  var competition = Registrations.findOne({
+  let competition = Registrations.findOne({
     competitionId: competitionId,
     userId: userId,
   }, {
@@ -107,8 +107,8 @@ register("isRegisteredForCompetition", function(userId) {
 });
 
 minutesToPrettyTime = function(timeMinutes) {
-  var duration = moment.duration(timeMinutes, 'minutes');
-  var timeMoment = moment({
+  let duration = moment.duration(timeMinutes, 'minutes');
+  let timeMoment = moment({
     hour: duration.hours(),
     minutes: duration.minutes(),
   });
@@ -119,7 +119,7 @@ register("minutesToPrettyTime", function(timeMinutes) {
 });
 
 getLastRoundIdForEvent = function(competitionId, eventCode) {
-  var lastRoundForEvent = Rounds.findOne({
+  let lastRoundForEvent = Rounds.findOne({
     competitionId: competitionId,
     eventCode: eventCode,
   }, {
@@ -132,18 +132,18 @@ getLastRoundIdForEvent = function(competitionId, eventCode) {
   return lastRoundForEvent._id;
 };
 
-var LOCAL_TIMEZONE = jstz.determine().name();
+const LOCAL_TIMEZONE = jstz.determine().name();
 
-var DATE_FORMAT = "LL";
-var ISO_DATE_FORMAT = "YYYY-MM-DD";
-var DATETIME_FORMAT = "LLLL z";
+const DATE_FORMAT = "LL";
+const ISO_DATE_FORMAT = "YYYY-MM-DD";
+const DATETIME_FORMAT = "LLLL z";
 
 formatMomentDate = function(m) {
   return m.utc().format(DATE_FORMAT);
 };
 
 formatMomentDateIso8601 = function(m) {
-  var iso8601Date = m.utc().format(ISO_DATE_FORMAT);
+  let iso8601Date = m.utc().format(ISO_DATE_FORMAT);
   return iso8601Date;
 };
 
@@ -161,20 +161,20 @@ register("formatMomentDateTime", function(m) {
 
 
 getResultsWithRegistrations = function(roundId, limit) {
-  var round = Rounds.findOne(roundId);
+  let round = Rounds.findOne(roundId);
   // Join each Result its Registration.
-  var registrations = Registrations.find({
+  let registrations = Registrations.find({
     competitionId: round.competitionId,
     registeredEvents: round.eventCode,
   });
-  var registrationById = {};
-  registrations.forEach(function(registration) {
+  let registrationById = {};
+  registrations.forEach(registration => {
     registrationById[registration._id] = registration;
   });
 
-  var results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
-  results.forEach(function(result) {
-    var registration = registrationById[result.registrationId];
+  let results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
+  results.forEach(result => {
+    let registration = registrationById[result.registrationId];
     if(!registration) {
       // The registration for this result may not have been found by our earlier
       // query because registeredEvents hasn't been populated yet. Just silently

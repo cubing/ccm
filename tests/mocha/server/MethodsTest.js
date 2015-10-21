@@ -1,12 +1,12 @@
 MochaWeb.testOnly(function() {
   describe('Methods', function() {
-    var comp1Id, comp2Id;
-    var oldCoalesceMillis;
+    let comp1Id, comp2Id;
+    let oldCoalesceMillis;
     beforeEach(function() {
       oldCoalesceMillis = RoundSorter.COALESCE_MILLIS;
       RoundSorter.COALESCE_MILLIS = 0;
 
-      [Competitions, Rounds, RoundProgresses, Registrations].forEach(function(collection) {
+      [Competitions, Rounds, RoundProgresses, Registrations].forEach(collection => {
         collection.remove({});
       });
       stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
@@ -20,8 +20,8 @@ MochaWeb.testOnly(function() {
     });
 
     it('deleteCompetition', function() {
-      [comp1Id, comp2Id].forEach(function(compId) {
-        var roundId = make(Rounds, { competitionId: compId, eventCode: '333', nthRound: 1, totalRounds: 1 })._id;
+      [comp1Id, comp2Id].forEach(compId => {
+        let roundId = make(Rounds, { competitionId: compId, eventCode: '333', nthRound: 1, totalRounds: 1 })._id;
         RoundProgresses.insert({ competitionId: compId, roundId: roundId });
       });
 
@@ -41,7 +41,7 @@ MochaWeb.testOnly(function() {
       Meteor.call('addRound', comp1Id, '444'); // decoy
       Meteor.call('addRound', comp2Id, '333'); // decoy
 
-      var rounds = Rounds.find({competitionId: comp1Id, eventCode: '333'}).fetch();
+      let rounds = Rounds.find({competitionId: comp1Id, eventCode: '333'}).fetch();
       chai.expect(rounds.length).to.equal(1);
       chai.expect(RoundProgresses.find({roundId: rounds[0]._id}).count()).to.equal(1);
       chai.expect(rounds[0].totalRounds).to.equal(1);
@@ -74,7 +74,7 @@ MochaWeb.testOnly(function() {
     });
 
     it('addRound respects wca.MAX_ROUNDS_PER_EVENT', function() {
-      for(var i = 0; i < wca.MAX_ROUNDS_PER_EVENT; i++) {
+      for(let i = 0; i < wca.MAX_ROUNDS_PER_EVENT; i++) {
         Meteor.call('addRound', comp1Id, '333');
       }
       chai.expect(function() {
@@ -83,8 +83,8 @@ MochaWeb.testOnly(function() {
     });
 
     describe('manage check-in', function() {
-      var registration;
-      var firstRound333;
+      let registration;
+      let firstRound333;
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
         firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
@@ -100,11 +100,11 @@ MochaWeb.testOnly(function() {
       });
 
       describe('when checked in for 333', function() {
-        var result;
+        let result;
         beforeEach(function() {
           Meteor.call('checkInRegistration', registration._id, true);
           Meteor.call('toggleEventRegistration', registration._id, '333');
-          var results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
+          let results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
           chai.expect(results.length).to.equal(1);
           result = results[0];
         });
@@ -133,7 +133,7 @@ MochaWeb.testOnly(function() {
 
     describe('importRegistrations', function() {
       it('works', function() {
-        var competitionJson = {
+        let competitionJson = {
           "formatVersion": "WCA Competition 0.2",
           "competitionId": "PleaseBeQuiet2015",
           "persons": [
@@ -247,7 +247,7 @@ MochaWeb.testOnly(function() {
       });
 
       it('adds missing events', function() {
-        var competitionJson = {
+        let competitionJson = {
           "formatVersion": "WCA Competition 0.2",
           "competitionId": "PleaseBeQuiet2015",
           "persons": [
@@ -307,7 +307,7 @@ MochaWeb.testOnly(function() {
         Meteor.call('addRound', comp1Id, '333');
         Meteor.call('addRound', comp1Id, '333');
 
-        var rounds = Rounds.find({
+        let rounds = Rounds.find({
           competitionId: comp1Id,
           eventCode: '333',
         }, {
@@ -316,19 +316,19 @@ MochaWeb.testOnly(function() {
           }
         }).fetch();
 
-        var registration1 = make(Registrations, {competitionId: comp1Id});
-        var result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
+        let registration1 = make(Registrations, {competitionId: comp1Id});
+        let result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
 
-        var registration2 = make(Registrations, {competitionId: comp1Id});
-        var result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
+        let registration2 = make(Registrations, {competitionId: comp1Id});
+        let result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
 
-        var registration3 = make(Registrations, {competitionId: comp1Id});
-        var result3 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 3, registrationId: registration3._id});
+        let registration3 = make(Registrations, {competitionId: comp1Id});
+        let result3 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 3, registrationId: registration3._id});
 
         Meteor.call('advanceParticipantsFromRound', 2, rounds[0]._id);
         chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(2);
 
-        var results = Results.find({ roundId: rounds[1]._id }, { sort: { previousPosition: 1 } } ).fetch();
+        let results = Results.find({ roundId: rounds[1]._id }, { sort: { previousPosition: 1 } } ).fetch();
         chai.expect(results.length).to.equal(2);
         chai.expect(results[0].registrationId).to.equal(registration1._id);
         chai.expect(results[0].previousPosition).to.equal(1);
@@ -357,10 +357,10 @@ MochaWeb.testOnly(function() {
     });
 
     describe("toggleGroupOpen", function() {
-      var roundId;
-      var groupId;
+      let roundId;
+      let groupId;
       beforeEach(function() {
-        var round = make(Rounds, { status: wca.roundStatuses.open });
+        let round = make(Rounds, { status: wca.roundStatuses.open });
         roundId = round._id;
         groupId = make(Groups, { group: "A", roundId: round._id })._id;
       });
@@ -384,9 +384,9 @@ MochaWeb.testOnly(function() {
     });
 
     describe("setSolveTime", function() {
-      var firstRound333;
-      var registration;
-      var result;
+      let firstRound333;
+      let registration;
+      let result;
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
         firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
@@ -394,13 +394,13 @@ MochaWeb.testOnly(function() {
 
         Meteor.call('checkInRegistration', registration._id, true);
         Meteor.call('toggleEventRegistration', registration._id, '333');
-        var results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
+        let results = Results.find({registrationId: registration._id, roundId: firstRound333._id}).fetch();
         chai.expect(results.length).to.equal(1);
         result = results[0];
       });
 
       it("can add times", function() {
-        for(var i = 0; i < firstRound333.format().count; i++) {
+        for(let i = 0; i < firstRound333.format().count; i++) {
           Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
         }
         result = Results.findOne(result._id);
@@ -413,7 +413,7 @@ MochaWeb.testOnly(function() {
       });
 
       it("can't add more times than round allows", function() {
-        var i;
+        let i;
         for(i = 0; i < firstRound333.format().count; i++) {
           Meteor.call('setSolveTime', result._id, i, { millis: 3333 + i });
         }
@@ -479,7 +479,7 @@ MochaWeb.testOnly(function() {
       });
 
       it("getBestNotAdvancedResultFromRoundPreviousToThisOne", function() {
-        var result = Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', secondRound333._id);
+        let result = Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', secondRound333._id);
         chai.expect(result._id).to.equal(result2._id);
       });
 

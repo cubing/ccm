@@ -2,7 +2,7 @@
 
 assert = function(condition, msg) {
   if(!condition) {
-    var message = "Assertion error";
+    let message = "Assertion error";
     if(msg) {
       message += ": " + msg;
     }

@@ -2,19 +2,19 @@ Template.layout.events({
   "mouseover [data-toggle='tooltip']": function(e) {
     // Bootstrap's tooltips are opt in. Here we lazily enable it on all
     // elements with a data-toggle="tooltip" attribute.
-    var $target = $(e.currentTarget);
+    let $target = $(e.currentTarget);
     if(!$target.data("tooltip-applied")) {
       $target.tooltip('show');
       $target.data("tooltip-applied", "true");
 
       // When this DOM element is removed, we must remove the corresponding
       // tooltip element.
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
+      let observer = new MutationObserver(function(mutations) {
+        mutations.forEach(mutation => {
           if(!document.body.contains($target[0])) {
             // $target has been removed from the DOM
-            var tipId = $target.attr('aria-describedby');
-            var $tip = $('#' + tipId).remove();
+            let tipId = $target.attr('aria-describedby');
+            let $tip = $('#' + tipId).remove();
             observer.disconnect();
           }
         });
@@ -23,7 +23,7 @@ Template.layout.events({
     }
   },
   'mouseover [data-toggle="popover"]': function(e) {
-    var $target = $(e.currentTarget);
+    let $target = $(e.currentTarget);
     if(!$target.data("popover-applied")) {
       $target.popover();
       $target.data("popover-applied", "true");
@@ -60,7 +60,7 @@ Router.onBeforeAction(function() {
   this.next();
 });
 
-var verificationSendSuccessReact = new ReactiveVar(null);
+let verificationSendSuccessReact = new ReactiveVar(null);
 
 Template.layout.helpers({
   verificationSendSuccess: function() {
@@ -254,10 +254,10 @@ Template._loginButtonsLoggedOut.helpers({
 // Adopted from http://stackoverflow.com/a/21778615
 $.fn.scrollToCenter = function(speed) {
   speed = speed || 200;
-  var el = this;
-  var elOffset = el.offset().top;
-  var windowHeight = $(window).height();
-  var offset = elOffset - Math.max((windowHeight - el.height()) / 2, 0);
+  let el = this;
+  let elOffset = el.offset().top;
+  let windowHeight = $(window).height();
+  let offset = elOffset - Math.max((windowHeight - el.height()) / 2, 0);
 
   $('html, body').animate({ scrollTop: offset }, speed);
 };

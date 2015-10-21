@@ -1,7 +1,7 @@
 // File name starts with "_" so it loads first
 
 // Force filter to be false. I really wish this was the default for SimpleSchema.
-var oldClean = SimpleSchema.prototype.clean;
+let oldClean = SimpleSchema.prototype.clean;
 SimpleSchema.prototype.clean = function(doc, options) {
   options = options || {};
   options.filter = false;
@@ -118,7 +118,7 @@ updatedAtSchemaField = {
 };
 
 validationObject = function(simpleSchemaObject, fields) {
-  var result = { id: simpleSchemaObject.docId };
+  let result = { id: simpleSchemaObject.docId };
   fields.forEach(function(field) {
     result[field] = simpleSchemaObject.field(field).value;
   });
@@ -126,7 +126,7 @@ validationObject = function(simpleSchemaObject, fields) {
 };
 
 isSiteAdmin = function(userId) {
-  var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
+  let user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
   return user && user.siteAdmin;
 };
 

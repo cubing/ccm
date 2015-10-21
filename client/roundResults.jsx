@@ -1,4 +1,4 @@
-let log = logging.handle("roundResults");
+const log = logging.handle("roundResults");
 
 Template.roundResults.helpers({
   round: function() {

@@ -1,6 +1,6 @@
-var API_VERSION = "0";
+const API_VERSION = "0";
 
-var descriptionByParam = {
+const descriptionByParam = {
   competitionUrlId: "WCA Id or _id of a competition",
   token: 'Meteor.loginWithPassword("ccm@ccm.com", "ccm", function(err) { if(err) { throw err; } console.log(Accounts._storedLoginToken()); })',
   solveTime: '<a href="http://www.jflei.com/jChester/" rel="external" target="_blank">SolveTime definition</a>',
@@ -44,7 +44,7 @@ Template.apiDocumentation.helpers({
 });
 
 Template.apiEndpoint.created = function() {
-  var template = this;
+  let template = this;
   template.paramValuesReact = new ReactiveVar({
     token: Accounts._storedLoginToken(),
   });
@@ -52,7 +52,7 @@ Template.apiEndpoint.created = function() {
 
 Template.apiEndpoint.helpers({
   params: function() {
-    var params = this.path.match(/:[^/]+/g);
+    let params = this.path.match(/:[^/]+/g);
     if(!params) {
       return [];
     }
@@ -62,25 +62,25 @@ Template.apiEndpoint.helpers({
     return params;
   },
   initialValue: function() {
-    var param = this.toString();
-    var template = Template.instance();
-    var paramValues = template.paramValuesReact.get();
+    let param = this.toString();
+    let template = Template.instance();
+    let paramValues = template.paramValuesReact.get();
     return paramValues[param];
   },
   paramDescription: function() {
     return descriptionByParam[this];
   },
   jsCode: function() {
-    var template = Template.instance();
-    var paramValues = template.paramValuesReact.get();
+    let template = Template.instance();
+    let paramValues = template.paramValuesReact.get();
 
-    var pathStr = replaceParameters(this.path, paramValues);
-    var pathStrRepr = JSON.stringify(pathStr);
+    let pathStr = replaceParameters(this.path, paramValues);
+    let pathStrRepr = JSON.stringify(pathStr);
 
-    var settingsStr = "";
-    var data = getData.call(this, paramValues);
+    let settingsStr = "";
+    let data = getData.call(this, paramValues);
     if(data || this.method != "GET") {
-      var settings = {};
+      let settings = {};
       if(data) {
         settings.data = data;
       }
@@ -90,7 +90,7 @@ Template.apiEndpoint.helpers({
       settingsStr = ", " + JSON.stringify(settings);
     }
 
-    var js = "$.ajax(" + pathStrRepr + settingsStr + ").done(function(data) {\n" +
+    let js = "$.ajax(" + pathStrRepr + settingsStr + ").done(function(data) {\n" +
              "  console.log(data);\n" +
              "}).fail(function(xhr, textStatus, error) {\n" +
              "  console.log(xhr.responseText);\n" +
@@ -102,10 +102,10 @@ Template.apiEndpoint.helpers({
 
 function getData(paramValues) {
   if(this.queryParams) {
-    var queryData = {};
-    this.queryParams.forEach(function(param) {
+    let queryData = {};
+    this.queryParams.forEach(param => {
       if(paramValues[param]) {
-        var value = paramValues[param];
+        let value = paramValues[param];
         if(param == "solveIndex") {
           value = parseInt(value);
         } else if(param == "solveTime") {
@@ -129,9 +129,9 @@ function getData(paramValues) {
 }
 
 function replaceParameters(js, paramValues) {
-  for(var param in paramValues) {
+  for(let param in paramValues) {
     if(paramValues.hasOwnProperty(param)) {
-      var value = paramValues[param];
+      let value = paramValues[param];
       if(value) {
         js = js.replace(new RegExp(":" + param, 'g'), value);
       }
@@ -142,12 +142,12 @@ function replaceParameters(js, paramValues) {
 
 Template.apiEndpoint.events({
   'click .js-run-api': function(e, template) {
-    var $output = template.$('.js-api-output');
+    let $output = template.$('.js-api-output');
     $output.text('...');
 
-    var paramValues = template.paramValuesReact.get();
-    var path = replaceParameters(this.path, paramValues);
-    var data = getData.call(this, paramValues);
+    let paramValues = template.paramValuesReact.get();
+    let path = replaceParameters(this.path, paramValues);
+    let data = getData.call(this, paramValues);
     $.ajax(path, {
       type: this.method,
       data: data,
@@ -161,23 +161,23 @@ Template.apiEndpoint.events({
     });
   },
   'click .js-clear-api': function(e, template) {
-    var $output = template.$('.js-api-output');
+    let $output = template.$('.js-api-output');
     $output.text('');
   },
   'input input': function(e, template) {
-    var paramName = this.toString();
-    var input = e.currentTarget;
-    var paramValues = template.paramValuesReact.get();
+    let paramName = this.toString();
+    let input = e.currentTarget;
+    let paramValues = template.paramValuesReact.get();
     paramValues[paramName] = input.value;
     template.paramValuesReact.set(paramValues);
   },
 });
 
 Template.hljs.rendered = function() {
-  var template = this;
+  let template = this;
   template.autorun(function() {
-    var data = Template.currentData();
-    var $code = template.$('code[class]');
+    let data = Template.currentData();
+    let $code = template.$('code[class]');
     $code.text(data);
     hljs.highlightBlock($code[0]);
   });

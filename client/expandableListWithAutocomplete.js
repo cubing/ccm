@@ -1,28 +1,28 @@
 Template.expandableListWithAutocomplete.created = function() {
-  var template = this;
+  let template = this;
   template.newDocSelectedReact = new ReactiveVar(null);
 };
 
 Template.expandableListWithAutocomplete.helpers({
   newDocSelected: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.newDocSelectedReact.get();
   },
   matchingDocs: function() {
-    var collName = this.settings.collectionName;
-    var collection = window;
-    collName.split(".").forEach(function(part) {
+    let collName = this.settings.collectionName;
+    let collection = window;
+    collName.split(".").forEach(part => {
       collection = collection[part];
     });
-    var docs = collection.find(_.extend({}, this.settings.filter, this.settings.docCriteria));
+    let docs = collection.find(_.extend({}, this.settings.filter, this.settings.docCriteria));
     return docs;
   },
   isDeletable: function() {
-    var data = Template.parentData(1);
+    let data = Template.parentData(1);
     return data.settings.isDeletable(this);
   },
   autocompleteSettings: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return {
       position: "top",
       limit: 5,
@@ -48,15 +48,15 @@ Template.expandableListWithAutocomplete.events({
   },
   'submit form[name="newDocForm"]': function(e, template) {
     e.preventDefault();
-    var form = e.currentTarget;
+    let form = e.currentTarget;
     form.name.value = '';
 
-    var newDoc = template.newDocSelectedReact.get();
+    let newDoc = template.newDocSelectedReact.get();
     template.newDocSelectedReact.set(null);
     this.settings.addDoc(newDoc._id);
   },
   'click button[name="buttonRemoveDoc"]': function(e) {
-    var parentData = Template.currentData();
+    let parentData = Template.currentData();
     parentData.settings.removeDoc(this._id);
   },
 });

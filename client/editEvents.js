@@ -1,12 +1,12 @@
-var roundPopupReact = new ReactiveVar(null);
+let roundPopupReact = new ReactiveVar(null);
 
 Template.editEvents.events({
   'click button[name="buttonAddRound"]': function(e, template) {
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonRemoveRound"]': function(e, template) {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    var progress = RoundProgresses.findOne({roundId: lastRoundId});
+    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    let progress = RoundProgresses.findOne({roundId: lastRoundId});
     if(progress.total > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
@@ -21,15 +21,15 @@ Template.editEvents.events({
     Rounds.update(this._id, { $set: { status: wca.roundStatuses.open } });
   },
   'click button[name="buttonCloseRound"]': function(e, template) {
-    var roundProgress = RoundProgresses.findOne({roundId: this._id});
+    let roundProgress = RoundProgresses.findOne({roundId: this._id});
     // When closing a round, set it to unstarted if nobody has any results yet.
-    var newRoundStatus = roundProgress.done === 0 ? wca.roundStatuses.unstarted : wca.roundStatuses.closed;
+    let newRoundStatus = roundProgress.done === 0 ? wca.roundStatuses.unstarted : wca.roundStatuses.closed;
     Rounds.update(this._id, { $set: { status: newRoundStatus } });
   },
   'change select[name="roundFormat"]': function(e) {
-    var select = e.currentTarget;
-    var formatCode = select.value;
-    var roundId = this._id;
+    let select = e.currentTarget;
+    let formatCode = select.value;
+    let roundId = this._id;
     Rounds.update(roundId, { $set: { formatCode: formatCode } });
   },
   'click button[name="buttonSetRoundSize"]': function(e, template) {
@@ -64,7 +64,7 @@ Template.editEvents.events({
   },
 });
 
-var eventCountPerRowByDeviceSize = {
+let eventCountPerRowByDeviceSize = {
   xs: 1,
   sm: 2,
   md: 2,
@@ -73,11 +73,10 @@ var eventCountPerRowByDeviceSize = {
 
 Template.editEvents.helpers({
   events: function() {
-    var that = this;
-    var events = _.map(wca.events, function(e, i) {
+    let events = wca.events.map((e, i) => {
       return {
         index: i,
-        competitionId: that.competitionId,
+        competitionId: this.competitionId,
         eventCode: e.code,
         eventName: e.name,
       };
@@ -85,16 +84,15 @@ Template.editEvents.helpers({
     return events;
   },
   eventColumnsClasses: function() {
-    var classes = _.map(eventCountPerRowByDeviceSize, function(eventCount, deviceSize) {
-      var cols = Math.floor(12 / eventCount);
+    let classes = eventCountPerRowByDeviceSize.map((eventCount, deviceSize) => {
+      let cols = Math.floor(12 / eventCount);
       return "col-" + deviceSize + "-" + cols;
     });
     return classes.join(" ");
   },
   clearfixVisibleClass: function() {
-    var that = this;
-    var classes = _.map(eventCountPerRowByDeviceSize, function(eventCount, deviceSize) {
-      if((that.index + 1) % eventCount === 0) {
+    let classes = eventCountPerRowByDeviceSize.map((eventCount, deviceSize) => {
+      if((this.index + 1) % eventCount === 0) {
         return 'visible-' + deviceSize + '-block';
       }
       return '';
@@ -114,15 +112,15 @@ Template.editEvents.helpers({
     if(!this.softCutoff) {
       return true;
     }
-    var format = wca.formatByCode[this.formatCode];
-    var allowedSoftCutoffFormatCodes = format.softCutoffFormatCodes;
+    let format = wca.formatByCode[this.formatCode];
+    let allowedSoftCutoffFormatCodes = format.softCutoffFormatCodes;
     return _.contains(allowedSoftCutoffFormatCodes, this.softCutoff.formatCode);
   },
   isFirstRound: function() {
     return this.nthRound === 0;
   },
   participantsRegisteredForEventCount: function() {
-    var participantsCount = Registrations.find({
+    let participantsCount = Registrations.find({
       competitionId: this.competitionId,
       events: this.eventCode,
     }, {
@@ -134,15 +132,15 @@ Template.editEvents.helpers({
     return RoundProgresses.findOne({roundId: this._id});
   },
   roundSizeWarning: function() {
-    var maxAllowedRoundSize = this.getMaxAllowedSize();
+    let maxAllowedRoundSize = this.getMaxAllowedSize();
     if(maxAllowedRoundSize === null) {
       return false;
     }
     return this.size > maxAllowedRoundSize;
   },
   progressClasses: function() {
-    var progress = RoundProgresses.findOne({roundId: this._id});
-    var classes = "progress-bar-" + {incomplete: "warning", complete: "success", overcomplete: "danger"}[progress.completeness()];
+    let progress = RoundProgresses.findOne({roundId: this._id});
+    let classes = "progress-bar-" + {incomplete: "warning", complete: "success", overcomplete: "danger"}[progress.completeness()];
     if(this.isOpen()) {
       classes += " progress-bar-striped active";
     }
@@ -152,15 +150,15 @@ Template.editEvents.helpers({
     return progress.percentage();
   },
   lastRoundResultsCount: function() {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     if(!lastRoundId) {
       return 0;
     }
-    var progress = RoundProgresses.findOne({roundId: lastRoundId});
+    let progress = RoundProgresses.findOne({roundId: lastRoundId});
     return progress.total;
   },
   canRemoveRound: function() {
-    var lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     if(!lastRoundId) {
       return false;
     }
@@ -179,19 +177,19 @@ Template.editEvents.helpers({
     return this.isOpen();
   },
   canOpenRound: function() {
-    var previousRound = this.getPreviousRound();
+    let previousRound = this.getPreviousRound();
     if(previousRound && !previousRound.isClosed()) {
       // If the previous round is not closed, we can't open this round.
       return false;
     }
-    var nextRound = this.getNextRound();
+    let nextRound = this.getNextRound();
     if(nextRound && !nextRound.isUnstarted()) {
       // If there's a next round that is already opened (or
       // closed), we can't reopen this round.
       return false;
     }
     if(this.isUnstarted()) {
-      var progress = RoundProgresses.findOne({roundId: this._id});
+      let progress = RoundProgresses.findOne({roundId: this._id});
       // We always create and delete WCA Rounds and RoundProgresses together,
       // but when deleting a Round, there's a window where this helper gets called,
       // so we first make sure progress exists before we use it.
@@ -212,12 +210,12 @@ Template.editEvents.helpers({
     return !this.isLast();
   },
   isCurrentRoundFormat: function() {
-    var round = Template.parentData(1);
-    var formatCode = this.toString();
+    let round = Template.parentData(1);
+    let formatCode = this.toString();
     return round.formatCode == formatCode;
   },
   lastRoundCode: function() {
-    var roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
+    let roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
     return Rounds.findOne(roundId).roundCode();
   },
   roundPopup: function() {
@@ -229,16 +227,16 @@ Template.editEvents.helpers({
 });
 
 Template.modalSetRoundSize.created = function() {
-  var template = this;
+  let template = this;
   template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     template.isSaveableReact.set(!!data);
   });
 };
 Template.modalSetRoundSize.helpers({
   isSaveable: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.isSaveableReact.get();
   },
 });
@@ -254,11 +252,11 @@ Template.modalSetRoundSize.events({
   'submit form': function(e, template) {
     e.preventDefault();
 
-    var $input = $('input[name="roundSize"]');
-    var sizeStr = $input.val();
-    var toSet = {};
+    let $input = $('input[name="roundSize"]');
+    let sizeStr = $input.val();
+    let toSet = {};
     if(sizeStr) {
-      var size = parseInt(sizeStr);
+      let size = parseInt(sizeStr);
       toSet.$set = { size: size };
     } else {
       toSet.$unset = { size: 1 };
@@ -269,11 +267,11 @@ Template.modalSetRoundSize.events({
 });
 
 Template.modalSoftCutoff.created = function() {
-  var template = this;
+  let template = this;
   template.showTimeEntryReact = new ReactiveVar(false);
   template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     template.showTimeEntryReact.set(data && data.softCutoff);
     template.isSaveableReact.set(!!data);
   });
@@ -283,25 +281,25 @@ Template.modalSoftCutoff.helpers({
     return wca.softCutoffFormats;
   },
   isCurrentSoftCutoffFormat: function() {
-    var round = Template.parentData(1);
+    let round = Template.parentData(1);
     if(!round.softCutoff) {
       return false;
     }
-    var softCutoffFormatCode = this.code;
+    let softCutoffFormatCode = this.code;
     return round.softCutoff.formatCode == softCutoffFormatCode;
   },
   isAllowedSoftCutoffFormat: function() {
-    var round = Template.parentData(1);
-    var roundFormat = wca.formatByCode[round.formatCode];
-    var softCutoffFormatCode = this.code;
+    let round = Template.parentData(1);
+    let roundFormat = wca.formatByCode[round.formatCode];
+    let softCutoffFormatCode = this.code;
     return _.contains(roundFormat.softCutoffFormatCodes, softCutoffFormatCode);
   },
   showTimeEntry: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.showTimeEntryReact.get();
   },
   isSaveable: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.isSaveableReact.get();
   },
 });
@@ -312,8 +310,8 @@ Template.modalSoftCutoff.events({
     template.$('input').filter(':visible:first').select();
   },
   'change select[name="softCutoffFormatCode"]': function(e, template) {
-    var select = e.currentTarget;
-    var softCutoffFormatCode = select.value;
+    let select = e.currentTarget;
+    let softCutoffFormatCode = select.value;
     template.showTimeEntryReact.set(!!softCutoffFormatCode);
   },
   'solveTimeInput [name="inputSoftCutoff"]': function(e, template, solveTime) {
@@ -322,13 +320,13 @@ Template.modalSoftCutoff.events({
   'submit form': function(e, template) {
     e.preventDefault();
 
-    var $selectCutoffFormat = template.$('select[name="softCutoffFormatCode"]');
-    var formatCode = $selectCutoffFormat.val();
+    let $selectCutoffFormat = template.$('select[name="softCutoffFormatCode"]');
+    let formatCode = $selectCutoffFormat.val();
 
-    var softCutoff = {};
+    let softCutoff = {};
     if(formatCode) {
-      var $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
-      var time = $inputSoftCutoff.jChester('getSolveTime');
+      let $inputSoftCutoff = template.$('[name="inputSoftCutoff"]');
+      let time = $inputSoftCutoff.jChester('getSolveTime');
       softCutoff = {
         time: time,
         formatCode: formatCode,
@@ -337,7 +335,7 @@ Template.modalSoftCutoff.events({
       softCutoff = null;
     }
 
-    var roundId = this._id;
+    let roundId = this._id;
     Meteor.call('setRoundSoftCutoff', roundId, softCutoff, function(err, result) {
       if(!err) {
         template.$(".modal").modal('hide');
@@ -349,10 +347,10 @@ Template.modalSoftCutoff.events({
 });
 
 Template.modalHardCutoff.created = function() {
-  var template = this;
+  let template = this;
   template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     template.isSaveableReact.set(!!data);
   });
 };
@@ -368,8 +366,8 @@ Template.modalHardCutoff.events({
   'submit form': function(e, template) {
     e.preventDefault();
 
-    var $inputHardCutoff = template.$('[name="inputHardCutoff"]');
-    var time = $inputHardCutoff.jChester('getSolveTime');
+    let $inputHardCutoff = template.$('[name="inputHardCutoff"]');
+    let time = $inputHardCutoff.jChester('getSolveTime');
 
     Rounds.update(
       _this._id,
@@ -389,7 +387,7 @@ Template.modalHardCutoff.events({
 });
 Template.modalHardCutoff.helpers({
   isSaveable: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.isSaveableReact.get();
   }
 });

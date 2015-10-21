@@ -1,6 +1,6 @@
 Template.competition.helpers({
   registeredForCompetition: function() {
-    var registration = Registrations.findOne({
+    let registration = Registrations.findOne({
       competitionId: this.competitionId,
       userId: Meteor.userId(),
     }, {
@@ -12,7 +12,7 @@ Template.competition.helpers({
     return Competitions.findOne(this.competitionId).startDate;
   },
   dateInterval: function() {
-    var comp = Competitions.findOne(this.competitionId);
+    let comp = Competitions.findOne(this.competitionId);
     return $.fullCalendar.formatRange(moment(comp.startDate).utc(), moment(comp.endDate()).utc(), "LL");
   },
 });

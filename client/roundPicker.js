@@ -1,11 +1,11 @@
 Template.roundPicker.created = function() {
-  var template = this;
+  let template = this;
   template.selectedEventCodeReact = new ReactiveVar(null);
   template.autorun(function() {
-    var data = Template.currentData();
-    var currentRoundId = data.roundId;
+    let data = Template.currentData();
+    let currentRoundId = data.roundId;
 
-    var newEventCode = null;
+    let newEventCode = null;
     if(currentRoundId) {
       newEventCode = Rounds.findOne(currentRoundId).eventCode;
     } else if(data.eventCode) {
@@ -23,17 +23,17 @@ Template.roundPicker.events({
 
 Template.roundPicker.helpers({
   isCurrentEvent: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return this.eventCode == template.selectedEventCodeReact.get();
   },
 
   selectedEventCode: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.selectedEventCodeReact.get();
   },
   roundsForEvent: function() {
-    var template = Template.instance();
-    var rounds = Rounds.find({
+    let template = Template.instance();
+    let rounds = Rounds.find({
       competitionId: this.competitionId,
       eventCode: template.selectedEventCodeReact.get(),
     }, {
@@ -42,14 +42,14 @@ Template.roundPicker.helpers({
     return rounds;
   },
   isCurrentRound: function() {
-    var roundData = Template.parentData(1);
-    var currentRoundId = roundData.roundId;
+    let roundData = Template.parentData(1);
+    let currentRoundId = roundData.roundId;
     if(!currentRoundId) {
       return false;
     }
-    var currentRound = Rounds.findOne(currentRoundId);
-    var template = Template.instance();
-    var selectedEventCode = template.selectedEventCodeReact.get();
+    let currentRound = Rounds.findOne(currentRoundId);
+    let template = Template.instance();
+    let selectedEventCode = template.selectedEventCodeReact.get();
     if(selectedEventCode != currentRound.eventCode) {
       return false;
     }
@@ -59,7 +59,7 @@ Template.roundPicker.helpers({
 });
 
 Template.openRoundPicker.created = function() {
-  var template = this;
+  let template = this;
   template.showAllRoundsReact = new ReactiveVar(false);
 };
 
@@ -79,11 +79,11 @@ Template.openRoundPicker.helpers({
       return true;
     }
 
-    var template = Template.instance();
+    let template = Template.instance();
     return template.showAllRoundsReact.get();
   },
   openRounds: function() {
-    var openRounds = Rounds.find({
+    let openRounds = Rounds.find({
       competitionId: this.competitionId,
       status: wca.roundStatuses.open,
     }, {
@@ -95,8 +95,8 @@ Template.openRoundPicker.helpers({
     return openRounds;
   },
   isSelectedRound: function() {
-    var data = Template.parentData(1);
-    var selectedRoundId = data.roundId;
+    let data = Template.parentData(1);
+    let selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
   },
 });

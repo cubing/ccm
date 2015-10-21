@@ -1,6 +1,6 @@
 Template.competitionEvents.helpers({
   roundsInCompetition: function() {
-    var mostAdvancedRound = Rounds.findOne({
+    let mostAdvancedRound = Rounds.findOne({
       competitionId: this.competitionId,
     }, {
       sort: { nthRound: -1 },
@@ -12,7 +12,7 @@ Template.competitionEvents.helpers({
     return getCompetitionEvents(this.competitionId);
   },
   rounds: function() {
-    var rounds = Rounds.find({
+    let rounds = Rounds.find({
       competitionId: this.competitionId,
       eventCode: this.eventCode,
     },

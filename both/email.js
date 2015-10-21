@@ -5,8 +5,8 @@ if(Meteor.isClient) {
 }
 
 if(Meteor.isServer) {
-  var MANDRILL_USERNAME = process.env.MANDRILL_USERNAME;
-  var MANDRILL_APIKEY = process.env.MANDRILL_APIKEY;
+  let MANDRILL_USERNAME = process.env.MANDRILL_USERNAME;
+  let MANDRILL_APIKEY = process.env.MANDRILL_APIKEY;
   if(!MANDRILL_USERNAME || !MANDRILL_APIKEY) {
     console.warn("Could not find either MANDRILL_USERNAME or MANDRILL_APIKEY" +
                  " environment variables. Emailing is disabled");

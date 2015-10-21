@@ -1,21 +1,21 @@
 Template.exportResults.created = function() {
-  var template = this;
+  let template = this;
   this.wcaResultsReact = new ReactiveVar(null);
   this.exportProblemsReact = new ReactiveVar(null);
 };
 
 Template.exportResults.helpers({
   wcaResultsJson: function() {
-    var template = Template.instance();
-    var wcaResults = template.wcaResultsReact.get();
+    let template = Template.instance();
+    let wcaResults = template.wcaResultsReact.get();
     if(!wcaResults) {
       return '';
     }
-    var wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
+    let wcaResultsJson = JSON.stringify(wcaResults, undefined, 2);
     return wcaResultsJson;
   },
   problems: function() {
-    var template = Template.instance();
+    let template = Template.instance();
     return template.exportProblemsReact.get();
   }
 });

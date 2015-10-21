@@ -4,12 +4,12 @@ HTTP.publish({name: '/api/v0/competitions'}, function() {
 });
 
 HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/registrations'}, function() {
-  var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
     throw new Meteor.Error(404, "Competition not found");
   }
 
-  var registrations = Registrations.find({
+  let registrations = Registrations.find({
     competitionId: competitionId
   }, {
     fields: {
@@ -24,7 +24,7 @@ HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/registrations'}, fun
 });
 
 HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/rounds'}, function() {
-  var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
     throw new Meteor.Error(404, "Competition not found");
   }
@@ -33,7 +33,7 @@ HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/rounds'}, function()
 });
 
 function getRoundId(requireManagement) {
-  var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
     throw new Meteor.Error(404, "Competition not found");
   }
@@ -45,8 +45,8 @@ function getRoundId(requireManagement) {
     throwIfCannotManageCompetition(this.userId, competitionId);
   }
 
-  var nthRound = parseInt(this.params.nthRound);
-  var round = Rounds.findOne({
+  let nthRound = parseInt(this.params.nthRound);
+  let round = Rounds.findOne({
     competitionId: competitionId,
     eventCode: this.params.eventCode,
     nthRound: nthRound,
@@ -60,21 +60,21 @@ function getRoundId(requireManagement) {
 HTTP.methods({
   '/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results': {
     get: function(data) {
-      var requireManagement = false;
-      var roundId = getRoundId.call(this, requireManagement);
+      let requireManagement = false;
+      let roundId = getRoundId.call(this, requireManagement);
 
-      var resultsQuery = { roundId: roundId };
+      let resultsQuery = { roundId: roundId };
       if(this.query.registrationId) {
         resultsQuery.registrationId = this.query.registrationId;
       }
-      var results = Results.find(resultsQuery);
+      let results = Results.find(resultsQuery);
 
       this.setContentType('application/json');
       return JSON.stringify(results.fetch());
     },
     put: function(data) {
-      var requireManagement = true;
-      var roundId = getRoundId.call(this, requireManagement);
+      let requireManagement = true;
+      let roundId = getRoundId.call(this, requireManagement);
 
       if(!data) {
         throw new Meteor.Error(400, "Please send an object with registrationId, solveIndex, and solveTime");
@@ -92,7 +92,7 @@ HTTP.methods({
         throw new Meteor.Error(400, "Please specify a solveTime");
       }
 
-      var result = Results.findOne({
+      let result = Results.findOne({
         roundId: roundId,
         registrationId: data.registrationId,
       });
@@ -107,14 +107,14 @@ HTTP.methods({
 HTTP.methods({
   '/api/v0/competitions/:competitionUrlId/groups': {
     get: function(data) {
-      var competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
+      let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
 
       if(!this.userId) {
         throw new Meteor.Error(401, "Please specify a valid token");
       }
       throwIfCannotManageCompetition(this.userId, competitionId);
 
-      var openRounds = Rounds.find({
+      let openRounds = Rounds.find({
         competitionId: competitionId,
         status: wca.roundStatuses.open,
       }, {
@@ -123,13 +123,13 @@ HTTP.methods({
         }
       }).fetch();
 
-      var closedGroupFields = {
+      let closedGroupFields = {
         competitionId: 1,
         roundId: 1,
         group: 1,
         open: 1,
       };
-      var openGroups = Groups.find({
+      let openGroups = Groups.find({
         competitionId: competitionId,
         open: true,
         // Only consider a group open if it's for a round that is open.
@@ -138,7 +138,7 @@ HTTP.methods({
         fields: _.extend({ scrambles: 1, extraScrambles: 1 }, closedGroupFields),
       }).fetch();
 
-      var closedGroups = Groups.find({
+      let closedGroups = Groups.find({
         competitionId: competitionId,
         $or: [
           { open: { $ne: true } },
@@ -148,7 +148,7 @@ HTTP.methods({
         fields: closedGroupFields,
       }).fetch();
 
-      var allGroups = openGroups.concat(closedGroups);
+      let allGroups = openGroups.concat(closedGroups);
 
       this.setContentType('application/json');
       return JSON.stringify(allGroups);

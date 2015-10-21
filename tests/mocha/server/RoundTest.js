@@ -41,9 +41,9 @@ MochaWeb.testOnly(function() {
     });
 
     it('status convenience functions', function() {
-      var unstarted = make(Rounds, { status: 'unstarted' });
-      var open = make(Rounds, { status: 'open' });
-      var closed = make(Rounds, { status: 'closed' });
+      let unstarted = make(Rounds, { status: 'unstarted' });
+      let open = make(Rounds, { status: 'open' });
+      let closed = make(Rounds, { status: 'closed' });
 
       chai.expect(unstarted.isUnstarted()).to.be.true;
       chai.expect(open.isUnstarted()).to.be.false;
@@ -69,10 +69,10 @@ MochaWeb.testOnly(function() {
     });
 
     it('updates sortableBestValue and sortableAverageValue when times are cleared', function() {
-      var comp = make(Competitions);
-      var round = make(Rounds, { competitionId: comp._id });
-      var registration1 = make(Registrations, { competitionId: comp._id });
-      var result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
+      let comp = make(Competitions);
+      let round = make(Rounds, { competitionId: comp._id });
+      let registration1 = make(Registrations, { competitionId: comp._id });
+      let result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
       setSolveTime(result1._id, 0, { millis: 3333 });
       setSolveTime(result1._id, 0, null);
       result1 = Results.findOne(result1._id);
@@ -81,12 +81,12 @@ MochaWeb.testOnly(function() {
     });
 
     it('sortResults()', function() {
-      var comp = make(Competitions);
-      var round = make(Rounds, { competitionId: comp._id });
-      var registration1 = make(Registrations, { competitionId: comp._id });
-      var result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
-      var registration2 = make(Registrations, { competitionId: comp._id });
-      var result2 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration2._id });
+      let comp = make(Competitions);
+      let round = make(Rounds, { competitionId: comp._id });
+      let registration1 = make(Registrations, { competitionId: comp._id });
+      let result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
+      let registration2 = make(Registrations, { competitionId: comp._id });
+      let result2 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration2._id });
       setSolveTime(result2._id, 0, { millis: 3333 });
       setSolveTime(result2._id, 1, { millis: 2222 });
       setSolveTime(result2._id, 2, { millis: 4444 });

@@ -1,9 +1,9 @@
 // It might make sense to get rid of this in favor of the substringMatcher below.
 typeaheadSubstringMatcher = function(collection, attribute, extraCriteria) {
   return function findMatches(q, cb) {
-    var seenIds = {};
-    var arr = [];
-    var addResult = function(result) {
+    let seenIds = {};
+    let arr = [];
+    let addResult = function(result) {
       if(seenIds[result._id]) {
         return;
       }
@@ -14,16 +14,16 @@ typeaheadSubstringMatcher = function(collection, attribute, extraCriteria) {
     // First search for strings that start with the query,
     // then search for strings that have words that start with the query,
     // then search for strings that have the query in them anywhere.
-    _.each(["^", "\\b", ""], function(rePrefix) {
-      var reStr = rePrefix + RegExp.escape(q);
-      var criteria = {};
+    ["^", "\\b", ""].forEach(rePrefix => {
+      let reStr = rePrefix + RegExp.escape(q);
+      let criteria = {};
       criteria[attribute] = {
         $regex: reStr,
         $options: 'i'
       };
       criteria = _.extend({}, extraCriteria, criteria);
-      var results = collection.find(criteria).fetch();
-      for(var i = 0; i < results.length; i++) {
+      let results = collection.find(criteria).fetch();
+      for(let i = 0; i < results.length; i++) {
         addResult(results[i]);
       }
     });
@@ -34,9 +34,9 @@ typeaheadSubstringMatcher = function(collection, attribute, extraCriteria) {
 
 substringMatcher = function(getObjects, attribute) {
   return function(q, cb) {
-    var seenIds = {};
-    var arr = [];
-    var addResult = function(object) {
+    let seenIds = {};
+    let arr = [];
+    let addResult = function(object) {
       if(seenIds[object._id]) {
         return;
       }
@@ -44,18 +44,18 @@ substringMatcher = function(getObjects, attribute) {
       arr.push(object);
     };
 
-    var objects = getObjects();
+    let objects = getObjects();
     // First search for strings that start with the query,
     // then search for strings that have words that start with the query,
     // then search for strings that have the query in them anywhere.
-    _.each(["^", "\\b", ""], function(rePrefix) {
-      var reStr = rePrefix + RegExp.escape(q);
-      var re = new RegExp(reStr, 'i');
+    ["^", "\\b", ""].forEach(rePrefix => {
+      let reStr = rePrefix + RegExp.escape(q);
+      let re = new RegExp(reStr, 'i');
 
-      var newMatches = [];
-      for(var i = 0; i < objects.length; i++) {
-        var object = objects[i];
-        var str = object[attribute];
+      let newMatches = [];
+      for(let i = 0; i < objects.length; i++) {
+        let object = objects[i];
+        let str = object[attribute];
         if(re.test(str)) {
           newMatches.push(object);
         }
@@ -71,7 +71,7 @@ substringMatcher = function(getObjects, attribute) {
           return 0;
         }
       });
-      _.each(newMatches, function(match) {
+      newMatches.forEach(match => {
         addResult(match);
       });
     });
@@ -83,11 +83,11 @@ substringMatcher = function(getObjects, attribute) {
 // Monkeypatching the typeahead plugin to automatically
 // highlight the first suggestion. This way the user can press enter
 // to select it.
-var oldTypeahead = $.fn.typeahead;
+let oldTypeahead = $.fn.typeahead;
 $.fn.typeahead = function(method) {
   if(!method || typeof(method) === "object" || method === "initialize") {
-    var $typeahead = $(this);
-    var ttTypeahead = $typeahead.data('ttTypeahead');
+    let $typeahead = $(this);
+    let ttTypeahead = $typeahead.data('ttTypeahead');
     if(!ttTypeahead) {
       $typeahead.keydown(function(e) {
         if(e.which >= 37 && e.which <= 40) {
@@ -97,12 +97,12 @@ $.fn.typeahead = function(method) {
           return;
         }
         Meteor.defer(function() {
-          var ttTypeahead = $typeahead.data('ttTypeahead');
-          var dropdown = ttTypeahead.dropdown;
+          let ttTypeahead = $typeahead.data('ttTypeahead');
+          let dropdown = ttTypeahead.dropdown;
           if(dropdown._getCursor().length > 0) {
             return;
           }
-          var silent = true; // prevent updating the text field
+          let silent = true; // prevent updating the text field
           dropdown._setCursor(dropdown._getSuggestions().first(), silent);
         });
       });

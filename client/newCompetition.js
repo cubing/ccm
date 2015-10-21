@@ -1,5 +1,5 @@
-var newCompetitionNameReact = new ReactiveVar(null);
-var uploadedCompetitionReact = new ReactiveVar(null);
+let newCompetitionNameReact = new ReactiveVar(null);
+let uploadedCompetitionReact = new ReactiveVar(null);
 
 Template.newCompetition.created = function() {
   newCompetitionNameReact.set(null);
@@ -16,7 +16,7 @@ Template.newCompetition.helpers({
 });
 
 function getTodayDateNoTime() {
-  var today = moment();
+  let today = moment();
   return new Date(Date.UTC(today.year(), today.month(), today.date()));
 }
 
@@ -27,8 +27,8 @@ Template.newCompetition.events({
   'submit #formNewCompetition': function(e) {
     e.preventDefault();
 
-    var form = e.currentTarget;
-    var competitionName = form.inputCompetitionName.value;
+    let form = e.currentTarget;
+    let competitionName = form.inputCompetitionName.value;
     Meteor.call("createCompetition", competitionName, getTodayDateNoTime(), function(err, competitionUrlId) {
       if(err) {
         FlashMessages.sendError("Error submitting form: " + err.message, { autoHide: true, hideDelay: 5000 });
@@ -42,12 +42,12 @@ Template.newCompetition.events({
   'change #formImportCompetition input[type="file"]': function(e, template) {
     uploadedCompetitionReact.set(null);
 
-    var fileInput = e.currentTarget;
-    var file = fileInput.files[0];
+    let fileInput = e.currentTarget;
+    let file = fileInput.files[0];
 
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.onload = function() {
-      var wcaCompetition = JSON.parse(reader.result);
+      let wcaCompetition = JSON.parse(reader.result);
       uploadedCompetitionReact.set(wcaCompetition);
     };
     reader.readAsText(file);
@@ -55,8 +55,8 @@ Template.newCompetition.events({
   'submit #formImportCompetition': function(e, template) {
     e.preventDefault();
 
-    var $form = $(e.currentTarget);
-    var wcaCompetition = uploadedCompetitionReact.get();
+    let $form = $(e.currentTarget);
+    let wcaCompetition = uploadedCompetitionReact.get();
 
     $form.css('cursor', 'wait');
     $form.find('button').addClass('disabled');

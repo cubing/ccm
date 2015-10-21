@@ -1,17 +1,17 @@
-var log = logging.handle("manageCheckin");
+const log = logging.handle("manageCheckin");
 
-var selectedRegistrationReact = new ReactiveVar(null);
-var wcaCompetitionDataReact = new ReactiveVar(null);
+let selectedRegistrationReact = new ReactiveVar(null);
+let wcaCompetitionDataReact = new ReactiveVar(null);
 Template.manageCheckin.created = function() {
-  var template = this;
+  let template = this;
   selectedRegistrationReact.set(null);
 };
 
 Template.manageCheckin.rendered = function() {
-  var template = this;
+  let template = this;
 
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
 
     React.render(
       <CheckinList competitionId={data.competitionId} />,
@@ -20,9 +20,9 @@ Template.manageCheckin.rendered = function() {
   });
 
   template.autorun(function() {
-    var data = Template.currentData();
-    var competition = Competitions.findOne(data.competitionId, { fields: { wcaCompetitionId: 1 } });
-    var pendingWcaAjax = $.get("https://www.worldcubeassociation.org/api/v0/competitions/" + encodeURIComponent(competition.wcaCompetitionId));
+    let data = Template.currentData();
+    let competition = Competitions.findOne(data.competitionId, { fields: { wcaCompetitionId: 1 } });
+    let pendingWcaAjax = $.get("https://www.worldcubeassociation.org/api/v0/competitions/" + encodeURIComponent(competition.wcaCompetitionId));
     pendingWcaAjax.done(data => {
       wcaCompetitionDataReact.set(data);
     });
@@ -33,9 +33,9 @@ Template.manageCheckin.rendered = function() {
 };
 
 Template.manageCheckin.destroyed = function() {
-  var template = this;
+  let template = this;
   selectedRegistrationReact.set(null);
-  var unmounted = React.unmountComponentAtNode(
+  let unmounted = React.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
   assert(unmounted);
@@ -49,18 +49,17 @@ Template.manageCheckin.helpers({
 
 Template.manageCheckin.events({
   'click .addParticipant': function() {
-    var newRegistration = {
+    let newRegistration = {
       competitionId: this.competitionId,
     };
     selectedRegistrationReact.set(newRegistration);
     $("#modalEditRegistration").modal('show');
   },
   'click .js-delete-registration': function() {
-    var that = this;
-    var confirmStr = "Are you sure you want to delete the registration for " + this.uniqueName + "?";
-    bootbox.confirm(confirmStr, function(confirm) {
+    let confirmStr = "Are you sure you want to delete the registration for " + this.uniqueName + "?";
+    bootbox.confirm(confirmStr, confirm => {
       if(confirm) {
-        Registrations.remove(that._id);
+        Registrations.remove(this._id);
         $("#modalEditRegistration").modal('hide');
       }
     });
@@ -91,7 +90,7 @@ Template.modalImportRegistrations.helpers({
     return registrationJsonParseErrorReact.get();
   },
   cusaJsonUrl: function() {
-    var wcaCompetitionData = wcaCompetitionDataReact.get();
+    let wcaCompetitionData = wcaCompetitionDataReact.get();
     if(wcaCompetitionData && !wcaCompetitionData.error) {
       if(wcaCompetitionData.website.indexOf("cubingusa.com") >= 0) {
         if(wcaCompetitionData.website[wcaCompetitionData.website.length - 1] !== "/") {
@@ -104,8 +103,8 @@ Template.modalImportRegistrations.helpers({
   },
 });
 
-var registrationJsonReact = new ReactiveVar(null);
-var registrationJsonParseErrorReact = new ReactiveVar(null);
+let registrationJsonReact = new ReactiveVar(null);
+let registrationJsonParseErrorReact = new ReactiveVar(null);
 Template.modalImportRegistrations.events({
   'input textarea[name="registrationJson"]': function(e) {
     try {
@@ -117,9 +116,9 @@ Template.modalImportRegistrations.events({
     }
   },
   'click button[type="submit"]': function(e) {
-    var registrationJson = registrationJsonReact.get();
+    let registrationJson = registrationJsonReact.get();
     assert(registrationJson);
-    var data = Template.parentData(1);
+    let data = Template.parentData(1);
     Meteor.call('importRegistrations', data.competitionId, registrationJson, function(error) {
       if(error) {
         bootbox.alert(`Error importing registrations: ${error.reason}`);
@@ -130,14 +129,14 @@ Template.modalImportRegistrations.events({
   },
 });
 
-var CheckinList = React.createClass({
+let CheckinList = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData: function() {
-    var competitionId = this.props.competitionId;
-    var registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
+    let competitionId = this.props.competitionId;
+    let registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
 
-    var competitionEvents = getCompetitionEvents(this.props.competitionId);
+    let competitionEvents = getCompetitionEvents(this.props.competitionId);
 
     return {
       registrations: registrations,
@@ -150,24 +149,24 @@ var CheckinList = React.createClass({
   componentDidMount: function() {
     log.l1("component did mount");
 
-    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
     makeTableSticky($checkinTable);
   },
   componentWillUpdate(nextProps, nextState) {
     log.l1("component will update");
-    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
     $checkinTable.find('thead tr th').css({ minWidth: "", maxWidth: "" });
     makeTableNotSticky($checkinTable);
   },
   componentDidUpdate(prevProps, prevState) {
     log.l1("component did update");
-    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
     makeTableSticky($checkinTable);
   },
   componentWillUnmount: function() {
     log.l1("component will unmount");
 
-    var $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
     makeTableNotSticky($checkinTable);
   },
   registeredCheckboxToggled: function(registration, event) {
@@ -189,8 +188,6 @@ var CheckinList = React.createClass({
     $("#modalEditRegistration").modal('show');
   },
   render: function() {
-    var that = this;
-
     return (
       <div>
         <template name="devinTest">
@@ -204,7 +201,7 @@ var CheckinList = React.createClass({
               <th className="text-nowrap">WCA id</th>
               <th>Gender</th>
               <th>Birthday</th>
-              {that.data.competitionEvents.map(function(event) {
+              {this.data.competitionEvents.map(function(event) {
                 return (
                   <th key={event.eventCode} className="text-center">
                     <span className={"cubing-icon icon-" + event.eventCode} alt={event.eventCode}></span><br />
@@ -216,17 +213,17 @@ var CheckinList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {that.data.registrations.map(function(registration) {
-              var eventTds = [];
-              that.data.competitionEvents.forEach(function(event) {
-                var registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
+            {this.data.registrations.map(registration => {
+              let eventTds = [];
+              this.data.competitionEvents.forEach(event => {
+                let registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
 
-                var classes = classNames({
+                let classes = classNames({
                   'text-center': true,
                 });
-                var onChange = that.registeredCheckboxToggled.bind(null, registration, event);
-                var onClick = function(e) {
-                  var $input = $(e.currentTarget).find('input');
+                let onChange = this.registeredCheckboxToggled.bind(null, registration, event);
+                let onClick = function(e) {
+                  let $input = $(e.currentTarget).find('input');
                   if($input[0] == e.target) {
                     // Ignore direct clicks on the checkbox, those are handled by the
                     // onChange event listener.
@@ -241,10 +238,10 @@ var CheckinList = React.createClass({
                 );
               });
 
-              var checkinButtonText = registration.checkedIn ? "Un-check-in" : "Check-in";
-              var onClick = that.checkInClicked.bind(null, registration);
-              var style = {};
-              var checkinButton = (
+              let checkinButtonText = registration.checkedIn ? "Un-check-in" : "Check-in";
+              let onClick = this.checkInClicked.bind(null, registration);
+              let style = {};
+              let checkinButton = (
                 <button type="button"
                         className="btn btn-default btn-xs"
                         style={style}
@@ -253,8 +250,8 @@ var CheckinList = React.createClass({
                 </button>
               );
 
-              var handleEditRegistration = that.handleEditRegistration.bind(null, registration);
-              var gender = registration.gender ? wca.genderByValue[registration.gender].label : '';
+              let handleEditRegistration = this.handleEditRegistration.bind(null, registration);
+              let gender = registration.gender ? wca.genderByValue[registration.gender].label : '';
               return (
                 <tr key={registration._id}>
                   <td className="uniqueName">{registration.uniqueName}</td>

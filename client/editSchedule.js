@@ -1,4 +1,4 @@
-var eventToEditReact = new ReactiveVar(null);
+let eventToEditReact = new ReactiveVar(null);
 
 function activateDraggable() {
   $('.draggable').draggable({
@@ -13,7 +13,7 @@ Template.editSchedule.helpers({
     return Competitions.findOne(this.competitionId);
   },
   sortedRounds: function() {
-    var allRounds = Rounds.find({ competitionId: this.competitionId }).fetch();
+    let allRounds = Rounds.find({ competitionId: this.competitionId }).fetch();
     return _.sortBy(allRounds, function(round) { return round.displayTitle(); });
   },
   eventToEdit: function() {
@@ -31,37 +31,37 @@ Template.editSchedule.events({
 });
 
 Template.editSchedule.rendered = function() {
-  var template = this;
+  let template = this;
   setupCompetitionCalendar(template, template.$('#calendar'), template.$('#editEventModal'));
   activateDraggable();
 };
 
 // This is global so competitionSchedule.js can use it
 setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
-  var dbScheduleEvents = [];
+  let dbScheduleEvents = [];
 
   template.autorun(function() {
-    var data = Template.currentData();
-    var competitionId = data.competitionId;
-    var competition = Competitions.findOne(competitionId);
+    let data = Template.currentData();
+    let competitionId = data.competitionId;
+    let competition = Competitions.findOne(competitionId);
 
     $calendarDiv.fullCalendar('destroy');
 
     function timeMinutesToFullCalendarTime(timeMinutes) {
-      var duration = moment.duration(timeMinutes, 'minutes');
+      let duration = moment.duration(timeMinutes, 'minutes');
       return Math.floor(duration.asHours()) + ":" + duration.minutes() + ":00";
     }
 
-    var startDateMoment = competition.startDate ? moment(competition.startDate).utc() : moment.utc().startOf('day');
+    let startDateMoment = competition.startDate ? moment(competition.startDate).utc() : moment.utc().startOf('day');
 
-    var eventChanged = function(event, revertFunc) {
-      var update = {
+    let eventChanged = function(event, revertFunc) {
+      let update = {
         nthDay: event.start.diff(startDateMoment, 'days'),
         startMinutes: event.start.hour()*60 + event.start.minute(),
         durationMinutes: event.end.diff(event.start, 'minutes'),
       };
 
-      var successCount = ScheduleEvents.update(event.id, { $set: update });
+      let successCount = ScheduleEvents.update(event.id, { $set: update });
       if(!successCount) {
         revertFunc(); // moves the event back to before the drag
       }
@@ -86,14 +86,14 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
       contentHeight: 'auto',
       droppable: true,
       drop: function(date) { // A round / new event was dragged onto the schedule
-        var newEventData = {
+        let newEventData = {
           competitionId: competitionId,
           nthDay: date.diff(startDateMoment, 'days'),
           startMinutes: date.utc().get('hour')*60 + date.utc().get('minute'),
           durationMinutes: ScheduleEvent.DEFAULT_DURATION.asMinutes(),
         };
 
-        var droppedRoundId = $(this).data('round-id');
+        let droppedRoundId = $(this).data('round-id');
         if(droppedRoundId) {
           Meteor.call('addScheduleEvent', competitionId, newEventData, droppedRoundId);
           $(this).draggable({ disabled: true });
@@ -103,16 +103,16 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
         }
       },
       events: function(start, end, timezone, callback) {
-        var calEvents = [];
+        let calEvents = [];
 
-        _.each(dbScheduleEvents, function(dbEvent) {
+        dbScheduleEvents.forEach(dbEvent => {
           // startDateMoment is guaranteed to be in UTC, so there's no
           // weirdness here with adding time to a midnight that is about to
           // experience DST.
-          var day = startDateMoment.clone().add(dbEvent.nthDay, 'days');
-          var start = day.clone().add(dbEvent.startMinutes, 'minutes');
-          var end = start.clone().add(dbEvent.durationMinutes, 'minutes');
-          var calEvent = {
+          let day = startDateMoment.clone().add(dbEvent.nthDay, 'days');
+          let start = day.clone().add(dbEvent.startMinutes, 'minutes');
+          let end = start.clone().add(dbEvent.durationMinutes, 'minutes');
+          let calEvent = {
             id: dbEvent._id,
             title: dbEvent.displayTitle(),
             start: start,
@@ -138,7 +138,7 @@ setupCompetitionCalendar = function(template, $calendarDiv, $editModal) {
   });
 
   template.autorun(function() {
-    var data = Template.currentData();
+    let data = Template.currentData();
     dbScheduleEvents = ScheduleEvents.find({ competitionId: data.competitionId }).fetch();
     $calendarDiv.fullCalendar('refetchEvents');
   });
@@ -155,8 +155,8 @@ Template.editEventModal.helpers({
     return Competitions.findOne(this.competitionId).numberOfDays > 1;
   },
   nthDayOptions: function() {
-    var options = [];
-    for(var i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i++) {
+    let options = [];
+    for(let i = 0; i < Competitions.findOne(this.competitionId).numberOfDays; i++) {
       options.push({label: "Day " + (i+1), value: i});
     }
     return options;
@@ -181,7 +181,7 @@ AutoForm.hooks({
 
 Template.editEventModal.events({
   'click #buttonDeleteEvent': function(e, template) {
-    var eventToEdit = eventToEditReact.get();
+    let eventToEdit = eventToEditReact.get();
     assert(eventToEdit._id);
     Meteor.call('removeScheduleEvent', eventToEdit._id, function(err, result) {
       if(!err) {

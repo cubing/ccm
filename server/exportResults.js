@@ -1,16 +1,15 @@
-var log = logging.handle("server_exportResults");
-
+const log = logging.handle("server_exportResults");
 
 Meteor.methods({
   exportWcaResults: function exportWcaResults(competitionId, competitionUrlId) {
     log.l0("exportWcaResults start");
-    var problems = [];
+    let problems = [];
 
-    var uploadScramblesRoute = Router.routes.uploadScrambles;
-    var uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competitionUrlId });
+    let uploadScramblesRoute = Router.routes.uploadScrambles;
+    let uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competitionUrlId });
 
-    var groups = Groups.find({ competitionId: competitionId }).fetch();
-    var scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
+    let groups = Groups.find({ competitionId: competitionId }).fetch();
+    let scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
     if(scramblePrograms.length > 1) {
       // TODO - more details
       problems.push({
@@ -19,13 +18,13 @@ Meteor.methods({
         fixUrl: uploadScramblesPath
       });
     }
-    var scrambleProgram = scramblePrograms[0];
+    let scrambleProgram = scramblePrograms[0];
 
-    var registrations = Registrations.find({ competitionId: competitionId }).fetch();
+    let registrations = Registrations.find({ competitionId: competitionId }).fetch();
     // TODO - compare this list of people to the people who *actually* competed
-    var wcaPersons = _.map(registrations, function(registration) {
-      var iso8601Date = formatMomentDateIso8601(moment(registration.dob));
-      var wcaPerson = {
+    let wcaPersons = _.map(registrations, function(registration) {
+      let iso8601Date = formatMomentDateIso8601(moment(registration.dob));
+      let wcaPerson = {
         "id": registration._id,
         "name": registration.uniqueName,
         "wcaId": registration.wcaId,
@@ -36,18 +35,18 @@ Meteor.methods({
       return wcaPerson;
     });
 
-    var wcaEvents = [];
-    _.toArray(wca.eventByCode).forEach(function(e, i) {
-      var wcaRounds = [];
+    let wcaEvents = [];
+    _.toArray(wca.eventByCode).forEach((e, i) => {
+      let wcaRounds = [];
       Rounds.find({
         competitionId: competitionId,
         eventCode: e.code
-      }).forEach(function(round) {
-        var wcaResults = [];
-        Results.find({ roundId: round._id }).forEach(function(result) {
-          var wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
+      }).forEach(round => {
+        let wcaResults = [];
+        Results.find({ roundId: round._id }).forEach(result => {
+          let wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
 
-          var roundDataEntryPath = Router.routes.dataEntry.path({
+          let roundDataEntryPath = Router.routes.dataEntry.path({
             competitionUrlId: competitionUrlId,
             eventCode: round.eventCode,
             nthRound: round.nthRound,
@@ -61,8 +60,8 @@ Meteor.methods({
             return;
           }
 
-          var wcaAverage = wca.solveTimeToWcaValue(result.average);
-          var wcaResult = {
+          let wcaAverage = wca.solveTimeToWcaValue(result.average);
+          let wcaResult = {
             personId: result.userId,
             position: result.position,
             results: wcaValues,
@@ -72,9 +71,9 @@ Meteor.methods({
           wcaResults.push(wcaResult);
         });
 
-        var wcaGroups = [];
-        Groups.find({ roundId: round._id }).forEach(function(group) {
-          var wcaGroup = {
+        let wcaGroups = [];
+        Groups.find({ roundId: round._id }).forEach(group => {
+          let wcaGroup = {
             group: group.group,
             scrambles: group.scrambles,
             extraScrambles: group.extraScrambles
@@ -89,7 +88,7 @@ Meteor.methods({
           });
         }
 
-        var wcaRound = {
+        let wcaRound = {
           roundId: round.roundCode(),
           formatId: round.formatCode,
           results: wcaResults,
@@ -100,14 +99,14 @@ Meteor.methods({
       if(wcaRounds.length === 0) {
         return;
       }
-      var wcaEvent = {
+      let wcaEvent = {
         eventId: e.code,
         rounds: wcaRounds
       };
       wcaEvents.push(wcaEvent);
     });
 
-    var wcaResults = {
+    let wcaResults = {
       "formatVersion": "WCA Competition 0.2",
       "competitionId": Competitions.findOne(competitionId).wcaCompetitionId,
       "scrambleProgram": scrambleProgram,

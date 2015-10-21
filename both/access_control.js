@@ -2,11 +2,11 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
-  var user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
+  let user = Meteor.users.findOne(userId, { fields: { siteAdmin: 1 } });
   if(!user) {
     return new Meteor.Error(401, "User " + userId + " not found");
   }
-  var competition = Competitions.findOne(competitionId, { fields: { _id: 1 } });
+  let competition = Competitions.findOne(competitionId, { fields: { _id: 1 } });
   if(!competition) {
     return new Meteor.Error(404, "Competition does not exist");
   }
@@ -14,7 +14,7 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
   if(!user.siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
     // in order to manage =)
-    var registration = Registrations.findOne({
+    let registration = Registrations.findOne({
       competitionId: competitionId,
       userId: userId,
     }, {
@@ -29,33 +29,33 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
 };
 
 getCannotRegisterReasons = function(competitionId) {
-  var reasonText; // re-usable
+  let reasonText; // re-usable
 
-  var competition = Competitions.findOne(competitionId);
+  let competition = Competitions.findOne(competitionId);
   if(!competition.registrationOpenDate || !competition.registrationCloseDate) {
     // open / close dates not yet set
     return ["Competition registration is not open."];
   }
 
-  var now = moment();
-  var open = moment(competition.registrationOpenDate);
-  var close = moment(competition.registrationCloseDate);
+  let now = moment();
+  let open = moment(competition.registrationOpenDate);
+  let close = moment(competition.registrationCloseDate);
 
   if(now.isAfter(close)) {
     return ["Competition registration is now closed!"];
   }
   if(now.isBefore(open)) {
     reasonText = "Competition registration is not yet open!";
-    var openStr = formatMomentDateTime(open);
+    let openStr = formatMomentDateTime(open);
     reasonText += " Registration is set to open" +
                   " <strong>" + open.fromNow() + "</strong>" +
                   " on " + openStr + ".";
     return [reasonText];
   }
 
-  var reasons = [];
+  let reasons = [];
   // Check to make sure profile has appropriate data
-  var user = Meteor.user();
+  let user = Meteor.user();
   reasonText = "You need to complete your user profile to register!";
   if(!user.profile) {
     reasons.push(reasonText);
@@ -81,7 +81,7 @@ getCannotRegisterReasons = function(competitionId) {
   // Users already registered should still be able to edit registrations
   if(!Registrations.findOne({userId: Meteor.userId(), competitionId: competitionId})) {
     // participant capacity limit
-    var numParticipants;
+    let numParticipants;
     if(competition.registrationParticipantLimitCount) {
       numParticipants = Registrations.find({competitionId: competitionId}, {}).count();
       if(numParticipants >= competition.registrationParticipantLimitCount) {
@@ -90,10 +90,10 @@ getCannotRegisterReasons = function(competitionId) {
     }
     // total venue capacity limit
     if(competition.registrationAttendeeLimitCount) {
-      var registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
+      let registrationGuestData = Registrations.find({competitionId: competitionId}, {fields: {guestCount: 1}});
       numParticipants = registrationGuestData.count();
-      var guestTotalCount = 0;
-      registrationGuestData.forEach(function(obj) {
+      let guestTotalCount = 0;
+      registrationGuestData.forEach(obj => {
         guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
       });
       if(numParticipants + guestTotalCount >= competition.registrationAttendeeLimitCount) {
@@ -110,7 +110,7 @@ getCannotRegisterReasons = function(competitionId) {
 };
 
 throwIfCannotManageCompetition = function(userId, competitionId) {
-  var cannotManageReason = getCannotManageCompetitionReason(userId, competitionId);
+  let cannotManageReason = getCannotManageCompetitionReason(userId, competitionId);
   if(cannotManageReason) {
     throw cannotManageReason;
   }
@@ -118,7 +118,7 @@ throwIfCannotManageCompetition = function(userId, competitionId) {
 
 canRemoveRound = function(userId, roundId) {
   check(roundId, String);
-  var round = Rounds.findOne(roundId);
+  let round = Rounds.findOne(roundId);
   if(!round) {
     throw new Meteor.Error(404, "Unrecognized round id");
   }
@@ -138,13 +138,13 @@ canAddRound = function(userId, competitionId, eventCode) {
     throw new Meteor.Error(404, "Unrecognized event code");
   }
 
-  var rounds = Rounds.find({
+  let rounds = Rounds.find({
     competitionId: competitionId,
     eventCode: eventCode
   }, {
     fields: { _id: 1 }
   });
-  var nthRound = rounds.count();
+  let nthRound = rounds.count();
   return nthRound < wca.MAX_ROUNDS_PER_EVENT;
 };
 
@@ -159,7 +159,7 @@ if(Meteor.isServer) {
       if(getCannotManageCompetitionReason(userId, competition._id)) {
         return false;
       }
-      var allowedFields = [
+      let allowedFields = [
         'competitionName',
         'organizers',
 
@@ -191,7 +191,7 @@ if(Meteor.isServer) {
       if(getCannotManageCompetitionReason(userId, round.competitionId)) {
         return false;
       }
-      var allowedFields = [
+      let allowedFields = [
         'formatCode',
         'softCutoff',
         'hardCutoff',
@@ -213,7 +213,7 @@ if(Meteor.isServer) {
       if(getCannotManageCompetitionReason(userId, scheduleEvent.competitionId)) {
         return false;
       }
-      var allowedFields = [
+      let allowedFields = [
         'nthDay',
         'startMinutes',
         'durationMinutes',
@@ -228,7 +228,7 @@ if(Meteor.isServer) {
       if(getCannotManageCompetitionReason(userId, progress.competitionId)) {
         return false;
       }
-      var allowedFields = [
+      let allowedFields = [
         'done',
         'total',
       ];
@@ -241,7 +241,7 @@ if(Meteor.isServer) {
       if(getCannotManageCompetitionReason(userId, result.competitionId)) {
         return false;
       }
-      var allowedFields = [
+      let allowedFields = [
         'solves',
 
         'updatedAt',
@@ -276,7 +276,7 @@ if(Meteor.isServer) {
     if(registration.userId != userId) {
       return false;
     }
-    var allowedFields = [
+    let allowedFields = [
       'userId',
       'competitionId',
       'uniqueName',

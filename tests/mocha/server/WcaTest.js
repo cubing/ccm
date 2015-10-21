@@ -1,4 +1,4 @@
-var expect = chai.expect;
+let expect = chai.expect;
 
 MochaWeb.testOnly(function() {
   describe('wca', function() {
@@ -17,68 +17,68 @@ MochaWeb.testOnly(function() {
 
     describe('computeSolvesStatistics', function() {
       describe('average of five', function() {
-        var roundFormatCode = 'a';
+        let roundFormatCode = 'a';
 
         it('simple average', function() {
-          var solves = [time(1300), time(555), time(1000), time(9999), time(1300)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1300), time(555), time(1000), time(9999), time(1300)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(1200));
           expectBestWorstIndex(stats, 1, 3);
         });
 
         it('average with DNF', function() {
-          var solves = [time(555), time(1200), time(1200), dnf(), time(1200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(555), time(1200), time(1200), dnf(), time(1200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(1200));
           expectBestWorstIndex(stats, 0, 3);
         });
 
         it('average with DNS', function() {
-          var solves = [time(1200), time(555), time(1200), dns(), time(1200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1200), time(555), time(1200), dns(), time(1200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(1200));
           expectBestWorstIndex(stats, 1, 3);
         });
 
         it('average with double dnf', function() {
-          var solves = [time(1200), dnf(), time(1200), dnf(), time(1200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1200), dnf(), time(1200), dnf(), time(1200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(dnf());
           expectBestWorstIndex(stats, 0, 3);
         });
 
         it('average with double DNS', function() {
-          var solves = [time(1200), dns(), time(1200), dns(), time(1200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1200), dns(), time(1200), dns(), time(1200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           // https://www.worldcubeassociation.org/regulations/#9f9
           expect(stats.average).to.deep.equal(dnf());
           expectBestWorstIndex(stats, 0, 3);
         });
 
         it('average with soft cutoff', function() {
-          var solves = [time(1200), time(3200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1200), time(3200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 0, 1);
         });
 
         it('average with soft cutoff', function() {
-          var solves = [time(1200), time(3200), null, null, null];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(1200), time(3200), null, null, null];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(null);
           expectBestWorstIndex(stats, 0, 1);
         });
 
         it('first solve is DNF', function() {
-          var solves = [dnf(), time(500), time(500), time(100), time(200)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [dnf(), time(500), time(500), time(100), time(200)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(400));
           expectBestWorstIndex(stats, 3, 0);
         });
 
         it('average with 5 identical times', function() {
-          var solves = [time(555), time(555), time(555), time(555), time(555)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(555), time(555), time(555), time(555), time(555)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(555));
           // We don't particularly care which of these 5 identical solves is
           // best or worst, but we do care that they are different solves.
@@ -87,51 +87,51 @@ MochaWeb.testOnly(function() {
       });
 
       describe('mean of three', function() {
-        var roundFormatCode = 'm';
+        let roundFormatCode = 'm';
 
         it('simple mean', function() {
-          var solves = [time(2300), time(2000), time(2300)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300), time(2000), time(2300)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(time(2200));
           expectBestWorstIndex(stats, 1, 2);
         });
 
         it('mean with DNF', function() {
-          var solves = [time(2300), time(2000), dnf()];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300), time(2000), dnf()];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.deep.equal(dnf());
           expectBestWorstIndex(stats, 1, 2);
         });
 
         it('mean with cutoff', function() {
-          var solves = [time(2300), time(2000)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300), time(2000)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 1, 0);
         });
       });
 
       describe('best of three', function() {
-        var roundFormatCode = '3';
+        let roundFormatCode = '3';
 
         describe('times', function() {
           it('simple times', function() {
-            var solves = [time(2300), time(2000), time(2300)];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [time(2300), time(2000), time(2300)];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
             expect(stats.average).to.deep.equal(time(2200));
             expectBestWorstIndex(stats, 1, 2);
           });
 
           it('with DNF', function() {
-            var solves = [time(2300), time(2000), dnf()];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [time(2300), time(2000), dnf()];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
             expect(stats.average).to.deep.equal(dnf());
             expectBestWorstIndex(stats, 1, 2);
           });
 
           it('with cutoff', function() {
-            var solves = [time(2300), time(2000)];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [time(2300), time(2000)];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
             expect(stats.average).to.equal(null);
             expectBestWorstIndex(stats, 1, 0);
           });
@@ -140,18 +140,18 @@ MochaWeb.testOnly(function() {
 
         describe('fmc', function() {
           it('simple fmc', function() {
-            var solves = [moves(27), moves(29), moves(24)];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [moves(27), moves(29), moves(24)];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
 
-            var fmcAverage = moves(26.67);
+            let fmcAverage = moves(26.67);
             fmcAverage.decimals = 2;
             expect(stats.average).to.deep.equal(fmcAverage);
             expectBestWorstIndex(stats, 2, 1);
           });
 
           it('with DNF', function() {
-            var solves = [moves(33), moves(42), dnf()];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [moves(33), moves(42), dnf()];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
             expect(stats.average).to.deep.equal(dnf());
             expectBestWorstIndex(stats, 0, 2);
           });
@@ -160,32 +160,32 @@ MochaWeb.testOnly(function() {
       });
 
       describe('best of two', function() {
-        var roundFormatCode = '2';
+        let roundFormatCode = '2';
 
         it('simple', function() {
-          var solves = [time(2300), time(2000)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300), time(2000)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 1, 0);
         });
 
         it('with DNF', function() {
-          var solves = [time(2300), dnf()];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300), dnf()];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 0, 1);
         });
 
         it('with cutoff', function() {
-          var solves = [time(2300)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 0, 0);
         });
         describe('multiblind', function() {
           it('sorts correctly', function() {
-            var solves = [mbf(1000, 1, 2), mbf(1200, 2, 2)];
-            var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+            let solves = [mbf(1000, 1, 2), mbf(1200, 2, 2)];
+            let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
             expect(stats.average).to.equal(null);
             expectBestWorstIndex(stats, 1, 0);
           });
@@ -193,18 +193,18 @@ MochaWeb.testOnly(function() {
       });
 
       describe('best of one', function() {
-        var roundFormatCode = '1';
+        let roundFormatCode = '1';
 
         it('simple', function() {
-          var solves = [time(2300)];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [time(2300)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 0, 0);
         });
 
         it('with DNF', function() {
-          var solves = [dnf()];
-          var stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          let solves = [dnf()];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
           expect(stats.average).to.equal(null);
           expectBestWorstIndex(stats, 0, 0);
         });
@@ -213,16 +213,16 @@ MochaWeb.testOnly(function() {
 
     describe('softCutoffFormats', function() {
       describe('cumulative', function() {
-        var softCutoffFormatCode = 'cumulative';
-        var softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
+        let softCutoffFormatCode = 'cumulative';
+        let softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
         it('missed cutoff', function() {
           expect(softCutoffFormat.getExpectedSolveCount([time(340)], time(320), 'a')).to.equal(1);
         });
       });
 
       describe('in 1', function() {
-        var softCutoffFormatCode = '1';
-        var softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
+        let softCutoffFormatCode = '1';
+        let softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
         it('missed cutoff', function() {
           expect(softCutoffFormat.getExpectedSolveCount([time(340)], time(320), 'a')).to.equal(1);
         });
@@ -232,8 +232,8 @@ MochaWeb.testOnly(function() {
       });
 
       describe('in 2', function() {
-        var softCutoffFormatCode = '2';
-        var softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
+        let softCutoffFormatCode = '2';
+        let softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
 
         it('has not yet made or missed cutoff', function() {
           expect(softCutoffFormat.getExpectedSolveCount([time(340)], time(320), 'a')).to.equal(5);
@@ -249,8 +249,8 @@ MochaWeb.testOnly(function() {
       });
 
       describe('in 3', function() {
-        var softCutoffFormatCode = '3';
-        var softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
+        let softCutoffFormatCode = '3';
+        let softCutoffFormat = wca.softCutoffFormatByCode[softCutoffFormatCode];
         it('has not yet made or missed cutoff', function() {
           expect(softCutoffFormat.getExpectedSolveCount([time(340)], time(320), 'a')).to.equal(5);
         });

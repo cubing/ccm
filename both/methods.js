@@ -1,22 +1,22 @@
-var log = logging.handle("methods");
+const log = logging.handle("methods");
 
-var throwIfNotVerifiedUser = function(userId) {
+let throwIfNotVerifiedUser = function(userId) {
   if(!userId) {
     throw new Meteor.Error(401, "Must log in");
   }
 
-  var user = Meteor.users.findOne(userId);
+  let user = Meteor.users.findOne(userId);
   if(!user.emails[0].verified) {
     throw new Meteor.Error(401, "Must verify email");
   }
 };
 
-var throwIfNotSiteAdmin = function(userId) {
+let throwIfNotSiteAdmin = function(userId) {
   if(!userId) {
     throw new Meteor.Error(401, "Must log in");
   }
 
-  var user = Meteor.users.findOne(userId);
+  let user = Meteor.users.findOne(userId);
   if(!user.siteAdmin) {
     throw new Meteor.Error(401, "Must be a site admin");
   }
@@ -27,7 +27,7 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   if(solveTime && !solveTime.updatedAt) {
     solveTime.updatedAt = new Date();
   }
-  var result = Results.findOne(resultId, {
+  let result = Results.findOne(resultId, {
     fields: {
       competitionId: 1,
       roundId: 1,
@@ -39,7 +39,7 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   }
   throwIfCannotManageCompetition(this.userId, result.competitionId);
 
-  var round = Rounds.findOne(result.roundId);
+  let round = Rounds.findOne(result.roundId);
   if(!round) {
     throw new Meteor.Error(404, "Round not found");
   }
@@ -63,18 +63,18 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
     result.solves.pop();
   }
 
-  var $set = {
+  let $set = {
     solves: result.solves
   };
 
-  var statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode());
+  let statistics = wca.computeSolvesStatistics(result.solves, round.formatCode, round.roundCode());
   _.extend($set, statistics);
 
   Results.update(resultId, { $set: $set });
   RoundSorter.addRoundToSort(result.roundId);
 };
 
-var stripTimeFromDate = function(date) {
+let stripTimeFromDate = function(date) {
   return moment(date).utc().startOf('day').toDate();
 };
 
@@ -87,10 +87,10 @@ Meteor.methods({
     }
     throwIfNotVerifiedUser(this.userId);
 
-    var user = Meteor.users.findOne(this.userId);
-    var uniqueName = user.profile.name;
+    let user = Meteor.users.findOne(this.userId);
+    let uniqueName = user.profile.name;
 
-    var competitionId = Competitions.insert({
+    let competitionId = Competitions.insert({
       competitionName: competitionName,
       listed: false,
       startDate: startDate,
@@ -128,8 +128,8 @@ Meteor.methods({
     // in order, but I don't know if there is any guarantee of such across users
     // See http://docs.meteor.com/#method_unblock.
 
-    var newCount = Rounds.find({competitionId: competitionId, eventCode: eventCode}).count() + 1;
-    var newRoundId = Rounds.insert({
+    let newCount = Rounds.find({competitionId: competitionId, eventCode: eventCode}).count() + 1;
+    let newRoundId = Rounds.insert({
       competitionId: competitionId,
       eventCode: eventCode,
       formatCode: wca.formatsByEventCode[eventCode][0],
@@ -149,12 +149,12 @@ Meteor.methods({
     });
   },
   removeLastRound: function(competitionId, eventCode) {
-    var roundId = getLastRoundIdForEvent(competitionId, eventCode);
+    let roundId = getLastRoundIdForEvent(competitionId, eventCode);
     if(!roundId || !canRemoveRound(this.userId, roundId)) {
       throw new Meteor.Error(400, "Cannot remove round.");
     }
 
-    var deadRound = Rounds.findOne(roundId);
+    let deadRound = Rounds.findOne(roundId);
     assert(deadRound);
 
     Rounds.remove(roundId);
@@ -170,7 +170,7 @@ Meteor.methods({
 
     // Deleting a round affects the set of people who advanced
     // from the previous round =)
-    var previousRound = deadRound.getPreviousRound();
+    let previousRound = deadRound.getPreviousRound();
     if(previousRound) {
       Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
     }
@@ -179,7 +179,7 @@ Meteor.methods({
     check(competitionId, String);
     throwIfCannotManageCompetition(this.userId, competitionId);
 
-    var round = Rounds.findOne(roundId); // Will not exist for some events
+    let round = Rounds.findOne(roundId); // Will not exist for some events
 
     if(!round && roundId) {
       throw new Meteor.Error("Invalid roundId: '" + roundId +"'");
@@ -195,13 +195,13 @@ Meteor.methods({
     });
   },
   removeScheduleEvent: function(scheduleEventId) {
-    var event = ScheduleEvents.findOne(scheduleEventId);
+    let event = ScheduleEvents.findOne(scheduleEventId);
     throwIfCannotManageCompetition(this.userId, event.competitionId);
     ScheduleEvents.remove(scheduleEventId);
   },
   addOrUpdateGroup: function(newGroup) {
     throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
-    var round = Rounds.findOne(newGroup.roundId);
+    let round = Rounds.findOne(newGroup.roundId);
     if(!round) {
       throw new Meteor.Error("Invalid roundId: '" + newGroup.roundId +"'");
     }
@@ -209,7 +209,7 @@ Meteor.methods({
       throw new Meteor.Error("Group's competitionId does not match round's competitionId");
     }
 
-    var existingGroup = Groups.findOne({
+    let existingGroup = Groups.findOne({
       roundId: newGroup.roundId,
       group: newGroup.group,
     });
@@ -221,31 +221,31 @@ Meteor.methods({
     }
   },
   advanceParticipantsFromRound: function(participantsToAdvance, roundId) {
-    var round = Rounds.findOne(roundId);
+    let round = Rounds.findOne(roundId);
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var results = Results.find({ roundId: roundId }, { sort: { position: 1 } }).fetch();
+    let results = Results.find({ roundId: roundId }, { sort: { position: 1 } }).fetch();
     if(participantsToAdvance < 0) {
       throw new Meteor.Error(400, 'Cannot advance a negative number of competitors');
     }
     if(participantsToAdvance > results.length) {
       throw new Meteor.Error(400, 'Cannot advance more people than there are in round');
     }
-    var nextRound = round.getNextRound();
+    let nextRound = round.getNextRound();
     if(!nextRound) {
       throw new Meteor.Error(404, 'No next round found for roundId ' + roundId);
     }
 
-    var desiredRegistrationIds = [];
-    for(var i = 0; i < participantsToAdvance; i++) {
-      var result = results[i];
+    let desiredRegistrationIds = [];
+    for(let i = 0; i < participantsToAdvance; i++) {
+      let result = results[i];
       desiredRegistrationIds.push(result.registrationId);
     }
 
-    var actualRegistrationIds = _.pluck(Results.find({ roundId: nextRound._id }, { fields: { registrationId: 1 } }).fetch(), 'registrationId');
+    let actualRegistrationIds = _.pluck(Results.find({ roundId: nextRound._id }, { fields: { registrationId: 1 } }).fetch(), 'registrationId');
 
-    var registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
-    var registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
+    let registrationIdsToRemove = _.difference(actualRegistrationIds, desiredRegistrationIds);
+    let registrationIdsToAdd = _.difference(desiredRegistrationIds, actualRegistrationIds);
 
     // Before we actually advance participants to the next round, lets check that it
     // wouldn't require deleting any Results with data entered.
@@ -315,7 +315,7 @@ Meteor.methods({
   },
   setSolveTime: setSolveTime,
   setRoundSoftCutoff: function(roundId, softCutoff) {
-    var round = Rounds.findOne(roundId, {
+    let round = Rounds.findOne(roundId, {
       fields: {
         competitionId: 1,
         eventCode: 1,
@@ -326,7 +326,7 @@ Meteor.methods({
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var toSet = {};
+    let toSet = {};
     if(softCutoff) {
       toSet.$set = {
         // Explicitly listing all the relevant fields in SolveTime as a workaround for
@@ -353,10 +353,10 @@ Meteor.methods({
     RoundSorter.addRoundToSort(roundId);
   },
   toggleEventRegistration: function(registrationId, eventCode) {
-    var registration = Registrations.findOne(registrationId);
+    let registration = Registrations.findOne(registrationId);
     throwIfCannotManageCompetition(this.userId, registration.competitionId);
-    var registeredForEvent = _.contains(registration.registeredEvents, eventCode);
-    var update;
+    let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
+    let update;
     if(registeredForEvent) {
       // if registered, then unregister
       update = {
@@ -364,7 +364,7 @@ Meteor.methods({
           registeredEvents: eventCode
         }
       };
-      var index = registration.registeredEvents.indexOf(eventCode);
+      let index = registration.registeredEvents.indexOf(eventCode);
       if(index >= 0) {
         registration.registeredEvents.splice(index, 1);
       }
@@ -379,22 +379,22 @@ Meteor.methods({
     }
     // If this registrant is already checked in, then we need to synchronize the
     // set of first rounds they have Results for. This may not be possible if it
-    // requires deleting a Result that has data (see checkInRegistration).
+    // requires deleting a Result that has data.
     if(registration.checkedIn) {
-      checkInRegistration(registration, true);
+      registration.checkIn(true);
     }
 
-    // Wait to actually update update the Registration until checkInRegistration
+    // Wait to actually update update the Registration until checkIn
     // succeeds (it will throw an exception if we're not allowed to remove the
     // registrants Result).
     Registrations.update(registration._id, update);
   },
   toggleGroupOpen: function(groupId) {
-    var group = Groups.findOne(groupId);
+    let group = Groups.findOne(groupId);
     if(!group) {
       throw new Meteor.Error(404, "Group not found");
     }
-    var round = Rounds.findOne(group.roundId);
+    let round = Rounds.findOne(group.roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
@@ -405,18 +405,18 @@ Meteor.methods({
     Groups.update(group._id, { $set: { open: !group.open } });
   },
   advanceResultIdFromRoundPreviousToThisOne: function(resultId, roundId) {
-    var round = Rounds.findOne(roundId);
+    let round = Rounds.findOne(roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var bestNotAdvancedResult = Results.findOne(resultId);
+    let bestNotAdvancedResult = Results.findOne(resultId);
     if(!bestNotAdvancedResult) {
       throw new Meteor.Error(404, "Result not found");
     }
 
-    var previousRound = round.getPreviousRound();
+    let previousRound = round.getPreviousRound();
     if(!previousRound) {
       throw new Meteor.Error(404, "No previous round found");
     }
@@ -427,7 +427,7 @@ Meteor.methods({
 
     // We found the best result from the previous round that did not advance.
     // Copy them into this round.
-    var result = Results.findOne({
+    let result = Results.findOne({
       competitionId: round.competitionId,
       roundId: round._id,
       registrationId: bestNotAdvancedResult.registrationId,
@@ -445,15 +445,15 @@ Meteor.methods({
     RoundSorter.addRoundToSort(roundId);
   },
   getBestNotAdvancedResultFromRoundPreviousToThisOne: function(roundId) {
-    var round = Rounds.findOne(roundId);
+    let round = Rounds.findOne(roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId);
 
-    var previousRound = round.getPreviousRound();
+    let previousRound = round.getPreviousRound();
     if(previousRound) {
-      var bestResultThatDidNotAdvance = Results.findOne({
+      let bestResultThatDidNotAdvance = Results.findOne({
         roundId: previousRound._id,
         advanced: { $ne: true },
       }, {
@@ -463,13 +463,13 @@ Meteor.methods({
     }
   },
   setResultNoShow: function(resultId, newNoShow) {
-    var result = Results.findOne(resultId);
+    let result = Results.findOne(resultId);
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
     }
     throwIfCannotManageCompetition(this.userId, result.competitionId);
 
-    var round = Rounds.findOne(result.roundId);
+    let round = Rounds.findOne(result.roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
@@ -511,7 +511,7 @@ RoundSorter = {
   _handleSortTimer: function(roundId) {
     log.l1("RoundSorter._handleSortTimer(", roundId, ")");
     delete this._roundsToSortById[roundId];
-    var round = Rounds.findOne(roundId);
+    let round = Rounds.findOne(roundId);
     if(round) {
       // There's no guarantee that this round still exists by the time we
       // decide to sort it. We seem to be hitting this race in tests.
@@ -521,81 +521,15 @@ RoundSorter = {
 };
 
 if(Meteor.isServer) {
-  var child_process = Npm.require('child_process');
-  var path = Npm.require("path");
-  var fs = Npm.require('fs');
-  var os = Npm.require('os');
-  var mkdirp = Meteor.npmRequire('mkdirp');
+  let child_process = Npm.require('child_process');
+  let path = Npm.require("path");
+  let fs = Npm.require('fs');
+  let os = Npm.require('os');
+  let mkdirp = Meteor.npmRequire('mkdirp');
 
-  var zipIdToFilename = function(zipId, userId) {
-    var tmpdir = os.tmpdir();
+  let zipIdToFilename = function(zipId, userId) {
+    let tmpdir = os.tmpdir();
     return path.join(tmpdir, "tnoodlezips", userId, zipId + ".zip");
-  };
-
-  var checkInRegistration = function(registration, toCheckIn) {
-    // This method is called to check-in a participant for the first time,
-    // to update their check-in because the set of events they are registered for
-    // changed, or to uncheck them in from the competition. If accomplishing this
-    // would require deleting results with data, we throw an error and do nothing.
-    var firstRounds = Rounds.find({
-      competitionId: registration.competitionId,
-      nthRound: 1,
-    }, {
-      fields: { _id: 1, eventCode: 1 }
-    }).fetch();
-
-    [true, false].forEach(simulate => {
-      firstRounds.forEach(round => {
-        var result = Results.findOne({
-          roundId: round._id,
-          registrationId: registration._id,
-        });
-        var registeredForEvent = _.contains(registration.registeredEvents, round.eventCode);
-        var shouldHaveResultForRound = toCheckIn && registeredForEvent;
-        var hasResultForRound = !!result;
-
-        if(hasResultForRound == shouldHaveResultForRound) {
-          // Nothing to do.
-          return;
-        }
-        if(shouldHaveResultForRound) {
-          // Need to register for round.
-          if(!simulate) {
-            log.l1("Creating result for registration", registration._id, "in", round.eventCode, "round 1");
-            Results.insert({
-              competitionId: registration.competitionId,
-              roundId: round._id,
-              registrationId: registration._id,
-            });
-          }
-        } else {
-          // Need to unregister for round. First check if it's safe to delete
-          // their results.
-          if(simulate) {
-            if(result) {
-              // This registrant has a result for this round that we no longer want them
-              // in. If they actually have results for this round, throw an exception
-              // rather than deleting data irreversibly.
-              var hasSolves = _.filter(result.solves, s => s !== null).length > 0;
-              if(hasSolves) {
-                var reason = "Cannot unregister " + registration.uniqueName + " for " + round.eventCode + " round 1 because they already have results in that round.";
-                throw new Meteor.Error(403, reason);
-              }
-            }
-          } else {
-            log.l1("Removing result for registration", registration._id, "in", round.eventCode, "round 1");
-            Results.remove({
-              roundId: round._id,
-              registrationId: registration._id,
-            });
-          }
-        }
-
-        // Update round progress
-        RoundSorter.addRoundToSort(round._id);
-      });
-    });
-    Registrations.update(registration._id, { $set: { checkedIn: toCheckIn } });
   };
 
   Meteor.methods({
@@ -607,14 +541,14 @@ if(Meteor.isServer) {
       // exists, but isn't a folder? Permissions could also screw us up.
       // Ideally we would just decompress the zip file client side, but
       // there aren't any libraries for that yet.
-      var id = Date.now();
-      var zipFilename = zipIdToFilename(id, this.userId);
+      let id = Date.now();
+      let zipFilename = zipIdToFilename(id, this.userId);
       mkdirp.sync(path.join(zipFilename, ".."));
       fs.writeFileSync(zipFilename, zipData, 'binary');
       return id;
     },
     unzipTNoodleZip: function(zipId, pw) {
-      var args = [];
+      let args = [];
       args.push('-p'); // extract to stdout
 
       // If you don't pass -P to unzip and try to unzip a password protected
@@ -624,7 +558,7 @@ if(Meteor.isServer) {
       args.push('-P');
       args.push(pw || "");
 
-      var zipFilename = zipIdToFilename(zipId, this.userId);
+      let zipFilename = zipIdToFilename(zipId, this.userId);
       args.push(zipFilename);
       args.push('*.json'); // there should be exactly one json file in the zip
       function unzipAsync(cb) {
@@ -642,9 +576,9 @@ if(Meteor.isServer) {
           }
         });
       }
-      var unzipSync = Meteor.wrapAsync(unzipAsync);
+      let unzipSync = Meteor.wrapAsync(unzipAsync);
       try {
-        var jsonStr = unzipSync();
+        let jsonStr = unzipSync();
         return jsonStr;
       } catch(e) {
         throw new Meteor.Error('unzip', e.message);
@@ -658,13 +592,13 @@ if(Meteor.isServer) {
       // they are not checked in.
       throwIfCannotManageCompetition(this.userId, competitionId);
 
-      var registrationByWcaJsonId = {};
-      var uniqueNames = {};
+      let registrationByWcaJsonId = {};
+      let uniqueNames = {};
       wcaCompetition.persons.forEach(wcaPerson => {
         // Pick a uniqueName for this participant
-        var suffix = 0;
-        var uniqueName;
-        var uniqueNameTaken; // grrr...jshint
+        let suffix = 0;
+        let uniqueName;
+        let uniqueNameTaken; // grrr...jshint
         do {
           suffix++;
           uniqueName = wcaPerson.name;
@@ -676,8 +610,8 @@ if(Meteor.isServer) {
         assert(!uniqueNames[uniqueName]);
         uniqueNames[uniqueName] = true;
 
-        var dobMoment = moment.utc(wcaPerson.dob);
-        var registration = Registrations.findOne({
+        let dobMoment = moment.utc(wcaPerson.dob);
+        let registration = Registrations.findOne({
           competitionId: competitionId,
           uniqueName: uniqueName,
         });
@@ -705,14 +639,14 @@ if(Meteor.isServer) {
       });
 
       wcaCompetition.events.forEach(wcaEvent => {
-        var hasEvent = !!Rounds.findOne({
+        let hasEvent = !!Rounds.findOne({
           competitionId: competitionId,
           eventCode: wcaEvent.eventId,
         });
         if(!hasEvent) {
           // Create the rounds for this event!
           wcaEvent.rounds.forEach((wcaRound, nthRound) => {
-            var roundId = Rounds.insert({
+            let roundId = Rounds.insert({
               competitionId: competitionId,
               eventCode: wcaEvent.eventId,
               nthRound: nthRound + 1,
@@ -733,14 +667,14 @@ if(Meteor.isServer) {
         // for this event.
         wcaEvent.rounds[0].results.forEach(wcaResult => {
           // wcaResult.personId refers to the personId in the wca json
-          var registration = registrationByWcaJsonId[wcaResult.personId];
+          let registration = registrationByWcaJsonId[wcaResult.personId];
           registration.registeredEvents[wcaEvent.eventId] = true;
         });
       });
       // Update the registrations to reflect the events they signed up for.
-      for(var jsonId in registrationByWcaJsonId) {
+      for(let jsonId in registrationByWcaJsonId) {
         if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
-          var registration = registrationByWcaJsonId[jsonId];
+          let registration = registrationByWcaJsonId[jsonId];
           if(!registration.checkedIn) {
             Registrations.update(registration._id, {
               $set: {
@@ -755,31 +689,31 @@ if(Meteor.isServer) {
       startDate = stripTimeFromDate(startDate);
       throwIfNotSiteAdmin(this.userId);
 
-      var competitionName = wcaCompetition.competitionId;
-      var newCompetition = {
+      let competitionName = wcaCompetition.competitionId;
+      let newCompetition = {
         competitionName: competitionName,
         listed: false,
         startDate: startDate,
       };
 
-      var wcaCompetitionId = wcaCompetition.competitionId;
-      var existingCompetition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
+      let wcaCompetitionId = wcaCompetition.competitionId;
+      let existingCompetition = Competitions.findOne({ wcaCompetitionId: wcaCompetitionId });
       // Only set a wca competition id if a competition does not yet exist
       // with this wca competition id.
       if(!existingCompetition) {
         newCompetition.wcaCompetitionId = wcaCompetitionId;
       }
-      var competitionId = Competitions.insert(newCompetition);
-      var competition = Competitions.findOne(competitionId);
+      let competitionId = Competitions.insert(newCompetition);
+      let competition = Competitions.findOne(competitionId);
       assert(competition);
 
-      var registrationByWcaJsonId = {};
-      var uniqueNames = {};
+      let registrationByWcaJsonId = {};
+      let uniqueNames = {};
       wcaCompetition.persons.forEach(wcaPerson => {
         // Pick a uniqueName for this participant
-        var suffix = 0;
-        var uniqueName;
-        var uniqueNameTaken; // grrr...jshint
+        let suffix = 0;
+        let uniqueName;
+        let uniqueNameTaken; // grrr...jshint
         do {
           suffix++;
           uniqueName = wcaPerson.name;
@@ -791,8 +725,8 @@ if(Meteor.isServer) {
         assert(!uniqueNames[uniqueName]);
         uniqueNames[uniqueName] = true;
 
-        var dobMoment = moment.utc(wcaPerson.dob);
-        var registrationId = Registrations.insert({
+        let dobMoment = moment.utc(wcaPerson.dob);
+        let registrationId = Registrations.insert({
           competitionId: competition._id,
           uniqueName: uniqueName,
           wcaId: wcaPerson.wcaId,
@@ -801,7 +735,7 @@ if(Meteor.isServer) {
           dob: dobMoment.toDate(),
           registeredEvents: [],
         });
-        var registration = Registrations.findOne(registrationId);
+        let registration = Registrations.findOne(registrationId);
 
         assert(!registrationByWcaJsonId[wcaPerson.id]);
         registrationByWcaJsonId[wcaPerson.id] = registration;
@@ -815,10 +749,10 @@ if(Meteor.isServer) {
           return ( wca.roundByCode[r1.roundId].supportedRoundIndex -
                    wca.roundByCode[r2.roundId].supportedRoundIndex );
         });
-        var newRoundIds = [];
+        let newRoundIds = [];
         wcaEvent.rounds.forEach((wcaRound, nthRound) => {
           log.l1("adding data for round " + nthRound);
-          var roundId = Rounds.insert({
+          let roundId = Rounds.insert({
             nthRound: nthRound + 1,
             totalRounds: wcaEvent.rounds.length,
             competitionId: competition._id,
@@ -833,11 +767,11 @@ if(Meteor.isServer) {
             competitionId: competitionId,
           });
 
-          var softCutoff = null;
+          let softCutoff = null;
           wcaRound.results.forEach(wcaResult => {
             log.l2("adding data for personId " + wcaResult.personId);
             // wcaResult.personId refers to the personId in the wca json
-            var registration = registrationByWcaJsonId[wcaResult.personId];
+            let registration = registrationByWcaJsonId[wcaResult.personId];
             registration.registeredEvents[wcaEvent.eventId] = true;
 
             if(!wcaResult.results) {
@@ -849,19 +783,17 @@ if(Meteor.isServer) {
             }
             registration.checkedIn = true;
 
-            var solves = _.map(wcaResult.results, function(wcaValue) {
-              return wca.wcaValueToSolveTime(wcaValue, wcaEvent.eventId);
-            });
+            let solves = wcaResult.results.map(wcaValue => wca.wcaValueToSolveTime(wcaValue, wcaEvent.eventId));
             if(!solves[solves.length - 1]) {
               // We're missing a solve, so this must be a combined round
               // and this participant didn't make the soft cutoff.
-              var roundInfo = wca.roundByCode[wcaRound.roundId];
+              let roundInfo = wca.roundByCode[wcaRound.roundId];
               assert(roundInfo.combined);
-              var lastSolveIndex = -1;
-              var minSolveTime = null;
+              let lastSolveIndex = -1;
+              let minSolveTime = null;
               while(solves[lastSolveIndex + 1] && solves[lastSolveIndex + 1]) {
                 lastSolveIndex++;
-                var lastSolveTime = solves[lastSolveIndex];
+                let lastSolveTime = solves[lastSolveIndex];
                 if(!minSolveTime || wca.compareSolveTimes(lastSolveTime, minSolveTime) < 0) {
                   minSolveTime = lastSolveTime;
                 }
@@ -869,7 +801,7 @@ if(Meteor.isServer) {
               // We always import combined rounds as if they have a
               // "soft cutoff in N" cutoff (this doesn't handle
               // cumulative cutoffs).
-              var softCutoffFormatCode = "" + (lastSolveIndex + 1);
+              let softCutoffFormatCode = "" + (lastSolveIndex + 1);
               if(softCutoff) {
                 assert(softCutoff.formatCode === softCutoffFormatCode);
                 softCutoff.time = wca.minSolveTime(softCutoff.time, minSolveTime);
@@ -880,16 +812,16 @@ if(Meteor.isServer) {
                 };
               }
             }
-            var result = {
+            let result = {
               competitionId: competition._id,
               roundId: roundId,
               registrationId: registration._id,
               position: wcaResult.position,
               solves: solves,
             };
-            var statistics = wca.computeSolvesStatistics(solves, wcaRound.formatId);
+            let statistics = wca.computeSolvesStatistics(solves, wcaRound.formatId);
             _.extend(result, statistics);
-            var id = Results.insert(
+            let id = Results.insert(
               result, {
               // meteor-collection2 is *killing* us here when we are inserting
               // a bunch of stuff at once. Turning off all the validation it
@@ -940,10 +872,10 @@ if(Meteor.isServer) {
       });
 
       // Update the registrations to reflect the events they signed up for.
-      for(var jsonId in registrationByWcaJsonId) {
+      for(let jsonId in registrationByWcaJsonId) {
         if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
-          var registration = registrationByWcaJsonId[jsonId];
-          var registrationId = Registrations.update(
+          let registration = registrationByWcaJsonId[jsonId];
+          let registrationId = Registrations.update(
             registration._id,
           {
             $set: {
@@ -959,13 +891,13 @@ if(Meteor.isServer) {
     recomputeWhoAdvancedAndPreviousPosition: function(roundId) {
       check(roundId, String);
 
-      var round = Rounds.findOne(roundId);
-      var nextRound = round.getNextRound();
+      let round = Rounds.findOne(roundId);
+      let nextRound = round.getNextRound();
 
-      var results = Results.find({ roundId: roundId });
+      let results = Results.find({ roundId: roundId });
 
       results.forEach(result => {
-        var advanced;
+        let advanced;
         if(nextRound) {
           // Update the previousPosition field of the corresponding Result in
           // the next round. If we found a Result to update, then they must
@@ -986,9 +918,9 @@ if(Meteor.isServer) {
       });
     },
     checkInRegistration: function(registrationId, toCheckIn) {
-      var registration = Registrations.findOne(registrationId);
+      let registration = Registrations.findOne(registrationId);
       throwIfCannotManageCompetition(this.userId, registration.competitionId);
-      checkInRegistration(registration, toCheckIn);
+      registration.checkIn(toCheckIn);
     },
   });
 }

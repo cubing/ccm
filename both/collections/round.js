@@ -1,4 +1,4 @@
-let log = logging.handle("round");
+const log = logging.handle("round");
 
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
 Round = function(doc) {
@@ -113,7 +113,7 @@ _.extend(Round.prototype, {
       }
 
       totalSolves += result.getExpectedSolveCount();
-      result.solves.forEach(function(solve) {
+      result.solves.forEach(solve => {
         if(solve) {
           doneSolves++;
         }

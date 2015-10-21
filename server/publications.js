@@ -1,4 +1,4 @@
-var userFieldsToPublish = {
+let userFieldsToPublish = {
   emails: 1,
   profile: 1,
   siteAdmin: 1,
@@ -6,7 +6,7 @@ var userFieldsToPublish = {
   'services.worldcubeassociation': 1,
 };
 
-var registrationFieldsToPublish = {
+let registrationFieldsToPublish = {
   competitionId: 1,
   userId: 1,
   uniqueName: 1,
@@ -27,7 +27,7 @@ Meteor.publish(null, function() {
 });
 
 Meteor.publish("roundProgresses", function(competitionUrlId) {
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -35,7 +35,7 @@ Meteor.publish("roundProgresses", function(competitionUrlId) {
 });
 
 Meteor.publish("scheduleEvents", function(competitionUrlId) {
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -48,12 +48,12 @@ Meteor.publish('competitions', function() {
 
 Meteor.publish('competition', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
 
-  var cursors = [
+  let cursors = [
     Competitions.find(competitionId),
     Rounds.find({ competitionId: competitionId }),
   ];
@@ -69,11 +69,11 @@ Meteor.publish('competition', function(competitionUrlId) {
 
 Meteor.publish('competitionRegistrations', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
-  var fields = _.extend({}, registrationFieldsToPublish);
+  let fields = _.extend({}, registrationFieldsToPublish);
   if(!getCannotManageCompetitionReason(this.userId, competitionId)) {
     fields.dob = 1;
     fields.comments = 1;
@@ -84,11 +84,11 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
 Meteor.publish('participantResults', function(competitionUrlId, participantUniqueName) {
   check(competitionUrlId, String);
   check(participantUniqueName, String);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
-  var registration = Registrations.findOne({
+  let registration = Registrations.findOne({
     competitionId: competitionId,
     uniqueName: participantUniqueName,
   });
@@ -108,11 +108,11 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
   check(competitionUrlId, String);
   check(eventCode, String);
   check(nthRound, Number);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
-  var round = Rounds.findOne({
+  let round = Rounds.findOne({
     competitionId: competitionId,
     eventCode: eventCode,
     nthRound: nthRound,
@@ -130,7 +130,7 @@ Meteor.publish('roundResults', function(competitionUrlId, eventCode, nthRound) {
 
 Meteor.publish('competitionScrambles', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -143,7 +143,7 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
 
 Meteor.publish('competitionPodiumResults', function(competitionUrlId) {
   check(competitionUrlId, String);
-  var competitionId = api.competitionUrlIdToId(competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
     return [];
   }
@@ -169,8 +169,8 @@ Meteor.publish('allSiteAdmins', function() {
 
 // Copied and modified from https://github.com/mizzao/meteor-autocomplete/blob/master/autocomplete-server.coffee
 Meteor.publish('autocompleteSubscription', function(selector, options, collName) {
-  var collection = global;
-  collName.split(".").forEach(function(part) {
+  let collection = global;
+  collName.split(".").forEach(part => {
     collection = collection[part];
   });
   // guard against client-side DOS: hard limit to 50

@@ -1,5 +1,5 @@
-var stickyTableById = {};
-var stickyTableId = 0;
+let stickyTableById = {};
+let stickyTableId = 0;
 
 makeTableSticky = function($table) {
   stickyTableId++;
@@ -10,13 +10,13 @@ makeTableSticky = function($table) {
   // Since $.stickyTableHeaders copies the <thead> we generated with react,
   // that copy has a data-reactid. Explicitly removing this attribute seems to
   // be enough to make react happy.
-  var $floatingHead = $table.find("thead.tableFloatingHeader");
+  let $floatingHead = $table.find("thead.tableFloatingHeader");
   $floatingHead.removeAttr('data-reactid');
 };
 
 makeTableNotSticky = function($table) {
-  var id = $table.data("stickyTableId");
-  var $storedTable = stickyTableById[id];
+  let id = $table.data("stickyTableId");
+  let $storedTable = stickyTableById[id];
   delete stickyTableById[id];
   $table.stickyTableHeaders('destroy');
 };

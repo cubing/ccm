@@ -1,5 +1,5 @@
 function getUserRegistration(userId, competitionId) {
-  var hasRegistrationEntry = Registrations.findOne({
+  let hasRegistrationEntry = Registrations.findOne({
     userId: userId,
     competitionId: competitionId,
   });
@@ -16,8 +16,8 @@ function styleRegistrationInputButtonsOnChange() {
 
 Template.competitionRegistration.helpers({
   eventOptions: function() {
-    var competitionId = this.competitionId;
-    var events = getCompetitionEvents(competitionId);
+    let competitionId = this.competitionId;
+    let events = getCompetitionEvents(competitionId);
 
     return events.map(function(c) {
       return {label: wca.eventByCode[c.eventCode].name, value: wca.eventByCode[c.eventCode].code};
@@ -25,14 +25,14 @@ Template.competitionRegistration.helpers({
   },
 
   defaultRegistrationData: function() {
-    var competitionId = this.competitionId;
-    var userId = Meteor.userId();
-    var registration = getUserRegistration(userId, competitionId);
+    let competitionId = this.competitionId;
+    let userId = Meteor.userId();
+    let registration = getUserRegistration(userId, competitionId);
     if(registration) {
       return registration;
     } else {
       // populate user / competition data if there is no registration for this person yet
-      var profile = Meteor.user().profile;
+      let profile = Meteor.user().profile;
       return {
         userId: userId,
         competitionId: competitionId,
@@ -46,14 +46,14 @@ Template.competitionRegistration.helpers({
   },
 
   userIsRegistered: function() {
-    var competitionId = this.competitionId;
-    var userId = Meteor.userId();
+    let competitionId = this.competitionId;
+    let userId = Meteor.userId();
     return getUserRegistration(userId, competitionId);
   },
 
   registrationFormType: function() {
-    var competitionId = this.competitionId;
-    var userId = Meteor.userId();
+    let competitionId = this.competitionId;
+    let userId = Meteor.userId();
     if(getUserRegistration(userId, competitionId)) {
       // update type if there is a registration
       return "update";
@@ -64,24 +64,24 @@ Template.competitionRegistration.helpers({
   },
 
   cannotRegisterReasons: function() {
-    var competitionId = this.competitionId;
+    let competitionId = this.competitionId;
     return getCannotRegisterReasons(competitionId);
   },
 
   registrationCloseMoment: function() {
-    var closeDate = Competitions.findOne(this.competitionId).registrationCloseDate;
+    let closeDate = Competitions.findOne(this.competitionId).registrationCloseDate;
     return closeDate ? moment(closeDate) : null;
   },
 
   needsUniqueName: function() {
-    var competitionId = this.competitionId;
+    let competitionId = this.competitionId;
     if(getUserRegistration(Meteor.userId(), competitionId)) {
       // If we're already registered, then we don't need a unique name
       return false;
     }
-    var userName = Meteor.user().profile.name;
+    let userName = Meteor.user().profile.name;
     // See if someone already has this name?
-    var registrationWithUniqueName = Registrations.findOne({
+    let registrationWithUniqueName = Registrations.findOne({
       uniqueName: userName,
       competitionId: competitionId
     }, {
@@ -98,13 +98,13 @@ Template.competitionRegistration.helpers({
   },
 
   hasUniqueName: function() {
-    var registration = getUserRegistration(Meteor.userId(), this.competitionId);
+    let registration = getUserRegistration(Meteor.userId(), this.competitionId);
     return registration && registration.uniqueName != Meteor.user().profile.name;
   },
 
   registrationAskAboutGuests: function() {
-    var competitionId = this.competitionId;
-    var competition = Competitions.findOne(competitionId, { fields: { registrationAskAboutGuests: 1 } });
+    let competitionId = this.competitionId;
+    let competition = Competitions.findOne(competitionId, { fields: { registrationAskAboutGuests: 1 } });
     return competition.registrationAskAboutGuests;
   }
 });
@@ -120,9 +120,9 @@ Template.competitionRegistration.events({
   'click #unregisterButton': function(e, t) {
     e.preventDefault();
 
-    var competitionId = this.competitionId;
-    var userId = Meteor.userId();
-    var registration = getUserRegistration(userId, competitionId);
+    let competitionId = this.competitionId;
+    let userId = Meteor.userId();
+    let registration = getUserRegistration(userId, competitionId);
     Registrations.remove(registration._id);
 
     $('#modalConfirmDeregistration').modal('hide');

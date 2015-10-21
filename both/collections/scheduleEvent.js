@@ -19,7 +19,7 @@ _.extend(ScheduleEvent.prototype, {
 
 ScheduleEvents = new Mongo.Collection("scheduleEvents", { transform: function(doc) { return new ScheduleEvent(doc); } });
 
-var schema = new SimpleSchema({
+let schema = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -55,10 +55,10 @@ var schema = new SimpleSchema({
     },
     custom: function() {
       // SimpleSchema has no place to do multi field validations, so we arbitrarily do this here.
-      var obj = validationObject(this, ['nthDay', 'startMinutes', 'durationMinutes', 'competitionId']);
+      let obj = validationObject(this, ['nthDay', 'startMinutes', 'durationMinutes', 'competitionId']);
 
-      var compId = obj.competitionId || ScheduleEvents.findOne(obj.id).competitionId;
-      var comp = Competitions.findOne(compId);
+      let compId = obj.competitionId || ScheduleEvents.findOne(obj.id).competitionId;
+      let comp = Competitions.findOne(compId);
 
       if(obj.nthDay >= comp.numberOfDays) {
         return "tooLateDay";

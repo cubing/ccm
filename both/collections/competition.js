@@ -10,7 +10,7 @@ _.extend(Competition.prototype, {
 });
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
-var schema = new SimpleSchema({
+let schema = new SimpleSchema({
   competitionName: {
     type: String,
     label: "Competition name",
@@ -36,9 +36,9 @@ var schema = new SimpleSchema({
       }
     },
     custom: function() {
-      var obj = validationObject(this, ['calendarStartMinutes']);
+      let obj = validationObject(this, ['calendarStartMinutes']);
 
-      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
       if(_.any(events, function(event) { return event.startMinutes < obj.calendarStartMinutes; })) {
         return "earlierExistingEvents";
       }
@@ -51,13 +51,13 @@ var schema = new SimpleSchema({
     max: 23.5*60,
     defaultValue: 23.5*60,
     custom: function() {
-      var obj = validationObject(this, ['calendarStartMinutes', 'calendarEndMinutes']);
+      let obj = validationObject(this, ['calendarStartMinutes', 'calendarEndMinutes']);
 
       if(obj.calendarEndMinutes <= obj.calendarStartMinutes) {
         return "calendarEndIsNotBeforeStart";
       }
 
-      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
       if(_.any(events, function(event) { return event.endMinutes() > obj.calendarEndMinutes; })) {
         return "laterExistingEvents";
       }
@@ -81,9 +81,9 @@ var schema = new SimpleSchema({
     min: 1,
     defaultValue: 1,
     custom: function() {
-      var obj = validationObject(this, ['numberOfDays']);
+      let obj = validationObject(this, ['numberOfDays']);
 
-      var events = ScheduleEvents.find({competitionId: obj.id}).fetch();
+      let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
       if(_.any(events, function(event) { return event.nthDay >= obj.numberOfDays; })) {
         return "laterDayExistingEvents";
       }
@@ -98,7 +98,7 @@ var schema = new SimpleSchema({
       }
     },
     custom: function() {
-      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
+      let obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
       if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)
@@ -128,7 +128,7 @@ var schema = new SimpleSchema({
     },
     custom: function() {
       // TODO require the registration close date to be before the competition starts?
-      var obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
+      let obj = validationObject(this, ['registrationOpenDate', 'registrationCloseDate']);
 
       if(!obj.registrationCloseDate && !obj.registrationOpenDate) {
         // OK to have neither filled (esp. for competition creation)

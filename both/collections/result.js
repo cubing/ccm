@@ -1,5 +1,5 @@
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
-var Result = function(doc) {
+let Result = function(doc) {
   _.extend(this, doc);
 };
 
@@ -8,7 +8,7 @@ _.extend(Result.prototype, {
     if(this.noShow) {
       return 0;
     }
-    var round = Rounds.findOne(this.roundId, {
+    let round = Rounds.findOne(this.roundId, {
       fields: {
         formatCode: 1,
         softCutoff: 1,
@@ -17,14 +17,14 @@ _.extend(Result.prototype, {
     if(!round.softCutoff) {
       return round.format().count;
     }
-    var softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
-    var expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
+    let softCutoffFormat = wca.softCutoffFormatByCode[round.softCutoff.formatCode];
+    let expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
     return expectedSolveCount;
   },
   allSolves: function() {
     // Sanitize the solves array to contain all current and future solves.
-    var expectedSolveCount = this.getExpectedSolveCount();
-    var solves = this.solves || [];
+    let expectedSolveCount = this.getExpectedSolveCount();
+    let solves = this.solves || [];
     while(solves.length < expectedSolveCount) {
       solves.push(null);
     }

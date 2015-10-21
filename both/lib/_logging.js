@@ -5,7 +5,7 @@
  *
  * Example use:
 
-    var log = logging.handle("main");
+    const log = logging.handle("main");
     log.l1("can't see me!");
     log.l1.enable();
     log.l1("can see me!");
@@ -18,19 +18,19 @@
 
 */
 
-var wildcardMatch = function(wildcard, toMatch) {
-  var asteriskIndex = wildcard.indexOf("*");
+let wildcardMatch = function(wildcard, toMatch) {
+  let asteriskIndex = wildcard.indexOf("*");
   if(asteriskIndex == -1) {
     return wildcard == toMatch;
   }
-  var wildcardPrefix = wildcard.substring(0, asteriskIndex);
-  var toMatchPrefix = toMatch.substring(0, asteriskIndex);
+  let wildcardPrefix = wildcard.substring(0, asteriskIndex);
+  let toMatchPrefix = toMatch.substring(0, asteriskIndex);
   return wildcardPrefix == toMatchPrefix;
 };
 
 function now() {
   if(Meteor.isServer) {
-    var hrtime = process.hrtime();
+    let hrtime = process.hrtime();
     return hrtime[0] * 1e9 + hrtime[1];
   } else {
     return performance.now();
@@ -43,23 +43,23 @@ logging = {
   setting_: "*/0",
   doEnableDisableHandle_: function(handle) {
     // First, disable all log levels for this handle
-    logging.LEVELS.forEach(function(level) {
+    logging.LEVELS.forEach(level => {
       handle['l' + level].disable();
     });
 
-    logging.setting_.split(",").forEach(function(handleLevel) {
-      var handle_levels = handleLevel.split("/");
-      var handleDesc = handle_levels[0];
-      var levels = handle_levels[1] || "";
+    logging.setting_.split(",").forEach(handleLevel => {
+      let handle_levels = handleLevel.split("/");
+      let handleDesc = handle_levels[0];
+      let levels = handle_levels[1] || "";
       if(!wildcardMatch(handleDesc, handle.name)) {
         return;
       }
       if(levels == "*") {
         levels = logging.LEVELS.join("");
       }
-      levels.split("").forEach(function(levelStr) {
-        var level = parseInt(levelStr);
-        var log = handle['l' + level];
+      levels.split("").forEach(levelStr => {
+        let level = parseInt(levelStr);
+        let log = handle['l' + level];
         if(log) {
           log.enable();
         }
@@ -68,12 +68,11 @@ logging = {
   },
   settingIs: function(setting) {
     logging.setting_ = setting;
-    for(var handleName in logging.handles_) {
-      if(logging.handles_.hasOwnProperty(handleName)) {
-        var handle = logging.handles_[handleName];
-        logging.doEnableDisableHandle_(handle);
-      }
-    }
+
+    Object.keys(logging.handles_).forEach(handleName => {
+      let handle = logging.handles_[handleName];
+      logging.doEnableDisableHandle_(handle);
+    });
   },
   setting: function() {
     return logging.setting_;
@@ -85,12 +84,12 @@ logging = {
     }
 
     function createLogLevel(level) {
-      var log = function() {
+      let log = function() {
         if(!log.enabled) {
           return;
         }
-        var args = Array.prototype.slice.call(arguments, 0);
-        var timeStr = new Date().toISOString();
+        let args = Array.prototype.slice.call(arguments, 0);
+        let timeStr = new Date().toISOString();
         args.unshift(now() + " " + timeStr + " " + handleName + "/" + level);
         console.log.apply(console, args);
       };
@@ -104,9 +103,9 @@ logging = {
       return log;
     }
 
-    var handle = {};
+    let handle = {};
     handle.name = handleName;
-    logging.LEVELS.forEach(function(level) {
+    logging.LEVELS.forEach(level => {
       handle['l' + level] = createLogLevel(level);
     });
 

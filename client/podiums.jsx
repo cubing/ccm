@@ -67,7 +67,7 @@ const EventPodiumsByPerson = React.createClass({
     let resultsByRegistration = _.chain(this.props.finalResults)
       .groupBy(result => result.registrationId)
       .pairs()
-      .sortBy(([registrationId, results]) => _.min(_.map(results, resultValue)))
+      .sortBy(([registrationId, results]) => _.min(results.map(resultValue)))
       .map(([registrationId, results]) => [ registrationId, _.sortBy(results, result => wca.eventByCode[result.round.eventCode].index) ])
       .value()
     ;

@@ -2,7 +2,7 @@ MochaWeb.testOnly(function() {
   describe('helpers', function() {
 
     describe('getCompetitionEvents', function() {
-      var compId;
+      let compId;
       beforeEach(function() {
         compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
       });
@@ -18,7 +18,7 @@ MochaWeb.testOnly(function() {
       });
 
       it('returns events in WCA order', function() {
-        ['333', '222', '333mbf', '777', 'clock'].forEach(function(code) {
+        ['333', '222', '333mbf', '777', 'clock'].forEach(code => {
           make(Rounds, {competitionId: compId, eventCode: code});
         });
         chai.expect(_.pluck(getCompetitionEvents(compId), 'eventCode').join()).to.equal('333,222,clock,777,333mbf');

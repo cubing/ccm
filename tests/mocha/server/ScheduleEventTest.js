@@ -8,7 +8,7 @@ MochaWeb.testOnly(function() {
     });
 
     describe('validation', function() {
-      var comp;
+      let comp;
 
       it('is within competition', function() {
         comp = make(Competitions);
