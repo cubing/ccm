@@ -64,12 +64,12 @@ Template.editEvents.events({
   },
 });
 
-let eventCountPerRowByDeviceSize = {
-  xs: 1,
-  sm: 2,
-  md: 2,
-  lg: 3,
-};
+let deviceSizeAndEventCounts = [
+  ['xs', 1],
+  ['sm', 2],
+  ['md', 2],
+  ['lg', 3],
+];
 
 Template.editEvents.helpers({
   events: function() {
@@ -84,14 +84,14 @@ Template.editEvents.helpers({
     return events;
   },
   eventColumnsClasses: function() {
-    let classes = eventCountPerRowByDeviceSize.map((eventCount, deviceSize) => {
+    let classes = deviceSizeAndEventCounts.map(([deviceSize, eventCount]) => {
       let cols = Math.floor(12 / eventCount);
       return "col-" + deviceSize + "-" + cols;
     });
     return classes.join(" ");
   },
   clearfixVisibleClass: function() {
-    let classes = eventCountPerRowByDeviceSize.map((eventCount, deviceSize) => {
+    let classes = deviceSizeAndEventCounts.map(([deviceSize, eventCount]) => {
       if((this.index + 1) % eventCount === 0) {
         return 'visible-' + deviceSize + '-block';
       }
