@@ -74,6 +74,11 @@ Template.layout.helpers({
         icon: 'fa fa-cog',
         text: 'Manage',
       }, {
+        route: 'editStaff',
+        title: 'Assign staff members',
+        icon: 'fa fa-group',
+        text: 'Staff',
+      }, {
         route: 'editEvents',
         title: 'Add and remove rounds, change cutoffs, open and close rounds',
         icon: 'fa fa-cube',

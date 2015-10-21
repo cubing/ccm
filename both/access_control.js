@@ -1,4 +1,4 @@
-getCannotManageCompetitionReason = function(userId, competitionId) {
+getCannotManageCompetitionReason = function(userId, competitionId, role='organizer') {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
@@ -13,15 +13,13 @@ getCannotManageCompetitionReason = function(userId, competitionId) {
 
   if(!user.siteAdmin) {
     // If the user is not a siteAdmin, then they must be an organizer
-    // in order to manage =)
-    let registration = Registrations.findOne({
+    // in order to manage the competition.
+    let competitionStaff = CompetitionStaff.findOne({
       competitionId: competitionId,
       userId: userId,
-    }, {
-      fields: { organizer: 1 }
     });
-    if(!registration || !registration.organizer) {
-      return new Meteor.Error(403, "Not an organizer for this competition");
+    if(!competitionStaff || !competitionStaff[role]) {
+      return new Meteor.Error(403, `Do not have role ${role} for this competition`);
     }
   }
 

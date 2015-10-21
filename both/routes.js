@@ -99,6 +99,7 @@ BaseCompetitionController = RouteController.extend({
     let subscriptions = [subs.subscribe('competition', this.params.competitionUrlId, subscriptionError(this))];
     if(this.ccmManage) {
       subscriptions.push(subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this)));
+      subscriptions.push(subs.subscribe('competitionStaff', this.params.competitionUrlId, subscriptionError(this)));
     }
     if(this.extraSubscriptions) {
       subscriptions = subscriptions.concat(this.extraSubscriptions());
@@ -367,6 +368,12 @@ Router.route('/manage/:competitionUrlId', {
   template: 'editCompetition',
   controller: 'ManageCompetitionController',
   titlePrefix: "Manage",
+});
+Router.route('/manage/:competitionUrlId/staff', {
+  name: 'editStaff',
+  template: 'editStaff',
+  controller: 'ManageCompetitionController',
+  titlePrefix: "Staff",
 });
 ManageCompetitionEventsController = ManageCompetitionController.extend({
   extraSubscriptions: function() {

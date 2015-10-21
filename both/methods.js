@@ -101,11 +101,16 @@ Meteor.methods({
       userId: this.userId,
       uniqueName: uniqueName,
       registeredEvents: [],
-      organizer: true,
       wcaId: user.profile.wcaId,
       countryId: user.profile.countryId,
       gender: user.profile.gender,
       dob: user.profile.dob,
+    });
+
+    CompetitionStaff.insert({
+      competitionId: competitionId,
+      userId: this.userId,
+      organizer: true,
     });
     return competitionId;
   },
@@ -114,7 +119,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, competitionId);
 
     Competitions.remove({ _id: competitionId });
-    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {
+    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents, CompetitionStaff].forEach(collection => {
       collection.remove({ competitionId: competitionId });
     });
   },

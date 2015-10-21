@@ -18,7 +18,6 @@ let registrationFieldsToPublish = {
   checkedIn: 1,
 };
 
-
 Meteor.publish(null, function() {
   if(!this.userId) {
     return [];
@@ -58,10 +57,10 @@ Meteor.publish('competition', function(competitionUrlId) {
     Rounds.find({ competitionId: competitionId }),
   ];
   if(this.userId) {
-    // Always publish the users registration, as that lets us know if they are
-    // staff and/or an organizer.
+    // Always publish the user's CompetitionStaff, as that lets the UI show administrative
+    // options.
     cursors.push(
-      Registrations.find({ competitionId: competitionId, userId: this.userId })
+      CompetitionStaff.find({ competitionId: competitionId, userId: this.userId })
     );
   }
   return cursors;
@@ -79,6 +78,15 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
     fields.comments = 1;
   }
   return Registrations.find({ competitionId: competitionId }, { fields: fields });
+});
+
+Meteor.publish('competitionStaff', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+  return CompetitionStaff.find({ competitionId: competitionId });
 });
 
 Meteor.publish('participantResults', function(competitionUrlId, participantUniqueName) {

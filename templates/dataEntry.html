@@ -5,7 +5,7 @@
     {{#if roundId}}
       {{#each round.getAlerts}}
         <div class="alert alert-{{severity}}" role="alert">
-          <strong style="text-transform: capitalize;">{{severity}}!</strong> {{{message}}}
+          <strong class="text-capitalize">{{severity}}!</strong> {{{message}}}
         </div>
       {{/each}}
       {{> roundDataEntry roundId=roundId}}

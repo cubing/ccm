@@ -45,7 +45,6 @@ let setCompetitionLocationMap = function() {
     // autoform inputs
     $locationInput.val($addressInput.val());
 
-
     let mapOptions = {
       scrollwheel: false,
       zoom: $addressInput.val() ? 12 : 2,
@@ -113,37 +112,6 @@ let setCompetitionLocationMap = function() {
   });
 };
 
-
-function getExpandableListSettings(competitionId, registrationAttribute) {
-  return {
-    collectionName: 'Registrations',
-    field: 'uniqueName',
-    pillTemplateName: 'registrationPill',
-    filter: {
-      competitionId: competitionId,
-      userId: {
-        $exists: true,
-      },
-    },
-    addDoc: function(registrationId) {
-      let $toSet = {};
-      $toSet[registrationAttribute] = true;
-      Registrations.update(registrationId, { $set: $toSet });
-    },
-    removeDoc: function(registrationId) {
-      let $toSet = {};
-      $toSet[registrationAttribute] = false;
-      Registrations.update(registrationId, { $set: $toSet });
-    },
-    docCriteria: {
-      [registrationAttribute]: true,
-    },
-    isDeletable: function(registration) {
-      return registration.userId != Meteor.userId();
-    },
-  };
-}
-
 Template.editCompetition.helpers({
   defaultCompetitionDataDocument: function() {
     let competitionId = this.competitionId;
@@ -156,13 +124,6 @@ Template.editCompetition.helpers({
         // any default values
       };
     }
-  },
-
-  staffPickerSettings: function() {
-    return getExpandableListSettings(this.competitionId, 'staff');
-  },
-  organizersPickerSettings: function() {
-    return getExpandableListSettings(this.competitionId, 'organizer');
   },
 });
 

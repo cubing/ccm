@@ -3,8 +3,8 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title text-capitalize">
-          Administrative Competition Settings
+        <h3 class="panel-title">
+          Administrative settings
         </h3>
       </div>
       <div class="panel-body">
@@ -45,8 +45,8 @@
     {{#autoForm id="updateCompetitionGeneralSettings" type="update" doc=defaultCompetitionDataDocument collection="Competitions" autosave=true template="bootstrap3-horizontal" label-class="col-sm-3" input-col-class="col-sm-9"}}
       <div class="panel panel-default">
         <div class="panel-heading">
-          <h3 class="panel-title text-capitalize">
-            General settings for competition: {{competitionAttr "competitionName"}}
+          <h3 class="panel-title">
+            General settings for {{competitionAttr "competitionName"}}
           </h3>
         </div>
 
@@ -80,11 +80,10 @@
       </div>
 
       <div class="row">
-
         <div id="competitionRegistrationSettings" class="col-sm-6">
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title text-capitalize">
+              <h3 class="panel-title">
                 Registration settings
               </h3>
             </div>
@@ -100,36 +99,8 @@
             </div>
           </div><!-- /.panel -->
         </div><!-- /#competitionRegistrationSettings -->
-
-        <div id="competitionPaymentSettings" class="col-sm-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title text-capitalize">
-                Payment settings
-              </h3>
-            </div>
-            <div class="panel-body">
-              A form.
-            </div>
-          </div><!-- /.panel -->
-        </div><!-- /#competitionPaymentSettings -->
-
       </div>
     {{/autoForm}}
-
-    <div class="row">
-      <div id="organizersList" class="col-sm-6">
-        {{#expandableListWithAutocomplete title="Organizers" settings=organizersPickerSettings}}
-          Have complete control over a competition.
-        {{/expandableListWithAutocomplete}}
-      </div>
-
-      <div id="staffList" class="col-sm-6">
-        {{#expandableListWithAutocomplete title="Staff" settings=staffPickerSettings}}
-          Can only enter times and view scrambles for ongoing rounds.
-        {{/expandableListWithAutocomplete}}
-      </div>
-    </div>
 
     <p>
       <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalConfirmDeleteCompetition">
