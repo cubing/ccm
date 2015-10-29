@@ -63,6 +63,10 @@ Router.onBeforeAction(function() {
 let verificationSendSuccessReact = new ReactiveVar(null);
 
 Template.layout.helpers({
+  showManageCompetitionLink: function() {
+    let competition = Competitions.findOne(this.competitionId);
+    return competition.userIsStaffMember(Meteor.userId());
+  },
   verificationSendSuccess: function() {
     return verificationSendSuccessReact.get();
   },

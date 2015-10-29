@@ -27,6 +27,8 @@ function presets(propertyKey) {
     case Groups:
       return { competitionId: 'fake', group: "A" + (uniqueNumber++), scrambles: [ "R U2 R'" ], extraScrambles: [ "F U2" ], scrambleProgram: "TNoodle 42" };
 
+    case Meteor.users:
+      return { emails: [], createdAt: new Date() };
     default:
       throw new Error("Unknown property key: " + propertyKey);
   }

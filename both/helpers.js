@@ -88,11 +88,6 @@ register("competitionEvents", function() {
   return getCompetitionEvents(this.competitionId);
 });
 
-register("canManageCompetition", function(userId) {
-  let cannotManageReason = getCannotManageCompetitionReason(userId, this.competitionId);
-  return !cannotManageReason;
-});
-
 isRegisteredForCompetition = function(userId, competitionId) {
   let competition = Registrations.findOne({
     competitionId: competitionId,

@@ -32,17 +32,17 @@ HTTP.publish({name: '/api/v0/competitions/:competitionUrlId/rounds'}, function()
   return Rounds.find({ competitionId: competitionId });
 });
 
-function getRoundId(requireManagement) {
+function getRoundId(requireManagement, role=null) {
   let competitionId = api.competitionUrlIdToId(this.params.competitionUrlId);
   if(!competitionId) {
     throw new Meteor.Error(404, "Competition not found");
   }
 
-  if(requireManagement) {
+  if(role) {
     if(!this.userId) {
       throw new Meteor.Error(401, "Please specify a valid token");
     }
-    throwIfCannotManageCompetition(this.userId, competitionId);
+    throwIfCannotManageCompetition(this.userId, competitionId, role);
   }
 
   let nthRound = parseInt(this.params.nthRound);
@@ -60,8 +60,7 @@ function getRoundId(requireManagement) {
 HTTP.methods({
   '/api/v0/competitions/:competitionUrlId/rounds/:eventCode/:nthRound/results': {
     get: function(data) {
-      let requireManagement = false;
-      let roundId = getRoundId.call(this, requireManagement);
+      let roundId = getRoundId.call(this);
 
       let resultsQuery = { roundId: roundId };
       if(this.query.registrationId) {
@@ -74,7 +73,7 @@ HTTP.methods({
     },
     put: function(data) {
       let requireManagement = true;
-      let roundId = getRoundId.call(this, requireManagement);
+      let roundId = getRoundId.call(this, 'dataEntry');
 
       if(!data) {
         throw new Meteor.Error(400, "Please send an object with registrationId, solveIndex, and solveTime");
@@ -112,7 +111,7 @@ HTTP.methods({
       if(!this.userId) {
         throw new Meteor.Error(401, "Please specify a valid token");
       }
-      throwIfCannotManageCompetition(this.userId, competitionId);
+      throwIfCannotManageCompetition(this.userId, competitionId, 'viewScrambles');
 
       let openRounds = Rounds.find({
         competitionId: competitionId,

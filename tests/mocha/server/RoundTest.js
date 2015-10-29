@@ -2,7 +2,8 @@ MochaWeb.testOnly(function() {
   describe('Round', function() {
 
     beforeEach(function() {
-      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
+      stubs.create('fakeLogin', global, 'getCannotManageCompetitionReason');
+      stubs.fakeLogin.returns(null);
     });
     afterEach(function() {
       stubs.restoreAll();

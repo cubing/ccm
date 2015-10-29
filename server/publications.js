@@ -73,7 +73,7 @@ Meteor.publish('competitionRegistrations', function(competitionUrlId) {
     return [];
   }
   let fields = _.extend({}, registrationFieldsToPublish);
-  if(!getCannotManageCompetitionReason(this.userId, competitionId)) {
+  if(!getCannotManageCompetitionReason(this.userId, competitionId, 'manageCheckin')) {
     fields.dob = 1;
     fields.comments = 1;
   }
@@ -142,7 +142,7 @@ Meteor.publish('competitionScrambles', function(competitionUrlId) {
   if(!competitionId) {
     return [];
   }
-  if(getCannotManageCompetitionReason(this.userId, competitionId)) {
+  if(getCannotManageCompetitionReason(this.userId, competitionId, 'viewScrambles')) {
     return [];
   }
 
@@ -153,9 +153,6 @@ Meteor.publish('competitionPodiumResults', function(competitionUrlId) {
   check(competitionUrlId, String);
   let competitionId = api.competitionUrlIdToId(competitionUrlId);
   if(!competitionId) {
-    return [];
-  }
-  if(getCannotManageCompetitionReason(this.userId, competitionId)) {
     return [];
   }
 

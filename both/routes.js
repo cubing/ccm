@@ -133,7 +133,8 @@ BaseCompetitionController = RouteController.extend({
       this.render('competitionNotFound');
       return;
     }
-    if(this.ccmManage && getCannotManageCompetitionReason(Meteor.userId(), competitionId)) {
+    let competition = Competitions.findOne(competitionId);
+    if(this.ccmManage && !competition.userIsStaffMember(Meteor.userId())) {
       this.render('cannotManageCompetition');
       return;
     }

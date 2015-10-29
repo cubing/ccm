@@ -4,16 +4,22 @@ let CompetitionStaffModel = function(doc) {
 };
 
 _.extend(CompetitionStaffModel.prototype, {
-  user: function() {
+  user() {
     return Meteor.users.findOne(this.userId);
   },
 });
 
 CompetitionStaff = new Mongo.Collection("competitionStaff", {
-  transform: function(doc) {
+  transform(doc) {
     return new CompetitionStaffModel(doc);
   },
 });
+
+let OptionalBoolean = {
+  type: Boolean,
+  defaultValue: false,
+  optional: true,
+};
 
 var schema = new SimpleSchema({
   competitionId: {
@@ -22,11 +28,12 @@ var schema = new SimpleSchema({
   userId: {
     type: String,
   },
-  organizer: {
-    type: Boolean,
-    defaultValue: false,
+
+  roles: {
+    type: new SimpleSchema(_.object(RoleHeirarchy.allRoles.map(role => [ role.name, OptionalBoolean ]))),
     optional: true,
   },
+
   createdAt: createdAtSchemaField,
   updatedAt: updatedAtSchemaField,
 });

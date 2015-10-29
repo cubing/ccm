@@ -9,7 +9,8 @@ MochaWeb.testOnly(function() {
       [Competitions, Rounds, RoundProgresses, Registrations].forEach(collection => {
         collection.remove({});
       });
-      stubs.create('Fake login', global, 'throwIfCannotManageCompetition');
+      stubs.create('fakeLogin', global, 'getCannotManageCompetitionReason');
+      stubs.fakeLogin.returns(null);
 
       comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
       comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });

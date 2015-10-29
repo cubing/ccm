@@ -138,10 +138,7 @@ let CheckinList = React.createClass({
 
     let competitionEvents = getCompetitionEvents(this.props.competitionId);
 
-    return {
-      registrations: registrations,
-      competitionEvents,
-    };
+    return { registrations, competitionEvents };
   },
   componentWillMount: function() {
     log.l1("component will mount");

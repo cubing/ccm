@@ -65,7 +65,7 @@
               <a href="{{pathFor 'competition'}}">{{competitionAttr 'competitionName'}}</a>
             </li>
             {{#if currentUser}}
-              {{#if canManageCompetition currentUser._id}}
+            {{#if showManageCompetitionLink}}
                 <li class="{{#if isActiveOrAncestorRoute 'manageCompetition'}}active{{/if}}">
                   <a href="{{pathFor 'manageCompetition'}}"><i class="fa fa-cogs"></i></a>
                 </li>

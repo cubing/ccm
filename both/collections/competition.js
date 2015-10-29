@@ -3,11 +3,93 @@ Competition = function(doc) {
 };
 
 _.extend(Competition.prototype, {
-
-  endDate: function() {
+  endDate() {
     return new Date(this.startDate.getTime() + (this.numberOfDays - 1) * 24*60*60*1000);
   },
+  userIsStaffMember(userId) {
+    let user = Meteor.users.findOne(userId);
+    if(!user) {
+      return false;
+    }
+    if(user.siteAdmin) {
+      return true;
+    }
+    return !!CompetitionStaff.findOne({
+      userId: userId,
+      competitionId: this._id,
+    });
+  },
+  userHasRole(userId, roleName) {
+    let role = RoleHeirarchy.roleByName[roleName];
+    if(!role) {
+      throw new Error(`Unrecognized role name: ${roleName}`);
+    }
+
+    let user = Meteor.users.findOne(userId);
+    if(user.siteAdmin) {
+      return true;
+    }
+    // If the user is not a siteAdmin, then they must have an entry in CompetitionStaff
+    // with the appropriate role.
+    let competitionStaff = CompetitionStaff.findOne({
+      competitionId: this._id,
+      userId: userId,
+    });
+    return competitionStaff && role.isOrIsDescendentOfAny(competitionStaff.roles);
+  },
 });
+
+RoleHeirarchy = class {
+  constructor(roleName, parentRole) {
+    this.name = roleName;
+    this.parentRole = parentRole;
+    this.childRoles = [];
+    if(this.parentRole) {
+      this.parentRole.childRoles.push(this);
+    }
+    assert(!RoleHeirarchy.roleByName[this.name]);
+    RoleHeirarchy.roleByName[this.name] = this;
+  }
+
+  isOrIsDescendentOfAny(roleNames) {
+    roleNames = roleNames || {};
+    let potentialRole = this;
+    while(potentialRole) {
+      if(roleNames[potentialRole.name]) {
+        return true;
+      }
+      potentialRole = potentialRole.parentRole;
+    }
+    return false;
+  }
+
+  static get roleByName() {
+    this._roleByName = this._roleByName || {};
+    return this._roleByName;
+  }
+
+  static get allRoles() {
+    let roles = [];
+    let fringe = [rootRole];
+    while(fringe.length > 0) {
+      let role = fringe.pop();
+      roles.push(role);
+      fringe = fringe.concat(role.childRoles);
+    }
+    return roles;
+  }
+};
+
+let rootRole = new RoleHeirarchy('organizer', null);
+/**/new RoleHeirarchy('manageEvents', rootRole);
+/**/new RoleHeirarchy('dataEntry', rootRole);
+/**/new RoleHeirarchy('deleteCompetition', rootRole);
+/**/new RoleHeirarchy('manageCheckin', rootRole);
+/**/let manageCompetitionMetadataRole = new RoleHeirarchy('manageCompetitionMetadata', rootRole);
+/*  */new RoleHeirarchy('manageSchedule', manageCompetitionMetadataRole);
+/**/let manageScramblesRole = new RoleHeirarchy('manageScrambles', rootRole);
+/*  */new RoleHeirarchy('viewScrambles', manageScramblesRole);
+
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
 let schema = new SimpleSchema({

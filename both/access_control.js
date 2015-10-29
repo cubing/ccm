@@ -1,4 +1,4 @@
-getCannotManageCompetitionReason = function(userId, competitionId, role='organizer') {
+getCannotManageCompetitionReason = function(userId, competitionId, role) {
   if(!userId) {
     return new Meteor.Error(401, "Must log in");
   }
@@ -11,16 +11,8 @@ getCannotManageCompetitionReason = function(userId, competitionId, role='organiz
     return new Meteor.Error(404, "Competition does not exist");
   }
 
-  if(!user.siteAdmin) {
-    // If the user is not a siteAdmin, then they must be an organizer
-    // in order to manage the competition.
-    let competitionStaff = CompetitionStaff.findOne({
-      competitionId: competitionId,
-      userId: userId,
-    });
-    if(!competitionStaff || !competitionStaff[role]) {
-      return new Meteor.Error(403, `Do not have role ${role} for this competition`);
-    }
+  if(!competition.userHasRole(userId, role)) {
+    return new Meteor.Error(403, `You are not allowed to ${role} for this competition`);
   }
 
   return false;
@@ -107,8 +99,8 @@ getCannotRegisterReasons = function(competitionId) {
   return false;
 };
 
-throwIfCannotManageCompetition = function(userId, competitionId) {
-  let cannotManageReason = getCannotManageCompetitionReason(userId, competitionId);
+throwIfCannotManageCompetition = function(userId, competitionId, role) {
+  let cannotManageReason = getCannotManageCompetitionReason(userId, competitionId, role);
   if(cannotManageReason) {
     throw cannotManageReason;
   }
@@ -120,7 +112,9 @@ canRemoveRound = function(userId, roundId) {
   if(!round) {
     throw new Meteor.Error(404, "Unrecognized round id");
   }
-  throwIfCannotManageCompetition(userId, round.competitionId);
+  if(getCannotManageCompetitionReason(userId, round.competitionId, 'manageEvents')) {
+    return false;
+  }
 
   // Only let the user remove the last round for an event.
   return round.isLast();
@@ -131,7 +125,9 @@ canAddRound = function(userId, competitionId, eventCode) {
     return false;
   }
   check(competitionId, String);
-  throwIfCannotManageCompetition(userId, competitionId);
+  if(getCannotManageCompetitionReason(userId, competitionId, 'manageEvents')) {
+    return false;
+  }
   if(!wca.eventByCode[eventCode]) {
     throw new Meteor.Error(404, "Unrecognized event code");
   }
@@ -154,7 +150,7 @@ if(Meteor.isServer) {
 
   Competitions.allow({
     update: function(userId, competition, fields, modifier) {
-      if(getCannotManageCompetitionReason(userId, competition._id)) {
+      if(getCannotManageCompetitionReason(userId, competition._id, 'manageCompetitionMetadata')) {
         return false;
       }
       let allowedFields = [
@@ -186,7 +182,7 @@ if(Meteor.isServer) {
 
   Rounds.allow({
     update: function(userId, round, fields, modifier) {
-      if(getCannotManageCompetitionReason(userId, round.competitionId)) {
+      if(getCannotManageCompetitionReason(userId, round.competitionId, 'manageEvents')) {
         return false;
       }
       let allowedFields = [
@@ -208,7 +204,7 @@ if(Meteor.isServer) {
 
   ScheduleEvents.allow({
     update: function(userId, scheduleEvent, fields, modifier) {
-      if(getCannotManageCompetitionReason(userId, scheduleEvent.competitionId)) {
+      if(getCannotManageCompetitionReason(userId, scheduleEvent.competitionId, 'manageSchedule')) {
         return false;
       }
       let allowedFields = [
@@ -219,35 +215,6 @@ if(Meteor.isServer) {
       ];
       return onlyAllowedFields(fields, allowedFields);
     },
-  });
-
-  RoundProgresses.allow({
-    update: function(userId, progress, fields, modifier) {
-      if(getCannotManageCompetitionReason(userId, progress.competitionId)) {
-        return false;
-      }
-      let allowedFields = [
-        'done',
-        'total',
-      ];
-      return onlyAllowedFields(fields, allowedFields);
-    },
-  });
-
-  Results.allow({
-    update: function(userId, result, fields, modifier) {
-      if(getCannotManageCompetitionReason(userId, result.competitionId)) {
-        return false;
-      }
-      let allowedFields = [
-        'solves',
-
-        'updatedAt',
-        'createdAt',
-      ];
-      return onlyAllowedFields(fields, allowedFields);
-    },
-    fetch: [ 'competitionId' ],
   });
 
   Registrations.allow({
@@ -263,8 +230,9 @@ if(Meteor.isServer) {
   });
 
   Registrations.allowOperation = function(userId, registration, fields) {
-    if(!getCannotManageCompetitionReason(userId, registration.competitionId)) {
-      // If you're allowed to manage the competition, you can change anyone's registration.
+    if(!getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin')) {
+      // If you're a staff member with the manageCheckin
+      // role, you can change anyone's registration.
       return true;
     }
     if(getCannotRegisterReasons(registration.competitionId)) {

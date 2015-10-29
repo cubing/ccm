@@ -37,7 +37,7 @@ setSolveTime = function(resultId, solveIndex, solveTime) {
   if(!result) {
     throw new Meteor.Error(404, "Result not found");
   }
-  throwIfCannotManageCompetition(this.userId, result.competitionId);
+  throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
 
   let round = Rounds.findOne(result.roundId);
   if(!round) {
@@ -110,13 +110,15 @@ Meteor.methods({
     CompetitionStaff.insert({
       competitionId: competitionId,
       userId: this.userId,
-      organizer: true,
+      roles: {
+        organizer: true,
+      },
     });
     return competitionId;
   },
   deleteCompetition: function(competitionId) {
     check(competitionId, String);
-    throwIfCannotManageCompetition(this.userId, competitionId);
+    throwIfCannotManageCompetition(this.userId, competitionId, 'deleteCompetition');
 
     Competitions.remove({ _id: competitionId });
     [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents, CompetitionStaff].forEach(collection => {
@@ -182,7 +184,7 @@ Meteor.methods({
   },
   addScheduleEvent: function(competitionId, eventData, roundId) {
     check(competitionId, String);
-    throwIfCannotManageCompetition(this.userId, competitionId);
+    throwIfCannotManageCompetition(this.userId, competitionId, 'manageSchedule');
 
     let round = Rounds.findOne(roundId); // Will not exist for some events
 
@@ -201,11 +203,11 @@ Meteor.methods({
   },
   removeScheduleEvent: function(scheduleEventId) {
     let event = ScheduleEvents.findOne(scheduleEventId);
-    throwIfCannotManageCompetition(this.userId, event.competitionId);
+    throwIfCannotManageCompetition(this.userId, event.competitionId, 'manageSchedule');
     ScheduleEvents.remove(scheduleEventId);
   },
   addOrUpdateGroup: function(newGroup) {
-    throwIfCannotManageCompetition(this.userId, newGroup.competitionId);
+    throwIfCannotManageCompetition(this.userId, newGroup.competitionId, 'manageScrambles');
     let round = Rounds.findOne(newGroup.roundId);
     if(!round) {
       throw new Meteor.Error("Invalid roundId: '" + newGroup.roundId +"'");
@@ -227,7 +229,7 @@ Meteor.methods({
   },
   advanceParticipantsFromRound: function(participantsToAdvance, roundId) {
     let round = Rounds.findOne(roundId);
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId, 'dataEntry');
 
     let results = Results.find({ roundId: roundId }, { sort: { position: 1 } }).fetch();
     if(participantsToAdvance < 0) {
@@ -329,7 +331,7 @@ Meteor.methods({
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId, 'manageEvents');
 
     let toSet = {};
     if(softCutoff) {
@@ -359,7 +361,7 @@ Meteor.methods({
   },
   toggleEventRegistration: function(registrationId, eventCode) {
     let registration = Registrations.findOne(registrationId);
-    throwIfCannotManageCompetition(this.userId, registration.competitionId);
+    throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
     let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
     let update;
     if(registeredForEvent) {
@@ -406,7 +408,7 @@ Meteor.methods({
     if(!round.isOpen()) {
       throw new Meteor.Error(404, "Group's round is not open");
     }
-    throwIfCannotManageCompetition(this.userId, group.competitionId);
+    throwIfCannotManageCompetition(this.userId, group.competitionId, 'manageScrambles');
     Groups.update(group._id, { $set: { open: !group.open } });
   },
   advanceResultIdFromRoundPreviousToThisOne: function(resultId, roundId) {
@@ -414,7 +416,7 @@ Meteor.methods({
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId, 'dataEntry');
 
     let bestNotAdvancedResult = Results.findOne(resultId);
     if(!bestNotAdvancedResult) {
@@ -454,7 +456,7 @@ Meteor.methods({
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
-    throwIfCannotManageCompetition(this.userId, round.competitionId);
+    throwIfCannotManageCompetition(this.userId, round.competitionId, 'dataEntry');
 
     let previousRound = round.getPreviousRound();
     if(previousRound) {
@@ -472,7 +474,7 @@ Meteor.methods({
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
     }
-    throwIfCannotManageCompetition(this.userId, result.competitionId);
+    throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
 
     let round = Rounds.findOne(result.roundId);
     if(!round) {
@@ -485,6 +487,21 @@ Meteor.methods({
 
     Results.update(resultId, { $set: { noShow: newNoShow } });
     RoundSorter.addRoundToSort(round._id);
+  },
+  setStaffRole: function(competitionStaffId, role, toSet) {
+    check(competitionStaffId, String);
+    check(role, String);
+    check(toSet, Boolean);
+    let competitionStaff = CompetitionStaff.findOne(competitionStaffId);
+    if(!competitionStaff) {
+      throw new Meteor.Error(404, "CompetitionStaff not found");
+    }
+    throwIfCannotManageCompetition(this.userId, competitionStaff.competitionId, 'organizer');
+
+    if(competitionStaff.userId === this.userId && !toSet) {
+      throw new Meteor.Error(403, "You cannot demote yourself");
+    }
+    CompetitionStaff.update(competitionStaffId, { $set: { [`roles.${role}`]: toSet } });
   },
 });
 
@@ -595,7 +612,7 @@ if(Meteor.isServer) {
       // We don't want this method to silently delete any data, so we only add missing
       // registrations, and we only change the events a person is registered for if
       // they are not checked in.
-      throwIfCannotManageCompetition(this.userId, competitionId);
+      throwIfCannotManageCompetition(this.userId, competitionId, 'manageCheckin');
 
       let registrationByWcaJsonId = {};
       let uniqueNames = {};
@@ -924,7 +941,7 @@ if(Meteor.isServer) {
     },
     checkInRegistration: function(registrationId, toCheckIn) {
       let registration = Registrations.findOne(registrationId);
-      throwIfCannotManageCompetition(this.userId, registration.competitionId);
+      throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
       registration.checkIn(toCheckIn);
     },
   });
