@@ -23,7 +23,7 @@ let StaffList = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData() {
-    let staff = CompetitionStaff.find({ competitionId: this.props.competitionId }).fetch();
+    let staff = Registrations.find({ competitionId: this.props.competitionId, roles: { $exists: 1 } }).fetch();
     return { staff };
   },
 
@@ -63,6 +63,5 @@ let StaffList = React.createClass({
 });
 // TODO - sort staff by name
 // TODO - autoset/disable descendent roles
-// TODO - don't allow autodemotion
 // TODO - make it possible to add new staff
 // TODO - make it possible to delete staff

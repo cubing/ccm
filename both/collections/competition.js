@@ -14,10 +14,11 @@ _.extend(Competition.prototype, {
     if(user.siteAdmin) {
       return true;
     }
-    return !!CompetitionStaff.findOne({
+    let registration = Registrations.findOne({
       userId: userId,
       competitionId: this._id,
     });
+    return registration && registration.roles;
   },
   userHasRole(userId, roleName) {
     let role = RoleHeirarchy.roleByName[roleName];
@@ -29,13 +30,13 @@ _.extend(Competition.prototype, {
     if(user.siteAdmin) {
       return true;
     }
-    // If the user is not a siteAdmin, then they must have an entry in CompetitionStaff
-    // with the appropriate role.
-    let competitionStaff = CompetitionStaff.findOne({
+    // If the user is not a siteAdmin, then they must have a Registration for
+    // this competition with the appropriate role.
+    let registration = Registrations.findOne({
       competitionId: this._id,
       userId: userId,
     });
-    return competitionStaff && role.isOrIsDescendentOfAny(competitionStaff.roles);
+    return registration && role.isOrIsDescendentOfAny(registration.roles);
   },
 });
 

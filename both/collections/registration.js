@@ -71,6 +71,9 @@ _.extend(Registration.prototype, {
     });
     Registrations.update(this._id, { $set: { checkedIn: toCheckIn } });
   },
+  user() {
+    return Meteor.users.findOne(this.userId);
+  },
 });
 
 Registrations = new Mongo.Collection("registrations", {
@@ -78,6 +81,13 @@ Registrations = new Mongo.Collection("registrations", {
     return new Registration(doc);
   },
 });
+
+let OptionalBoolean = {
+  type: Boolean,
+  defaultValue: false,
+  optional: true,
+};
+
 let schema = new SimpleSchema({
   competitionId: {
     type: String,
@@ -139,6 +149,10 @@ let schema = new SimpleSchema({
   checkedIn: {
     type: Boolean,
     defaultValue: false,
+  },
+  roles: {
+    type: new SimpleSchema(_.object(RoleHeirarchy.allRoles.map(role => [ role.name, OptionalBoolean ]))),
+    optional: true,
   },
   createdAt: createdAtSchemaField,
   updatedAt: updatedAtSchemaField,

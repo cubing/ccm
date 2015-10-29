@@ -230,17 +230,14 @@ if(Meteor.isServer) {
   });
 
   Registrations.allowOperation = function(userId, registration, fields) {
-    if(!getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin')) {
-      // If you're a staff member with the manageCheckin
-      // role, you can change anyone's registration.
-      return true;
-    }
-    if(getCannotRegisterReasons(registration.competitionId)) {
-      return false;
-    }
-    // can only edit entries with own user id
-    if(registration.userId != userId) {
-      return false;
+    if(getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin')) {
+      if(getCannotRegisterReasons(registration.competitionId)) {
+        return false;
+      }
+      // can only edit entries with own user id
+      if(registration.userId != userId) {
+        return false;
+      }
     }
     let allowedFields = [
       'userId',

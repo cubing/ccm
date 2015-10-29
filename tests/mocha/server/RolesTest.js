@@ -39,29 +39,29 @@ MochaWeb.testOnly(function() {
       competition = make(Competitions);
 
       organizerUserId = make(Meteor.users)._id;
-      organizerStaffId = CompetitionStaff.insert({ competitionId: competition._id, userId: organizerUserId, roles: {organizer: true} });
+      organizerStaffId = Registrations.insert({ uniqueName: "Mr. Organizer", competitionId: competition._id, userId: organizerUserId, roles: {organizer: true} });
 
       nonOrganizerUserId = make(Meteor.users)._id;
-      nonOrganizerStaffId = CompetitionStaff.insert({ competitionId: competition._id, userId: nonOrganizerUserId });
+      nonOrganizerStaffId = Registrations.insert({ uniqueName: "Mr. Non Organizer", competitionId: competition._id, userId: nonOrganizerUserId });
     });
 
     it('organizer can set roles', function() {
       setStaffRole.call({ userId: organizerUserId }, nonOrganizerStaffId, 'organizer', true);
-      chai.expect(CompetitionStaff.findOne(nonOrganizerStaffId).roles.organizer).to.eq(true);
+      chai.expect(Registrations.findOne(nonOrganizerStaffId).roles.organizer).to.eq(true);
     });
 
     it('non organizer cannot set roles', function() {
       chai.expect(function() {
         setStaffRole.call({ userId: nonOrganizerUserId }, organizerStaffId, 'organizer', false);
       }).to.throw(Meteor.Error);
-      chai.expect(CompetitionStaff.findOne(organizerStaffId).roles.organizer).to.eq(true);
+      chai.expect(Registrations.findOne(organizerStaffId).roles.organizer).to.eq(true);
     });
 
     it('cannot demote oneself', function() {
       chai.expect(function() {
         setStaffRole.call({ userId: organizerUserId }, organizerStaffId, 'organizer', false);
       }).to.throw(Meteor.Error);
-      chai.expect(CompetitionStaff.findOne(organizerStaffId).roles.organizer).to.eq(true);
+      chai.expect(Registrations.findOne(organizerStaffId).roles.organizer).to.eq(true);
     });
   });
 });

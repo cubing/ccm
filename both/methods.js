@@ -105,15 +105,11 @@ Meteor.methods({
       countryId: user.profile.countryId,
       gender: user.profile.gender,
       dob: user.profile.dob,
-    });
-
-    CompetitionStaff.insert({
-      competitionId: competitionId,
-      userId: this.userId,
       roles: {
         organizer: true,
       },
     });
+
     return competitionId;
   },
   deleteCompetition: function(competitionId) {
@@ -121,7 +117,7 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, competitionId, 'deleteCompetition');
 
     Competitions.remove({ _id: competitionId });
-    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents, CompetitionStaff].forEach(collection => {
+    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {
       collection.remove({ competitionId: competitionId });
     });
   },
@@ -488,20 +484,20 @@ Meteor.methods({
     Results.update(resultId, { $set: { noShow: newNoShow } });
     RoundSorter.addRoundToSort(round._id);
   },
-  setStaffRole: function(competitionStaffId, role, toSet) {
-    check(competitionStaffId, String);
+  setStaffRole: function(registrationId, role, toSet) {
+    check(registrationId, String);
     check(role, String);
     check(toSet, Boolean);
-    let competitionStaff = CompetitionStaff.findOne(competitionStaffId);
-    if(!competitionStaff) {
-      throw new Meteor.Error(404, "CompetitionStaff not found");
+    let registration = Registrations.findOne(registrationId);
+    if(!registration) {
+      throw new Meteor.Error(404, "Registration not found");
     }
-    throwIfCannotManageCompetition(this.userId, competitionStaff.competitionId, 'organizer');
+    throwIfCannotManageCompetition(this.userId, registration.competitionId, 'organizer');
 
-    if(competitionStaff.userId === this.userId && !toSet) {
+    if(registration.userId === this.userId && !toSet) {
       throw new Meteor.Error(403, "You cannot demote yourself");
     }
-    CompetitionStaff.update(competitionStaffId, { $set: { [`roles.${role}`]: toSet } });
+    Registrations.update(registrationId, { $set: { [`roles.${role}`]: toSet } });
   },
 });
 
