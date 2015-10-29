@@ -230,7 +230,8 @@ if(Meteor.isServer) {
   });
 
   Registrations.allowOperation = function(userId, registration, fields) {
-    if(getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin')) {
+    let canManageCheckin = !getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin');
+    if(!canManageCheckin) {
       if(getCannotRegisterReasons(registration.competitionId)) {
         return false;
       }
@@ -250,6 +251,9 @@ if(Meteor.isServer) {
       'updatedAt',
       'createdAt',
     ];
+    if(canManageCheckin) {
+      allowedFields.push('wcaId', 'gender', 'dob', 'countryId');
+    }
     return onlyAllowedFields(fields, allowedFields);
   };
 }
