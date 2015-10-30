@@ -1,4 +1,5 @@
 wca = {};
+wca.ROOT_URL = "https://www.worldcubeassociation.org";
 wca.MAX_INT = Math.pow(2, 32) - 1;
 
 /* From https://www.worldcubeassociation.org/results/misc/export.html
@@ -656,3 +657,12 @@ wca.genderByValue = {};
 wca.genders.forEach(function(gender) {
   wca.genderByValue[gender.value] = gender;
 });
+
+wca.getUserData = function(wcaIdOrWcaUserId) {
+  try {
+    let result = HTTP.get(`${wca.ROOT_URL}/api/v0/users/${wcaIdOrWcaUserId}`);
+    return result.data.user;
+  } catch(e) {
+    throw e;
+  }
+};

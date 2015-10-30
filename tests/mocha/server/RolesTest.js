@@ -1,4 +1,10 @@
 MochaWeb.testOnly(function() {
+  beforeEach(function() {
+    [Competitions, Rounds, RoundProgresses, Registrations, Meteor.users].forEach(collection => {
+      collection.remove({});
+    });
+  });
+
   describe('RoleHeirarchy', function() {
     describe('viewScrambles isOrIsDescendentOfAny', function() {
       let viewScramblesRole;

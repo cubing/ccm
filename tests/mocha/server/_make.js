@@ -29,6 +29,7 @@ function presets(propertyKey) {
 
     case Meteor.users:
       return { emails: [], createdAt: new Date() };
+
     default:
       throw new Error("Unknown property key: " + propertyKey);
   }

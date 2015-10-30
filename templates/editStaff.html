@@ -4,7 +4,7 @@
 
     <span class="extraButtons">
       <span data-toggle="modal" data-target="#modalAddStaff">
-        <span class="extraButton add" data-toggle="tooltip" data-placement="top" title="Add staff member"></span>
+        <span class="extraButton add" data-toggle="tooltip" data-placement="top" title="Add staff members"></span>
       </span>
     </span>
   </div>
@@ -15,16 +15,15 @@
 <template name="modalAddStaff">
   {{#ccmModal id="modalAddStaff"}}
     {{#ccmHeader}}
-      Add staff member
+      Add staff members
     {{/ccmHeader}}
     <div class="modal-body">
-      <p>
-        YOYO
-      </p>
-    </div>
-    <div class="modal-footer">
-      {{> ccmCancelButton}}
-      {{> ccmSaveButton saveable=registrationJson text="Add"}}
+      <div class="input-group">
+        <input class="form-control select-user" placeholder="Search for staff" />
+        <span class="input-group-btn">
+          {{> ccmSaveButton saveable=saveable text="Add"}}
+        </span>
+      </div>
     </div>
   {{/ccmModal}}
 </template>

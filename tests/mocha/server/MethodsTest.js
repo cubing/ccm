@@ -6,7 +6,7 @@ MochaWeb.testOnly(function() {
       oldCoalesceMillis = RoundSorter.COALESCE_MILLIS;
       RoundSorter.COALESCE_MILLIS = 0;
 
-      [Competitions, Rounds, RoundProgresses, Registrations].forEach(collection => {
+      [Competitions, Rounds, RoundProgresses, Registrations, Meteor.users].forEach(collection => {
         collection.remove({});
       });
       stubs.create('fakeLogin', global, 'getCannotManageCompetitionReason');
@@ -194,6 +194,9 @@ MochaWeb.testOnly(function() {
           ]
         };
 
+        let jeremyUser = make(Meteor.users);
+        Meteor.users.update(jeremyUser._id, { $set: { 'profile.wcaId': "2005FLEI01" } });
+
         Meteor.call('importRegistrations', comp1Id, competitionJson);
         let registrations = _.sortBy(Registrations.find({ competitionId: comp1Id }).fetch(), registration => registration.uniqueName);
 
@@ -202,9 +205,11 @@ MochaWeb.testOnly(function() {
         chai.expect(registrations[0].uniqueName).to.equal("Jeremy Fleischman");
         chai.expect(registrations[0].countryId).to.equal("US");
         chai.expect(registrations[0].registeredEvents).to.deep.equal(["333", "333oh"]);
+        chai.expect(registrations[0].userId).to.equal(jeremyUser._id);
 
         chai.expect(registrations[1].uniqueName).to.equal("Patricia Li");
         chai.expect(registrations[1].registeredEvents).to.deep.equal(["333"]);
+        chai.expect(registrations[1].userId).to.not.exist;
 
         // Remove Jeremy from 333 round 1.
         competitionJson.events[0].rounds[0].results.shift();

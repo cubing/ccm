@@ -32,16 +32,7 @@ Template.competitionRegistration.helpers({
       return registration;
     } else {
       // populate user / competition data if there is no registration for this person yet
-      let profile = Meteor.user().profile;
-      return {
-        userId: userId,
-        competitionId: competitionId,
-        uniqueName: profile.name,
-        wcaId: profile.wcaId,
-        countryId: profile.countryId,
-        dob: profile.dob,
-        gender: profile.gender,
-      };
+      return generateCompetitionRegistrationForUser(competitionId, Meteor.user());
     }
   },
 

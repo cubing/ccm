@@ -71,10 +71,26 @@ _.extend(Registration.prototype, {
     });
     Registrations.update(this._id, { $set: { checkedIn: toCheckIn } });
   },
+  actuallyHasStaffRoles() {
+    return _.any(_.values(this.roles));
+  },
   user() {
     return Meteor.users.findOne(this.userId);
   },
 });
+
+generateCompetitionRegistrationForUser = function(competitionId, user) {
+  let profile = user.profile;
+  return {
+    userId: user._id,
+    competitionId: competitionId,
+    uniqueName: profile.name,
+    wcaId: profile.wcaId,
+    countryId: profile.countryId,
+    dob: profile.dob,
+    gender: profile.gender,
+  };
+};
 
 Registrations = new Mongo.Collection("registrations", {
   transform: function(doc) {
@@ -84,7 +100,6 @@ Registrations = new Mongo.Collection("registrations", {
 
 let OptionalBoolean = {
   type: Boolean,
-  defaultValue: false,
   optional: true,
 };
 

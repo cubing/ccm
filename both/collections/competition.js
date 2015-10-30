@@ -105,6 +105,10 @@ let rootRole = new RoleHeirarchy('organizer', null);
 /**/let manageScramblesRole = new RoleHeirarchy('manageScrambles', rootRole);
 /*  */new RoleHeirarchy('viewScrambles', manageScramblesRole);
 
+DEFAULT_STAFF_ROLES = {
+  viewScrambles: true,
+  dataEntry: true,
+};
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
 let schema = new SimpleSchema({

@@ -499,6 +499,19 @@ Meteor.methods({
     }
     Registrations.update(registrationId, { $set: { [`roles.${role}`]: toSet } });
   },
+  removeStaffMember: function(registrationId) {
+    check(registrationId, String);
+    let registration = Registrations.findOne(registrationId);
+    if(!registration) {
+      throw new Meteor.Error(404, "Registration not found");
+    }
+    throwIfCannotManageCompetition(this.userId, registration.competitionId, 'organizer');
+
+    if(registration.userId === this.userId) {
+      throw new Meteor.Error(403, "You cannot demote yourself");
+    }
+    Registrations.update(registrationId, { $unset: { roles: 1 } });
+  },
 });
 
 /*
@@ -628,25 +641,44 @@ if(Meteor.isServer) {
         assert(!uniqueNames[uniqueName]);
         uniqueNames[uniqueName] = true;
 
-        let dobMoment = moment.utc(wcaPerson.dob);
-        let registration = Registrations.findOne({
-          competitionId: competitionId,
-          uniqueName: uniqueName,
-        });
+        // First try to find an existing Registration by wcaId.
+        let registration = null;
+        if(wcaPerson.wcaId) {
+          registration = Registrations.findOne({
+            competitionId: competitionId,
+            wcaId: wcaPerson.wcaId,
+          });
+        }
+        // Then try to find an existing Registration by uniqueName.
+        if(!registration) {
+          registration = Registrations.findOne({
+            competitionId: competitionId,
+            uniqueName: uniqueName,
+          });
+        }
+        // Otherwise, give up and create a new Registration.
         if(!registration) {
           registration = Registrations.findOne(Registrations.insert({
             competitionId: competitionId,
             uniqueName: uniqueName,
           }));
         }
-        Registrations.update(registration._id, {
-          $set: {
-            wcaId: wcaPerson.wcaId,
-            countryId: wcaPerson.countryId,
-            gender: wcaPerson.gender,
-            dob: dobMoment.toDate(),
-          },
-        });
+        let toSet = {
+          wcaId: wcaPerson.wcaId,
+          countryId: wcaPerson.countryId,
+          gender: wcaPerson.gender,
+          dob: moment.utc(wcaPerson.dob).toDate(),
+        };
+        // If this Registration doesn't have a userId, and we have a wcaId, try
+        // to find an existing user with this wcaId.
+        if(!registration.userId && wcaPerson.wcaId) {
+          let user = Meteor.users.findOne({ 'profile.wcaId': wcaPerson.wcaId });
+          if(user) {
+            // We found a user with this WCA id!
+            toSet.userId = user._id;
+          }
+        }
+        Registrations.update(registration._id, { $set: toSet });
         registration = Registrations.findOne(registration._id);
         // Clear the list of events this person is registered for.
         // We'll only go on to update their registration if they're not checked in.
@@ -743,14 +775,13 @@ if(Meteor.isServer) {
         assert(!uniqueNames[uniqueName]);
         uniqueNames[uniqueName] = true;
 
-        let dobMoment = moment.utc(wcaPerson.dob);
         let registrationId = Registrations.insert({
           competitionId: competition._id,
           uniqueName: uniqueName,
           wcaId: wcaPerson.wcaId,
           countryId: wcaPerson.countryId,
           gender: wcaPerson.gender,
-          dob: dobMoment.toDate(),
+          dob: moment.utc(wcaPerson.dob).toDate(),
           registeredEvents: [],
         });
         let registration = Registrations.findOne(registrationId);
@@ -939,6 +970,48 @@ if(Meteor.isServer) {
       let registration = Registrations.findOne(registrationId);
       throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
       registration.checkIn(toCheckIn);
+    },
+    addStaffMembers: function(competitionId, wcaUserIds) {
+      // Only organizers can add staff members.
+      throwIfCannotManageCompetition(this.userId, competitionId, 'organizer');
+
+      // Since we're going to be hitting the WCA api, unblock so this user
+      // can call other methods while this one runs.
+      this.unblock();
+
+      // Do all the api queries first as a way of validing the WCA user ids we've
+      // been given.
+      let wcaUserData = wcaUserIds.map(wca.getUserData);
+
+      wcaUserData.forEach(wcaUserDatum => {
+        let user = Meteor.users.findOne({ 'services.worldcubeassociation.id': wcaUserDatum.id });
+        if(!user) {
+          // There is no user with the given wcaUserDatum.id, so create one!
+          let serviceData = _.pick(wcaUserDatum, WorldCubeAssociation.whitelistedFields);
+
+          let userId = Meteor.users.insert({
+            services: { worldcubeassociation: serviceData },
+            emails: [],
+            createdAt: new Date(),
+          });
+          user = Meteor.users.findOne(userId);
+          copyUserWcaDataToProfile(user);
+          user = Meteor.users.findOne(user._id);
+        }
+
+        // We've got the user, now check if there's a registration for them for
+        // this competition.
+        let registration = Registrations.findOne({
+          competitionId: competitionId,
+          userId: user._id,
+        });
+        if(!registration) {
+          registration = Registrations.findOne(Registrations.insert(generateCompetitionRegistrationForUser(competitionId, user)));
+        }
+        if(!registration.roles) {
+          Registrations.update(registration._id, { $set: { roles: DEFAULT_STAFF_ROLES } });
+        }
+      });
     },
   });
 }

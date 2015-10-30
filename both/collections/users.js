@@ -25,7 +25,7 @@ Meteor.users.attachSchema(new SimpleSchema({
         optional: true,
       },
       wcaId: _.extend({ optional: true }, WcaIdType),
-      countryId:_.extend({ optional: true }, CountryIdType),
+      countryId: _.extend({ optional: true }, CountryIdType),
       gender: _.extend({ optional: true }, GenderType),
       dob: _.extend({ optional: true }, DobType),
     }),
@@ -39,6 +39,14 @@ Meteor.users.attachSchema(new SimpleSchema({
 }));
 
 if(Meteor.isServer) {
+  // Do not allow users with duplicate WCA ids.
+  Meteor.users._ensureIndex({
+    'profile.wcaId': 1,
+  }, {
+    unique: 1,
+    sparse: 1,
+  });
+
   Accounts.onCreateUser(function(options, user) {
     // Transform to match our users schema
     if(options.profile.email) {
@@ -71,4 +79,25 @@ if(Meteor.isServer) {
     });
     return result;
   };
+
+  copyUserWcaDataToProfile = function(user) {
+    let wca = user.services.worldcubeassociation;
+    if(wca) {
+      Meteor.users.update(user._id, {
+        $set: {
+          'profile.name': wca.name,
+          'profile.wcaId': wca.wca_id,
+          // The WCA doesn't expose these fields yet =(
+          // See https://github.com/cubing/ccm/issues/259
+          //'profile.countryId': wca.country_id,
+          //'profile.gender': wca.gender,
+          //'profile.dob': wca.dob,
+        }
+      });
+    }
+  };
+  Accounts.onLogin(function(user_wrapper) {
+    let user = user_wrapper.user;
+    copyUserWcaDataToProfile(user);
+  });
 }
