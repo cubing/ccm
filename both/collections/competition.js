@@ -52,9 +52,19 @@ RoleHeirarchy = class {
     RoleHeirarchy.roleByName[this.name] = this;
   }
 
-  isOrIsDescendentOfAny(roleNames) {
+  getAncestorRoles() {
+    let ancestorRoles = [];
+    let role = this.parentRole;
+    while(role) {
+      ancestorRoles.push(role);
+      role = role.parentRole;
+    }
+    return ancestorRoles;
+  }
+
+  isDescendentOfAny(roleNames) {
     roleNames = roleNames || {};
-    let potentialRole = this;
+    let potentialRole = this.parentRole;
     while(potentialRole) {
       if(roleNames[potentialRole.name]) {
         return true;
@@ -62,6 +72,10 @@ RoleHeirarchy = class {
       potentialRole = potentialRole.parentRole;
     }
     return false;
+  }
+
+  isOrIsDescendentOfAny(roleNames) {
+    return roleNames[this.name] || this.isDescendentOfAny(roleNames);
   }
 
   static get roleByName() {

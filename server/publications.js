@@ -16,6 +16,7 @@ let registrationFieldsToPublish = {
   guestCount: 1,
   registeredEvents: 1,
   checkedIn: 1,
+  roles: 1,
 };
 
 Meteor.publish(null, function() {
@@ -60,7 +61,7 @@ Meteor.publish('competition', function(competitionUrlId) {
     // Always publish the user's Registration, as that lets the UI show administrative
     // options.
     cursors.push(
-      Registrations.find({ competitionId: competitionId, userId: this.userId })
+      Registrations.find({ competitionId: competitionId, userId: this.userId }, { fields: registrationFieldsToPublish })
     );
   }
   return cursors;

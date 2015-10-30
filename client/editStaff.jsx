@@ -23,33 +23,80 @@ let StaffList = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData() {
-    let staff = Registrations.find({ competitionId: this.props.competitionId, roles: { $exists: 1 } }).fetch();
+    let staff = Registrations.find({
+      competitionId: this.props.competitionId,
+      roles: {
+        $exists: 1
+      },
+    }, {
+      sort: {
+        uniqueName: 1
+      }
+    }).fetch();
     return { staff };
   },
 
-  roleInputClicked(staff, role, e) {
+  getInitialState() {
+    return {
+      hoveredRoleName: null,
+      staffId: null,
+    };
+  },
+
+  roleInputChanged(staff, role, e) {
     let input = e.currentTarget;
     Meteor.call('setStaffRole', staff._id, role.name, input.checked);
   },
 
+  mouseEnterRole(role, staff) {
+    this.setState({ hoveredRoleName: role.name, staffId: staff._id });
+  },
+
+  mouseLeaveRole(role, staff) {
+    this.setState({ hoveredRoleName: null, staffId: null });
+  },
+
   render() {
+    classesForRole = (role, staff=null) => {
+      let classes = {
+        'staff-role': true,
+      };
+      if(this.state.hoveredRoleName && (staff === null || staff._id === this.state.staffId)) {
+        classes['staff-role-hovered'] = this.state.hoveredRoleName === role.name;
+        classes['staff-role-granted-by-hovered'] = role.isDescendentOfAny({ [this.state.hoveredRoleName]: true });
+      }
+      return classNames(classes);
+    };
     return (
-      <table className="table table-hover">
+      <table className="table">
         <thead>
           <tr>
             <th>Name</th>
-            {RoleHeirarchy.allRoles.map(role => <th key={role.name}>{role.name}</th>)}
+            {RoleHeirarchy.allRoles.map(role => {
+              return <th key={role.name} className={classesForRole(role)}>{role.name}</th>;
+            })}
           </tr>
         </thead>
         <tbody>
           {this.data.staff.map(staff => {
             return (
               <tr key={staff._id}>
-                <td>{staff.user().profile.name}</td>
+                <td>{staff.uniqueName}</td>
                 {RoleHeirarchy.allRoles.map(role => {
+                  let onChange = this.roleInputChanged.bind(null, staff, role);
+                  let onClick = function(e) {
+                    let input = $(e.currentTarget).find('input')[0];
+                    if(input == e.target) {
+                      // Ignore direct clicks on the checkbox, those are handled by the
+                      // onChange event listener.
+                      return;
+                    }
+                    input.checked = !input.checked;
+                    onChange({ currentTarget: input });
+                  };
                   return (
-                    <td key={role.name}>
-                      <input type="checkbox" checked={staff.roles && staff.roles[role.name]} onChange={this.roleInputClicked.bind(null, staff, role)} />
+                    <td key={role.name} className={classesForRole(role, staff)} onMouseEnter={this.mouseEnterRole.bind(null, role, staff)} onMouseLeave={this.mouseLeaveRole.bind(null, role, staff)} onClick={onClick}>
+                      <input type="checkbox" disabled={role.isDescendentOfAny(staff.roles)} checked={role.isOrIsDescendentOfAny(staff.roles || {})} onChange={onChange} />
                     </td>
                   );
                 })}
@@ -61,7 +108,5 @@ let StaffList = React.createClass({
     );
   },
 });
-// TODO - sort staff by name
-// TODO - autoset/disable descendent roles
 // TODO - make it possible to add new staff
 // TODO - make it possible to delete staff
