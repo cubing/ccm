@@ -75,6 +75,7 @@ RoleHeirarchy = class {
   }
 
   isOrIsDescendentOfAny(roleNames) {
+    roleNames = roleNames || {};
     return roleNames[this.name] || this.isDescendentOfAny(roleNames);
   }
 
