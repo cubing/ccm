@@ -68,45 +68,47 @@ let StaffList = React.createClass({
       return classNames(classes);
     };
     return (
-      <table className="table staff-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            {RoleHeirarchy.allRoles.map(role => {
-              return <th key={role.name}><div><span className={classesForRole(role)}>{role.name}</span></div></th>;
+      <div>
+        <table className="table staff-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              {RoleHeirarchy.allRoles.map(role => {
+                return <th key={role.name}><div><span className={classesForRole(role)}>{role.name}</span></div></th>;
+              })}
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.data.staff.map(staff => {
+              return (
+                <tr key={staff._id}>
+                  <td>{staff.uniqueName}</td>
+                  {RoleHeirarchy.allRoles.map(role => {
+                    let onChange = this.roleInputChanged.bind(null, staff, role);
+                    let onClick = function(e) {
+                      let input = $(e.currentTarget).find('input')[0];
+                      if(input == e.target) {
+                        // Ignore direct clicks on the checkbox, those are handled by the
+                        // onChange event listener.
+                        return;
+                      }
+                      input.checked = !input.checked;
+                      onChange({ currentTarget: input });
+                    };
+                    return (
+                      <td key={role.name} className={classesForRole(role, staff)} onMouseEnter={this.mouseEnterRole.bind(null, role, staff)} onMouseLeave={this.mouseLeaveRole.bind(null, role, staff)} onClick={onClick}>
+                        <input type="checkbox" disabled={role.isDescendentOfAny(staff.roles)} checked={role.isOrIsDescendentOfAny(staff.roles || {})} onChange={onChange} />
+                      </td>
+                    );
+                  })}
+                  <td></td>
+                </tr>
+              );
             })}
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.data.staff.map(staff => {
-            return (
-              <tr key={staff._id}>
-                <td>{staff.uniqueName}</td>
-                {RoleHeirarchy.allRoles.map(role => {
-                  let onChange = this.roleInputChanged.bind(null, staff, role);
-                  let onClick = function(e) {
-                    let input = $(e.currentTarget).find('input')[0];
-                    if(input == e.target) {
-                      // Ignore direct clicks on the checkbox, those are handled by the
-                      // onChange event listener.
-                      return;
-                    }
-                    input.checked = !input.checked;
-                    onChange({ currentTarget: input });
-                  };
-                  return (
-                    <td key={role.name} className={classesForRole(role, staff)} onMouseEnter={this.mouseEnterRole.bind(null, role, staff)} onMouseLeave={this.mouseLeaveRole.bind(null, role, staff)} onClick={onClick}>
-                      <input type="checkbox" disabled={role.isDescendentOfAny(staff.roles)} checked={role.isOrIsDescendentOfAny(staff.roles || {})} onChange={onChange} />
-                    </td>
-                  );
-                })}
-                <td></td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     );
   },
 });

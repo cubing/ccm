@@ -1,5 +1,30 @@
 <template name="editStaff">
   <div class="container">
     <div class="reactRenderArea"></div>
+
+    <span class="extraButtons">
+      <span data-toggle="modal" data-target="#modalAddStaff">
+        <span class="extraButton add" data-toggle="tooltip" data-placement="top" title="Add staff member"></span>
+      </span>
+    </span>
   </div>
+
+  {{> modalAddStaff}}
+</template>
+
+<template name="modalAddStaff">
+  {{#ccmModal id="modalAddStaff"}}
+    {{#ccmHeader}}
+      Add staff member
+    {{/ccmHeader}}
+    <div class="modal-body">
+      <p>
+        YOYO
+      </p>
+    </div>
+    <div class="modal-footer">
+      {{> ccmCancelButton}}
+      {{> ccmSaveButton saveable=registrationJson text="Add"}}
+    </div>
+  {{/ccmModal}}
 </template>

@@ -1,5 +1,5 @@
 #checkinTable {
-  margin-bottom: @extraCheckInButtonsSize;
+  margin-bottom: @extraButtonsSize;
   
   thead th {
     min-width: @eventColumnWidth;
@@ -23,49 +23,6 @@
 
   button {
     margin-right: 3px;
-  }
-}
-
-span.extraCheckInButtons {
-  position: fixed;
-  bottom: 10px + @footer-height;
-  right: 0px;
-
-  .extraCheckInButton {
-    display: inline-block;
-    height: @extraCheckInButtonsSize;
-    width: @extraCheckInButtonsSize;
-    line-height: @extraCheckInButtonsSize;
-    margin-right: 10px;
-
-    border-radius: 50%;
-
-    color: white;
-    text-align: center;
-    font-size: 2em;
-
-    background-color: #4679BD;
-    box-shadow: 0px 1px 5px 2px #999;
-
-    cursor: pointer;
-
-    font-family: 'Glyphicons Halflings';
-    &.importRegistrations {
-      .glyphicon-import();
-    }
-    &.addParticipant {
-      .glyphicon-plus();
-    }
-
-    &:hover {
-      transform: scale(1.1);
-      transition: all 0.1s ease-in-out 0s;
-    }
-
-    &:active {
-      transform: scale(0.9);
-      transition: all 0.1s ease-in-out 0s;
-    }
   }
 }
 

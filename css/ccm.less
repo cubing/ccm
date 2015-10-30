@@ -118,6 +118,49 @@ thead.tableFloatingHeaderOriginal {
   }
 }
 
+span.extraButtons {
+  position: fixed;
+  bottom: 10px + @footer-height;
+  right: 0px;
+
+  .extraButton {
+    display: inline-block;
+    height: @extraButtonsSize;
+    width: @extraButtonsSize;
+    line-height: @extraButtonsSize;
+    margin-right: 10px;
+
+    border-radius: 50%;
+
+    color: white;
+    text-align: center;
+    font-size: 2em;
+
+    background-color: #4679BD;
+    box-shadow: 0px 1px 5px 2px #999;
+
+    cursor: pointer;
+
+    font-family: 'Glyphicons Halflings';
+    &.import {
+      .glyphicon-import();
+    }
+    &.add {
+      .glyphicon-plus();
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      transition: all 0.1s ease-in-out 0s;
+    }
+
+    &:active {
+      transform: scale(0.9);
+      transition: all 0.1s ease-in-out 0s;
+    }
+  }
+}
+
 @import "navbar.import.less";
 @import "layout.import.less";
 @import "advanceParticipants.import.less";
