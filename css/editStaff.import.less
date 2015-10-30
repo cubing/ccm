@@ -1,9 +1,36 @@
-.staff-role {
-  &.staff-role-hovered {
-    background-color: @alert-success-bg;
+.staff-table {
+	// Rotate table headers from https://css-tricks.com/rotated-table-column-headers/
+	th {
+		height: 150px;
+		white-space: nowrap;
+	}
+
+	th > div {
+		transform: rotate(360deg - 45deg);
+		width: 30px;
+	}
+	th > div > span {
+		border-bottom: 1px solid #ccc;
+		padding: 5px 10px;
+	}
+
+  // Shrink the table columns as much as possible, and give all
+  // available space to the last column.
+  th:not(:last-child),
+  td:not(:last-child) {
+    white-space: nowrap;
+  }
+  td:last-child {
+    width: 100%;
   }
 
-  &.staff-role-granted-by-hovered {
-    background-color: @alert-success-bg;
+  .staff-role {
+    &.staff-role-hovered {
+      background-color: @alert-success-bg;
+    }
+
+    &.staff-role-granted-by-hovered {
+      background-color: @alert-success-bg;
+    }
   }
 }

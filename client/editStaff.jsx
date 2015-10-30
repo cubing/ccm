@@ -68,13 +68,14 @@ let StaffList = React.createClass({
       return classNames(classes);
     };
     return (
-      <table className="table">
+      <table className="table staff-table">
         <thead>
           <tr>
             <th>Name</th>
             {RoleHeirarchy.allRoles.map(role => {
-              return <th key={role.name} className={classesForRole(role)}>{role.name}</th>;
+              return <th key={role.name}><div><span className={classesForRole(role)}>{role.name}</span></div></th>;
             })}
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -100,6 +101,7 @@ let StaffList = React.createClass({
                     </td>
                   );
                 })}
+                <td></td>
               </tr>
             );
           })}
