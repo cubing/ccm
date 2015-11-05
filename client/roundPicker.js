@@ -99,6 +99,10 @@ Template.openRoundPicker.helpers({
     let selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
   },
+  selectedRound: function() {
+    let data = Template.parentData(1);
+    return Rounds.findOne(data.roundId);
+  },
 });
 
 Template.openRoundPicker.events({

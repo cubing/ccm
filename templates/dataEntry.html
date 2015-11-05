@@ -3,17 +3,18 @@
 
   <div class="container-fluid">
     {{#if roundId}}
-      {{#each round.getAlerts}}
-        <div class="alert alert-{{severity}}" role="alert">
-          <strong class="text-capitalize">{{severity}}!</strong> {{{message}}}
-        </div>
-      {{/each}}
       {{> roundDataEntry roundId=roundId}}
     {{/if}}
   </div>
 </template>
 
 <template name="roundDataEntry">
+  {{#each getAlerts}}
+    <div class="alert alert-{{severity}}" role="alert">
+      <strong class="text-capitalize">{{severity}}!</strong> {{{message}}}
+    </div>
+  {{/each}}
+
   <div class="row">
 
     <div class="results-sidebar-container col-xs-12 col-sm-6 col-md-5 col-lg-4">

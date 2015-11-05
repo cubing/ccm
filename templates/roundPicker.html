@@ -78,6 +78,14 @@
             </li>
           {{/if}}
         </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="{{pathFor 'roundResults' competitionUrlId=../competitionUrlId eventCode=selectedRound.eventCode nthRound=selectedRound.nthRound}}">
+              Public link
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
