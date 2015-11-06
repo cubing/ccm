@@ -56,8 +56,8 @@ iron:location@1.0.11
 iron:middleware-stack@1.0.11
 iron:router@1.0.12
 iron:url@1.0.11
-jfly:accounts-worldcubeassociation@1.0.2
-jfly:worldcubeassociation@1.0.1
+jfly:accounts-worldcubeassociation@1.1.1
+jfly:worldcubeassociation@1.1.1
 jquery@1.11.4
 jss:flag-icon@0.7.3
 jsx@0.2.3
