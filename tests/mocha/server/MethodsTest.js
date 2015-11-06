@@ -2,6 +2,7 @@ MochaWeb.testOnly(function() {
   describe('Methods', function() {
     let comp1Id, comp2Id;
     let oldCoalesceMillis;
+    let siteAdminUserId;
     beforeEach(function() {
       oldCoalesceMillis = RoundSorter.COALESCE_MILLIS;
       RoundSorter.COALESCE_MILLIS = 0;
@@ -9,15 +10,94 @@ MochaWeb.testOnly(function() {
       [Competitions, Rounds, RoundProgresses, Registrations, Meteor.users].forEach(collection => {
         collection.remove({});
       });
-      stubs.create('fakeLogin', global, 'getCannotManageCompetitionReason');
-      stubs.fakeLogin.returns(null);
+
+      stubs.create('fakeCanManageCompetition', global, 'getCannotManageCompetitionReason');
+      stubs.fakeCanManageCompetition.returns(null);
 
       comp1Id = Competitions.insert({ competitionName: "Comp One", listed: false, startDate: new Date() });
       comp2Id = Competitions.insert({ competitionName: "Comp Two", listed: false, startDate: new Date() });
+
+      siteAdminUserId = make(Meteor.users, { siteAdmin: true })._id;
     });
     afterEach(function() {
       RoundSorter.COALESCE_MILLIS = oldCoalesceMillis;
       stubs.restoreAll();
+    });
+
+    it('createCompetition', function() {
+      let createCompetition = Meteor.server.method_handlers.createCompetition;
+      let competitionId = createCompetition.call({ userId: siteAdminUserId }, "Test Competition", new Date());
+      let competition = Competitions.findOne(competitionId);
+      chai.expect(competition.competitionName).to.equal("Test Competition");
+
+      let registration = Registrations.findOne({ competitionId });
+      chai.expect(registration.userId).to.equal(siteAdminUserId);
+      chai.expect(registration.roles).to.deep.equal({ organizer: true });
+    });
+
+    it('uploadCompetition', function() {
+      let uploadCompetition = Meteor.server.method_handlers.uploadCompetition;
+      let wcaCompetition = {
+        "formatVersion": "WCA Competition 0.2",
+        "competitionId": "PleaseBeQuiet2015",
+        "persons": [
+          {
+            "id": "1",
+            "name": "Jeremy Fleischman",
+            "countryId": "US",
+            "wcaId": "2005FLEI01",
+            "dob": "2014-10-11"
+          },
+          {
+            "id": "2",
+            "name": "Patricia Li",
+            "wcaId": "2009LIPA01",
+            "dob": "2015-09-04"
+          }
+        ],
+        "events": [
+          {
+            "eventId": "333",
+            "rounds": [
+              {
+                "roundId": "f",
+                "formatId": "a",
+                "results": [
+                  { "personId": "1" },
+                  { "personId": "2" },
+                ],
+                "groups": []
+              }
+            ]
+          },
+          {
+            "eventId": "333oh",
+            "rounds": [
+              {
+                "roundId": "f",
+                "formatId": "a",
+                "results": [
+                  { "personId": "1" },
+                ],
+                "groups": []
+              }
+            ]
+          },
+          {
+            "eventId": "222",
+            "rounds": [
+              {
+                "roundId": "f",
+                "formatId": "a",
+                "results": [],
+                "groups": []
+              }
+            ]
+          },
+        ],
+      };
+      let competition = uploadCompetition.call({ userId: siteAdminUserId }, wcaCompetition, new Date());
+      chai.expect(competition.wcaCompetitionId).to.equal("PleaseBeQuiet2015");
     });
 
     it('deleteCompetition', function() {

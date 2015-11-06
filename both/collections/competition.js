@@ -40,6 +40,42 @@ _.extend(Competition.prototype, {
   },
 });
 
+_.extend(Competition, {
+  create(userId, competitionName, startDate) {
+    competitionName = competitionName.trim();
+    if(competitionName.length === 0) {
+      throw new Meteor.Error(400, "Competition name must be nonempty");
+    }
+
+    let stripTimeFromDate = function(date) {
+      return moment(date).utc().startOf('day').toDate();
+    };
+    let competitionId = Competitions.insert({
+      competitionName: competitionName,
+      listed: false,
+      startDate: stripTimeFromDate(startDate),
+    });
+
+    let user = Meteor.users.findOne(userId);
+    let uniqueName = user.profile.name;
+    Registrations.insert({
+      competitionId: competitionId,
+      userId: userId,
+      uniqueName: uniqueName,
+      registeredEvents: [],
+      wcaId: user.profile.wcaId,
+      countryId: user.profile.countryId,
+      gender: user.profile.gender,
+      dob: user.profile.dob,
+      roles: {
+        organizer: true,
+      },
+    });
+
+    return Competitions.findOne(competitionId);
+  },
+});
+
 RoleHeirarchy = class {
   constructor(roleName, parentRole) {
     this.name = roleName;

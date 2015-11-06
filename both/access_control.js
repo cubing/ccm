@@ -106,6 +106,12 @@ throwIfCannotManageCompetition = function(userId, competitionId, role) {
   }
 };
 
+throwIfNotLoggedIn = function(userId) {
+  if(!userId) {
+    throw new Meteor.Error(401, "Must log in");
+  }
+};
+
 canRemoveRound = function(userId, roundId) {
   check(roundId, String);
   let round = Rounds.findOne(roundId);

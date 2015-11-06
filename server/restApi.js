@@ -98,7 +98,11 @@ HTTP.methods({
       if(!result) {
         throw new Meteor.Error(404, "Could not find result for given registrationId");
       }
-      setSolveTime.call(this, result._id, data.solveIndex, data.solveTime);
+      if(!this.userId) {
+        throw new Meteor.Error(401, "Please specify a valid token");
+      }
+      throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
+      result.setSolveTime(data.solveIndex, data.solveTime);
     },
   }
 });

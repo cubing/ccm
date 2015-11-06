@@ -60,11 +60,11 @@ Template.newCompetition.events({
 
     $form.css('cursor', 'wait');
     $form.find('button').addClass('disabled');
-    Meteor.call('uploadCompetition', wcaCompetition, getTodayDateNoTime(), function(err, competitionUrlId) {
+    Meteor.call('uploadCompetition', wcaCompetition, getTodayDateNoTime(), function(err, competition) {
       $form.css('cursor', '');
       $form.find('button').removeClass('disabled');
       if(!err) {
-        Router.go('manageCompetition', { competitionUrlId: competitionUrlId });
+        Router.go('manageCompetition', { competitionUrlId: competition.wcaCompetitionId || competition._id });
       } else {
         console.error("Meteor.call() error: " + err);
       }

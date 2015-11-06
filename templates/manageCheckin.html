@@ -64,7 +64,7 @@
             {{/if}}
           {{/ccmHeader}}
 
-          {{#autoForm id="editRegistrationForm" type=editRegistrationFormType doc=this collection="Registrations"}}
+          {{#autoForm id="editRegistrationForm" type="method" meteormethod="addEditRegistration" doc=this}}
             <div class="modal-body">
               <div class="form-group">
                 {{> afFieldInput name="competitionId"}}

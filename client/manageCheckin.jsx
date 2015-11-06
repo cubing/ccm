@@ -56,10 +56,10 @@ Template.manageCheckin.events({
     $("#modalEditRegistration").modal('show');
   },
   'click .js-delete-registration': function() {
-    let confirmStr = "Are you sure you want to delete the registration for " + this.uniqueName + "?";
+    let confirmStr = `Are you sure you want to delete the registration for ${this.uniqueName}?`;
     bootbox.confirm(confirmStr, confirm => {
       if(confirm) {
-        Registrations.remove(this._id);
+        Registrations.remove(this._id);//<<<
         $("#modalEditRegistration").modal('hide');
       }
     });
@@ -67,12 +67,6 @@ Template.manageCheckin.events({
   'hidden.bs.modal .modal': function(e, template) {
     selectedRegistrationReact.set(null);
     AutoForm.resetForm('editRegistrationForm');
-  },
-});
-
-Template.modalEditRegistration.helpers({
-  editRegistrationFormType: function() {
-    return this._id ? "update" : "insert";
   },
 });
 

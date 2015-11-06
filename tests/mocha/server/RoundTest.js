@@ -74,8 +74,8 @@ MochaWeb.testOnly(function() {
       let round = make(Rounds, { competitionId: comp._id });
       let registration1 = make(Registrations, { competitionId: comp._id });
       let result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
-      setSolveTime(result1._id, 0, { millis: 3333 });
-      setSolveTime(result1._id, 0, null);
+      result1.setSolveTime(0, { millis: 3333 });
+      result1.setSolveTime(0, null);
       result1 = Results.findOne(result1._id);
       chai.expect(result1.sortableBestValue).to.equal(wca.MAX_INT);
       chai.expect(result1.sortableAverageValue).to.equal(wca.MAX_INT);
@@ -88,11 +88,11 @@ MochaWeb.testOnly(function() {
       let result1 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration1._id });
       let registration2 = make(Registrations, { competitionId: comp._id });
       let result2 = make(Results, { competitionId: comp._id, roundId: round._id, registrationId: registration2._id });
-      setSolveTime(result2._id, 0, { millis: 3333 });
-      setSolveTime(result2._id, 1, { millis: 2222 });
-      setSolveTime(result2._id, 2, { millis: 4444 });
-      setSolveTime(result2._id, 3, { millis: 3333 });
-      setSolveTime(result2._id, 4, { millis: 3333 });
+      result2.setSolveTime(0, { millis: 3333 });
+      result2.setSolveTime(1, { millis: 2222 });
+      result2.setSolveTime(2, { millis: 4444 });
+      result2.setSolveTime(3, { millis: 3333 });
+      result2.setSolveTime(4, { millis: 3333 });
       round.sortResults();
       result1 = Results.findOne(result1._id);
       result2 = Results.findOne(result2._id);

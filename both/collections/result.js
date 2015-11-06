@@ -4,7 +4,7 @@ let Result = function(doc) {
 };
 
 _.extend(Result.prototype, {
-  getExpectedSolveCount: function() {
+  getExpectedSolveCount() {
     if(this.noShow) {
       return 0;
     }
@@ -21,7 +21,7 @@ _.extend(Result.prototype, {
     let expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
     return expectedSolveCount;
   },
-  allSolves: function() {
+  allSolves() {
     // Sanitize the solves array to contain all current and future solves.
     let expectedSolveCount = this.getExpectedSolveCount();
     let solves = this.solves || [];
@@ -29,6 +29,46 @@ _.extend(Result.prototype, {
       solves.push(null);
     }
     return solves;
+  },
+  setSolveTime(solveIndex, solveTime) {
+    // If the client didn't send us a timestamp, cons one up here.
+    if(solveTime && !solveTime.updatedAt) {
+      solveTime.updatedAt = new Date();
+    }
+
+    let round = Rounds.findOne(this.roundId);
+    if(!round) {
+      throw new Meteor.Error(404, "Round not found");
+    }
+
+    check(solveIndex, Match.Integer);
+    if(solveIndex < 0) {
+      throw new Meteor.Error(400, "Cannot have a negative solve index");
+    }
+    if(solveIndex >= this.solves.length) {
+      // If we add this solveTime, we'll be expanding the solves list.
+      // We only want to let the user expand the solves list so long as they
+      // stay within the round solve limit.
+      if(solveIndex >= round.format().count) {
+        throw new Meteor.Error(400, `Round ${round._id} does not allow a solve at index ${solveIndex}`);
+      }
+    }
+    this.solves[solveIndex] = solveTime;
+
+    // Trim null solves from the end of the solves array until it fits.
+    while(this.solves.length > 0 && !this.solves[this.solves.length - 1]) {
+      this.solves.pop();
+    }
+
+    let $set = {
+      solves: this.solves
+    };
+
+    let statistics = wca.computeSolvesStatistics(this.solves, round.formatCode, round.roundCode());
+    _.extend($set, statistics);
+
+    Results.update(this._id, { $set: $set });
+    RoundSorter.addRoundToSort(this.roundId);
   },
 });
 
