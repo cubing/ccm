@@ -6,6 +6,7 @@ _.extend(Competition.prototype, {
   endDate() {
     return new Date(this.startDate.getTime() + (this.numberOfDays - 1) * 24*60*60*1000);
   },
+
   userIsStaffMember(userId) {
     let user = Meteor.users.findOne(userId);
     if(!user) {
@@ -20,6 +21,7 @@ _.extend(Competition.prototype, {
     });
     return registration && registration.roles;
   },
+
   userHasRole(userId, roleName) {
     let role = RoleHeirarchy.roleByName[roleName];
     if(!role) {
@@ -37,6 +39,37 @@ _.extend(Competition.prototype, {
       userId: userId,
     });
     return registration && role.isOrIsDescendentOfAny(registration.roles);
+  },
+
+  remove() {
+    Competitions.remove({ _id: this._id });
+    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {
+      collection.remove({ competitionId: this._id });
+    });
+  },
+
+  getEvents() {
+    let rounds = Rounds.find({ competitionId: this._id }, { fields: { eventCode: 1 } }).fetch();
+
+    let eventCodes = {};
+    rounds.forEach(round => {
+      eventCodes[round.eventCode] = true;
+    });
+    let events = _.chain(wca.events)
+      .filter(e => eventCodes[e.code])
+      .map(e => { return { competitionId: this._id, eventCode: e.code }; })
+      .value();
+    return events;
+  },
+
+  getMaxRoundsInCompetition() {
+    let mostAdvancedRound = Rounds.findOne({
+      competitionId: this._id,
+    }, {
+      sort: { nthRound: -1 },
+      fields: { nthRound: 1 },
+    });
+    return _.range(1, mostAdvancedRound.nthRound + 1);
   },
 });
 

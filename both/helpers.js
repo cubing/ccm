@@ -64,30 +64,6 @@ register("clockFormat", function(solveTime) {
   return clockFormat(solveTime);
 });
 
-getCompetitionEvents = function(competitionId) {
-  let rounds = Rounds.find({ competitionId: competitionId }, { fields: { eventCode: 1 } }).fetch();
-
-  let eventCodes = {};
-  rounds.forEach(round => {
-    eventCodes[round.eventCode] = true;
-  });
-  let events = _.chain(wca.events)
-    .filter(function(e) {
-      return eventCodes[e.code];
-    })
-    .map(function(e) {
-      return {
-        competitionId: competitionId,
-        eventCode: e.code,
-      };
-    })
-    .value();
-  return events;
-};
-register("competitionEvents", function() {
-  return getCompetitionEvents(this.competitionId);
-});
-
 isRegisteredForCompetition = function(userId, competitionId) {
   let competition = Registrations.findOne({
     competitionId: competitionId,
@@ -153,31 +129,3 @@ register("formatMomentDate", function(m) {
 register("formatMomentDateTime", function(m) {
   return formatMomentDateTime(m);
 });
-
-
-getResultsWithRegistrations = function(roundId, limit) {
-  let round = Rounds.findOne(roundId);
-  // Join each Result its Registration.
-  let registrations = Registrations.find({
-    competitionId: round.competitionId,
-    registeredEvents: round.eventCode,
-  });
-  let registrationById = {};
-  registrations.forEach(registration => {
-    registrationById[registration._id] = registration;
-  });
-
-  let results = Results.find({ roundId: roundId }, { limit: limit }).fetch();
-  results.forEach(result => {
-    let registration = registrationById[result.registrationId];
-    if(!registration) {
-      // The registration for this result may not have been found by our earlier
-      // query because registeredEvents hasn't been populated yet. Just silently
-      // continue here, knowing we'll get called again when the data has arrived.
-      return;
-    }
-    result.registration = registration;
-  });
-
-  return results;
-};

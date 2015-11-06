@@ -1,27 +1,26 @@
 MochaWeb.testOnly(function() {
   describe('helpers', function() {
 
-    describe('getCompetitionEvents', function() {
-      let compId;
+    describe('.getEvents', function() {
+      let comp;
       beforeEach(function() {
-        compId = Competitions.insert({ competitionName: "Comp Etition", listed: false, startDate: new Date() });
+        comp = make(Competitions);
       });
 
       it('returns events in expected format', function() {
-        chai.expect(getCompetitionEvents(null)).to.deep.equal([]);
-        chai.expect(getCompetitionEvents(compId)).to.deep.equal([]);
+        chai.expect(comp.getEvents()).to.deep.equal([]);
 
-        make(Rounds, {competitionId: compId, eventCode: '333'});
+        make(Rounds, {competitionId: comp._id, eventCode: '333'});
         make(Rounds, {competitionId: 'other competition', eventCode: '666'});
 
-        chai.expect(getCompetitionEvents(compId)).to.deep.equal([{competitionId: compId, eventCode: '333'}]);
+        chai.expect(comp.getEvents()).to.deep.equal([{competitionId: comp._id, eventCode: '333'}]);
       });
 
       it('returns events in WCA order', function() {
         ['333', '222', '333mbf', '777', 'clock'].forEach(code => {
-          make(Rounds, {competitionId: compId, eventCode: code});
+          make(Rounds, {competitionId: comp._id, eventCode: code});
         });
-        chai.expect(_.pluck(getCompetitionEvents(compId), 'eventCode').join()).to.equal('333,222,clock,777,333mbf');
+        chai.expect(_.pluck(comp.getEvents(), 'eventCode').join()).to.equal('333,222,clock,777,333mbf');
       });
     });
   });

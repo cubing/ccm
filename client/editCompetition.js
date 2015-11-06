@@ -31,7 +31,6 @@ let setCompetitionLocationMap = function() {
 
   GoogleMaps.init({
     'libraries': 'places',
-    'sensor': true,
   }, function() {
     // google maps components
     let $mapDiv = $('#competitionLocationMap');

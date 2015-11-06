@@ -59,8 +59,13 @@ Template.manageCheckin.events({
     let confirmStr = `Are you sure you want to delete the registration for ${this.uniqueName}?`;
     bootbox.confirm(confirmStr, confirm => {
       if(confirm) {
-        Registrations.remove(this._id);//<<<
-        $("#modalEditRegistration").modal('hide');
+        Meteor.call('deleteRegistration', this._id, function(error) {
+          if(error) {
+            bootbox.alert(`Error deleting registration: ${error.reason}`);
+          } else {
+            $("#modalEditRegistration").modal('hide');
+          }
+        });
       }
     });
   },
@@ -128,9 +133,10 @@ let CheckinList = React.createClass({
 
   getMeteorData: function() {
     let competitionId = this.props.competitionId;
+    let competition = Competitions.findOne(competitionId);
     let registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
 
-    let competitionEvents = getCompetitionEvents(this.props.competitionId);
+    let competitionEvents = competition.getEvents();
 
     return { registrations, competitionEvents };
   },

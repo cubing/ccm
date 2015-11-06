@@ -6,7 +6,7 @@ Template.editProfile.events({
 
 Template.editProfile.helpers({
   birthdate() {
-    return moment(Meteor.user().profile.dob).utc().format("LL");
+    return formatMomentDate(moment(Meteor.user().profile.dob));
   },
   gender() {
     return wca.genderByValue(Meteor.user().profile.gender);

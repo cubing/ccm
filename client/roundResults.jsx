@@ -22,7 +22,8 @@ Template.roundResultsList.rendered = function() {
     let data = Template.currentData();
 
     let limit = resultsListLimitReact.get();
-    let results = getResultsWithRegistrations(data.roundId, limit);
+    let round = Round.findOne(data.roundId);
+    let results = round.getResultsWithRegistrations(limit);
     // Asking meteor to sort is slower than just fetching and doing
     // it ourselves. So here we go.
     results.sort(function(a, b) {
@@ -52,10 +53,6 @@ Template.roundResultsList.rendered = function() {
         return -1;
       }
       return a.position - b.position;
-    });
-    let round = Rounds.findOne(data.roundId);
-    results.forEach(result => {
-      result.round = round;
     });
 
     ReactDOM.render(

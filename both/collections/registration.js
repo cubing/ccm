@@ -6,7 +6,7 @@ let Registration = function(doc) {
 };
 
 _.extend(Registration.prototype, {
-  checkIn: function(toCheckIn) {
+  checkIn(toCheckIn) {//<<<
     // This method is called to check-in a participant for the first time,
     // to update their check-in because the set of events they are registered for
     // changed, or to uncheck them in from the competition. If accomplishing this
@@ -14,8 +14,6 @@ _.extend(Registration.prototype, {
     let firstRounds = Rounds.find({
       competitionId: this.competitionId,
       nthRound: 1,
-    }, {
-      fields: { _id: 1, eventCode: 1 }
     }).fetch();
 
     [true, false].forEach(simulate => {
@@ -93,7 +91,7 @@ generateCompetitionRegistrationForUser = function(competitionId, user) {
 };
 
 Registrations = new Mongo.Collection("registrations", {
-  transform: function(doc) {
+  transform(doc) {
     return new Registration(doc);
   },
 });
@@ -119,7 +117,7 @@ let schema = new SimpleSchema({
   },
   uniqueName: {
     type: String,
-    custom: function() {
+    custom() {
       let obj = validationObject(this, ['uniqueName', 'userId', 'competitionId']);
 
       let uniqueMatch = Registrations.findOne({

@@ -99,7 +99,8 @@ Template.roundDataEntry.rendered = function() {
   let results = [];
   template.autorun(function() {
     let data = Template.currentData();
-    results = getResultsWithRegistrations(data.roundId);
+    let round = Round.findOne(data.roundId);
+    results = round.getResultsWithRegistrations();
   });
 
   this.$('.typeahead').typeahead({

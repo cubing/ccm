@@ -222,44 +222,4 @@ if(Meteor.isServer) {
       return onlyAllowedFields(fields, allowedFields);
     },
   });
-
-  Registrations.allow({
-    insert: function(userId, registration) {
-      return Registrations.allowOperation(userId, registration, []);
-    },
-    update: function(userId, registration, fields, modifier) {
-      return Registrations.allowOperation(userId, registration, fields);
-    },
-    remove: function(userId, registration) {
-      return Registrations.allowOperation(userId, registration, []);
-    },
-  });
-
-  Registrations.allowOperation = function(userId, registration, fields) {
-    let canManageCheckin = !getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin');
-    if(!canManageCheckin) {
-      if(getCannotRegisterReasons(registration.competitionId)) {
-        return false;
-      }
-      // can only edit entries with own user id
-      if(registration.userId != userId) {
-        return false;
-      }
-    }
-    let allowedFields = [
-      'userId',
-      'competitionId',
-      'uniqueName',
-      'registeredEvents',
-      'guestCount',
-      'comments',
-
-      'updatedAt',
-      'createdAt',
-    ];
-    if(canManageCheckin) {
-      allowedFields.push('wcaId', 'gender', 'dob', 'countryId');
-    }
-    return onlyAllowedFields(fields, allowedFields);
-  };
 }

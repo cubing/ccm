@@ -23,10 +23,11 @@ let throwIfNotSiteAdmin = function(userId) {
 };
 
 Meteor.methods({
-  requestVerificationEmail: function() {
+  requestVerificationEmail() {
     Accounts.sendVerificationEmail(this.userId);
   },
-  uploadTNoodleZip: function(zipData) {
+
+  uploadTNoodleZip(zipData) {
     // TODO - this is pretty janky. What if the folder we try to create
     // exists, but isn't a folder? Permissions could also screw us up.
     // Ideally we would just decompress the zip file client side, but
@@ -37,7 +38,8 @@ Meteor.methods({
     fs.writeFileSync(zipFilename, zipData, 'binary');
     return id;
   },
-  unzipTNoodleZip: function(zipId, pw) {
+
+  unzipTNoodleZip(zipId, pw) {
     let args = [];
     args.push('-p'); // extract to stdout
 
@@ -74,7 +76,8 @@ Meteor.methods({
       throw new Meteor.Error('unzip', e.message);
     }
   },
-  importRegistrations: function(competitionId, wcaCompetition) {
+
+  importRegistrations(competitionId, wcaCompetition) {//<<<
     // We use the WCA Competition JSON Format to encode registration information. See:
     //  https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format
     // We don't want this method to silently delete any data, so we only add missing
@@ -194,7 +197,8 @@ Meteor.methods({
       }
     }
   },
-  uploadCompetition: function(wcaCompetition, startDate) {
+
+  uploadCompetition(wcaCompetition, startDate) {
     throwIfNotSiteAdmin(this.userId);
 
     // The WCA competition JSON doesn't include a competition name field, so
@@ -390,7 +394,8 @@ Meteor.methods({
 
     return competition;
   },
-  recomputeWhoAdvancedAndPreviousPosition: function(roundId) {
+
+  recomputeWhoAdvancedAndPreviousPosition(roundId) {
     check(roundId, String);
 
     let round = Rounds.findOne(roundId);
@@ -419,12 +424,14 @@ Meteor.methods({
       Results.update(result._id, { $set: { advanced: advanced } });
     });
   },
-  checkInRegistration: function(registrationId, toCheckIn) {
+
+  checkInRegistration(registrationId, toCheckIn) {
     let registration = Registrations.findOne(registrationId);
     throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
     registration.checkIn(toCheckIn);
   },
-  addStaffMembers: function(competitionId, wcaUserIds) {
+
+  addStaffMembers(competitionId, wcaUserIds) {
     // Only organizers can add staff members.
     throwIfCannotManageCompetition(this.userId, competitionId, 'organizer');
 
@@ -465,5 +472,43 @@ Meteor.methods({
         Registrations.update(registration._id, { $set: { roles: DEFAULT_STAFF_ROLES } });
       }
     });
+  },
+
+  addEditRegistration(registration) {
+    throw new Meteor.Error(400, 'not yet implemented');//<<<
+
+    /*<<<
+    Registrations.allowOperation = function(userId, registration, fields) {
+      let canManageCheckin = !getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin');
+      if(!canManageCheckin) {
+        if(getCannotRegisterReasons(registration.competitionId)) {
+          return false;
+        }
+        // can only edit entries with own user id
+        if(registration.userId != userId) {
+          return false;
+        }
+      }
+      let allowedFields = [
+        'userId',
+        'competitionId',
+        'uniqueName',
+        'registeredEvents',
+        'guestCount',
+        'comments',
+
+        'updatedAt',
+        'createdAt',
+      ];
+      if(canManageCheckin) {
+        allowedFields.push('wcaId', 'gender', 'dob', 'countryId');
+      }
+      return onlyAllowedFields(fields, allowedFields);
+    };
+    */
+  },
+
+  deleteRegistration(registrationId) {
+    throw new Meteor.Error(400, 'not yet implemented');//<<<
   },
 });

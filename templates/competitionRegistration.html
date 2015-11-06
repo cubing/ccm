@@ -23,7 +23,7 @@
           {{/if}}
         </div>
 
-        {{#autoForm id="registrationForm" type=registrationFormType doc=defaultRegistrationData collection="Registrations"}}
+        {{#autoForm id="registrationForm" type="method" meteormethod="addEditRegistration" doc=defaultRegistrationData collection="Registrations"}}
 
           {{> afFieldInput name="userId" }}
           {{> afFieldInput name="wcaId" type="hidden" }}

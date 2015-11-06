@@ -1,22 +1,24 @@
 const log = logging.handle("both_methods");
 
 Meteor.methods({
-  createCompetition: function(competitionName, startDate) {
+  createCompetition(competitionName, startDate) {
     check(competitionName, String);
     throwIfNotLoggedIn(this.userId);
     let competition = Competition.create(this.userId, competitionName, startDate);
     return competition._id;
   },
-  deleteCompetition: function(competitionId) {
-    check(competitionId, String);
-    throwIfCannotManageCompetition(this.userId, competitionId, 'deleteCompetition');
 
-    Competitions.remove({ _id: competitionId });
-    [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {
-      collection.remove({ competitionId: competitionId });
-    });
+  deleteCompetition(competitionId) {
+    check(competitionId, String);
+    let competition = Competitions.findOne(competitionId);
+    if(!competition) {
+      throw new Meteor.Error(404, "Competition not found");
+    }
+    throwIfCannotManageCompetition(this.userId, competitionId, 'deleteCompetition');
+    competition.remove();
   },
-  addRound: function(competitionId, eventCode) {
+
+  addRound(competitionId, eventCode) {
     if(!canAddRound(this.userId, competitionId, eventCode)) {
       throw new Meteor.Error(400, "Cannot add another round");
     }
@@ -46,7 +48,8 @@ Meteor.methods({
       competitionId: competitionId,
     });
   },
-  removeLastRound: function(competitionId, eventCode) {
+
+  removeLastRound(competitionId, eventCode) {
     let roundId = getLastRoundIdForEvent(competitionId, eventCode);
     if(!roundId || !canRemoveRound(this.userId, roundId)) {
       throw new Meteor.Error(400, "Cannot remove round.");
@@ -73,7 +76,8 @@ Meteor.methods({
       Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
     }
   },
-  addScheduleEvent: function(competitionId, eventData, roundId) {
+
+  addScheduleEvent(competitionId, eventData, roundId) {
     check(competitionId, String);
     throwIfCannotManageCompetition(this.userId, competitionId, 'manageSchedule');
 
@@ -92,12 +96,14 @@ Meteor.methods({
       durationMinutes: eventData.durationMinutes,
     });
   },
-  removeScheduleEvent: function(scheduleEventId) {
+
+  removeScheduleEvent(scheduleEventId) {
     let event = ScheduleEvents.findOne(scheduleEventId);
     throwIfCannotManageCompetition(this.userId, event.competitionId, 'manageSchedule');
     ScheduleEvents.remove(scheduleEventId);
   },
-  addOrUpdateGroup: function(newGroup) {
+
+  addOrUpdateGroup(newGroup) {
     throwIfCannotManageCompetition(this.userId, newGroup.competitionId, 'manageScrambles');
     let round = Rounds.findOne(newGroup.roundId);
     if(!round) {
@@ -118,7 +124,8 @@ Meteor.methods({
       Groups.insert(newGroup);
     }
   },
-  advanceParticipantsFromRound: function(participantsToAdvance, roundId) {
+
+  advanceParticipantsFromRound(participantsToAdvance, roundId) {
     let round = Rounds.findOne(roundId);
     throwIfCannotManageCompetition(this.userId, round.competitionId, 'dataEntry');
 
@@ -192,14 +199,16 @@ Meteor.methods({
     // and its progress.
     RoundSorter.addRoundToSort(nextRound);
   },
-  addSiteAdmin: function(newSiteAdminUserId) {
+
+  addSiteAdmin(newSiteAdminUserId) {
     if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
     }
 
     Meteor.users.update(newSiteAdminUserId, { $set: { siteAdmin: true } });
   },
-  removeSiteAdmin: function(siteAdminToRemoveUserId) {
+
+  removeSiteAdmin(siteAdminToRemoveUserId) {
     if(!isSiteAdmin(this.userId)) {
       throw new Meteor.Error(403, "Must be a site admin");
     }
@@ -211,7 +220,8 @@ Meteor.methods({
 
     Meteor.users.update(siteAdminToRemoveUserId, { $set: { siteAdmin: false } });
   },
-  setSolveTime: function(resultId, solveIndex, solveTime) {
+
+  setSolveTime(resultId, solveIndex, solveTime) {
     let result = Results.findOne(resultId);
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
@@ -219,7 +229,8 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
     result.setSolveTime(solveIndex, solveTime);
   },
-  setRoundSoftCutoff: function(roundId, softCutoff) {
+
+  setRoundSoftCutoff(roundId, softCutoff) {
     let round = Rounds.findOne(roundId, {
       fields: {
         competitionId: 1,
@@ -257,7 +268,8 @@ Meteor.methods({
     // so queue up a recomputation of that.
     RoundSorter.addRoundToSort(roundId);
   },
-  toggleEventRegistration: function(registrationId, eventCode) {
+
+  toggleEventRegistration(registrationId, eventCode) {//<<<
     let registration = Registrations.findOne(registrationId);
     throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
     let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
@@ -289,12 +301,13 @@ Meteor.methods({
       registration.checkIn(true);
     }
 
-    // Wait to actually update update the Registration until checkIn
-    // succeeds (it will throw an exception if we're not allowed to remove the
-    // registrants Result).
+    // Note that we've waited to actually update update the Registration until checkIn
+    // succeeded (it would throw an exception if we're not allowed to remove the
+    // registrant's Result).
     Registrations.update(registration._id, update);
   },
-  toggleGroupOpen: function(groupId) {
+
+  toggleGroupOpen(groupId) {
     let group = Groups.findOne(groupId);
     if(!group) {
       throw new Meteor.Error(404, "Group not found");
@@ -309,7 +322,8 @@ Meteor.methods({
     throwIfCannotManageCompetition(this.userId, group.competitionId, 'manageScrambles');
     Groups.update(group._id, { $set: { open: !group.open } });
   },
-  advanceResultIdFromRoundPreviousToThisOne: function(resultId, roundId) {
+
+  advanceResultIdFromRoundPreviousToThisOne(resultId, roundId) {
     let round = Rounds.findOne(roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
@@ -349,7 +363,8 @@ Meteor.methods({
     Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
     RoundSorter.addRoundToSort(roundId);
   },
-  getBestNotAdvancedResultFromRoundPreviousToThisOne: function(roundId) {
+
+  getBestNotAdvancedResultFromRoundPreviousToThisOne(roundId) {
     let round = Rounds.findOne(roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
@@ -367,7 +382,8 @@ Meteor.methods({
       return bestResultThatDidNotAdvance;
     }
   },
-  setResultNoShow: function(resultId, newNoShow) {
+
+  setResultNoShow(resultId, newNoShow) {
     let result = Results.findOne(resultId);
     if(!result) {
       throw new Meteor.Error(404, "Result not found");
@@ -386,7 +402,8 @@ Meteor.methods({
     Results.update(resultId, { $set: { noShow: newNoShow } });
     RoundSorter.addRoundToSort(round._id);
   },
-  setStaffRole: function(registrationId, role, toSet) {
+
+  setStaffRole(registrationId, role, toSet) {
     check(registrationId, String);
     check(role, String);
     check(toSet, Boolean);
@@ -401,7 +418,8 @@ Meteor.methods({
     }
     Registrations.update(registrationId, { $set: { [`roles.${role}`]: toSet } });
   },
-  removeStaffMember: function(registrationId) {
+
+  removeStaffMember(registrationId) {
     check(registrationId, String);
     let registration = Registrations.findOne(registrationId);
     if(!registration) {

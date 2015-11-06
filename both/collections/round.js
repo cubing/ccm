@@ -6,10 +6,11 @@ Round = function(doc) {
 };
 
 _.extend(Round.prototype, {
-  prettyStringNoFormat: function() {
+  prettyStringNoFormat() {
     return this.prettyString({showFormat: false});
   },
-  prettyString: function({showEventName=true, showName=true, showFormat=true}={}) { // jshint ignore:line
+
+  prettyString({showEventName=true, showName=true, showFormat=true}={}) { // jshint ignore:line
     let str = "";
     if(showEventName) {
       str += this.eventName();
@@ -28,14 +29,17 @@ _.extend(Round.prototype, {
     }
     return str;
   },
-  displayTitle: function() {
+
+  displayTitle() {
     let words = (this.totalRounds == 1) ? "Final Round" : `Round ${this.nthRound} of ${this.totalRounds}`;
     return `${this.eventName()}: ${words}`;
   },
-  format: function() {
+
+  format() {
     return wca.formatByCode[this.formatCode];
   },
-  resultSortOrder: function() {
+
+  resultSortOrder() {
     switch(this.format().sortBy) {
     case "best":
       return {sortableBestValue: 1};
@@ -45,47 +49,56 @@ _.extend(Round.prototype, {
       throw new Error(`Unknown format sortBy '${sortBy}'`);
     }
   },
-  properties: function() {
+
+  properties() {
     return wca.roundByCode[this.roundCode()];
   },
-  eventName: function() {
+
+  eventName() {
     assert(this.eventCode);
     return wca.eventByCode[this.eventCode].name;
   },
-  eventSolveTimeFields: function() {
+
+  eventSolveTimeFields() {
     assert(this.eventCode);
     return wca.eventByCode[this.eventCode].solveTimeFields;
   },
-  roundCode: function() {
+
+  roundCode() {
     if(this.isLast()) {
       return this.softCutoff ? 'c' : 'f';
     } else {
       return (this.softCutoff ? 'degc' : '123f')[this.nthRound-1];
     }
   },
-  isUnstarted: function() {
+
+  isUnstarted() {
     return this.status === wca.roundStatuses.unstarted;
   },
-  isOpen: function() {
+  isOpen() {
     return this.status === wca.roundStatuses.open;
   },
-  isClosed: function() {
+  isClosed() {
     return this.status === wca.roundStatuses.closed;
   },
-  isLast: function() {
+  isLast() {
     return this.nthRound === this.totalRounds;
   },
-  endMinutes: function() {
+
+  endMinutes() {
     return this.startMinutes + this.durationMinutes;
   },
-  isScheduled: function() {
+
+  isScheduled() {
     let scheduledEvent = ScheduleEvents.findOne({roundId: this._id});
     return !!scheduledEvent;
   },
-  groups: function() {
+
+  groups() {
     return Groups.find({roundId: this._id}, { sort: { group: 1 }});
   },
-  sortResults: function() {
+
+  sortResults() {
     let results = Results.find({ roundId: this._id }, { sort: this.resultSortOrder() }).fetch();
     let position = 0;
     let doneSolves = 0;
@@ -137,34 +150,39 @@ _.extend(Round.prototype, {
     log.l2(this._id, " updating progress - done: " + done + ", total: " + total);
     RoundProgresses.update({ roundId: this._id }, { $set: { done: done, total: total }});
   },
-  getPreviousRound: function() {
+
+  getPreviousRound() {
     return Rounds.findOne({
       competitionId: this.competitionId,
       eventCode: this.eventCode,
       nthRound: this.nthRound - 1,
     });
   },
-  getNextRound: function() {
+
+  getNextRound() {
     return Rounds.findOne({
       competitionId: this.competitionId,
       eventCode: this.eventCode,
       nthRound: this.nthRound + 1,
     });
   },
-  getMaxAllowedToAdvanceCount: function() {
+
+  getMaxAllowedToAdvanceCount() {
     if(!this.size) {
       return null;
     }
     return Math.floor(this.size*(1 - wca.MINIMUM_CUTOFF_PERCENTAGE/100.0));
   },
-  getMaxAllowedSize: function() {
+
+  getMaxAllowedSize() {
     let previousRound = this.getPreviousRound();
     if(!previousRound) {
       return null;
     }
     return previousRound.getMaxAllowedToAdvanceCount();
   },
-  getAlerts: function() {
+
+  getAlerts() {
     let alerts = [];
     if(this.isClosed()) {
       alerts.push({
@@ -186,6 +204,33 @@ _.extend(Round.prototype, {
       });
     }
     return alerts;
+  },
+
+  getResultsWithRegistrations(limit) {
+    // Join each Result with its Registration and Round.
+    let registrations = Registrations.find({
+      competitionId: this.competitionId,
+      registeredEvents: this.eventCode,
+    });
+    let registrationById = {};
+    registrations.forEach(registration => {
+      registrationById[registration._id] = registration;
+    });
+
+    let results = Results.find({ roundId: this._id }, { limit: limit }).fetch();
+    results.forEach(result => {
+      let registration = registrationById[result.registrationId];
+      if(!registration) {
+        // The registration for this result may not have been found by our earlier
+        // query because registeredEvents hasn't been populated yet. Just silently
+        // continue here, knowing we'll get called again when the data has arrived.
+        return;
+      }
+      result.registration = registration;
+      result.round = this;
+    });
+
+    return results;
   },
 });
 
