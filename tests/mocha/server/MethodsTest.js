@@ -165,13 +165,13 @@ MochaWeb.testOnly(function() {
           }
         }).fetch();
 
-        let registration1 = make(Registrations, {competitionId: comp1Id});
+        let registration1 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
         let result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
 
-        let registration2 = make(Registrations, {competitionId: comp1Id});
+        let registration2 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
         let result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
 
-        let registration3 = make(Registrations, {competitionId: comp1Id});
+        let registration3 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
         let result3 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 3, registrationId: registration3._id});
 
         Meteor.call('advanceParticipantsFromRound', 2, rounds[0]._id);
@@ -259,6 +259,13 @@ MochaWeb.testOnly(function() {
         chai.expect(result.solves[2].millis).to.equal(3335);
         chai.expect(result.solves[3].millis).to.equal(3336);
         chai.expect(result.solves[4].millis).to.equal(3337);
+      });
+
+      it("not allowed when not checked in", function() {
+        Meteor.call('checkInRegistration', registration._id, false);
+        chai.expect(function() {
+          Meteor.call('setSolveTime', result._id, 0, { millis: 3333 });
+        }).to.throw(Meteor.Error);
       });
 
       it("can't add more times than round allows", function() {

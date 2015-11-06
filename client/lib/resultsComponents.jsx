@@ -274,7 +274,7 @@ ResultsList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {this.props.results.map((result, i) => {
+            {this.props.results.filter(r => r.registration.checkedIn).map((result, i) => {
               let prevResult = i > 0 ? this.props.results[i - 1] : null;
               let lastToAdvance = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
               let lastAllowedToAdvance = this.props.configurableAdvanceCount && this.props.maxAllowedToAdvanceCount == i + 1;

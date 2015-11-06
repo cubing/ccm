@@ -212,6 +212,14 @@ Meteor.methods({
       throw new Meteor.Error(404, "Result not found");
     }
     throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
+    let registration = result.registration();
+    if(!registration) {
+      throw new Meteor.Erorr(404, "Registration not found");
+    }
+    if(!registration.checkedIn) {
+      throw new Meteor.Error(400, "Cannot enter results for someone who is not checked in");
+    }
+
     result.setSolveTime(solveIndex, solveTime);
   },
 

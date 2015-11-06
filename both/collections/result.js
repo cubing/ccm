@@ -4,6 +4,14 @@ let Result = function(doc) {
 };
 
 _.extend(Result.prototype, {
+  round() {
+    return Rounds.findOne(this.roundId);
+  },
+
+  registration() {
+    return Registrations.findOne(this.registrationId);
+  },
+
   getExpectedSolveCount() {
     if(this.noShow) {
       return 0;
@@ -75,10 +83,6 @@ _.extend(Result.prototype, {
 
     Results.update(this._id, { $set: $set });
     RoundSorter.addRoundToSort(this.roundId);
-  },
-
-  round() {
-    return Rounds.findOne(this.roundId);
   },
 });
 

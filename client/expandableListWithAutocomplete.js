@@ -10,10 +10,7 @@ Template.expandableListWithAutocomplete.helpers({
   },
   matchingDocs: function() {
     let collName = this.settings.collectionName;
-    let collection = window;
-    collName.split(".").forEach(part => {
-      collection = collection[part];
-    });
+    let collection = _.get(window, collName);
     let docs = collection.find(_.extend({}, this.settings.filter, this.settings.docCriteria));
     return docs;
   },

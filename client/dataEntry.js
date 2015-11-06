@@ -99,7 +99,7 @@ Template.roundDataEntry.rendered = function() {
   let results = [];
   template.autorun(function() {
     let data = Template.currentData();
-    let round = Round.findOne(data.roundId);
+    let round = Rounds.findOne(data.roundId);
     results = round.getResultsWithRegistrations();
   });
 
@@ -110,9 +110,9 @@ Template.roundDataEntry.rendered = function() {
   }, {
     name: 'results',
     displayKey: function(result) {
-      return result.uniqueName;
+      return result.registration.uniqueName;
     },
-    source: substringMatcher(function() { return results; }, 'uniqueName'),
+    source: substringMatcher(function() { return results; }, 'registration.uniqueName'),
   });
 };
 
@@ -235,6 +235,10 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   let $inputParticipantName = template.$('#inputParticipantName');
   let uniqueName = $inputParticipantName.typeahead('val');
   let registration = Registrations.findOne({ uniqueName: uniqueName }, { _id: 1 });
+  if(!registration) {
+    selectedResultIdReact.set(null);
+    return;
+  }
   let result = Results.findOne({
     roundId: roundId,
     registrationId: registration._id,

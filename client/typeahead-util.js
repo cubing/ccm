@@ -55,7 +55,7 @@ substringMatcher = function(getObjects, attribute) {
       let newMatches = [];
       for(let i = 0; i < objects.length; i++) {
         let object = objects[i];
-        let str = object[attribute];
+        let str = _.get(object, attribute);
         if(re.test(str)) {
           newMatches.push(object);
         }
@@ -63,9 +63,11 @@ substringMatcher = function(getObjects, attribute) {
 
       // Sort all matches for this category before adding them to the final array.
       newMatches.sort(function(o1, o2) {
-        if(o1[attribute] > o2[attribute]) {
+        let v1 = _.get(o1, attribute);
+        let v2 = _.get(o2, attribute);
+        if(v1 > v2) {
           return 1;
-        } else if(o1[attribute] < o2[attribute]) {
+        } else if(v1 < v2) {
           return -1;
         } else {
           return 0;

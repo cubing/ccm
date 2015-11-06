@@ -135,6 +135,7 @@ let OptionalBoolean = {
 Schema.registration = new SimpleSchema({
   _id: {
     type: String,
+    optional: true,
   },
   competitionId: {
     type: String,
