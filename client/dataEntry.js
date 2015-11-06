@@ -164,19 +164,12 @@ Template.roundDataEntry.helpers({
     if(!selectedResultId) {
       return null;
     }
+    // It's really important to only select solves and roundId here,
+    // as anything else causes this helper to refire shortly after editing a time
+    // (because the server computes its position, average, etc...)
+    // which deselects all the text in our newly focused jChester.
     let result = Results.findOne(selectedResultId, { fields: { solves: 1, roundId: 1 } });
-    let round = Rounds.findOne(result.roundId);
-    let solves = result.solves || [];
-    while(solves.length < round.format().count) {
-      solves.push(null);
-    }
-    return solves.map(function(solve, i) {
-      return {
-        solveTime: solve,
-        index: i,
-        resultId: selectedResultId,
-      };
-    });
+    return result.allSolves();
   },
 });
 

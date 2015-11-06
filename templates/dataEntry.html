@@ -44,8 +44,8 @@
           {{#unless noShow}}
             <table class="table table-condensed jChesterTable">
               <tbody>
-                {{#each selectedSolves}}
-                  {{> solveTimeEditor}}
+                {{#each solveTime in selectedSolves}}
+                  {{> solveTimeEditor solveTime=solveTime index=@index resultId=selectedResultId roundId=roundId}}
                 {{/each}}
               </tbody>
             </table>
