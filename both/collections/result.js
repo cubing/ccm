@@ -21,6 +21,11 @@ _.extend(Result.prototype, {
     let expectedSolveCount = softCutoffFormat.getExpectedSolveCount(this.solves, round.softCutoff.time, round.formatCode);
     return expectedSolveCount;
   },
+
+  hasDataEntered() {
+    return this.solves && this.solves.filter(s => s).length > 0;
+  },
+
   allSolves() {
     // Sanitize the solves array to contain all current and future solves.
     let expectedSolveCount = this.getExpectedSolveCount();
@@ -30,6 +35,7 @@ _.extend(Result.prototype, {
     }
     return solves;
   },
+
   setSolveTime(solveIndex, solveTime) {
     // If the client didn't send us a timestamp, cons one up here.
     if(solveTime && !solveTime.updatedAt) {
@@ -70,6 +76,10 @@ _.extend(Result.prototype, {
     Results.update(this._id, { $set: $set });
     RoundSorter.addRoundToSort(this.roundId);
   },
+
+  round() {
+    return Rounds.findOne(this.roundId);
+  },
 });
 
 Results = new Mongo.Collection("results", {
@@ -77,7 +87,8 @@ Results = new Mongo.Collection("results", {
     return new Result(doc);
   },
 });
-Results.attachSchema({
+
+Schema.result = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -144,6 +155,9 @@ Results.attachSchema({
   createdAt: createdAtSchemaField,
   updatedAt: updatedAtSchemaField,
 });
+
+Results.attachSchema(Schema.result);
+
 if(Meteor.isServer) {
   Results._ensureIndex({
     competitionId: 1,

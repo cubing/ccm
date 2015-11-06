@@ -239,7 +239,7 @@ MochaWeb.testOnly(function() {
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
         firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
-        registration = make(Registrations, {competitionId: comp1Id});
+        registration = Registrations.findOne(Meteor.call('addEditRegistration', build(Registrations, {competitionId: comp1Id})));
 
         Meteor.call('checkInRegistration', registration._id, true);
         Meteor.call('toggleEventRegistration', registration._id, '333');

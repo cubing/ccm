@@ -10,7 +10,8 @@ _.extend(Group.prototype, {
 });
 
 Groups = new Mongo.Collection("groups", { transform: function(doc) { return new Group(doc); } });
-Groups.attachSchema({
+
+Schema.group = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -34,6 +35,9 @@ Groups.attachSchema({
     type: String,
   },
 });
+
+Groups.attachSchema(Schema.group);
+
 if(Meteor.isServer) {
   Groups._ensureIndex({
     competitionId: 1,

@@ -50,31 +50,16 @@ Meteor.methods({
   },
 
   removeLastRound(competitionId, eventCode) {
-    let roundId = getLastRoundIdForEvent(competitionId, eventCode);
-    if(!roundId || !canRemoveRound(this.userId, roundId)) {
-      throw new Meteor.Error(400, "Cannot remove round.");
+    let competition = Competitions.findOne(competitionId);
+    if(!competition) {
+      throw new Meteor.Error(404, "Competition not found");
+    }
+    let lastRound = competition.getLastRoundOfEvent(eventCode);
+    if(!lastRound || !canRemoveRound(this.userId, lastRound._id)) {
+      throw new Meteor.Error(400, "Cannot remove lastRound.");
     }
 
-    let deadRound = Rounds.findOne(roundId);
-    assert(deadRound);
-
-    Rounds.remove(roundId);
-    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(collection => {
-      collection.remove({ roundId: roundId });
-    });
-
-    Rounds.update(
-      { competitionId: competitionId, eventCode: eventCode },
-      { $set: { totalRounds: deadRound.totalRounds - 1 } },
-      { multi: true }
-    );
-
-    // Deleting a round affects the set of people who advanced
-    // from the previous round =)
-    let previousRound = deadRound.getPreviousRound();
-    if(previousRound) {
-      Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
-    }
+    lastRound.remove();
   },
 
   addScheduleEvent(competitionId, eventData, roundId) {
@@ -84,7 +69,7 @@ Meteor.methods({
     let round = Rounds.findOne(roundId); // Will not exist for some events
 
     if(!round && roundId) {
-      throw new Meteor.Error("Invalid roundId: '" + roundId +"'");
+      throw new Meteor.Error(`Invalid roundId: '${roundId}'`);
     }
 
     return ScheduleEvents.insert({
@@ -269,41 +254,32 @@ Meteor.methods({
     RoundSorter.addRoundToSort(roundId);
   },
 
-  toggleEventRegistration(registrationId, eventCode) {//<<<
+  toggleEventRegistration(registrationId, eventCode) {
     let registration = Registrations.findOne(registrationId);
     throwIfCannotManageCompetition(this.userId, registration.competitionId, 'manageCheckin');
     let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
     let update;
     if(registeredForEvent) {
-      // if registered, then unregister
-      update = {
-        $pull: {
-          registeredEvents: eventCode
-        }
-      };
+      // If registered, then unregister.
+      update = { $pull: { registeredEvents: eventCode } };
       let index = registration.registeredEvents.indexOf(eventCode);
       if(index >= 0) {
         registration.registeredEvents.splice(index, 1);
       }
     } else {
-      // if not registered, then register
-      update = {
-        $addToSet: {
-          registeredEvents: eventCode
-        }
-      };
+      // If not registered, then register.
+      update = { $addToSet: { registeredEvents: eventCode } };
       registration.registeredEvents.push(eventCode);
     }
-    // If this registrant is already checked in, then we need to synchronize the
-    // set of first rounds they have Results for. This may not be possible if it
-    // requires deleting a Result that has data.
-    if(registration.checkedIn) {
-      registration.checkIn(true);
-    }
 
-    // Note that we've waited to actually update update the Registration until checkIn
-    // succeeded (it would throw an exception if we're not allowed to remove the
-    // registrant's Result).
+    // Synchronize the set of first rounds this Registration should have
+    // Results for. This may not be possible if that would require deleting a Result
+    // that has data.
+    registration.createAndDeleteFirstRoundResults();
+
+    // Note that we've waited to actually update update the Registration until
+    // createAndDeleteFirstRoundResults succeeded (it would throw an exception
+    // if we're not allowed to remove the registrant's Result).
     Registrations.update(registration._id, update);
   },
 

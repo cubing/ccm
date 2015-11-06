@@ -1,4 +1,4 @@
-// File name starts with "_" so it loads first
+Schema = {};
 
 // Force filter to be false. I really wish this was the default for SimpleSchema.
 let oldClean = SimpleSchema.prototype.clean;

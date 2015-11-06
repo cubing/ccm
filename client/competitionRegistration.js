@@ -12,12 +12,12 @@ function styleRegistrationInputButtonsOnChange() {
 Template.competitionRegistration.helpers({
   eventOptions() {
     let competition = Competitions.findOne(this.competitionId);
-    let events = competition.getEvents();
+    let events = competition.getEventCodes();
 
-    return events.map(c => {
+    return events.map(eventCode => {
       return {
-        label: wca.eventByCode[c.eventCode].name,
-        value: wca.eventByCode[c.eventCode].code
+        label: wca.eventByCode[eventCode].name,
+        value: wca.eventByCode[eventCode].code,
       };
     });
   },
@@ -41,8 +41,8 @@ Template.competitionRegistration.helpers({
   },
 
   cannotRegisterReasons() {
-    let competitionId = this.competitionId;
-    return getCannotRegisterReasons(competitionId);
+    let competition = Competitions.findOne(this.competitionId);
+    return competition.getCannotRegisterReasons();
   },
 
   registrationCloseMoment() {

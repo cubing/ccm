@@ -219,24 +219,37 @@ _.extend(Round.prototype, {
 
     let results = Results.find({ roundId: this._id }, { limit: limit }).fetch();
     results.forEach(result => {
-      let registration = registrationById[result.registrationId];
-      if(!registration) {
-        // The registration for this result may not have been found by our earlier
-        // query because registeredEvents hasn't been populated yet. Just silently
-        // continue here, knowing we'll get called again when the data has arrived.
-        return;
-      }
-      result.registration = registration;
+      result.registration = registrationById[result.registrationId] || {};
       result.round = this;
     });
 
     return results;
   },
+
+  remove() {
+    Rounds.remove(this._id);
+    [RoundProgresses, Results, Groups, ScheduleEvents].forEach(collection => {
+      collection.remove({ roundId: this._id });
+    });
+
+    Rounds.update(
+      { competitionId: this.competitionId, eventCode: this.eventCode },
+      { $set: { totalRounds: this.totalRounds - 1 } },
+      { multi: true }
+    );
+
+    // Deleting a round affects the set of people who advanced
+    // from the previous round.
+    let previousRound = this.getPreviousRound();
+    if(previousRound) {
+      Meteor.call('recomputeWhoAdvancedAndPreviousPosition', previousRound._id);
+    }
+  },
 });
 
 Rounds = new Mongo.Collection("rounds", { transform: function(doc) { return new Round(doc); } });
 
-Rounds.attachSchema({
+Schema.round = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -311,6 +324,8 @@ Rounds.attachSchema({
     defaultValue: wca.roundStatuses.unstarted,
   },
 });
+
+Rounds.attachSchema(Schema.round);
 
 if(Meteor.isServer) {
   Rounds._ensureIndex({

@@ -5,8 +5,9 @@ Template.editEvents.events({
     Meteor.call('addRound', this.competitionId, this.eventCode);
   },
   'click button[name="buttonRemoveRound"]': function(e, template) {
-    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    let progress = RoundProgresses.findOne({roundId: lastRoundId});
+    let competition = Competitions.findOne(this.competitionId);
+    let lastRound = competition.getLastRoundOfEvent(this.eventCode);
+    let progress = RoundProgresses.findOne({roundId: lastRound._id});
     if(progress.total > 0) {
       $("#modalReallyRemoveRound_" + this.eventCode).modal('show');
     } else {
@@ -150,19 +151,21 @@ Template.editEvents.helpers({
     return progress.percentage();
   },
   lastRoundResultsCount: function() {
-    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    if(!lastRoundId) {
+    let competition = Competitions.findOne(this.competitionId);
+    let lastRound = competition.getLastRoundOfEvent(this.eventCode);
+    if(!lastRound) {
       return 0;
     }
-    let progress = RoundProgresses.findOne({roundId: lastRoundId});
+    let progress = RoundProgresses.findOne({roundId: lastRound._id});
     return progress.total;
   },
   canRemoveRound: function() {
-    let lastRoundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    if(!lastRoundId) {
+    let competition = Competitions.findOne(this.competitionId);
+    let lastRound = competition.getLastRoundOfEvent(this.eventCode);
+    if(!lastRound) {
       return false;
     }
-    return canRemoveRound(Meteor.userId(), lastRoundId);
+    return canRemoveRound(Meteor.userId(), lastRound._id);
   },
   canAddRound: function() {
     return canAddRound(Meteor.userId(), this.competitionId, this.eventCode);
@@ -215,8 +218,9 @@ Template.editEvents.helpers({
     return round.formatCode == formatCode;
   },
   lastRoundCode: function() {
-    let roundId = getLastRoundIdForEvent(this.competitionId, this.eventCode);
-    return Rounds.findOne(roundId).roundCode();
+    let competition = Competitions.findOne(this.competitionId);
+    let lastRound = competition.getLastRoundOfEvent(this.eventCode);
+    return lastRound.roundCode();
   },
   roundPopup: function() {
     return roundPopupReact.get();

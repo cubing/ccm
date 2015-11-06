@@ -25,6 +25,7 @@
 
         {{#autoForm id="registrationForm" type="method" meteormethod="addEditRegistration" doc=defaultRegistrationData collection="Registrations"}}
 
+          {{> afFieldInput name="_id" type="hidden" }}
           {{> afFieldInput name="userId" }}
           {{> afFieldInput name="wcaId" type="hidden" }}
           {{> afFieldInput name="countryId" type="hidden" }}

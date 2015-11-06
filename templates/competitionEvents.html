@@ -18,9 +18,9 @@
         </tr>
       </thead>
       <tbody>
-        {{#each competition.getEvents}}
+        {{#each competition.getEventCodes}}
           <tr>
-            <td>{{eventName eventCode}}</td>
+            <td>{{eventName this}}</td>
             {{#each rounds}}
               <td>{{formatName formatCode}}</td>
               <td>

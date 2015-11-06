@@ -136,7 +136,7 @@ let CheckinList = React.createClass({
     let competition = Competitions.findOne(competitionId);
     let registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
 
-    let competitionEvents = competition.getEvents();
+    let competitionEvents = competition.getEventCodes();
 
     return { registrations, competitionEvents };
   },
@@ -166,8 +166,8 @@ let CheckinList = React.createClass({
     let $checkinTable = $(this.refs.checkinTable);
     makeTableNotSticky($checkinTable);
   },
-  registeredCheckboxToggled: function(registration, event) {
-    Meteor.call('toggleEventRegistration', registration._id, event.eventCode, function(error) {
+  registeredCheckboxToggled: function(registration, eventCode) {
+    Meteor.call('toggleEventRegistration', registration._id, eventCode, function(error) {
       if(error) {
         bootbox.alert(`Error changing registration: ${error.reason}`);
       }
@@ -198,11 +198,11 @@ let CheckinList = React.createClass({
               <th className="text-nowrap">WCA id</th>
               <th>Gender</th>
               <th>Birthday</th>
-              {this.data.competitionEvents.map(function(event) {
+              {this.data.competitionEvents.map(eventCode => {
                 return (
-                  <th key={event.eventCode} className="text-center">
-                    <span className={"cubing-icon icon-" + event.eventCode} alt={event.eventCode}></span><br />
-                    <span>{event.eventCode}</span>
+                  <th key={eventCode} className="text-center">
+                    <span className={"cubing-icon icon-" + eventCode} alt={eventCode}></span><br />
+                    <span>{eventCode}</span>
                   </th>
                 );
               })}
@@ -212,13 +212,13 @@ let CheckinList = React.createClass({
           <tbody>
             {this.data.registrations.map(registration => {
               let eventTds = [];
-              this.data.competitionEvents.forEach(event => {
-                let registeredForEvent = _.contains(registration.registeredEvents, event.eventCode);
+              this.data.competitionEvents.forEach(eventCode => {
+                let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
 
                 let classes = classNames({
                   'text-center': true,
                 });
-                let onChange = this.registeredCheckboxToggled.bind(null, registration, event);
+                let onChange = this.registeredCheckboxToggled.bind(null, registration, eventCode);
                 let onClick = function(e) {
                   let $input = $(e.currentTarget).find('input');
                   if($input[0] == e.target) {
@@ -229,7 +229,7 @@ let CheckinList = React.createClass({
                   onChange();
                 };
                 eventTds.push(
-                  <td key={event.eventCode} className={classes} onClick={onClick}>
+                  <td key={eventCode} className={classes} onClick={onClick}>
                     <input type="checkbox" checked={registeredForEvent} onChange={onChange} />
                   </td>
                 );

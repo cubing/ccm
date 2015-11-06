@@ -17,7 +17,7 @@ _.extend(RoundProgress.prototype, {
 
 RoundProgresses = new Mongo.Collection("roundProgresses", { transform: function(doc) { return new RoundProgress(doc); } });
 
-RoundProgresses.attachSchema({
+Schema.roundProgress = new SimpleSchema({
   roundId: {
     type: String,
   },
@@ -37,3 +37,5 @@ RoundProgresses.attachSchema({
     defaultValue: 0,
   },
 });
+
+RoundProgresses.attachSchema(Schema.roundProgress);

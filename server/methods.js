@@ -77,7 +77,7 @@ Meteor.methods({
     }
   },
 
-  importRegistrations(competitionId, wcaCompetition) {//<<<
+  importRegistrations(competitionId, wcaCompetition) {
     // We use the WCA Competition JSON Format to encode registration information. See:
     //  https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format
     // We don't want this method to silently delete any data, so we only add missing
@@ -180,7 +180,7 @@ Meteor.methods({
       wcaEvent.rounds[0].results.forEach(wcaResult => {
         // wcaResult.personId refers to the personId in the wca json
         let registration = registrationByWcaJsonId[wcaResult.personId];
-        registration.registeredEvents[wcaEvent.eventId] = true;
+        registration.registeredEvents.push(wcaEvent.eventId);
       });
     });
     // Update the registrations to reflect the events they signed up for.
@@ -188,11 +188,7 @@ Meteor.methods({
       if(registrationByWcaJsonId.hasOwnProperty(jsonId)) {
         let registration = registrationByWcaJsonId[jsonId];
         if(!registration.checkedIn) {
-          Registrations.update(registration._id, {
-            $set: {
-              registeredEvents: _.keys(registration.registeredEvents),
-            }
-          });
+          Meteor.call('addEditRegistration', registration);
         }
       }
     }
@@ -475,40 +471,74 @@ Meteor.methods({
   },
 
   addEditRegistration(registration) {
-    throw new Meteor.Error(400, 'not yet implemented');//<<<
+    let existingRegistration = Registrations.findOne(registration._id);
+    if(existingRegistration && existingRegistration.competitionId != registration.competitionId) {
+      throw new Meteor.Error(400, "Cannot change the competitionId of a registration");
+    }
 
-    /*<<<
-    Registrations.allowOperation = function(userId, registration, fields) {
-      let canManageCheckin = !getCannotManageCompetitionReason(userId, registration.competitionId, 'manageCheckin');
-      if(!canManageCheckin) {
-        if(getCannotRegisterReasons(registration.competitionId)) {
-          return false;
-        }
-        // can only edit entries with own user id
-        if(registration.userId != userId) {
-          return false;
-        }
-      }
-      let allowedFields = [
-        'userId',
-        'competitionId',
-        'uniqueName',
-        'registeredEvents',
-        'guestCount',
-        'comments',
+    let competition = Competitions.findOne(registration.competitionId);
+    if(!competition) {
+      throw new Meteor.Error(404, "Cannot find competition");
+    }
 
-        'updatedAt',
-        'createdAt',
-      ];
-      if(canManageCheckin) {
-        allowedFields.push('wcaId', 'gender', 'dob', 'countryId');
+    let canManageCheckin = !getCannotManageCompetitionReason(this.userId, registration.competitionId, 'manageCheckin');
+    if(!canManageCheckin) {
+      let cannotRegisterReasons = competition.getCannotRegisterReasons();
+      if(cannotRegisterReasons) {
+        throw new Meteor.Error(400, cannotRegisterReasons.join(", "));
       }
-      return onlyAllowedFields(fields, allowedFields);
-    };
-    */
+      // can only edit entries with own user id
+      if(registration.userId != this.userId) {
+        throw new Meteor.Error(400, "Cannot edit a registration other than your own");
+      }
+    }
+    let allowedFields = [
+      'userId',
+      'competitionId',
+      'uniqueName',
+      'registeredEvents',
+      'guestCount',
+      'comments',
+    ];
+    if(canManageCheckin) {
+      allowedFields.push('wcaId', 'gender', 'dob', 'countryId');
+    }
+    registration = _.pick(registration, allowedFields);
+
+    if(existingRegistration) {
+      Registrations.update(existingRegistration._id, { $set: registration });
+      registration = Registrations.findOne(existingRegistration._id);
+    } else {
+      registration = Registrations.findOne(Registrations.insert(registration));
+    }
+    registration.createAndDeleteFirstRoundResults();
+    return registration._id;
   },
 
   deleteRegistration(registrationId) {
-    throw new Meteor.Error(400, 'not yet implemented');//<<<
+    let registration = Registrations.findOne(registrationId);
+    if(!registration) {
+      throw new Meteor.Error(404, "Cannot find registration");
+    }
+
+    let competition = Competitions.findOne(registration.competitionId);
+    if(!competition) {
+      throw new Meteor.Error(404, "Cannot find competition");
+    }
+
+    let canManageCheckin = !getCannotManageCompetitionReason(this.userId, registration.competitionId, 'manageCheckin');
+    if(!canManageCheckin) {
+      let cannotRegisterReasons = competition.getCannotRegisterReasons();
+      if(cannotRegisterReasons) {
+        throw new Meteor.Error(400, cannotRegisterReasons.join(", "));
+      }
+      // can only edit entries with own user id
+      if(registration.userId != this.userId) {
+        throw new Meteor.Error(400, "Cannot edit a registration other than your own");
+      }
+    }
+    registration.registeredEvents = [];
+    registration.createAndDeleteFirstRoundResults();
+    Registrations.remove(registrationId);
   },
 });

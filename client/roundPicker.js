@@ -22,16 +22,21 @@ Template.roundPicker.events({
 });
 
 Template.roundPicker.helpers({
-  isCurrentEvent: function() {
-    let template = Template.instance();
-    return this.eventCode == template.selectedEventCodeReact.get();
+  competition() {
+    return Competitions.findOne(this.competitionId);
   },
 
-  selectedEventCode: function() {
+  isCurrentEvent() {
+    let template = Template.instance();
+    return this == template.selectedEventCodeReact.get();
+  },
+
+  selectedEventCode() {
     let template = Template.instance();
     return template.selectedEventCodeReact.get();
   },
-  roundsForEvent: function() {
+
+  roundsForEvent() {
     let template = Template.instance();
     let rounds = Rounds.find({
       competitionId: this.competitionId,
@@ -41,7 +46,8 @@ Template.roundPicker.helpers({
     });
     return rounds;
   },
-  isCurrentRound: function() {
+
+  isCurrentRound() {
     let roundData = Template.parentData(1);
     let currentRoundId = roundData.roundId;
     if(!currentRoundId) {
@@ -64,7 +70,7 @@ Template.openRoundPicker.created = function() {
 };
 
 Template.openRoundPicker.helpers({
-  showAllRounds: function() {
+  showAllRounds() {
     if(!this.allowChosingClosedRounds) {
       return false;
     }
@@ -82,7 +88,8 @@ Template.openRoundPicker.helpers({
     let template = Template.instance();
     return template.showAllRoundsReact.get();
   },
-  openRounds: function() {
+
+  openRounds() {
     let openRounds = Rounds.find({
       competitionId: this.competitionId,
       status: wca.roundStatuses.open,
@@ -94,12 +101,14 @@ Template.openRoundPicker.helpers({
     });
     return openRounds;
   },
-  isSelectedRound: function() {
+
+  isSelectedRound() {
     let data = Template.parentData(1);
     let selectedRoundId = data.roundId;
     return selectedRoundId == this._id;
   },
-  selectedRound: function() {
+
+  selectedRound() {
     let data = Template.parentData(1);
     return Rounds.findOne(data.roundId);
   },

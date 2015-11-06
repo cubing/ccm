@@ -41,9 +41,15 @@ function presets(propertyKey) {
   }
 }
 
-// Call format:
-//   make(collection, [0 or more variants], [optional override object])
+// Call format is the same as for build()
 make = function(collection, otherArgs) {
+  let doc = build.apply(this, arguments);
+  return collection.findOne(collection.insert(doc));
+};
+
+// Call format:
+//   build(collection, [0 or more variants], [optional override object])
+build = function(collection, otherArgs) {
   let lastArg = arguments[arguments.length - 1];
   let hasOverrides = _.isObject(lastArg) && arguments.length > 1;
 
@@ -51,5 +57,5 @@ make = function(collection, otherArgs) {
   for(let i = 0; i < arguments.length - (hasOverrides ? 1 : 0); i++) {
     _.extend(properties, presets(arguments[i]));
   }
-  return collection.findOne(collection.insert(_.extend(properties, hasOverrides ? lastArg : {})));
+  return _.extend(properties, hasOverrides ? lastArg : {});
 };

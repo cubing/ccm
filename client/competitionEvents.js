@@ -4,9 +4,11 @@ Template.competitionEvents.helpers({
   },
 
   rounds: function() {
+    let data = Template.parentData(1);
+    let eventCode = this.toString();
     let rounds = Rounds.find({
-      competitionId: this.competitionId,
-      eventCode: this.eventCode,
+      competitionId: data.competitionId,
+      eventCode: eventCode,
     }, {
       sort: { nthRound: 1 }
     });

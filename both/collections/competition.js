@@ -7,6 +7,23 @@ _.extend(Competition.prototype, {
     return new Date(this.startDate.getTime() + (this.numberOfDays - 1) * 24*60*60*1000);
   },
 
+  getFirstRoundOfEvent(eventCode) {
+    return Rounds.findOne({
+      competitionId: this._id,
+      eventCode: eventCode,
+      nthRound: 1,
+    });
+  },
+
+  getLastRoundOfEvent(eventCode) {
+    return Rounds.findOne({
+      competitionId: this._id,
+      eventCode: eventCode,
+    }, {
+      sort: { nthRound: -1 },
+    });
+  },
+
   userIsStaffMember(userId) {
     let user = Meteor.users.findOne(userId);
     if(!user) {
@@ -48,16 +65,12 @@ _.extend(Competition.prototype, {
     });
   },
 
-  getEvents() {
-    let rounds = Rounds.find({ competitionId: this._id }, { fields: { eventCode: 1 } }).fetch();
-
-    let eventCodes = {};
-    rounds.forEach(round => {
-      eventCodes[round.eventCode] = true;
-    });
-    let events = _.chain(wca.events)
-      .filter(e => eventCodes[e.code])
-      .map(e => { return { competitionId: this._id, eventCode: e.code }; })
+  getEventCodes() {
+    let rounds = Rounds.find({ competitionId: this._id, nthRound: 1 }, { fields: { eventCode: 1 } }).fetch();
+    let events = _.chain(rounds)
+      .map(round => round.eventCode)
+      .filter(eventCode => wca.eventByCode[eventCode])
+      .sortBy(eventCode => wca.eventByCode[eventCode].index)
       .value();
     return events;
   },
@@ -70,6 +83,84 @@ _.extend(Competition.prototype, {
       fields: { nthRound: 1 },
     });
     return _.range(1, mostAdvancedRound.nthRound + 1);
+  },
+
+  getCannotRegisterReasons() {
+    if(!this.registrationOpenDate || !this.registrationCloseDate) {
+      // open / close dates not yet set
+      return ["Competition registration is not open."];
+    }
+
+    let now = moment();
+    let open = moment(this.registrationOpenDate);
+    let close = moment(this.registrationCloseDate);
+
+    if(now.isAfter(close)) {
+      return ["Competition registration is now closed!"];
+    }
+    if(now.isBefore(open)) {
+      let reasonText = "Competition registration is not yet open!";
+      let openStr = formatMomentDateTime(open);
+      reasonText += " Registration is set to open" +
+                    " <strong>" + open.fromNow() + "</strong>" +
+                    " on " + openStr + ".";
+      return [reasonText];
+    }
+
+    let reasons = [];
+    // Check to make sure profile has appropriate data
+    let user = Meteor.user();
+    let reasonText = "You need to complete your user profile to register!";
+    if(!user.profile) {
+      reasons.push(reasonText);
+    } else {
+      if(!user.profile.name) {
+        reasons.push(reasonText + " Please add your name to your profile.");
+      }
+      if(!user.profile.dob) {
+        reasons.push(reasonText + " Please provide a birthdate in your profile.");
+      }
+      if(!user.profile.countryId) {
+        reasons.push(reasonText + " Please specify a country in your profile.");
+      }
+      if(!user.profile.gender) {
+        reasons.push(reasonText + " Please specify your gender in your profile.");
+      }
+    }
+    if(!user.emails[0].verified) {
+      reasons.push("Please confirm your email address.");
+    }
+
+    // Registration should close upon hitting capacity;
+    // Users already registered should still be able to edit registrations
+    if(!Registrations.findOne({userId: user._id, competitionId: this._id})) {
+      // participant capacity limit
+      let numParticipants;
+      if(this.registrationParticipantLimitCount) {
+        numParticipants = Registrations.find({competitionId: this._id}, {}).count();
+        if(numParticipants >= this.registrationParticipantLimitCount) {
+          reasons.push("Registration has reached the maximum number of allowed participants.");
+        }
+      }
+      // total venue capacity limit
+      if(this.registrationAttendeeLimitCount) {
+        let registrationGuestData = Registrations.find({competitionId: this._id}, {fields: {guestCount: 1}});
+        numParticipants = registrationGuestData.count();
+        let guestTotalCount = 0;
+        registrationGuestData.forEach(obj => {
+          guestTotalCount += obj.guestCount > 0 ? obj.guestCount : 0;
+        });
+        if(numParticipants + guestTotalCount >= this.registrationAttendeeLimitCount) {
+          reasons.push("Registration has reached the maximum number of allowed competitors and guests.");
+        }
+      }
+    }
+
+    if(reasons.length > 0) {
+      return reasons;
+    }
+
+    return false;
   },
 });
 
@@ -181,7 +272,7 @@ DEFAULT_STAFF_ROLES = {
 };
 
 Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
-let schema = new SimpleSchema({
+Schema.competition = new SimpleSchema({
   competitionName: {
     type: String,
     label: "Competition name",
@@ -400,7 +491,7 @@ let schema = new SimpleSchema({
   },
 });
 
-schema.messages({
+Schema.competition.messages({
   registrationCloseDateAfterRegistrationOpenDate: "Registration close date should be after the registration open date.",
   missingRegistrationOpenDate: "Please enter a registration open date.",
   missingRegistrationCloseDate: "Please enter a registration close date.",
@@ -409,7 +500,7 @@ schema.messages({
   laterExistingEvents: "There are events later in the day.",
   laterDayExistingEvents: "There are events after the last day.",
 });
-Competitions.attachSchema(schema);
+Competitions.attachSchema(Schema.competition);
 
 if(Meteor.isServer) {
   Competitions._ensureIndex({

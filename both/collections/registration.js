@@ -1,12 +1,52 @@
 const log = logging.handle("registration");
 
 // Add functions to the Mongo object, using transform (see http://docs.meteor.com/#/full/mongo_collection)
-let Registration = function(doc) {
+Registration = function(doc) {
   _.extend(this, doc);
 };
 
 _.extend(Registration.prototype, {
-  checkIn(toCheckIn) {//<<<
+  user() {
+    return Meteor.users.findOne(this.userId);
+  },
+
+  competition() {
+    return Competitions.findOne(this.competitionId);
+  },
+
+  getResultsWithSolves() {
+    return Results.find({ registrationId: this._id }).fetch()
+      .filter(result => result.hasDataEntered());
+  },
+
+  actuallyHasStaffRoles() {
+    return _.any(_.values(this.roles));
+  },
+
+  checkIn(toCheckIn) {
+    // We don't allow checking someone out if they have data entered.
+    if(!toCheckIn) {
+      let results = this.getResultsWithSolves();
+      if(results.length > 0) {
+        results = _.sortBy(results, result => {
+          let round = result.round();
+          return [ wca.eventByCode[round.eventCode].index, round.nthRound ];
+        });
+        let roundsStr = results.map(result => result.round().prettyString({ showFormat: false })).join(", ");
+        let reason = `Cannot uncheckin ${this.uniqueName}, because they already have results in ${roundsStr}`;
+        throw new Meteor.Error(403, reason);
+      }
+    }
+
+    Registrations.update(this._id, { $set: { checkedIn: toCheckIn } });
+  },
+
+  createAndDeleteFirstRoundResults() {
+    let eventsNotBeingHeld = _.difference(this.registeredEvents, this.competition().getEventCodes());
+    if(eventsNotBeingHeld.length > 0) {
+      throw new Meteor.Error(400, `Cannot register for events not being held: ${eventsNotBeingHeld.join(", ")}`);
+    }
+
     // This method is called to check-in a participant for the first time,
     // to update their check-in because the set of events they are registered for
     // changed, or to uncheck them in from the competition. If accomplishing this
@@ -22,9 +62,8 @@ _.extend(Registration.prototype, {
           roundId: round._id,
           registrationId: this._id,
         });
-        let registeredForEvent = _.contains(this.registeredEvents, round.eventCode);
-        let shouldHaveResultForRound = toCheckIn && registeredForEvent;
         let hasResultForRound = !!result;
+        let shouldHaveResultForRound = _.contains(this.registeredEvents, round.eventCode);
 
         if(hasResultForRound == shouldHaveResultForRound) {
           // Nothing to do.
@@ -48,9 +87,8 @@ _.extend(Registration.prototype, {
               // This registrant has a result for this round that we no longer want them
               // in. If they actually have results for this round, throw an exception
               // rather than deleting data irreversibly.
-              let hasSolves = _.filter(result.solves, s => s !== null).length > 0;
-              if(hasSolves) {
-                let reason = "Cannot unregister " + this.uniqueName + " for " + round.eventCode + " round 1 because they already have results in that round.";
+              if(result.hasDataEntered()) {
+                let reason = `Cannot unregister ${this.uniqueName} for ${round.eventCode} round 1 because they already have results in that round.`;
                 throw new Meteor.Error(403, reason);
               }
             }
@@ -67,13 +105,6 @@ _.extend(Registration.prototype, {
         RoundSorter.addRoundToSort(round._id);
       });
     });
-    Registrations.update(this._id, { $set: { checkedIn: toCheckIn } });
-  },
-  actuallyHasStaffRoles() {
-    return _.any(_.values(this.roles));
-  },
-  user() {
-    return Meteor.users.findOne(this.userId);
   },
 });
 
@@ -101,7 +132,10 @@ let OptionalBoolean = {
   optional: true,
 };
 
-let schema = new SimpleSchema({
+Schema.registration = new SimpleSchema({
+  _id: {
+    type: String,
+  },
   competitionId: {
     type: String,
     autoform: {
@@ -171,11 +205,11 @@ let schema = new SimpleSchema({
   updatedAt: updatedAtSchemaField,
 });
 
-schema.messages({
+Schema.registration.messages({
   notUnique: "Someone is already registered with that name.",
 });
 
-Registrations.attachSchema(schema);
+Registrations.attachSchema(Schema.registration);
 
 if(Meteor.isServer) {
   // The (competitionId, uniqueName) pair should always be unique.

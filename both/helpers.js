@@ -89,20 +89,6 @@ register("minutesToPrettyTime", function(timeMinutes) {
   return minutesToPrettyTime(timeMinutes);
 });
 
-getLastRoundIdForEvent = function(competitionId, eventCode) {
-  let lastRoundForEvent = Rounds.findOne({
-    competitionId: competitionId,
-    eventCode: eventCode,
-  }, {
-    sort: { "nthRound": -1 },
-    fields: { _id: 1 }
-  });
-  if(!lastRoundForEvent) {
-    return null;
-  }
-  return lastRoundForEvent._id;
-};
-
 const LOCAL_TIMEZONE = jstz.determine().name();
 
 const DATE_FORMAT = "LL";

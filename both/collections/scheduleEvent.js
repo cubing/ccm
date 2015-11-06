@@ -19,7 +19,7 @@ _.extend(ScheduleEvent.prototype, {
 
 ScheduleEvents = new Mongo.Collection("scheduleEvents", { transform: function(doc) { return new ScheduleEvent(doc); } });
 
-let schema = new SimpleSchema({
+Schema.scheduleEvent = new SimpleSchema({
   competitionId: {
     type: String,
   },
@@ -82,14 +82,13 @@ let schema = new SimpleSchema({
   },
 });
 
-schema.messages({
+Schema.scheduleEvent.messages({
   tooLateDay: "Event scheduled on day after competition ended.",
   tooEarly:   "Event scheduled before competition day starts.",
   tooLate:    "Event scheduled after competition day ends.",
 });
 
-ScheduleEvents.attachSchema(schema);
-
+ScheduleEvents.attachSchema(Schema.scheduleEvent);
 
 if(Meteor.isServer) {
   ScheduleEvents._ensureIndex({

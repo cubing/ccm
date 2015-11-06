@@ -67,6 +67,7 @@
           {{#autoForm id="editRegistrationForm" type="method" meteormethod="addEditRegistration" doc=this collection="Registrations"}}
             <div class="modal-body">
               <div class="form-group">
+                {{> afFieldInput name="_id" type="hidden"}}
                 {{> afFieldInput name="competitionId"}}
                 {{> afFieldInput name="userId"}}
                 {{> afQuickField name="uniqueName" autofocus=''}}

@@ -1,14 +1,42 @@
 MochaWeb.testOnly(function() {
   describe('Competition', function() {
+    beforeEach(function() {
+      stubs.create('fakeCanManageCompetition', global, 'getCannotManageCompetitionReason');
+      stubs.fakeCanManageCompetition.returns(null);
+    });
 
     it('endDate()', function() {
       let comp = make(Competitions, {startDate: new Date("2015 Jun 23"), numberOfDays: 3});
       chai.expect(comp.endDate().getTime()).to.equal(new Date("2015 Jun 25").getTime());
     });
 
+    describe('getEventCodes()', function() {
+      let comp;
+      beforeEach(function() {
+        comp = make(Competitions);
+      });
+
+      it('returns events in expected format', function() {
+        chai.expect(comp.getEventCodes()).to.deep.equal([]);
+
+        make(Rounds, {competitionId: comp._id, eventCode: '333'});
+        make(Rounds, {competitionId: 'other competition', eventCode: '666'});
+
+        chai.expect(comp.getEventCodes()).to.deep.equal(['333']);
+      });
+
+      it('returns events in WCA order', function() {
+        ['333', '222', '333mbf', '777', 'clock'].forEach(code => {
+          Meteor.call('addRound', comp._id, code);
+          Meteor.call('addRound', comp._id, code);
+        });
+        chai.expect(comp.getEventCodes()).to.deep.equal(['333','222','clock','777','333mbf']);
+      });
+    });
+
     describe('validation', function() {
       it('includes existing events', function() {
-        let comp  = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
+        let comp = make(Competitions, {calendarStartMinutes: 800, calendarEndMinutes: 1100, numberOfDays: 2});
         let event = make(ScheduleEvents, {competitionId: comp._id, startMinutes: 900, durationMinutes: 100, nthDay: 1});
 
         chai.expect(function() {
@@ -48,7 +76,6 @@ MochaWeb.testOnly(function() {
         }).to.throw(/Please enter a registration open date/);
       });
     });
-
   });
 });
 

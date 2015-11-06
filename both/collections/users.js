@@ -1,4 +1,4 @@
-Meteor.users.attachSchema(new SimpleSchema({
+Schema.user = new SimpleSchema({
   emails: {
     type: [Object],
   },
@@ -36,7 +36,9 @@ Meteor.users.attachSchema(new SimpleSchema({
     optional: true,
     blackbox: true,
   },
-}));
+});
+
+Meteor.users.attachSchema(Schema.user);
 
 if(Meteor.isServer) {
   // Do not allow users with duplicate WCA ids.
