@@ -3,7 +3,7 @@ Template.participantResults.rendered = function() {
 
   template.autorun(function() {
     let data = Template.currentData();
-    React.render(<ParticipantResults competitionId={data.competitionId}
+    ReactDOM.render(<ParticipantResults competitionId={data.competitionId}
                                      competitionUrlId={data.competitionUrlId}
                                      registration={data.registration}/>,
       template.$('.reactRenderArea')[0]
@@ -12,7 +12,7 @@ Template.participantResults.rendered = function() {
 };
 Template.participantResults.destroyed = function() {
   let template = this;
-  React.unmountComponentAtNode(
+  ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
 };

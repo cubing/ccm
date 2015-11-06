@@ -116,7 +116,7 @@ ResultsList = React.createClass({
   componentDidMount: function() {
     log.l1("component did mount");
 
-    let $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    let $resultsTable = $(this.refs.resultsTable);
     makeTableSticky($resultsTable);
   },
   componentWillUpdate(nextProps, nextState) {
@@ -128,7 +128,7 @@ ResultsList = React.createClass({
   componentWillUnmount: function() {
     log.l1("component will unmount");
 
-    let $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    let $resultsTable = $(this.refs.resultsTable);
     makeTableNotSticky($resultsTable);
   },
   resultsTableScroll: function(e) {
@@ -136,11 +136,11 @@ ResultsList = React.createClass({
     // Workaround for https://github.com/jmosbech/StickyTableHeaders/issues/68.
     // StickyTableHeaders doesn't handle horizontal scrolling, so we detect it
     // ourselves and force the table header to reposition itself.
-    let $resultsTable = $(this.refs.resultsTable.getDOMNode());
+    let $resultsTable = $(this.refs.resultsTable);
     $resultsTable.data('plugin_stickyTableHeaders').toggleHeaders();
   },
 	onNameClick: function(result) {
-    let $resultDetailsModal = $(this.refs.resultDetailsModal.getDOMNode());
+    let $resultDetailsModal = $(this.refs.resultDetailsModal);
     this.setState({ selectedResult: result });
     $resultDetailsModal.modal('show');
 	},

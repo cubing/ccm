@@ -13,7 +13,7 @@ Template.manageCheckin.rendered = function() {
   template.autorun(function() {
     let data = Template.currentData();
 
-    React.render(
+    ReactDOM.render(
       <CheckinList competitionId={data.competitionId} />,
       template.$(".reactRenderArea")[0]
     );
@@ -35,7 +35,7 @@ Template.manageCheckin.rendered = function() {
 Template.manageCheckin.destroyed = function() {
   let template = this;
   selectedRegistrationReact.set(null);
-  let unmounted = React.unmountComponentAtNode(
+  let unmounted = ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
   assert(unmounted);
@@ -140,24 +140,24 @@ let CheckinList = React.createClass({
   componentDidMount: function() {
     log.l1("component did mount");
 
-    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable);
     makeTableSticky($checkinTable);
   },
   componentWillUpdate(nextProps, nextState) {
     log.l1("component will update");
-    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable);
     $checkinTable.find('thead tr th').css({ minWidth: "", maxWidth: "" });
     makeTableNotSticky($checkinTable);
   },
   componentDidUpdate(prevProps, prevState) {
     log.l1("component did update");
-    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable);
     makeTableSticky($checkinTable);
   },
   componentWillUnmount: function() {
     log.l1("component will unmount");
 
-    let $checkinTable = $(this.refs.checkinTable.getDOMNode());
+    let $checkinTable = $(this.refs.checkinTable);
     makeTableNotSticky($checkinTable);
   },
   registeredCheckboxToggled: function(registration, event) {

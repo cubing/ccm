@@ -58,7 +58,7 @@ Template.roundResultsList.rendered = function() {
       result.round = round;
     });
 
-    React.render(
+    ReactDOM.render(
       <ResultsList competitionUrlId={data.competitionUrlId}
                    advanceCount={data.advanceCount}
                    configurableAdvanceCount={data.configurableAdvanceCount}
@@ -85,7 +85,7 @@ Template.roundResultsList.rendered = function() {
 
 Template.roundResultsList.destroyed = function() {
   let template = this;
-  React.unmountComponentAtNode(
+  ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
 };

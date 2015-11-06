@@ -2,7 +2,7 @@ Template.editStaff.rendered = function() {
   let template = this;
   template.autorun(() => {
     let data = Template.currentData();
-    React.render(
+    ReactDOM.render(
       <StaffList competitionId={data.competitionId} />,
       template.$(".reactRenderArea")[0]
     );
@@ -10,7 +10,7 @@ Template.editStaff.rendered = function() {
 };
 Template.editStaff.destroyed = function() {
   let template = this;
-  let unmounted = React.unmountComponentAtNode(
+  let unmounted = ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
   assert(unmounted);

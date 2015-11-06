@@ -3,7 +3,7 @@ Template.podiums.rendered = function() {
 
   template.autorun(function() {
     let data = Template.currentData();
-    React.render(<EventPodiums competitionUrlId={data.competitionUrlId}
+    ReactDOM.render(<EventPodiums competitionUrlId={data.competitionUrlId}
                                finalRounds={data.finalRounds}
                                finalResults={data.finalResults} />,
       template.$('.reactRenderArea')[0]
@@ -12,7 +12,7 @@ Template.podiums.rendered = function() {
 };
 Template.podiums.destroyed = function() {
   let template = this;
-  React.unmountComponentAtNode(
+  ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
 };
@@ -22,7 +22,7 @@ Template.podiumsByPerson.rendered = function() {
 
   template.autorun(function() {
     let data = Template.currentData();
-    React.render(<EventPodiumsByPerson competitionUrlId={data.competitionUrlId}
+    ReactDOM.render(<EventPodiumsByPerson competitionUrlId={data.competitionUrlId}
                                        finalRounds={data.finalRounds}
                                        finalResults={data.finalResults} />,
       template.$('.reactRenderArea')[0]
@@ -31,7 +31,7 @@ Template.podiumsByPerson.rendered = function() {
 };
 Template.podiumsByPerson.destroyed = function() {
   let template = this;
-  React.unmountComponentAtNode(
+  ReactDOM.unmountComponentAtNode(
     template.$(".reactRenderArea")[0]
   );
 };
