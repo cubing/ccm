@@ -17,12 +17,14 @@
     <hr />
 
     <p class="text-center">
-      <h1>{{currentUser.profile.name}}</h1>
+      <h1>
+        {{currentUser.profile.name}} <span class="flag-icon flag-icon-{{countryId}}"></span>
+      </h1>
+      <h2>{{birthdate}}</h2>
       <h2>{{currentUser.profile.wcaId}}</h2>
       {{#if currentUser.services.worldcubeassociation.avatar}}
         <img src="{{currentUser.services.worldcubeassociation.avatar.thumb_url}}">
       {{/if}}
-      <br>
     </p>
   </div>
 </template>
