@@ -74,10 +74,12 @@ Template.roundDataEntry.rendered = function() {
     if(selectedResultId) {
       // Query for the selected Result's position just so we recenter whenever its
       // position changes.
-      let result = Results.findOne(selectedResultId, { fields: { position: 1 } });
-      log.l3("Result", selectedResultId, "changed position to", result.position, "... recentering");
-      let $selectedRow = template.$('tr.result[data-result-id="' + selectedResultId + '"]');
-      $selectedRow.scrollToCenter();
+      let result = Results.findOne(selectedResultId, { fields: { position: 1, registrationId: 1 } });
+      if(result.registration().checkedIn) {
+        log.l3("Result", selectedResultId, "changed position to", result.position, "... recentering");
+        let $selectedRow = template.$('tr.result[data-result-id="' + selectedResultId + '"]');
+        $selectedRow.scrollToCenter();
+      }
     }
   });
 
@@ -140,6 +142,10 @@ function getSolveWarnings(resultId, solveIndex) {
 Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
+  },
+  notCheckedIn: function() {
+    let result = Results.findOne(selectedResultIdReact.get(), { fields: { registrationId: 1 } });
+    return !result.registration().checkedIn;
   },
   noShow: function() {
     let result = Results.findOne(selectedResultIdReact.get(), { fields: { noShow: 1 } });

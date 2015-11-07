@@ -21,14 +21,6 @@
       <div class="results-sidebar">
         <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
-        {{! TODO - don't allow marking someone a no show if they're not checked in}}
-        {{! TODO - show a helpful message and link for people who are not checked in}}
-        {{#if selectedResultId}}
-          <a type="button" id="js-no-show-button" class="btn btn-default {{#if noShow}}active{{/if}}" disabled={{disableNoShow}} data-toggle="tooltip" data-placement="top" data-original-title="{{noShowTooltip}}" data-container="body">
-            No show
-          </a>
-        {{/if}}
-
         {{#with round}}
           {{#if softCutoff}}
             <p>
@@ -43,16 +35,25 @@
         {{/with}}
 
         {{#if selectedResultId}}
-          {{#unless noShow}}
-            <table class="table table-condensed jChesterTable">
-              <tbody>
-                {{#each solveTime in selectedSolves}}
-                  {{> solveTimeEditor solveTime=solveTime index=@index resultId=selectedResultId roundId=roundId}}
-                {{/each}}
-              </tbody>
-            </table>
-            <div class="focusguard focusguard-bottom" tabindex="0"></div>
-          {{/unless}}
+          {{#if notCheckedIn}}
+            <p>
+            This competitor is not checked in yet! You can manage check-in over <a href="{{pathFor 'manageCheckin' competitionUrlId=../competitionUrlId}}">here</a>.
+            </p>
+          {{else}}
+            <a type="button" id="js-no-show-button" class="btn btn-default {{#if noShow}}active{{/if}}" disabled={{disableNoShow}} data-toggle="tooltip" data-placement="top" data-original-title="{{noShowTooltip}}" data-container="body">
+              No show
+            </a>
+            {{#unless noShow}}
+              <table class="table table-condensed jChesterTable">
+                <tbody>
+                  {{#each solveTime in selectedSolves}}
+                    {{> solveTimeEditor solveTime=solveTime index=@index resultId=selectedResultId roundId=roundId}}
+                  {{/each}}
+                </tbody>
+              </table>
+              <div class="focusguard focusguard-bottom" tabindex="0"></div>
+            {{/unless}}
+          {{/if}}
         {{/if}}
       </div>
     </div>

@@ -375,6 +375,10 @@ Meteor.methods({
     }
     throwIfCannotManageCompetition(this.userId, result.competitionId, 'dataEntry');
 
+    if(!result.registration().checkedIn) {
+      throw new Meteor.Error(400, "Cannot mark someone as a no show if they're not checked in");
+    }
+
     let round = Rounds.findOne(result.roundId);
     if(!round) {
       throw new Meteor.Error(404, "Round not found");

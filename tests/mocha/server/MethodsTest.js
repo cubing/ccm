@@ -183,7 +183,7 @@ MochaWeb.testOnly(function() {
         let [registration3, result3] = createRegistration({ checkedIn: true });
         fillResultWithSolve(result3, { millis: 5555 });
 
-        let [uncheckedInRegistration, hiddenResult] = createRegistration({ checkedIn: false });
+        let [uncheckedInRegistration, uncheckedInResult] = createRegistration({ checkedIn: false });
         let [registration4, incompleteResult4] = createRegistration({ checkedIn: true });
 
         let roundProgress = RoundProgresses.findOne({roundId: rounds[0]._id});
@@ -203,7 +203,7 @@ MochaWeb.testOnly(function() {
         chai.expect(Results.findOne(result2._id).advanced).to.equal(true);
         chai.expect(Results.findOne(result3._id).advanced).to.equal(false);
         chai.expect(Results.findOne(incompleteResult4._id).advanced).to.equal(false);
-        chai.expect(Results.findOne(hiddenResult._id).advanced).to.equal(false);
+        chai.expect(Results.findOne(uncheckedInResult._id).advanced).to.equal(false);
 
         // Add a time for the slowest person in round 2
         Meteor.call('setSolveTime', results[results.length - 1]._id, 0, { millis: 3333 });
@@ -335,6 +335,7 @@ MochaWeb.testOnly(function() {
       let rounds;
       let registration1, result1;
       let registration2, result2;
+      let uncheckedInRegistration, uncheckedInResult;
       let secondResult1;
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
@@ -357,7 +358,7 @@ MochaWeb.testOnly(function() {
         [registration2, result2] = createRegistration({ checkedIn: true });
         fillResultWithSolve(result2, { millis: 4444 });
 
-        let [uncheckedInRegistration, hiddenResult] = createRegistration({ checkedIn: false });
+        [uncheckedInRegistration, uncheckedInResult] = createRegistration({ checkedIn: false });
         let [registration4, incompleteResult4] = createRegistration({ checkedIn: true });
 
         Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
@@ -371,14 +372,22 @@ MochaWeb.testOnly(function() {
         chai.expect(result._id).to.equal(result2._id);
       });
 
-      it("setResultNoShow", function() {
-        Meteor.call('setResultNoShow', secondResult1._id, true);
-        chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(true);
-        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(0);
+      describe("setResultNoShow", function() {
+        it('works', function() {
+          Meteor.call('setResultNoShow', secondResult1._id, true);
+          chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(true);
+          chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(0);
 
-        Meteor.call('setResultNoShow', secondResult1._id, false);
-        chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(false);
-        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
+          Meteor.call('setResultNoShow', secondResult1._id, false);
+          chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(false);
+          chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
+        });
+
+        it("does not allow marking someone a no show if they're not checked in", function() {
+          chai.expect(function() {
+            Meteor.call('setResultNoShow', uncheckedInResult._id, true);
+          }).to.throw(Meteor.Error);
+        });
       });
 
       it("advanceResultIdFromRoundPreviousToThisOne", function() {
