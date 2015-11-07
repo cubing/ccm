@@ -233,7 +233,12 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
   let $inputParticipantName = template.$('#inputParticipantName');
   let uniqueName = $inputParticipantName.typeahead('val');
-  let registration = Registrations.findOne({ uniqueName: uniqueName }, { _id: 1 });
+
+  let round = Rounds.findOne(roundId);
+  let registration = Registrations.findOne({
+    competitionId: round.competitionId,
+    uniqueName: uniqueName
+  });
   if(!registration) {
     selectedResultIdReact.set(null);
     return;
