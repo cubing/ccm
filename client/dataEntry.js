@@ -164,11 +164,11 @@ Template.roundDataEntry.helpers({
     if(!selectedResultId) {
       return null;
     }
-    // It's really important to only select solves and roundId here,
+    // It's really important to only select solves, roundId, and registrationId here,
     // as anything else causes this helper to refire shortly after editing a time
     // (because the server computes its position, average, etc...)
     // which deselects all the text in our newly focused jChester.
-    let result = Results.findOne(selectedResultId, { fields: { solves: 1, roundId: 1 } });
+    let result = Results.findOne(selectedResultId, { fields: { solves: 1, roundId: 1, registrationId: 1 } });
     return result.allSolves();
   },
 });

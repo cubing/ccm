@@ -39,6 +39,10 @@ _.extend(Registration.prototype, {
     }
 
     Registrations.update(this._id, { $set: { checkedIn: toCheckIn } });
+
+    Results.find({ registrationId: this._id }).forEach(result => {
+      RoundSorter.addRoundToSort(result.roundId);
+    });
   },
 
   createAndDeleteFirstRoundResults() {

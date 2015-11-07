@@ -114,7 +114,7 @@ Meteor.methods({
     let round = Rounds.findOne(roundId);
     throwIfCannotManageCompetition(this.userId, round.competitionId, 'dataEntry');
 
-    let results = Results.find({ roundId: roundId }, { sort: { position: 1 } }).fetch();
+    let results = round.getResultsWithRegistrations({ sorted: true });
     if(participantsToAdvance < 0) {
       throw new Meteor.Error(400, 'Cannot advance a negative number of competitors');
     }
@@ -360,6 +360,7 @@ Meteor.methods({
       let bestResultThatDidNotAdvance = Results.findOne({
         roundId: previousRound._id,
         advanced: { $ne: true },
+        position: { $ne: null },
       }, {
         sort: { position: 1 }
       });

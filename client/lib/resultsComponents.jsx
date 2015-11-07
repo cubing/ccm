@@ -157,9 +157,11 @@ ResultsList = React.createClass({
 
     let footerRows = [];
     if(this.props.showFooter) {
-      let withResultsCount = _.select(this.props.results, result => !result.noShow && result.position).length;
-      let incompleteCount = _.select(this.props.results, result => !result.noShow && !result.position).length;
-      let competitorsCount = _.select(this.props.results, result => !result.noShow).length;
+      let shownResults = _.select(this.props.results, result => result.registration.checkedIn);
+      let hiddenResults = _.select(this.props.results, result => !result.registration.checkedIn);
+      let withResultsCount = _.select(shownResults, result => !result.noShow && result.position).length;
+      let incompleteCount = _.select(shownResults, result => !result.noShow && !result.position).length;
+      let competitorsCount = _.select(shownResults, result => !result.noShow).length;
       let columnCount = 4 + maxSolveCountInResults + 1;
       footerRows.push(
         <tr key={footerRows.length}>
@@ -175,6 +177,16 @@ ResultsList = React.createClass({
           <tr key={footerRows.length}>
             <td colSpan={columnCount}>
               {noShowCount} did not show up
+            </td>
+          </tr>
+        );
+      }
+
+      if(hiddenResults.length > 0) {
+        footerRows.push(
+          <tr key={footerRows.length}>
+            <td colSpan={columnCount}>
+              {hiddenResults.length} not shown because they did not check in
             </td>
           </tr>
         );

@@ -13,7 +13,11 @@ _.extend(Result.prototype, {
   },
 
   getExpectedSolveCount() {
-    if(this.noShow) {
+    // As an optimization, Round.getResultsWithRegistrations() clobbers the
+    // registration function with the actual registration. This is a dirty hack
+    // to deal with that.
+    let registration = _.isFunction(this.registration) ? this.registration() : this.registration;
+    if(this.noShow || !registration.checkedIn) {
       return 0;
     }
     let round = Rounds.findOne(this.roundId, {

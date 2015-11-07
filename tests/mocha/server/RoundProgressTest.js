@@ -1,6 +1,5 @@
 MochaWeb.testOnly(function() {
   describe('RoundProgress', function() {
-
     it('percentage()', function() {
       chai.expect(make(RoundProgresses, {done: 5, total: 10}).percentage()).to.equal(50);
       chai.expect(make(RoundProgresses, {done: 2.47, total: 10}).percentage()).to.equal(25);

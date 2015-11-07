@@ -21,6 +21,8 @@
       <div class="results-sidebar">
         <div class="focusguard focusguard-top" tabindex="0"></div>
         <input name="name" id="inputParticipantName" class="typeahead form-control" type="text" placeholder="Enter name">
+        {{! TODO - don't allow marking someone a no show if they're not checked in}}
+        {{! TODO - show a helpful message and link for people who are not checked in}}
         {{#if selectedResultId}}
           <a type="button" id="js-no-show-button" class="btn btn-default {{#if noShow}}active{{/if}}" disabled={{disableNoShow}} data-toggle="tooltip" data-placement="top" data-original-title="{{noShowTooltip}}" data-container="body">
             No show

@@ -23,37 +23,7 @@ Template.roundResultsList.rendered = function() {
 
     let limit = resultsListLimitReact.get();
     let round = Rounds.findOne(data.roundId);
-    let results = round.getResultsWithRegistrations(limit);
-    // Asking meteor to sort is slower than just fetching and doing
-    // it ourselves. So here we go.
-    results.sort(function(a, b) {
-      // position may be undefined if no times have been entered yet.
-      // We intentionally sort so that unentered rows (results without a position)
-      // are on the bottom, with noShows even lower than them.
-      if(a.noShow && !b.noShow) {
-        return 1;
-      } else if(!a.noShow && b.noShow) {
-        return -1;
-      }
-      if(!a.position && !b.position) {
-        // Both of these results do not have a position yet, so sort them
-        // by how they did in the previous round.
-        if(!a.previousPosition) {
-          return 1;
-        }
-        if(!b.previousPosition) {
-          return -1;
-        }
-        return a.previousPosition - b.previousPosition;
-      }
-      if(!a.position) {
-        return 1;
-      }
-      if(!b.position) {
-        return -1;
-      }
-      return a.position - b.position;
-    });
+    let results = round.getResultsWithRegistrations({ limit: limit, sorted: true });
 
     ReactDOM.render(
       <ResultsList competitionUrlId={data.competitionUrlId}

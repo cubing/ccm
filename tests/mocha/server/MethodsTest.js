@@ -165,14 +165,30 @@ MochaWeb.testOnly(function() {
           }
         }).fetch();
 
-        let registration1 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
-        let result1 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 1, registrationId: registration1._id});
+        let createRegistration = function({checkedIn}) {
+          let registration = Registrations.findOne(Meteor.call('addEditRegistration', build(Registrations, {competitionId: comp1Id, registeredEvents: ['333']})));
+          if(checkedIn) {
+            Meteor.call('checkInRegistration', registration._id, true);
+          }
+          let result = Results.findOne({ roundId: rounds[0]._id, registrationId: registration._id });
+          return [ registration, result ];
+        };
 
-        let registration2 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
-        let result2 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 2, registrationId: registration2._id});
+        let [registration1, result1] = createRegistration({ checkedIn: true });
+        fillResultWithSolve(result1, { millis: 3333 });
 
-        let registration3 = make(Registrations, {competitionId: comp1Id, checkedIn: true});
-        let result3 = make(Results, {competitionId: comp1Id, roundId: rounds[0]._id, position: 3, registrationId: registration3._id});
+        let [registration2, result2] = createRegistration({ checkedIn: true });
+        fillResultWithSolve(result2, { millis: 4444 });
+
+        let [registration3, result3] = createRegistration({ checkedIn: true });
+        fillResultWithSolve(result3, { millis: 5555 });
+
+        let [uncheckedInRegistration, hiddenResult] = createRegistration({ checkedIn: false });
+        let [registration4, incompleteResult4] = createRegistration({ checkedIn: true });
+
+        let roundProgress = RoundProgresses.findOne({roundId: rounds[0]._id});
+        chai.expect(roundProgress.done).to.equal(3);
+        chai.expect(roundProgress.total).to.equal(4);
 
         Meteor.call('advanceParticipantsFromRound', 2, rounds[0]._id);
         chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(2);
@@ -181,9 +197,13 @@ MochaWeb.testOnly(function() {
         chai.expect(results.length).to.equal(2);
         chai.expect(results[0].registrationId).to.equal(registration1._id);
         chai.expect(results[0].previousPosition).to.equal(1);
+        chai.expect(results[1].registrationId).to.equal(registration2._id);
+        chai.expect(results[1].previousPosition).to.equal(2);
         chai.expect(Results.findOne(result1._id).advanced).to.equal(true);
         chai.expect(Results.findOne(result2._id).advanced).to.equal(true);
         chai.expect(Results.findOne(result3._id).advanced).to.equal(false);
+        chai.expect(Results.findOne(incompleteResult4._id).advanced).to.equal(false);
+        chai.expect(Results.findOne(hiddenResult._id).advanced).to.equal(false);
 
         // Add a time for the slowest person in round 2
         Meteor.call('setSolveTime', results[results.length - 1]._id, 0, { millis: 3333 });
@@ -312,66 +332,82 @@ MochaWeb.testOnly(function() {
     });
 
     describe("advancing extra participants", function() {
-      let firstRound333, secondRound333;
-      let registration1, registration2;
-      let result1, result2;
+      let rounds;
+      let registration1, result1;
+      let registration2, result2;
       let secondResult1;
       beforeEach(function() {
         Meteor.call('addRound', comp1Id, '333');
         Meteor.call('addRound', comp1Id, '333');
-        firstRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 1});
-        secondRound333 = Rounds.findOne({competitionId: comp1Id, eventCode: '333', nthRound: 2});
+        rounds = Rounds.find({competitionId: comp1Id, eventCode: '333'}, { sort: { nthRound: 1 } }).fetch();
+        chai.expect(rounds.length).to.equal(2);
 
-        registration1 = make(Registrations, {competitionId: comp1Id});
-        result1 = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: firstRound333._id, registrationId: registration1._id, position: 1 }));
+        let createRegistration = function({checkedIn}) {
+          let registration = Registrations.findOne(Meteor.call('addEditRegistration', build(Registrations, {competitionId: comp1Id, registeredEvents: ['333']})));
+          if(checkedIn) {
+            Meteor.call('checkInRegistration', registration._id, true);
+          }
+          let result = Results.findOne({ roundId: rounds[0]._id, registrationId: registration._id });
+          return [ registration, result ];
+        };
 
-        registration2 = make(Registrations, {competitionId: comp1Id});
-        result2 = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: firstRound333._id, registrationId: registration2._id, position: 2 }));
+        [registration1, result1] = createRegistration({ checkedIn: true });
+        fillResultWithSolve(result1, { millis: 3333 });
 
-        Meteor.call('advanceParticipantsFromRound', 1, firstRound333._id);
-        secondResult1 = Results.findOne({ roundId: secondRound333._id, registrationId: registration1._id });
-        chai.expect(Results.find({ roundId: secondRound333._id }).count()).to.equal(1);
-        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
+        [registration2, result2] = createRegistration({ checkedIn: true });
+        fillResultWithSolve(result2, { millis: 4444 });
+
+        let [uncheckedInRegistration, hiddenResult] = createRegistration({ checkedIn: false });
+        let [registration4, incompleteResult4] = createRegistration({ checkedIn: true });
+
+        Meteor.call('advanceParticipantsFromRound', 1, rounds[0]._id);
+        secondResult1 = Results.findOne({ roundId: rounds[1]._id, registrationId: registration1._id });
+        chai.expect(Results.find({ roundId: rounds[1]._id }).count()).to.equal(1);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
       });
 
       it("getBestNotAdvancedResultFromRoundPreviousToThisOne", function() {
-        let result = Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', secondRound333._id);
+        let result = Meteor.call('getBestNotAdvancedResultFromRoundPreviousToThisOne', rounds[1]._id);
         chai.expect(result._id).to.equal(result2._id);
       });
 
       it("setResultNoShow", function() {
         Meteor.call('setResultNoShow', secondResult1._id, true);
         chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(true);
-        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(0);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(0);
 
         Meteor.call('setResultNoShow', secondResult1._id, false);
         chai.expect(Results.findOne(secondResult1._id).noShow).to.equal(false);
-        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
       });
 
       it("advanceResultIdFromRoundPreviousToThisOne", function() {
-        chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.not.exist;
-        chai.expect(Results.findOne({ roundId: firstRound333._id, registrationId: registration2._id }).advanced).to.equal(false);
-        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(1);
+        chai.expect(Results.findOne({ roundId: rounds[1]._id, registrationId: registration2._id })).to.not.exist;
+        chai.expect(Results.findOne({ roundId: rounds[0]._id, registrationId: registration2._id }).advanced).to.equal(false);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(1);
 
-        Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
-        chai.expect(Results.findOne({ roundId: secondRound333._id, registrationId: registration2._id })).to.exist;
-        chai.expect(Results.findOne({ roundId: firstRound333._id, registrationId: registration2._id }).advanced).to.equal(true);
-        chai.expect(Rounds.findOne(secondRound333._id).size).to.equal(2);
+        Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, rounds[1]._id);
+        chai.expect(Results.findOne({ roundId: rounds[1]._id, registrationId: registration2._id })).to.exist;
+        chai.expect(Results.findOne({ roundId: rounds[0]._id, registrationId: registration2._id }).advanced).to.equal(true);
+        chai.expect(Rounds.findOne(rounds[1]._id).size).to.equal(2);
 
         // Trying to advance someone who is already advanced should not work.
         chai.expect(function() {
-          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, secondRound333._id);
+          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', result2._id, rounds[1]._id);
         }).to.throw(Meteor.Error);
       });
 
       it("advanceResultIdFromRoundPreviousToThisOne requires result from previous round ", function() {
         let randomResult = Results.findOne(Results.insert({ competitionId: comp1Id, roundId: "FOO", registrationId: registration1._id, position: 1 }));
         chai.expect(function() {
-          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', randomResult._id, secondRound333._id);
+          Meteor.call('advanceResultIdFromRoundPreviousToThisOne', randomResult._id, rounds[1]._id);
         }).to.throw(Meteor.Error);
       });
     });
 
   });
 });
+
+let fillResultWithSolve = function(result, solveTime) {
+  _.range(5).forEach(i => result.setSolveTime(i, solveTime));
+};
