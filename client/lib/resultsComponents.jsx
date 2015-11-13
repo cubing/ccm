@@ -274,7 +274,7 @@ ResultsList = React.createClass({
     let maxAllowedToAdvanceCount= this.props.round ? this.props.round.getMaxAllowedToAdvanceCount() : null;
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
-        <table className="table table-striped table-hover table-results" ref="resultsTable">
+        <table className="table table-striped table-hover table-results table-condensed" ref="resultsTable">
           <thead>
             <tr>
               <th></th>
