@@ -373,9 +373,7 @@ Template.modalHardCutoff.events({
     let $inputHardCutoff = template.$('[name="inputHardCutoff"]');
     let time = $inputHardCutoff.jChester('getSolveTime');
 
-    Rounds.update(
-      _this._id,
-    {
+    Rounds.update(this._id, {
       $set: {
         // Explicitly listing all the fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202
