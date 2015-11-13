@@ -25,6 +25,7 @@ MochaWeb.testOnly(function() {
 
     it('uploadCompetition', function() {
       let uploadCompetition = Meteor.server.method_handlers.uploadCompetition;
+      let userName = Meteor.users.findOne(siteAdminUserId).profile.name;
       let wcaCompetition = {
         "formatVersion": "WCA Competition 0.2",
         "competitionId": "PleaseBeQuiet2015",
@@ -41,7 +42,19 @@ MochaWeb.testOnly(function() {
             "name": "Patricia Li",
             "wcaId": "2009LIPA01",
             "dob": "2015-09-04"
-          }
+          },
+          {
+            "id": "3",
+            "name": userName, // This is the same person who is about to create this competition (us!)
+            "countryId": "US",
+            "dob": "2014-10-12"
+          },
+          {
+            "id": "4",
+            "name": userName, // duplicate name!
+            "countryId": "US",
+            "dob": "2014-10-12"
+          },
         ],
         "events": [
           {

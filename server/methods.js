@@ -212,20 +212,17 @@ Meteor.methods({
     }
 
     let registrationByWcaJsonId = {};
-    let uniqueNames = {};
+    // When creating the competition, a Registration was created. Populate our
+    // uniqueNames object with the contents of the Registrations that already exist.
+    let registrations = Registrations.find({ competitionId: competition._id }).fetch();
+    let uniqueNames = _.indexBy(registrations, 'uniqueName');
     wcaCompetition.persons.forEach(wcaPerson => {
       // Pick a uniqueName for this participant
       let suffix = 0;
-      let uniqueName;
-      let uniqueNameTaken; // grrr...jshint
-      do {
-        suffix++;
-        uniqueName = wcaPerson.name;
-        if(suffix > 1) {
-          uniqueName += " " + suffix;
-        }
-        uniqueNameTaken = !!uniqueNames[uniqueName];
-      } while(uniqueNameTaken);
+      let uniqueName = wcaPerson.name;
+      while(uniqueNames[uniqueName]) {
+        uniqueName = wcaPerson.name + " " + (++suffix);
+      }
       assert(!uniqueNames[uniqueName]);
       uniqueNames[uniqueName] = true;
 
