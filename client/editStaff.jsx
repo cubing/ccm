@@ -47,7 +47,7 @@ Template.modalAddStaff.events({
   'click button[type="submit"]': function(e, template) {
     let $input = template.$('input.select-user');
     let selectize = $input[0].selectize;
-    
+
     let wcaUserIds = selectize.getValue().split(",");
     let data = Template.parentData(1);
     Meteor.call('addStaffMembers', data.competitionId, wcaUserIds, function(error) {
@@ -115,7 +115,7 @@ let StaffList = React.createClass({
   },
 
   render() {
-    classesForRole = (role, staff=null) => {
+    let classesForRole = (role, staff=null) => {
       let classes = {
         'staff-role': true,
       };
@@ -145,6 +145,16 @@ let StaffList = React.createClass({
                 'btn-xs': true,
                 'btn-danger': staff.actuallyHasStaffRoles(),
               });
+              let removeFromStaffButton;
+              if(staff.userId === Meteor.userId()) {
+                removeFromStaffButton = null;
+              } else {
+                removeFromStaffButton = (
+                  <button type="button" className={removeStaffButtonClasses} onClick={this.removeStaffMember.bind(null, staff)}>
+                    <span className="fa fa-remove"></span> Remove from staff
+                  </button>
+                );
+              }
               return (
                 <tr key={staff._id}>
                   <td>{staff.uniqueName}</td>
@@ -167,9 +177,7 @@ let StaffList = React.createClass({
                     );
                   })}
                   <td>
-                    <button type="button" className={removeStaffButtonClasses} onClick={this.removeStaffMember.bind(null, staff)}>
-                      <span className="fa fa-remove"></span> Remove from staff
-                    </button>
+                    {removeFromStaffButton}
                   </td>
                   <td></td>
                 </tr>
