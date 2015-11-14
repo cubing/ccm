@@ -432,7 +432,7 @@ Meteor.methods({
     // can call other methods while this one runs.
     this.unblock();
 
-    // Do all the api queries first as a way of validing the WCA user ids we've
+    // Do all the api queries first as a way of validating the WCA user ids we've
     // been given.
     let wcaUserData = wcaUserIds.map(wca.getUserData);
 
@@ -454,12 +454,31 @@ Meteor.methods({
 
       // We've got the user, now check if there's a registration for them for
       // this competition.
+      // First search by userId.
       let registration = Registrations.findOne({
         competitionId: competitionId,
         userId: user._id,
       });
+      // Then search by WCA id.
+      if(!registration) {
+        registration = Registrations.findOne({
+          competitionId: competitionId,
+          wcaId: user.profile.wcaId,
+        });
+      }
+      // Then search by uniqueName.
+      if(!registration) {
+        registration = Registrations.findOne({
+          competitionId: competitionId,
+          uniqueName: user.profile.name,
+        });
+      }
+      // Else, give up and create a Registration for this user.
       if(!registration) {
         registration = Registrations.findOne(Registrations.insert(generateCompetitionRegistrationForUser(competitionId, user)));
+      }
+      if(!registration.userId) {
+        Registrations.update(registration._id, { $set: { userId: user._id } });
       }
       if(!registration.roles) {
         Registrations.update(registration._id, { $set: { roles: DEFAULT_STAFF_ROLES } });

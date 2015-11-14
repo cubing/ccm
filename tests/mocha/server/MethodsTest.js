@@ -118,6 +118,43 @@ MochaWeb.testOnly(function() {
       chai.expect(RoundProgresses.find().count()).to.equal(1);
     });
 
+    it('addStaffMembers', function() {
+      // Create a decoy registration with the new staff member's name.
+      // We should find registrations by WCA id first, before falling back to name.
+      let decoyRegistration = Registrations.findOne(Meteor.call('addEditRegistration', build(Registrations, {
+        competitionId: comp1Id,
+        uniqueName: "Jeremy Fleischman",
+        registeredEvents: [],
+      })));
+      let registration = Registrations.findOne(Meteor.call('addEditRegistration', build(Registrations, {
+        competitionId: comp1Id,
+        uniqueName: "Jeremy Fleischman 2",
+        wcaId: "2005FLEI01",
+        registeredEvents: [],
+      })));
+
+      stubs.create('fakeWcaGetUserData', wca, 'getUserData');
+      stubs.fakeWcaGetUserData.returns({
+        id: 1,
+        name: "Jeremy Fleischman",
+        email: "jay@jfly.com",
+        wca_id: "2005FLEI01",
+        dob: "1990-02-02",
+        gender: "m",
+        country_iso2: "US",
+      });
+
+      chai.expect(registration.roles).to.equal(undefined);
+      chai.expect(registration.userId).to.equal(undefined);
+      Meteor.call('addStaffMembers', comp1Id, ['2005FLEI01']);
+      // There was no user with WCA id 2005FLEI01, so check that we created one.
+      let user = Meteor.users.findOne({ 'profile.wcaId': '2005FLEI01' });
+      chai.expect(user).to.exist;
+      registration = Registrations.findOne(registration._id);
+      chai.expect(Object.keys(registration.roles).sort()).to.deep.equal(['dataEntry', 'viewScrambles']);
+      chai.expect(registration.userId).to.equal(user._id);
+    });
+
     it('addRound and removeLastRound', function() {
       Meteor.call('addRound', comp1Id, '333');
       Meteor.call('addRound', comp1Id, '444'); // decoy
