@@ -118,7 +118,7 @@ Template.editEvents.helpers({
     return _.contains(allowedSoftCutoffFormatCodes, this.softCutoff.formatCode);
   },
   isFirstRound: function() {
-    return this.nthRound === 0;
+    return this.nthRound === 1;
   },
   participantsRegisteredForEventCount: function() {
     let participantsCount = Registrations.find({
