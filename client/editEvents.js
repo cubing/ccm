@@ -123,7 +123,7 @@ Template.editEvents.helpers({
   participantsRegisteredForEventCount: function() {
     let participantsCount = Registrations.find({
       competitionId: this.competitionId,
-      events: this.eventCode,
+      registeredEvents: this.eventCode,
     }, {
       fields: { _id: 1 }
     }).count();
