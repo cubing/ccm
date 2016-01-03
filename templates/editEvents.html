@@ -102,19 +102,20 @@
 
                             {{! ============= Progress ============= }}
                             <td class="text-center">
-                              {{#if roundProgress.total}}
-                                <a href="{{pathFor 'dataEntry' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
-                                   data-toggle="tooltip" data-placement="top" data-original-title="Go to data entry" data-container="body"
-                                >
-                                  <div class="progress">
-                                    <div class="progress-bar {{progressClasses}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundProgress}}%;">
-                                      {{toAtMostFixed roundProgress.done 1}}/{{roundProgress.total}}
-                                    </div>
-                                  </div>
-                                </a>
+                              {{#if showRegistrationCount}}
+                                {{participantsRegisteredForEventCount}} registered,
+                                {{roundProgress.total}} checked in
                               {{else}}
-                                {{#if isFirstRound}}
-                                  {{participantsRegisteredForEventCount}} registered
+                                {{#if roundProgress.total}}
+                                  <a href="{{pathFor 'dataEntry' competitionUrlId=../../competitionUrlId eventCode=eventCode nthRound=nthRound}}"
+                                     data-toggle="tooltip" data-placement="top" data-original-title="Go to data entry" data-container="body"
+                                  >
+                                    <div class="progress">
+                                      <div class="progress-bar {{progressClasses}}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{percentage roundProgress}}%;">
+                                        {{toAtMostFixed roundProgress.done 1}}/{{roundProgress.total}}
+                                      </div>
+                                    </div>
+                                  </a>
                                 {{else}}
                                   <button type="button" name="buttonSetRoundSize"
                                           class="btn {{#if roundSizeWarning}}btn-warning{{else}}btn-default{{/if}} btn-xs btn-block"

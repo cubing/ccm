@@ -159,6 +159,10 @@ Template.editEvents.helpers({
     let progress = RoundProgresses.findOne({roundId: lastRound._id});
     return progress.total;
   },
+  showRegistrationCount: function() {
+    let firstRound = this.nthRound === 1;
+    return firstRound && this.isUnstarted();
+  },
   canRemoveRound: function() {
     let competition = Competitions.findOne(this.competitionId);
     let lastRound = competition.getLastRoundOfEvent(this.eventCode);
