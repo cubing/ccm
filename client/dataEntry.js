@@ -282,6 +282,17 @@ function getFocusables() {
   return $(".results-sidebar").find('#inputParticipantName, .jChester, #save-button');
 }
 
+function focusNextFocusable($currentElement, previous) {
+  var $focusables = getFocusables();
+  var index = $focusables.index($currentElement);
+  if(previous) {
+    index--;
+  } else {
+    index++;
+  }
+  $focusables.eq((index + $focusables.length) % $focusables.length).focus();
+}
+
 Template.roundDataEntry.events({
   'click #selectableResults tr.result': function(e, template) {
     let $row = $(e.currentTarget);
@@ -399,32 +410,17 @@ Template.roundDataEntry.events({
         return;
       }
 
-      let $focusables = getFocusables();
-      if(e.shiftKey) {
-        $focusables.eq($focusables.index($jChester)-1).focus();
-      } else {
-        $focusables.eq($focusables.index($jChester)+1).focus();
-      }
+      focusNextFocusable($jChester, e.shiftKey);
     }
   },
   'keyup #inputParticipantName': function(e) {
     if(e.which == 13) { // enter
-      if(e.shiftkey) {
-        $('#save-button').focus();
-      } else {
-        let $focusables = getFocusables();
-        $focusables.eq($focusables.index($('#inputParticipantName'))+1).focus();
-      }
+      focusNextFocusable($(e.currentTarget), e.shiftKey);
     }
   },
   'keyup #save-button': function(e) {
     if(e.which == 13) { // enter
-      if(e.shiftKey) {
-        let $focusables = getFocusables();
-        $focusables.eq($focusables.index($('#save-button'))-1).focus();
-      } else {
-        $('#inputParticipantName').focus();
-      }
+      focusNextFocusable($(e.currentTarget), e.shiftKey);
     }
   },
   'focus #inputParticipantName': function(e) {
