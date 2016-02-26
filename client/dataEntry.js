@@ -139,6 +139,24 @@ function getSolveWarnings(resultId, solveIndex) {
   return warnings;
 }
 
+function updateWarningContents () {
+  let data = Template.currentData();
+  let selectedResultId = selectedResultIdReact.get();
+  let warnings = getSolveWarnings(selectedResultId, data.index);
+  let $warningIcon = template.$('.solve-time-warning-icon');
+  let popover = $warningIcon.popover().data('bs.popover');
+  popover.options.content = warnings.join("<br>");
+
+  let $focusedJChester = $(document.activeElement).closest('.jChester');
+  let $jChester = template.find(".jChester");
+  if(warnings.length > 0 && $focusedJChester[0] == $jChester[0]) {
+    // Only show warnings if there are warnings and this jChester is focused.
+    $warningIcon.popover('show');
+  } else {
+    $warningIcon.popover('hide');
+  }
+}
+
 Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
@@ -205,29 +223,6 @@ Template.solveTimeEditor.helpers({
   },
 });
 
-Template.solveTimeEditor.rendered = function() {
-  let template = this;
-
-  // Keep warning popup contents up to date.
-  template.autorun(function() {
-    let data = Template.currentData();
-    let selectedResultId = selectedResultIdReact.get();
-    let warnings = getSolveWarnings(selectedResultId, data.index);
-    let $warningIcon = template.$('.solve-time-warning-icon');
-    let popover = $warningIcon.popover().data('bs.popover');
-    popover.options.content = warnings.join("<br>");
-
-    let $focusedJChester = $(document.activeElement).closest('.jChester');
-    let $jChester = template.find(".jChester");
-    if(warnings.length > 0 && $focusedJChester[0] == $jChester[0]) {
-      // Only show warnings if there are warnings and this jChester is focused.
-      $warningIcon.popover('show');
-    } else {
-      $warningIcon.popover('hide');
-    }
-  });
-};
-
 function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   jChesterToFocusIndex = jChesterToFocusIndex || 0;
 
@@ -268,10 +263,6 @@ function jChesterSave(solveIndex, $jChester, doneCallback) {
   let $tr = $jChester.closest('tr');
   let validationErrors = $jChester.jChester('getValidationErrors');
   if(validationErrors.length) {
-    return;
-  }
-  if(!$tr.hasClass("unsaved")) {
-    // Don't bother saving unless something has actually changed.
     return;
   }
   let solveTime = $jChester.jChester('getSolveTime');
@@ -406,25 +397,17 @@ Template.roundDataEntry.events({
     // We save when the user leaves the currently focused jChester.
     let $jChester = $(e.currentTarget);
 
-    let focusNewJChester = function() {
-      Tracker.afterFlush(function() {
-        let $jChesterNew = $(document.activeElement).closest('.jChester');
-        if($jChesterNew[0] !== $jChester[0]) {
-          $jChesterNew.focus();
-          let $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
-          $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
-        }
-      });
-    };
+    Tracker.afterFlush(function() {
+      let $jChesterNew = $(document.activeElement).closest('.jChester');
+      if($jChesterNew[0] !== $jChester[0]) {
+        $jChesterNew.focus();
+        let $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
+        $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
+      }
+    });
 
-    // Focus the new jChester. If we do this immediately, document.activeElement is still
-    // the body, which isn't useful.
-    focusNewJChester();
+    updateWarningContents();
 
-    // Save the time. Note that the impending does a Meteor.call which will
-    // deselect the text we just tried to select above (hand wavy explanation, sorry).
-    // It works to wait for the server to respond and then focus again.
-    jChesterSave(this.index, $jChester, focusNewJChester);
   },
   'keydown .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) { // enter
@@ -469,4 +452,13 @@ Template.roundDataEntry.events({
     let $focusables = $sidebar.find('#inputParticipantName, .jChester');
     $focusables.first().focus();
   },
+  'click #save-button': function(e) {
+    let selectedResultId = selectedResultIdReact.get();
+    let result = Results.findOne(selectedResultId, { fields: { solves: 1, roundId: 1, registrationId: 1 } });
+
+    $('.jChester').toArray().forEach(function(jChester, index) {
+      let $jChester = $(jChester);
+      jChesterSave(index, $jChester);
+    });
+  }
 });
