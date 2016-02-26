@@ -78,6 +78,11 @@ function getRoundsWithoutScrambles(competitionId) {
     competitionId: competitionId,
     _id: { $nin: _.pluck(groups, "roundId") },
     eventCode: { $exists: true },
+  }, {
+    sort: {
+      eventCode: 1,
+      nthRound: 1,
+    }
   }).fetch();
   return rounds;
 }
@@ -86,7 +91,7 @@ function findRoundForSheet(competitionId, sheet) {
   let round = Rounds.findOne({
     competitionId: competitionId,
     eventCode: sheet.event,
-    nthRound: (sheet.round - 1)
+    nthRound: sheet.round,
   });
   return round;
 }
@@ -129,7 +134,7 @@ Template.uploadScrambles.events({
     let files = Array.from(fileInput.files);
     let scrambleSets = [];
 
-    files.forEach(file, index => {
+    files.forEach((file, index) => {
       let scrambleSet = {
         index: index,
         file: file,
@@ -261,10 +266,9 @@ Template.uploadScrambles.helpers({
     roundsWithoutScrambles.forEach(round => {
       let event = {
         eventID: round.eventCode,
-        round: 1 + round.nthRound,
-        //groupCount: '1',
-        //scrambleCount: '5',
-        //extraScrambleCount: '2'
+        round: round.nthRound,
+        groupCount: '1',
+        scrambleCount: round.format().count,
       };
       events.push(event);
     });
