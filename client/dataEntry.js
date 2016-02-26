@@ -409,7 +409,7 @@ Template.roundDataEntry.events({
   },
   'keydown #inputParticipantName': function(e) {
     if(e.which == 13) { // enter
-      if (e.shiftkey) {
+      if(e.shiftkey) {
         $('#save-button').focus();
       } else {
         let $focusables = getFocusables();
@@ -419,7 +419,7 @@ Template.roundDataEntry.events({
   },
   'keydown #save-button': function(e) {
     if(e.which == 13) { // enter
-      if (e.shiftkey) {
+      if(e.shiftkey) {
         let $focusables = getFocusables();
         $focusables.eq($focusables.index($('#save-button'))-1).focus();
       } else {
