@@ -1,5 +1,4 @@
 let scrambleSetsReact = new ReactiveVar(null);
-let tnoodleStatusReact = new ReactiveVar(null);
 
 function getWarningForSheet(competitionId, sheet) {
   let round = findRoundForSheet(competitionId, sheet);
@@ -46,31 +45,6 @@ function getUploadButtonState(competitionId) {
 }
 
 let TNOODLE_ROOT_URL = "http://localhost:2014";
-let TNOODLE_VERSION_URL = TNOODLE_ROOT_URL + "/version.json";
-let TNOODLE_VERSION_POLL_FREQUENCY_MILLIS = 1000;
-
-let tnoodleStatusPoller = null;
-function startPollingTNoodleStatus() {
-  if(tnoodleStatusPoller === null) {
-    tnoodleStatusPoller = Meteor.defer(pollTNoodleStatus);
-  }
-}
-function stopPollingTNoodleStatus() {
-  if(tnoodleStatusPoller !== null) {
-    clearTimeout(tnoodleStatusPoller);
-    tnoodleStatusPoller = null;
-  }
-}
-function pollTNoodleStatus() {
-  $.ajax({
-    url: TNOODLE_VERSION_URL
-  }).done(function(data) {
-    tnoodleStatusReact.set(data);
-  }).fail(function() {
-    tnoodleStatusReact.set(null);
-  });
-  tnoodleStatusPoller = setTimeout(pollTNoodleStatus, TNOODLE_VERSION_POLL_FREQUENCY_MILLIS);
-}
 
 function getRoundsWithoutScrambles(competitionId) {
   let groups = Groups.find({ competitionId: competitionId }, { fields: { roundId: 1 } }).fetch();
@@ -118,14 +92,6 @@ function extractJsonFromZip(filename, zipId, pw, cb) {
     }
   });
 }
-
-Template.uploadScrambles.created = function() {
-  startPollingTNoodleStatus();
-};
-
-Template.uploadScrambles.destroyed = function() {
-  stopPollingTNoodleStatus();
-};
 
 Template.uploadScrambles.events({
   'change input[type="file"]': function(e, t) {
@@ -243,18 +209,6 @@ Template.uploadScrambles.events({
 });
 
 Template.uploadScrambles.helpers({
-  tnoodleVersionUrl: TNOODLE_VERSION_URL,
-  tnoodleStatus: function() {
-    return tnoodleStatusReact.get();
-  },
-  tnoodleRunningVersionAllowed: function() {
-    let tnoodleStatus = tnoodleStatusReact.get();
-    if(!tnoodleStatus) {
-      return false;
-    }
-    return _.contains(tnoodleStatus.allowed, tnoodleStatus.running_version);
-  },
-
   roundsWithoutScrambles: function() {
     let roundsWithoutScrambles = getRoundsWithoutScrambles(this.competitionId);
     return roundsWithoutScrambles;

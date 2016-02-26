@@ -3,27 +3,6 @@
   <div class="container">
 
     <div>
-      <p>
-        {{#if tnoodleStatus}}
-          {{#if tnoodleRunningVersionAllowed}}
-            Detected up to date
-            <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
-          {{else}}
-            Detected unofficial
-            <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleStatus.running_version}}</a>.
-            Please download the latest official version of TNoodle
-            <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">here</a>
-            and start it.
-          {{/if}}
-        {{else}}
-          Could not find TNoodle running at
-          <a rel="external" target="_blank" href="{{tnoodleVersionUrl}}">{{tnoodleVersionUrl}}</a>.
-          Make sure you've downloaded the latest version of
-          <a rel="external" target="_blank" href="https://www.worldcubeassociation.org/regulations/scrambles/">TNoodle</a>
-          and started it.
-        {{/if}}
-      </p>
-
       <div class="well">
         {{#if roundsWithoutScrambles.length}}
           <p>
