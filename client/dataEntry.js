@@ -139,24 +139,6 @@ function getSolveWarnings(resultId, solveIndex) {
   return warnings;
 }
 
-function updateWarningContents () {
-  let data = Template.currentData();
-  let selectedResultId = selectedResultIdReact.get();
-  let warnings = getSolveWarnings(selectedResultId, data.index);
-  let $warningIcon = template.$('.solve-time-warning-icon');
-  let popover = $warningIcon.popover().data('bs.popover');
-  popover.options.content = warnings.join("<br>");
-
-  let $focusedJChester = $(document.activeElement).closest('.jChester');
-  let $jChester = template.find(".jChester");
-  if(warnings.length > 0 && $focusedJChester[0] == $jChester[0]) {
-    // Only show warnings if there are warnings and this jChester is focused.
-    $warningIcon.popover('show');
-  } else {
-    $warningIcon.popover('hide');
-  }
-}
-
 Template.roundDataEntry.helpers({
   selectedResultId: function() {
     return selectedResultIdReact.get();
@@ -279,8 +261,19 @@ function jChesterSave(solveIndex, $jChester, doneCallback) {
     } else {
       console.error("Meteor.call() error: " + err);
     }
-    if(doneCallback) {
-      doneCallback(err);
+
+    // Eventually move out to a function that updates warning icon
+    let selectedResultId = selectedResultIdReact.get();
+    let warnings = getSolveWarnings(selectedResultId, solveIndex);
+    let $warningIcon = $jChester.closest('tr').find('.solve-time-warning-icon');
+    let popover = $warningIcon.popover().data('bs.popover');
+    popover.options.content = warnings.join("<br>");
+
+    if(warnings.length > 0) {
+      // Only show warnings if there are warnings and this jChester is focused.
+      $warningIcon.popover('show');
+    } else {
+      $warningIcon.popover('hide');
     }
   });
 }
@@ -394,20 +387,14 @@ Template.roundDataEntry.events({
     }, 100); // Nasty hack to make popup show up, sometimes it doesn't show up.
   },
   'blur .jChester[name="inputSolve"]': function(e) {
-    // We save when the user leaves the currently focused jChester.
     let $jChester = $(e.currentTarget);
 
     Tracker.afterFlush(function() {
       let $jChesterNew = $(document.activeElement).closest('.jChester');
       if($jChesterNew[0] !== $jChester[0]) {
         $jChesterNew.focus();
-        let $warningIconNew = $jChesterNew.parents("tr").find('i[data-toggle="popover"]');
-        $('[data-toggle="popover"]').not($warningIconNew).popover('hide');
       }
     });
-
-    updateWarningContents();
-
   },
   'keydown .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) { // enter
