@@ -386,16 +386,6 @@ Template.roundDataEntry.events({
       $warningIcon.popover('show');
     }, 100); // Nasty hack to make popup show up, sometimes it doesn't show up.
   },
-  'blur .jChester[name="inputSolve"]': function(e) {
-    let $jChester = $(e.currentTarget);
-
-    Tracker.afterFlush(function() {
-      let $jChesterNew = $(document.activeElement).closest('.jChester');
-      if($jChesterNew[0] !== $jChester[0]) {
-        $jChesterNew.focus();
-      }
-    });
-  },
   'keydown .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) { // enter
       let $jChester = $(e.currentTarget);
