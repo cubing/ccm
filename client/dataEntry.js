@@ -263,8 +263,8 @@ function jChesterSave(solveIndex, $jChester, doneCallback) {
     }
 
     // Eventually move out to a function that updates warning icon
-    let selectedResultId = selectedResultIdReact.get();
-    let warnings = getSolveWarnings(selectedResultId, solveIndex);
+    // https://github.com/cubing/ccm/issues/284
+    let warnings = getSolveWarnings(resultId, solveIndex);
     let $warningIcon = $jChester.closest('tr').find('.solve-time-warning-icon');
     let popover = $warningIcon.popover().data('bs.popover');
     popover.options.content = warnings.join("<br>");
@@ -276,6 +276,10 @@ function jChesterSave(solveIndex, $jChester, doneCallback) {
       $warningIcon.popover('hide');
     }
   });
+}
+
+function getFocusables() {
+  return $(".results-sidebar").find('#inputParticipantName, .jChester, #save-button');
 }
 
 Template.roundDataEntry.events({
@@ -395,22 +399,31 @@ Template.roundDataEntry.events({
         return;
       }
 
-      let $sidebar = $jChester.closest(".results-sidebar");
-      let $focusables = $sidebar.find('#inputParticipantName, .jChester');
-      let $next = $jChester.closest("tr").next("tr").find(".jChester");
-      if($next.length === 0) {
-        $next = $focusables.first();
-      }
-      let $prev = $jChester.closest("tr").prev("tr").find(".jChester");
-      if($prev.length === 0) {
-        $prev = $focusables.first();
-      }
-      // Note that we don't actually save here. That's because the following
-      // will cause a blur, which will cause the actual save.
+      let $focusables = getFocusables();
       if(e.shiftKey) {
-        $prev.focus();
+        $focusables.eq($focusables.index($jChester)-1).focus();
       } else {
-        $next.focus();
+        $focusables.eq($focusables.index($jChester)+1).focus();
+      }
+    }
+  },
+  'keydown #inputParticipantName': function(e) {
+    if(e.which == 13) { // enter
+      if (e.shiftkey) {
+        $('#save-button').focus();
+      } else {
+        let $focusables = getFocusables();
+        $focusables.eq($focusables.index($('#inputParticipantName'))+1).focus();
+      }
+    }
+  },
+  'keydown #save-button': function(e) {
+    if(e.which == 13) { // enter
+      if (e.shiftkey) {
+        let $focusables = getFocusables();
+        $focusables.eq($focusables.index($('#save-button'))-1).focus();
+      } else {
+        $('#inputParticipantName').focus();
       }
     }
   },
@@ -418,16 +431,10 @@ Template.roundDataEntry.events({
     e.currentTarget.select();
   },
   'focus .focusguard-top': function(e) {
-    let $target = $(e.currentTarget);
-    let $sidebar = $target.closest(".results-sidebar");
-    let $focusables = $sidebar.find('#inputParticipantName, .jChester');
-    $focusables.last().focus();
+    getFocusables().last().focus();
   },
   'focus .focusguard-bottom': function(e) {
-    let $target = $(e.currentTarget);
-    let $sidebar = $target.closest(".results-sidebar");
-    let $focusables = $sidebar.find('#inputParticipantName, .jChester');
-    $focusables.first().focus();
+    getFocusables().first().focus();
   },
   'click #save-button': function(e) {
     let selectedResultId = selectedResultIdReact.get();
