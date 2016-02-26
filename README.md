@@ -7,7 +7,7 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 ### Optional setup (useful for development)
 - Install nodejs.
 - `(cd tests; npm install)` - Install linting tools and setup pre-commit hook.
-- Note: if not using npm 3, dev dependencies will not install. Instead, do `(cd tests; npm install --save-dev)` to install. 
+  - Note: if not using npm 3, dev dependencies will not install. Instead, do `(cd tests; npm install --save-dev)` to install.
 
 ## To run
 - `meteor`

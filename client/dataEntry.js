@@ -365,7 +365,7 @@ Template.roundDataEntry.events({
   'typeahead:autocompleted .typeahead': function(e, template, suggestion, datasetName) {
     // Do nothing here. Wait for the user to actually select a result.
   },
-  'keydown .typeahead': function(e, template) {
+  'keyup .typeahead': function(e, template) {
     if(e.which == 13) {
       userResultMaybeSelected(template, this.roundId, e.shiftKey ? -1 : 0);
     }
@@ -390,7 +390,7 @@ Template.roundDataEntry.events({
       $warningIcon.popover('show');
     }, 100); // Nasty hack to make popup show up, sometimes it doesn't show up.
   },
-  'keydown .jChester[name="inputSolve"]': function(e) {
+  'keyup .jChester[name="inputSolve"]': function(e) {
     if(e.which == 13) { // enter
       let $jChester = $(e.currentTarget);
 
@@ -407,7 +407,7 @@ Template.roundDataEntry.events({
       }
     }
   },
-  'keydown #inputParticipantName': function(e) {
+  'keyup #inputParticipantName': function(e) {
     if(e.which == 13) { // enter
       if(e.shiftkey) {
         $('#save-button').focus();
@@ -417,9 +417,9 @@ Template.roundDataEntry.events({
       }
     }
   },
-  'keydown #save-button': function(e) {
+  'keyup #save-button': function(e) {
     if(e.which == 13) { // enter
-      if(e.shiftkey) {
+      if(e.shiftKey) {
         let $focusables = getFocusables();
         $focusables.eq($focusables.index($('#save-button'))-1).focus();
       } else {
