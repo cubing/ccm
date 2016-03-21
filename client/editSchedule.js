@@ -1,13 +1,5 @@
 let eventToEditReact = new ReactiveVar(null);
 
-function activateDraggable() {
-  $('.draggable').draggable({
-    zIndex: 999,
-    revert: true,
-    revertDuration: 0,
-  });
-}
-
 Template.editSchedule.helpers({
   competition: function() {
     return Competitions.findOne(this.competitionId);
@@ -19,10 +11,30 @@ Template.editSchedule.helpers({
   eventToEdit: function() {
     return eventToEditReact.get();
   },
-  draggability: function() {
-    return this.isScheduled() ? "undraggable" : "draggable";
-  },
 });
+
+
+var DRAGGABLE_OPTS = {
+  zIndex: 999,
+  revert: true,
+  revertDuration: 0,
+};
+
+Template.maybeDraggableRound.rendered = function() {
+  let template = this;
+  template.autorun(function() {
+    let round = Template.currentData();
+    let $round = template.$('.fc-event');
+    if(round.isScheduled()) {
+      let hasBeenMadeDraggable = $round.draggable( "instance" );
+      if(hasBeenMadeDraggable) {
+        $round.draggable("destroy");
+      }
+    } else {
+      $round.draggable(DRAGGABLE_OPTS);
+    }
+  });
+};
 
 Template.editSchedule.events({
   'hidden.bs.modal #editEventModal': function(e, t) {
@@ -33,7 +45,7 @@ Template.editSchedule.events({
 Template.editSchedule.rendered = function() {
   let template = this;
   setupCompetitionCalendar(template, template.$('#calendar'), template.$('#editEventModal'));
-  activateDraggable();
+  template.$('#new-calender-entry').draggable(DRAGGABLE_OPTS);
 };
 
 // This is global so competitionSchedule.js can use it
@@ -187,7 +199,6 @@ Template.editEventModal.events({
       if(!err) {
         template.$('#deleteEventConfirmModal').modal('hide');
         template.$('#editEventModal').modal('hide');
-        activateDraggable();
       } else {
         console.error("Meteor.call() error: " + err);
       }

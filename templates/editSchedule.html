@@ -13,9 +13,9 @@
 
         <h3>Drag to schedule ⇒</h3>
         <div id="sorted-rounds">
-          <div class="fc-event draggable" id="new-calender-entry">Add new calendar entry</div>
+          <div class="fc-event" id="new-calender-entry">Add new calendar entry</div>
           {{#each sortedRounds}}
-            <div class="fc-event {{ draggability }}" data-round-id="{{ _id }}">{{ displayTitle }}</div>
+            {{> maybeDraggableRound}}
           {{/each}}
         </div>
       </div>
@@ -29,6 +29,10 @@
     </div>
 
   </div>
+</template>
+
+<template name="maybeDraggableRound">
+  <div class="fc-event" data-round-id="{{ _id }}">{{ displayTitle }}</div>
 </template>
 
 <template name="editEventModal">
