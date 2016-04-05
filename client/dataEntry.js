@@ -124,9 +124,9 @@ function getSolveWarnings(resultId, solveIndex) {
   let result = Results.findOne(resultId);
   let round = Rounds.findOne(result.roundId);
   let solveTime = result.solves[solveIndex];
-  let violatesHardCutoff = round.hardCutoff && solveTime && !jChester.solveTimeIsDN(solveTime) && solveTime.millis > round.hardCutoff.time.millis;
-  if(violatesHardCutoff) {
-    warnings.push('Greater than hard cutoff');
+  let violatesTimeLimit = round.timeLimit && solveTime && !jChester.solveTimeIsDN(solveTime) && solveTime.millis > round.timeLimit.time.millis;
+  if(violatesTimeLimit) {
+    warnings.push('Greater than time limit');
   }
 
   let expectedSolveCount = result.getExpectedSolveCount();

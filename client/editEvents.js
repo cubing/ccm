@@ -37,9 +37,9 @@ Template.editEvents.events({
     roundPopupReact.set({ setRoundSize: this });
     $("#modalSetRoundSize").modal('show');
   },
-  'click button[name="buttonHardCutoff"]': function(e, template) {
-    roundPopupReact.set({ hardCutoff: this });
-    $("#modalHardCutoff").modal('show');
+  'click button[name="buttonTimeLimit"]': function(e, template) {
+    roundPopupReact.set({ timeLimit: this });
+    $("#modalTimeLimit").modal('show');
   },
   'click button[name="buttonSoftCutoff"]': function(e, template) {
     roundPopupReact.set({softCutoff: this });
@@ -354,7 +354,7 @@ Template.modalSoftCutoff.events({
   },
 });
 
-Template.modalHardCutoff.created = function() {
+Template.modalTimeLimit.created = function() {
   let template = this;
   template.isSaveableReact = new ReactiveVar(false);
   template.autorun(function() {
@@ -362,36 +362,36 @@ Template.modalHardCutoff.created = function() {
     template.isSaveableReact.set(!!data);
   });
 };
-Template.modalHardCutoff.events({
+Template.modalTimeLimit.events({
   'shown.bs.modal .modal': function(e, template) {
     // Focus first input when we become visible
     template.$('input').filter(':visible:first').focus();
     template.$('input').filter(':visible:first').select();
   },
-  'solveTimeInput [name="inputHardCutoff"]': function(e, template, solveTime) {
+  'solveTimeInput [name="inputTimeLimit"]': function(e, template, solveTime) {
     template.isSaveableReact.set(!!solveTime);
   },
   'submit form': function(e, template) {
     e.preventDefault();
 
-    let $inputHardCutoff = template.$('[name="inputHardCutoff"]');
-    let time = $inputHardCutoff.jChester('getSolveTime');
+    let $inputTimeLimit = template.$('[name="inputTimeLimit"]');
+    let time = $inputTimeLimit.jChester('getSolveTime');
 
     Rounds.update(this._id, {
       $set: {
         // Explicitly listing all the fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202
-        //'hardCutoff.time': time
-        'hardCutoff.time.millis': time.millis,
-        'hardCutoff.time.decimals': time.decimals,
-        'hardCutoff.time.penalties': time.penalties,
+        //'timeLimit.time': time
+        'timeLimit.time.millis': time.millis,
+        'timeLimit.time.decimals': time.decimals,
+        'timeLimit.time.penalties': time.penalties,
       }
     });
 
     template.$(".modal").modal('hide');
   },
 });
-Template.modalHardCutoff.helpers({
+Template.modalTimeLimit.helpers({
   isSaveable: function() {
     let template = Template.instance();
     return template.isSaveableReact.get();

@@ -315,10 +315,10 @@ Schema.round = new SimpleSchema({
     }),
     optional: true,
   },
-  hardCutoff: {
+  timeLimit: {
     type: new SimpleSchema({
       time: {
-        // This is the time limit per solve. Anything over the hard cutoff is a
+        // This is the time limit per solve. Anything over the time limit is a
         // DNF.
         type: SolveTime,
         autoValue: function() {
@@ -331,7 +331,7 @@ Schema.round = new SimpleSchema({
             let eventCode = eventCodeField.value;
             if(wca.eventAllowsCutoffs(eventCode)) {
               return {
-                millis: 1000*wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCode],
+                millis: 1000*wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE[eventCode],
                 decimals: 0,
               };
             }

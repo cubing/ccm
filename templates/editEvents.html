@@ -87,12 +87,12 @@
                                 </button>
                               </td>
 
-                              {{! ============= Hard cutoff ============= }}
+                              {{! ============= Time limit ============= }}
                               <td class="tight-cell text-center">
-                                <button type="button" name="buttonHardCutoff"
+                                <button type="button" name="buttonTimeLimit"
                                         class="btn btn-default btn-xs">
-                                  {{#if hardCutoff}}
-                                    {{clockFormat hardCutoff.time}}
+                                  {{#if timeLimit}}
+                                    {{clockFormat timeLimit.time}}
                                   {{else}}
                                     -
                                   {{/if}}
@@ -231,7 +231,7 @@
   </div>
 
   {{> modalSoftCutoff roundPopup.softCutoff}}
-  {{> modalHardCutoff roundPopup.hardCutoff}}
+  {{> modalTimeLimit roundPopup.timeLimit}}
   {{> modalSetRoundSize roundPopup.setRoundSize}}
 </template>
 
@@ -318,15 +318,15 @@
   {{/ccmModal}}
 </template>
 
-<template name="modalHardCutoff">
-  {{#ccmModal id="modalHardCutoff"}}
+<template name="modalTimeLimit">
+  {{#ccmModal id="modalTimeLimit"}}
     {{#if this}}
       <form role="form">
         {{#ccmHeader}}
-          Change hard cutoff for {{eventName eventCode}}: {{roundName roundCode}}
+          Change time limit for {{eventName eventCode}}: {{roundName roundCode}}
         {{/ccmHeader}}
         <div class="modal-body">
-          {{> mjChester solveTime=hardCutoff.time name="inputHardCutoff"}}
+          {{> mjChester solveTime=timeLimit.time name="inputTimeLimit"}}
         </div>
         <div class="modal-footer">
           {{> ccmCancelButton}}

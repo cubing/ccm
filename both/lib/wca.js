@@ -621,13 +621,13 @@ wca.eventAllowsCutoffs = function(eventCode) {
 };
 
 // https://www.worldcubeassociation.org/regulations/#A1a1
-wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE = {};
+wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE = {};
 Object.keys(wca.formatsByEventCode).forEach(function(eventCode) {
-  wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE[eventCode] = 10*60;
+  wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE[eventCode] = 10*60;
 });
-wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['444bf'] = 60*60;
-wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['555bf'] = 60*60;
-wca.DEFAULT_HARD_CUTOFF_SECONDS_BY_EVENTCODE['333mbf'] = 60*60;
+wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE['444bf'] = 60*60;
+wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE['555bf'] = 60*60;
+wca.DEFAULT_TIME_LIMIT_SECONDS_BY_EVENTCODE['333mbf'] = 60*60;
 
 // Country codes
 // Grabbing these from: https://github.com/OpenBookPrices/country-data
