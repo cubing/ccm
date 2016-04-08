@@ -219,17 +219,8 @@ let CheckinList = React.createClass({
                   'text-center': true,
                 });
                 let onChange = this.registeredCheckboxToggled.bind(null, registration, eventCode);
-                let onClick = function(e) {
-                  let $input = $(e.currentTarget).find('input');
-                  if($input[0] == e.target) {
-                    // Ignore direct clicks on the checkbox, those are handled by the
-                    // onChange event listener.
-                    return;
-                  }
-                  onChange();
-                };
                 eventTds.push(
-                  <td key={eventCode} className={classes} onClick={onClick}>
+                  <td key={eventCode} className={classes}>
                     <input type="checkbox" checked={registeredForEvent} onChange={onChange} />
                   </td>
                 );
