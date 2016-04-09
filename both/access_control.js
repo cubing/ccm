@@ -113,7 +113,7 @@ if(Meteor.isServer) {
       let allowedFields = [
         'formatCode',
         'softCutoff',
-        'hardCutoff',
+        'timeLimit',
         'size',
 
         'status',

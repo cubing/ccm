@@ -27,9 +27,9 @@
               Soft cutoff: {{clockFormat softCutoff.time}} {{softCutoffFormatName softCutoff.formatCode}}
             </p>
           {{/if}}
-          {{#if hardCutoff}}
+          {{#if timeLimit}}
             <p>
-              Hard cutoff: {{clockFormat hardCutoff.time}}
+              Time Limit: {{clockFormat timeLimit.time}}
             </p>
           {{/if}}
         {{/with}}
