@@ -26,6 +26,14 @@ MochaWeb.testOnly(function() {
           expectBestWorstIndex(stats, 1, 3);
         });
 
+        it('simple average with rounding', function() {
+          // Luke Tycksen 2x2 Round 1 at Atomic Cubing 2016
+          let solves = [time(6030), time(4570), time(3880), time(3510), time(3250)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          expect(stats.average).to.deep.equal(time(3990));
+          expectBestWorstIndex(stats, 4, 0);
+        });
+
         it('average with DNF', function() {
           let solves = [time(555), time(1200), time(1200), dnf(), time(1200)];
           let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
@@ -79,7 +87,8 @@ MochaWeb.testOnly(function() {
         it('average with 5 identical times', function() {
           let solves = [time(555), time(555), time(555), time(555), time(555)];
           let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
-          expect(stats.average).to.deep.equal(time(555));
+          // Kind of tricky, but since WCA only handles hundredths, we round 0.555 to 0.56
+          expect(stats.average).to.deep.equal(time(560));
           // We don't particularly care which of these 5 identical solves is
           // best or worst, but we do care that they are different solves.
           expect(stats.bestIndex).to.not.equal(stats.worstIndex);

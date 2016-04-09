@@ -244,7 +244,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
     } else {
       var average;
       if(isTimed) {
-        average = Math.round(sum / countingSolvesCount);
+        average = Math.round(sum / countingSolvesCount / 10) * 10;
         averageSolveTime = {
           millis: average,
           decimals: 2,
