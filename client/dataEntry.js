@@ -118,24 +118,36 @@ Template.roundDataEntry.rendered = function() {
   });
 };
 
-function getSolveWarnings(resultId, solveIndex) {
-  let warnings = [];
-
+function getSolveWarnings(resultId) {
+  let solveTimes = $('.jChester').toArray().map((jChester, index) => $(jChester).jChester('getSolveTime'));
   let result = Results.findOne(resultId);
-  let round = Rounds.findOne(result.roundId);
-  let solveTime = result.solves[solveIndex];
-  let violatesTimeLimit = round.timeLimit && solveTime && !jChester.solveTimeIsDN(solveTime) && solveTime.millis > round.timeLimit.time.millis;
-  if(violatesTimeLimit) {
-    warnings.push('Greater than time limit');
-  }
+  result.solves = solveTimes;
 
-  let expectedSolveCount = result.getExpectedSolveCount();
-  let missedCutoff = expectedSolveCount != round.format().count;
-  if(missedCutoff && solveIndex >= expectedSolveCount && solveTime) {
-    // There's a SolveTime at this index and the user didn't make the cutoff.
-    // Complain!
-    warnings.push("Did not make soft cutoff");
-  }
+  let round = result.round();
+
+  let warnings = solveTimes.map(function (solveTime, index) {
+    let expectedSolveCount = result.getExpectedSolveCount();
+    let missedCutoff = expectedSolveCount != round.format().count;
+    if(missedCutoff && index >= expectedSolveCount && solveTime) {
+      // There's a SolveTime at this index and the user didn't make the cutoff.
+      // Complain!
+      return {
+        classes: ['has-warnings', 'solve-skipped-due-to-cutoff'],
+        text: 'Should not exist because previous solves did not make soft cutoff'
+      };
+    }
+
+    let violatesTimeLimit = round.timeLimit && solveTime && !jChester.solveTimeIsDN(solveTime) && solveTime.millis > round.timeLimit.time.millis;
+    if(violatesTimeLimit) {
+      return {
+        classes: ['has-warnings'],
+        text: 'Greater than time limit'
+      };
+    }
+
+    return null;
+  })
+
   return warnings;
 }
 
@@ -180,9 +192,6 @@ Template.roundDataEntry.helpers({
 });
 
 Template.solveTimeEditor.helpers({
-  solveWarnings: function() {
-    return getSolveWarnings(selectedResultIdReact.get(), this.index);
-  },
   editableSolveTimeFields: function() {
     let data = Template.parentData(1);
     let fields = Rounds.findOne(data.roundId).eventSolveTimeFields();
@@ -196,12 +205,6 @@ Template.solveTimeEditor.helpers({
       obj[field] = true;
     });
     return obj;
-  },
-  solveSkippedDueToCutoff: function() {
-    let index = this.index;
-    let result = Results.findOne(this.resultId);
-    let expectedSolveCount = result.getExpectedSolveCount();
-    return index >= expectedSolveCount;
   },
 });
 
@@ -241,6 +244,26 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
   });
 }
 
+function showWarnings(resultId) {
+  let $jChesters = $('.jChester');
+  getSolveWarnings(resultId).forEach(function (warning, index) {
+    let $jChester = $jChesters.eq(index);
+    let $tr = $jChester.closest('tr');
+    let $warningIcon = $tr.find('.solve-time-warning-icon');
+    $tr.removeClass();
+
+    if (warning !== null) {
+      let popover = $warningIcon.popover().data('bs.popover');
+      popover.options.content = warning.text;
+      $tr.addClass(warning.classes.join(' '));
+
+      $warningIcon.popover('show');
+    } else {
+      $warningIcon.popover('hide');
+    }
+  });
+}
+
 function jChesterSave(solveIndex, $jChester, doneCallback) {
   let $tr = $jChester.closest('tr');
   let validationErrors = $jChester.jChester('getValidationErrors');
@@ -260,20 +283,6 @@ function jChesterSave(solveIndex, $jChester, doneCallback) {
       $tr.removeClass('saving');
     } else {
       console.error("Meteor.call() error: " + err);
-    }
-
-    // Eventually move out to a function that updates warning icon
-    // https://github.com/cubing/ccm/issues/284
-    let warnings = getSolveWarnings(resultId, solveIndex);
-    let $warningIcon = $jChester.closest('tr').find('.solve-time-warning-icon');
-    let popover = $warningIcon.popover().data('bs.popover');
-    popover.options.content = warnings.join("<br>");
-
-    if(warnings.length > 0) {
-      // Only show warnings if there are warnings and this jChester is focused.
-      $warningIcon.popover('show');
-    } else {
-      $warningIcon.popover('hide');
     }
   });
 }
@@ -412,6 +421,9 @@ Template.roundDataEntry.events({
 
       focusNextFocusable($jChester, e.shiftKey);
     }
+  },
+  'blur .jChester[name="inputSolve"]': function (e, template) {
+    showWarnings(selectedResultIdReact.get());
   },
   'keyup #inputParticipantName': function(e) {
     if(e.which == 13) { // enter
