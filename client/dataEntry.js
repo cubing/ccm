@@ -252,13 +252,13 @@ function showWarnings(resultId) {
     let $warningIcon = $tr.find('.solve-time-warning-icon');
     $tr.removeClass();
 
+    let popover = $warningIcon.popover().data('bs.popover');
     if(warning !== null) {
-      let popover = $warningIcon.popover().data('bs.popover');
-      popover.options.content = warning.text;
       $tr.addClass(warning.classes.join(' '));
-
+      popover.options.content = warning.text;
       $warningIcon.popover('show');
     } else {
+      popover.options.content = '';
       $warningIcon.popover('hide');
     }
   });
