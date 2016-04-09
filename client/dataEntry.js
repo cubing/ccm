@@ -125,7 +125,7 @@ function getSolveWarnings(resultId) {
 
   let round = result.round();
 
-  let warnings = solveTimes.map(function (solveTime, index) {
+  let warnings = solveTimes.map(function(solveTime, index) {
     let expectedSolveCount = result.getExpectedSolveCount();
     let missedCutoff = expectedSolveCount != round.format().count;
     if(missedCutoff && index >= expectedSolveCount && solveTime) {
@@ -146,7 +146,7 @@ function getSolveWarnings(resultId) {
     }
 
     return null;
-  })
+  });
 
   return warnings;
 }
@@ -246,13 +246,13 @@ function userResultMaybeSelected(template, roundId, jChesterToFocusIndex) {
 
 function showWarnings(resultId) {
   let $jChesters = $('.jChester');
-  getSolveWarnings(resultId).forEach(function (warning, index) {
+  getSolveWarnings(resultId).forEach(function(warning, index) {
     let $jChester = $jChesters.eq(index);
     let $tr = $jChester.closest('tr');
     let $warningIcon = $tr.find('.solve-time-warning-icon');
     $tr.removeClass();
 
-    if (warning !== null) {
+    if(warning !== null) {
       let popover = $warningIcon.popover().data('bs.popover');
       popover.options.content = warning.text;
       $tr.addClass(warning.classes.join(' '));
@@ -422,7 +422,7 @@ Template.roundDataEntry.events({
       focusNextFocusable($jChester, e.shiftKey);
     }
   },
-  'blur .jChester[name="inputSolve"]': function (e, template) {
+  'blur .jChester[name="inputSolve"]': function(e, template) {
     showWarnings(selectedResultIdReact.get());
   },
   'keyup #inputParticipantName': function(e) {
