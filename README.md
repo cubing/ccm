@@ -3,11 +3,7 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 
 ## Setup
 - `curl https://install.meteor.com/ | sh` - Install [Meteor](https://www.meteor.com/)
-
-### Optional setup (useful for development)
-- Install nodejs.
-- `(cd tests; npm install)` - Install linting tools and setup pre-commit hook.
-  - Note: if not using npm 3, dev dependencies will not install. Instead, do `(cd tests; npm install --save-dev)` to install.
+- `meteor npm install`
 
 ## To run
 - `VELOCITY=0 meteor` (velocity is a hog, and it's best to develop without it enabled)

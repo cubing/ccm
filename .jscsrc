@@ -1,10 +1,10 @@
 {
   "excludeFiles": [
-    "../tests/node_modules/**",
-    "../packages/**",
-    "../client/components**",
-    "../both/lib**",
-    "../.*" // Ignore everything in dotted directories such as .git and .meteor
+    "node_modules/**",
+    "packages/**",
+    "client/components**",
+    "both/lib**",
+    ".*" // Ignore everything in dotted directories such as .git and .meteor
   ],
   "fileExtensions": [ ".js" ],
 

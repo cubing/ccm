@@ -105,7 +105,6 @@ natestrauser:connection-banner@0.4.3
 nemo64:bootstrap@3.3.5_2
 nemo64:bootstrap-data@3.3.5
 npm-bcrypt@0.8.5
-npm-container@1.2.0
 npm-mongo@1.4.43
 oauth@1.1.10
 oauth2@1.1.9

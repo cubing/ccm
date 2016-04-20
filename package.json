@@ -23,18 +23,33 @@
     "react-dom": "^15.0.1",
     "typeahead.js": "^0.11.1"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "devDependencies": {
+    "jscs": "^2.2.1",
+    "jshint": "^2.8.0",
+    "precommit-hook": "^3.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/coder13/ccm.git"
+    "url": "https://github.com/cubing/ccm.git"
   },
-  "author": "= <=>",
-  "license": "ISC",
+  "license": "GPL-3.0",
+  "private": true,
   "bugs": {
-    "url": "https://github.com/coder13/ccm/issues"
+    "url": "https://github.com/cubing/ccm/issues"
   },
-  "homepage": "https://github.com/coder13/ccm"
+  "homepage": "https://live.cubing.net",
+  "scripts": {
+    "lint": "(jshint --exclude-path .jshintignore --config .jshintrc . && jscs .)",
+    "validate": "npm ls"
+  },
+  "config": {
+    "pre-commit": {
+      "lint": true,
+      "validate": false
+    }
+  },
+  "pre-commit": [
+    "lint",
+    "validate"
+  ]
 }
