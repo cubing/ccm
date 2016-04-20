@@ -188,10 +188,6 @@ let CheckinList = createContainer((props) => {
   render: function() {
     return (
       <div>
-        <template name="devinTest">
-          <div className="container"></div>
-        </template>
-
         <table id="checkinTable" className="table table-striped table-hover" ref="checkinTable">
           <thead>
             <tr>
