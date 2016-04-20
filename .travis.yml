@@ -4,8 +4,8 @@ node_js:
   - "4.1"
 cache:
   directories:
-    - tests/node_modules
+    - node_modules
 before_install:
-  - (cd tests; npm install)
+  - npm install
 script:
-  - (cd tests; npm run-script lint)
+  - npm run-script lint
