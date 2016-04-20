@@ -43,7 +43,10 @@ Meteor.methods({
         eventCode: e.code
       }).forEach(round => {
         let wcaResults = [];
-        Results.find({ roundId: round._id }).forEach(result => {
+        Results.find({
+          roundId: round._id,
+          noShow: false,
+        }).forEach(result => {
           let wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
 
           let roundDataEntryPath = Router.routes.dataEntry.path({
@@ -54,7 +57,7 @@ Meteor.methods({
           if(!result.hasOwnProperty('bestIndex') || !wcaValues[result.bestIndex]) {
             problems.push({
               warning: true,
-              message: "Incorrect best for result",
+              message: `Incorrect best for result: ${result._id}`,
               fixUrl: roundDataEntryPath,
             });
             return;
