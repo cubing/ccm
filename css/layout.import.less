@@ -26,11 +26,16 @@ body {
 }
 .footer {
   position: absolute;
-  bottom: 0;
+  bottom: 1px;
   width: 100%;
   /* Set the fixed height of the footer here */
   height: @footer-height;
   background-color: #f5f5f5;
+
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-color: @navbar-default-border;
+
   .container .text-muted {
     margin: 5px;
     text-align: center;
