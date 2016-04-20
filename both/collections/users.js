@@ -64,6 +64,7 @@ if(Meteor.isServer) {
     return user;
   });
 
+  // TODO - AccountsServer no longer exists. See: https://github.com/cubing/ccm/issues/310
   // Dirty hack to update user account emails when people sign in with WCA.
   // Meteor's OAuth code doesn't do this for us. We'll be able to clean this up
   // a little if we ever get the onUpdateUser hook mentioned here:
