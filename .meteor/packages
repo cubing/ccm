@@ -5,7 +5,6 @@
 
 iron:router
 accounts-password
-meteorhacks:npm
 
 
 cfs:http-publish
@@ -38,7 +37,6 @@ nemo64:bootstrap
 
 
 npm-container
-standard-minifiers
 meteor-base
 mobile-experience
 mongo
@@ -52,7 +50,6 @@ random
 ejson
 spacebars
 check
-react
 maxharris9:classnames
 ecmascript
 msavin:mongol
@@ -61,3 +58,6 @@ jss:flag-icon
 mike:mocha
 jfly:worldcubeassociation
 okgrow:analytics
+standard-minifier-css
+standard-minifier-js
+react-meteor-data

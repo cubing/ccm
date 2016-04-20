@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 const log = logging.handle("resultsComponents");
 
 ResultRow = function(ResultIdentifierTd) {

@@ -1,3 +1,7 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
+
 const log = logging.handle("manageCheckin");
 
 let selectedRegistrationReact = new ReactiveVar(null);
@@ -128,18 +132,15 @@ Template.modalImportRegistrations.events({
   },
 });
 
-let CheckinList = React.createClass({
-  mixins: [ReactMeteorData],
+let CheckinList = createContainer((props) => {
+  let competitionId = props.competitionId;
+  let competition = Competitions.findOne(competitionId);
+  let registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
 
-  getMeteorData: function() {
-    let competitionId = this.props.competitionId;
-    let competition = Competitions.findOne(competitionId);
-    let registrations = Registrations.find({ competitionId: competitionId }, { sort: { uniqueName: 1 } }).fetch();
+  let competitionEvents = competition.getEventCodes();
 
-    let competitionEvents = competition.getEventCodes();
-
-    return { registrations, competitionEvents };
-  },
+  return { registrations, competitionEvents };
+}, React.createClass({
   componentWillMount: function() {
     log.l1("component will mount");
   },
@@ -198,7 +199,7 @@ let CheckinList = React.createClass({
               <th className="text-nowrap">WCA id</th>
               <th>Gender</th>
               <th>Birthday</th>
-              {this.data.competitionEvents.map(eventCode => {
+              {this.props.competitionEvents.map(eventCode => {
                 return (
                   <th key={eventCode} className="text-center">
                     <span className={"cubing-icon icon-" + eventCode} alt={eventCode}></span><br />
@@ -210,9 +211,9 @@ let CheckinList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {this.data.registrations.map(registration => {
+            {this.props.registrations.map(registration => {
               let eventTds = [];
-              this.data.competitionEvents.forEach(eventCode => {
+              this.props.competitionEvents.forEach(eventCode => {
                 let registeredForEvent = _.contains(registration.registeredEvents, eventCode);
 
                 let classes = classNames({
@@ -266,4 +267,4 @@ let CheckinList = React.createClass({
       </div>
     );
   }
-});
+}));

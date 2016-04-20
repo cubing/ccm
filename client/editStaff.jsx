@@ -1,3 +1,7 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
+
 Template.editStaff.rendered = function() {
   let template = this;
   template.autorun(() => {
@@ -61,26 +65,22 @@ Template.modalAddStaff.events({
   },
 });
 
-let StaffList = React.createClass({
-  mixins: [ReactMeteorData],
-
-  getMeteorData() {
-    let staff = Registrations.find({
-      competitionId: this.props.competitionId,
-      roles: {
-        $exists: 1
-      },
-    }, {
-      sort: {
-        uniqueName: 1
-      }
-    }).fetch();
-    return {
-      staff: staff,
-      currentUserId: Meteor.userId(),
-    };
-  },
-
+let StaffList = createContainer((props) => {
+  let staff = Registrations.find({
+    competitionId: props.competitionId,
+    roles: {
+      $exists: 1
+    },
+  }, {
+    sort: {
+      uniqueName: 1
+    }
+  }).fetch();
+  return {
+    staff: staff,
+    currentUserId: Meteor.userId(),
+  };
+}, React.createClass({
   getInitialState() {
     return {
       hoveredRoleName: null,
@@ -139,7 +139,7 @@ let StaffList = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {this.data.staff.map(staff => {
+            {this.props.staff.map(staff => {
               let removeStaffButtonClasses = classNames({
                 'btn': true,
                 'btn-xs': true,
@@ -172,7 +172,7 @@ let StaffList = React.createClass({
                     };
                     return (
                       <td key={role.name} className={classesForRole(role, staff)} onMouseEnter={this.mouseEnterRole.bind(null, role, staff)} onMouseLeave={this.mouseLeaveRole.bind(null, role, staff)} onClick={onClick}>
-                        <input type="checkbox" disabled={role.isDescendentOfAny(staff.roles) || staff.userId === this.data.currentUserId} checked={role.isOrIsDescendentOfAny(staff.roles || {})} onChange={onChange} />
+                        <input type="checkbox" disabled={role.isDescendentOfAny(staff.roles) || staff.userId === this.props.currentUserId} checked={role.isOrIsDescendentOfAny(staff.roles || {})} onChange={onChange} />
                       </td>
                     );
                   })}
@@ -188,4 +188,4 @@ let StaffList = React.createClass({
       </div>
     );
   },
-});
+}));

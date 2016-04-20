@@ -1,8 +1,8 @@
-let url = Npm.require('url');
+let url = require('url');
 
 Meteor.startup(function() {
   // Announce ourselves via Zeroconf
-  let mdns = Meteor.npmRequire('mdns-js');
+  let mdns = require('mdns-js');
 
   // Wow, this is so gross. I couldn't find any way to get to
   // our "runner" though.

@@ -1,10 +1,10 @@
 const log = logging.handle("server_methods");
 
-const child_process = Npm.require('child_process');
-const path = Npm.require("path");
-const fs = Npm.require('fs');
-const os = Npm.require('os');
-const mkdirp = Meteor.npmRequire('mkdirp');
+const child_process = require('child_process');
+const path = require("path");
+const fs = require('fs');
+const os = require('os');
+const mkdirp = require('mkdirp');
 
 let zipIdToFilename = function(zipId, userId) {
   let tmpdir = os.tmpdir();

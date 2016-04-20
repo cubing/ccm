@@ -1,3 +1,7 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
+
 Template.participantResults.rendered = function() {
   let template = this;
 
@@ -47,29 +51,26 @@ const SingleEventResults = React.createClass({
   },
 });
 
-const ParticipantResults = React.createClass({
-  mixins: [ReactMeteorData],
-
-  getMeteorData: function() {
-    let results = Results.find({
-      competitionId: this.props.competitionId,
-      registrationId: this.props.registration._id,
-    }).fetch();
-    results.forEach(result => {
-      result.round = Rounds.findOne(result.roundId);
-      result.registration = Registrations.findOne(result.registrationId);
-    });
-    let eventAndResults = ( _.chain(results)
-      .groupBy(result => result.round.eventCode)
-      .pairs()
-      .map(([eventCode, results]) => [ eventCode, _.sortBy(results, result => -result.round.nthRound) ])
-      .sortBy(([eventCode, results]) => wca.eventByCode[eventCode].index)
-      .value()
-    );
-    return {
-      eventAndResults: eventAndResults,
-    };
-  },
+const ParticipantResults = createContainer((props) => {
+  let results = Results.find({
+    competitionId: props.competitionId,
+    registrationId: props.registration._id,
+  }).fetch();
+  results.forEach(result => {
+    result.round = Rounds.findOne(result.roundId);
+    result.registration = Registrations.findOne(result.registrationId);
+  });
+  let eventAndResults = ( _.chain(results)
+    .groupBy(result => result.round.eventCode)
+    .pairs()
+    .map(([eventCode, results]) => [ eventCode, _.sortBy(results, result => -result.round.nthRound) ])
+    .sortBy(([eventCode, results]) => wca.eventByCode[eventCode].index)
+    .value()
+  );
+  return {
+    eventAndResults: eventAndResults,
+  };
+}, React.createClass({
   render: function() {
     let wcaProfileLink = null;
     if(this.props.registration.wcaId) {
@@ -84,7 +85,7 @@ const ParticipantResults = React.createClass({
           {this.props.registration.uniqueName} {wcaProfileLink}
         </h1>
 
-        {this.data.eventAndResults.map(([eventCode, results]) => {
+        {this.props.eventAndResults.map(([eventCode, results]) => {
           return (
             <ResultsList key={eventCode}
                          competitionUrlId={this.props.competitionUrlId}
@@ -97,4 +98,4 @@ const ParticipantResults = React.createClass({
       </div>
     );
   },
-});
+}));

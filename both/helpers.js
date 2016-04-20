@@ -1,3 +1,5 @@
+import jstz from 'jstz';
+
 function register(name, func) {
   if(Meteor.isClient) {
     Template.registerHelper(name, func);

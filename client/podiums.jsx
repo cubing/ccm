@@ -1,3 +1,5 @@
+import React from 'react';
+
 Template.podiums.rendered = function() {
   let template = this;
 

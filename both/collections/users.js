@@ -68,19 +68,19 @@ if(Meteor.isServer) {
   // Meteor's OAuth code doesn't do this for us. We'll be able to clean this up
   // a little if we ever get the onUpdateUser hook mentioned here:
   // https://github.com/meteor/meteor/blob/53cc021064a1dabc02ea811e2a8c2d9977d34c4a/packages/accounts-base/accounts_server.js#L1359-L1360
-  let old = AccountsServer.prototype.updateOrCreateUserFromExternalService;
-  AccountsServer.prototype.updateOrCreateUserFromExternalService = function(serviceName, serviceData, options) {
-    let result = old.apply(this, arguments);
-    this.users.update(result.userId, {
-      $set: {
-        emails: [{
-          address: serviceData.email,
-          verified: true,
-        }]
-      }
-    });
-    return result;
-  };
+  //let old = AccountsServer.prototype.updateOrCreateUserFromExternalService;
+  //AccountsServer.prototype.updateOrCreateUserFromExternalService = function(serviceName, serviceData, options) {
+  //  let result = old.apply(this, arguments);
+  //  this.users.update(result.userId, {
+  //    $set: {
+  //      emails: [{
+  //        address: serviceData.email,
+  //        verified: true,
+  //      }]
+  //    }
+  //  });
+  //  return result;
+  //};
 
   copyUserWcaDataToProfile = function(user) {
     let wca = user.services.worldcubeassociation;
