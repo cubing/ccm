@@ -53,9 +53,10 @@ ecmascript
 msavin:mongol
 jfly:accounts-worldcubeassociation
 jss:flag-icon
-mike:mocha
 jfly:worldcubeassociation
 okgrow:analytics
 standard-minifier-css
 standard-minifier-js
 react-meteor-data
+practicalmeteor:mocha
+dispatch:mocha-phantomjs

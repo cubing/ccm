@@ -6,9 +6,8 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 - `meteor npm install`
 
 ## To run
-- `VELOCITY=0 meteor` (velocity is a hog, and it's best to develop without it enabled)
+- `meteor`
 - [http://localhost:3000](http://localhost:3000), log in as ccm@ccm.com/ccm. The ccm user is created when the server starts up if and only if there are no users in the database. **For security purposes, be SURE to delete this default account, or change its password if you're going to run the server where people you don't trust will have access.**
-- NOTE: If you see an error "While building package velocity:test-proxy", you've run into https://github.com/meteor-velocity/node-soft-mirror/issues/9, the solution is to `rm -r packages/tests-proxy`.
 
 ## Misc production setup
 - Analytics are handled by [okgrow:analytics](https://github.com/okgrow/analytics#configuration).
