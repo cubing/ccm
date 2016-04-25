@@ -1,5 +1,4 @@
-Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/ccm.png?branch=master)](https://travis-ci.org/cubing/ccm)
-=======
+# Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/ccm.png?branch=master)](https://travis-ci.org/cubing/ccm)
 
 ## Setup
 - `curl https://install.meteor.com/ | sh` - Install [Meteor](https://www.meteor.com/)
@@ -13,7 +12,7 @@ Cubing Competition Manager (CCM) [![Build Status](https://travis-ci.org/cubing/c
 - Analytics are handled by [okgrow:analytics](https://github.com/okgrow/analytics#configuration).
 
 ## To test
-- `meteor --test`
+- `meteor test --driver-package practicalmeteor:mocha`
 
 ## To lint
 - `(cd tests; npm run-script lint)`

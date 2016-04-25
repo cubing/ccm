@@ -1,11 +1,20 @@
+# Inspired by http://practicalmeteor.com/testing-your-meteor-packages-on-travis-cis-faster-docker-based-infrastructure/
+
 sudo: false
 language: node_js
 node_js:
-  - "4.1"
+  - "0.10.36"
 cache:
   directories:
     - node_modules
+
+# Since sudo isn't possible anymore (for now), meteor can't add a link to
+# itself to /usr/local/bin, so you'll have to add the meteor installation folder
+# to the PATH yourself.
 before_install:
-  - npm install
+  - "curl https://install.meteor.com | /bin/sh"
+  - export PATH="$HOME/.meteor:$PATH"
+  - meteor npm install
 script:
-  - npm run-script lint
+  - meteor npm run-script lint
+  - meteor npm test
