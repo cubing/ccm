@@ -21,8 +21,8 @@ Meteor.methods({
     let scrambleProgram = scramblePrograms[0];
 
     let registrations = Registrations.find({ competitionId: competitionId }).fetch();
-    // TODO - compare this list of people to the people who *actually* competed
-    let wcaPersons = _.map(registrations, function(registration) {
+    let wcaPersonById = {};
+    var registrationToWcaPerson = (registration) => {
       let iso8601Date = formatMomentDateIso8601(moment(registration.dob));
       let wcaPerson = {
         "id": registration._id,
@@ -33,7 +33,7 @@ Meteor.methods({
         "dob": iso8601Date,
       };
       return wcaPerson;
-    });
+    };
 
     let wcaEvents = [];
     _.toArray(wca.eventByCode).forEach((e, i) => {
@@ -47,6 +47,9 @@ Meteor.methods({
           roundId: round._id,
           noShow: false,
         }).forEach(result => {
+          if(!wcaPersonByRegistrationId[result.registrationId]) {
+            wcaPersonByRegistrationId[result.registrationId] = registrationToWcaPerson(result.registration());
+          }
           let wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
 
           let roundDataEntryPath = Router.routes.dataEntry.path({
@@ -113,7 +116,7 @@ Meteor.methods({
       "formatVersion": "WCA Competition 0.2",
       "competitionId": Competitions.findOne(competitionId).wcaCompetitionId,
       "scrambleProgram": scrambleProgram,
-      "persons": wcaPersons,
+      "persons": wcaPersonById.values(),
       "events": wcaEvents
     };
 
