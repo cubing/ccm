@@ -27,7 +27,6 @@ class CcmTest(unittest.TestCase):
             ccm_personId_to_canonicalId = {}
             wa_persons = wa_json["persons"]
             wa_personId_to_canonicalId = {}
-            self.assertEqual(len(ccm_persons), len(wa_persons))
             canonicalId = 1
             for wa_person in wa_json["persons"]:
                 for ccm_person in ccm_json["persons"]:
@@ -36,6 +35,17 @@ class CcmTest(unittest.TestCase):
                         wa_personId_to_canonicalId[wa_person['id']] = canonicalId
                         canonicalId += 1
                         break
+            ccm_persons.sort(key=lambda p: ccm_personId_to_canonicalId[p['id']])
+            wa_persons.sort(key=lambda p: wa_personId_to_canonicalId[p['id']])
+            for p in ccm_persons:
+                del p['id']
+                if p.get('wcaId') == "":
+                  del p['wcaId']
+            for p in wa_persons:
+                del p['id']
+                if p.get('wcaId') == "":
+                  del p['wcaId']
+            self.assertEqual(ccm_persons, wa_persons)
 
             # Check events
             ccm_events = ccm_json["events"]
