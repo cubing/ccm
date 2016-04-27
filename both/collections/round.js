@@ -259,6 +259,10 @@ _.extend(Round.prototype, {
     return results;
   },
 
+  recalculate() {
+    Results.find({ roundId: this._id }).forEach(result => result.recalculate());
+  },
+
   remove() {
     Rounds.remove(this._id);
     [RoundProgresses, Results, Groups, ScheduleEvents].forEach(collection => {

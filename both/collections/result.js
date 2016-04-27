@@ -73,15 +73,16 @@ _.extend(Result.prototype, {
     }
     this.solves[solveIndex] = solveTime;
 
-    // Trim null solves from the end of the solves array.
-    while(this.solves.length > 0 && !this.solves[this.solves.length - 1]) {
-      this.solves.pop();
-    }
+    this.recalculate();
   },
 
   recalculate() {
     let round = this.round();
 
+    // Trim null solves from the end of the solves array.
+    while(this.solves.length > 0 && !this.solves[this.solves.length - 1]) {
+      this.solves.pop();
+    }
     let $set = {
       solves: this.solves
     };

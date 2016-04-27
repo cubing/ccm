@@ -20,8 +20,8 @@ Meteor.methods({
     }
     let scrambleProgram = scramblePrograms[0];
 
-    let registrations = Registrations.find({ competitionId: competitionId }).fetch();
-    let wcaPersonById = {};
+    let registrationById = _.indexBy(Registrations.find({ competitionId: competitionId }).fetch(), '_id');
+    let wcaPersonByRegistrationId = {};
     var registrationToWcaPerson = (registration) => {
       let iso8601Date = formatMomentDateIso8601(moment(registration.dob));
       let wcaPerson = {
@@ -43,14 +43,23 @@ Meteor.methods({
         eventCode: e.code
       }).forEach(round => {
         let wcaResults = [];
+        let everyoneMadeCutoff = true;
         Results.find({
           roundId: round._id,
-          noShow: false,
+	  noShow: { $ne: true },
         }).forEach(result => {
-          if(!wcaPersonByRegistrationId[result.registrationId]) {
-            wcaPersonByRegistrationId[result.registrationId] = registrationToWcaPerson(result.registration());
+          let wcaPerson = wcaPersonByRegistrationId[result.registrationId];
+          if(!wcaPerson) {
+            wcaPerson = registrationToWcaPerson(registrationById[result.registrationId]);
+            wcaPersonByRegistrationId[result.registrationId] = wcaPerson;
           }
           let wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
+
+          // The WCA expects cutoff solves to show up as 0s.
+          while(wcaValues.length < round.format().count) {
+            everyoneMadeCutoff = false;
+            wcaValues.push(0);
+          }
 
           let roundDataEntryPath = Router.routes.dataEntry.path({
             competitionUrlId: competitionUrlId,
@@ -68,7 +77,7 @@ Meteor.methods({
 
           let wcaAverage = wca.solveTimeToWcaValue(result.average);
           let wcaResult = {
-            personId: result.userId,
+            personId: wcaPerson.id,
             position: result.position,
             results: wcaValues,
             best: wcaValues[result.bestIndex],
@@ -76,6 +85,13 @@ Meteor.methods({
           };
           wcaResults.push(wcaResult);
         });
+
+        // The WCA does not consider a round "combined" if everyone made the soft cutoff.
+        // Note that we're not writing to the database here, because I think it makes sense
+        // to store the cutoff information, even if everyone made the cutoff.
+        if(everyoneMadeCutoff && round.softCutoff) {
+          round.softCutoff = null;
+        }
 
         let wcaGroups = [];
         Groups.find({ roundId: round._id }).forEach(group => {
@@ -113,10 +129,11 @@ Meteor.methods({
     });
 
     let wcaResults = {
-      "formatVersion": "WCA Competition 0.2",
+      "formatVersion": "WCA Competition 0.3",
+      "resultsProgram": "CCM",
       "competitionId": Competitions.findOne(competitionId).wcaCompetitionId,
       "scrambleProgram": scrambleProgram,
-      "persons": wcaPersonById.values(),
+      "persons": _.values(wcaPersonByRegistrationId),
       "events": wcaEvents
     };
 
