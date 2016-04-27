@@ -46,7 +46,7 @@ Meteor.methods({
         let everyoneMadeCutoff = true;
         Results.find({
           roundId: round._id,
-	  noShow: { $ne: true },
+          noShow: { $ne: true },
         }).forEach(result => {
           let wcaPerson = wcaPersonByRegistrationId[result.registrationId];
           if(!wcaPerson) {

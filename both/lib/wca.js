@@ -74,7 +74,8 @@ wca.solveTimeToWcaValue = function(solveTime) {
     return solveTime.moveCount;
   } else if(isMBFSolveTime(solveTime)) {
     var puzzlesUnsolvedCount = solveTime.puzzlesAttemptedCount - solveTime.puzzlesSolvedCount;
-    var DD = 99 - puzzlesUnsolvedCount;
+    var points = solveTime.puzzlesSolvedCount - puzzlesUnsolvedCount;
+    var DD = 99 - points;
     var timeInSeconds = Math.floor(solveTime.millis / 1000);
 
     assert(0 <= puzzlesUnsolvedCount);
