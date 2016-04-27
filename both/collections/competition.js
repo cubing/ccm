@@ -58,6 +58,12 @@ _.extend(Competition.prototype, {
     return registration && role.isOrIsDescendentOfAny(registration.roles);
   },
 
+  recalculate() {
+    Rounds.find({ competitionId: this._id }).forEach(round => {
+      round.recalculate();
+    });
+  },
+
   remove() {
     Competitions.remove({ _id: this._id });
     [Rounds, RoundProgresses, Results, Groups, Registrations, ScheduleEvents].forEach(collection => {

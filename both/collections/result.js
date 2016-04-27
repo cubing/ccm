@@ -54,7 +54,7 @@ _.extend(Result.prototype, {
       solveTime.updatedAt = new Date();
     }
 
-    let round = Rounds.findOne(this.roundId);
+    let round = this.round();
     if(!round) {
       throw new Meteor.Error(404, "Round not found");
     }
@@ -73,10 +73,14 @@ _.extend(Result.prototype, {
     }
     this.solves[solveIndex] = solveTime;
 
-    // Trim null solves from the end of the solves array until it fits.
+    // Trim null solves from the end of the solves array.
     while(this.solves.length > 0 && !this.solves[this.solves.length - 1]) {
       this.solves.pop();
     }
+  },
+
+  recalculate() {
+    let round = this.round();
 
     let $set = {
       solves: this.solves
