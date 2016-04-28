@@ -27,7 +27,11 @@ Meteor.methods({
       let wcaPerson = {
         "id": registration._id,
         "name": registration.uniqueName,
-        "wcaId": registration.wcaId,
+
+        // Until https://github.com/cubing/worldcubeassociation.org/pull/545 is resolved,
+        // the WCA website requires that wcaId be specified as empty string.
+        "wcaId": registration.wcaId || "",
+
         "countryId": registration.countryId,
         "gender": registration.gender,
         "dob": iso8601Date,
