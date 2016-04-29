@@ -1,13 +1,3 @@
 <template name="competitions">
-  <ul class="competitions">
-    {{#each competitions}}
-      <li class="competition {{#if listed}}listed{{else}}unlisted{{/if}}">
-        {{#if wcaCompetitionId}}
-          <a href="{{pathFor 'competition' competitionUrlId=wcaCompetitionId}}">{{competitionName}}</a>
-        {{else}}
-          <a href="{{pathFor 'competition' competitionUrlId=_id}}">{{competitionName}}</a>
-        {{/if}}
-      </li>
-    {{/each}}
-  </ul>
+  <div class="reactRenderArea"></div>
 </template>
