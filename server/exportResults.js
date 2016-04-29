@@ -22,20 +22,26 @@ Meteor.methods({
 
     let registrationById = _.indexBy(Registrations.find({ competitionId: competitionId }).fetch(), '_id');
     let wcaPersonByRegistrationId = {};
-    var registrationToWcaPerson = (registration) => {
-      let iso8601Date = formatMomentDateIso8601(moment(registration.dob));
-      let wcaPerson = {
-        "id": registration._id,
-        "name": registration.uniqueName,
+    let wcaPersonId = 1;
+    var registrationIdToWcaPerson = (registrationId) => {
+      let wcaPerson = wcaPersonByRegistrationId[registrationId];
+      if(!wcaPerson) {
+        let registration = registrationById[registrationId];
+        let iso8601Date = formatMomentDateIso8601(moment(registration.dob));
+        wcaPerson = {
+          "id": wcaPersonId++,
+          "name": registration.uniqueName,
 
-        // Until https://github.com/cubing/worldcubeassociation.org/pull/545 is resolved,
-        // the WCA website requires that wcaId be specified as empty string.
-        "wcaId": registration.wcaId || "",
+          // Until https://github.com/cubing/worldcubeassociation.org/pull/545 is resolved,
+          // the WCA website requires that wcaId be specified as empty string.
+          "wcaId": registration.wcaId || "",
 
-        "countryId": registration.countryId,
-        "gender": registration.gender,
-        "dob": iso8601Date,
-      };
+          "countryId": registration.countryId,
+          "gender": registration.gender,
+          "dob": iso8601Date,
+        };
+        wcaPersonByRegistrationId[registrationId] = wcaPerson;
+      }
       return wcaPerson;
     };
 
@@ -52,11 +58,7 @@ Meteor.methods({
           roundId: round._id,
           noShow: { $ne: true },
         }).forEach(result => {
-          let wcaPerson = wcaPersonByRegistrationId[result.registrationId];
-          if(!wcaPerson) {
-            wcaPerson = registrationToWcaPerson(registrationById[result.registrationId]);
-            wcaPersonByRegistrationId[result.registrationId] = wcaPerson;
-          }
+          let wcaPerson = registrationIdToWcaPerson(result.registrationId);
           let wcaValues = _.map(result.solves, wca.solveTimeToWcaValue);
 
           // The WCA expects cutoff solves to show up as 0s.
