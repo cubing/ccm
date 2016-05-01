@@ -1,5 +1,8 @@
 if(Meteor.isClient) {
   Accounts.ui.config({
+    requestPermissions: {
+      worldcubeassociation: ['public', 'email', 'dob'],
+    },
     passwordSignupFields: 'EMAIL_ONLY',
   });
 }
