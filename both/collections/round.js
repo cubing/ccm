@@ -122,7 +122,7 @@ _.extend(Round.prototype, {
         }
       }
       if(!tied) {
-        position++;
+        position = i + 1;
       }
 
       totalSolves += result.getExpectedSolveCount();
