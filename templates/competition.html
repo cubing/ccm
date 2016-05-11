@@ -1,25 +1,3 @@
 <template name="competition">
-  <div class="jumbotron">
-    <div class="container">
-      <h1>{{competitionAttr 'competitionName'}}</h1>
-      <p>
-        {{#if competitionIsScheduled}}
-          <a href="{{pathFor 'competitionSchedule' competitionUrlId=competitionUrlId}}">
-            {{dateInterval}}
-          </a>
-        {{else}}
-          Unscheduled
-        {{/if}}
-      </p>
-      <p>
-        <a href="{{pathFor 'competitionRegistration' competitionUrlId=competitionUrlId}}">
-          {{#if registeredForCompetition}}
-            Edit registration
-          {{else}}
-            Register here
-          {{/if}}
-        </a>
-      </p>
-    </div>
-  </div>
+  <div class="reactRenderArea"></div>
 </template>
