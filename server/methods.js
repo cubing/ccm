@@ -323,15 +323,15 @@ Meteor.methods({
           _.extend(result, statistics);
           let id = Results.insert(
             result, {
-            // meteor-collection2 is *killing* us here when we are inserting
-            // a bunch of stuff at once. Turning off all the validation it
-            // does for us gives a huge speed boost.
-            validate: false,
-            filter: false,
-            autoConvert: false,
-            removeEmptyStrings: false,
-            getAutoValues: false,
-          });
+              // meteor-collection2 is *killing* us here when we are inserting
+              // a bunch of stuff at once. Turning off all the validation it
+              // does for us gives a huge speed boost.
+              validate: false,
+              filter: false,
+              autoConvert: false,
+              removeEmptyStrings: false,
+              getAutoValues: false,
+            });
         });
 
         if(softCutoff) {
@@ -377,11 +377,11 @@ Meteor.methods({
         let registration = registrationByWcaJsonId[jsonId];
         let registrationId = Registrations.update(
           registration._id, {
-          $set: {
-            registeredEvents: _.keys(registration.registeredEvents),
-            checkedIn: registration.checkedIn,
-          }
-        });
+            $set: {
+              registeredEvents: _.keys(registration.registeredEvents),
+              checkedIn: registration.checkedIn,
+            }
+          });
       }
     }
 

@@ -39,7 +39,7 @@
   },
   "homepage": "https://live.cubing.net",
   "scripts": {
-    "lint": "(jshint --exclude-path .jshintignore --config .jshintrc . && jscs .)",
+    "lint": "eslint .",
     "test": "meteor test --once --driver-package dispatch:mocha-phantomjs",
     "validate": "npm ls"
   },

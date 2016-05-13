@@ -15,7 +15,11 @@ _.extend(RoundProgress.prototype, {
   }
 });
 
-RoundProgresses = new Mongo.Collection("roundProgresses", { transform: function(doc) { return new RoundProgress(doc); } });
+RoundProgresses = new Mongo.Collection("roundProgresses", {
+  transform: function(doc) {
+    return new RoundProgress(doc);
+  }
+});
 
 Schema.roundProgress = new SimpleSchema({
   roundId: {

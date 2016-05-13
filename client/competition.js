@@ -16,3 +16,4 @@ Template.competition.helpers({
     return $.fullCalendar.formatRange(moment(comp.startDate).utc(), moment(comp.endDate()).utc(), "LL");
   },
 });
+

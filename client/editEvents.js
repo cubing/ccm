@@ -58,10 +58,10 @@ Template.editEvents.events({
     // While it looks weird to method chain collapse, I couldn't get it to work
     // via passing hide:true. You can't just call collapse('hide') because when
     // you  manually call collapse() it defaults to toggling the element.
-    $('#editEventsList .collapse').collapse({toggle:false}).collapse('hide');
+    $('#editEventsList .collapse').collapse({toggle: false}).collapse('hide');
   },
   'click #expandAllEvents': function() {
-    $('#editEventsList .collapse').collapse({toggle:false}).collapse('show');
+    $('#editEventsList .collapse').collapse({toggle: false}).collapse('show');
   },
 });
 

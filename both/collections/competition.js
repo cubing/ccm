@@ -277,7 +277,12 @@ DEFAULT_STAFF_ROLES = {
   dataEntry: true,
 };
 
-Competitions = new Mongo.Collection("competitions", { transform: function(doc) { return new Competition(doc); } });
+Competitions = new Mongo.Collection("competitions", {
+  transform: function(doc) {
+    return new Competition(doc);
+  }
+});
+
 Schema.competition = new SimpleSchema({
   competitionName: {
     type: String,
@@ -307,7 +312,9 @@ Schema.competition = new SimpleSchema({
       let obj = validationObject(this, ['calendarStartMinutes']);
 
       let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
-      if(_.any(events, function(event) { return event.startMinutes < obj.calendarStartMinutes; })) {
+      if(_.any(events, function(event) {
+        return event.startMinutes < obj.calendarStartMinutes;
+      })) {
         return "earlierExistingEvents";
       }
     },
@@ -326,7 +333,9 @@ Schema.competition = new SimpleSchema({
       }
 
       let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
-      if(_.any(events, function(event) { return event.endMinutes() > obj.calendarEndMinutes; })) {
+      if(_.any(events, function(event) {
+        return event.endMinutes() > obj.calendarEndMinutes;
+      })) {
         return "laterExistingEvents";
       }
     },
@@ -352,7 +361,9 @@ Schema.competition = new SimpleSchema({
       let obj = validationObject(this, ['numberOfDays']);
 
       let events = ScheduleEvents.find({competitionId: obj.id}).fetch();
-      if(_.any(events, function(event) { return event.nthDay >= obj.numberOfDays; })) {
+      if(_.any(events, function(event) {
+        return event.nthDay >= obj.numberOfDays;
+      })) {
         return "laterDayExistingEvents";
       }
     },

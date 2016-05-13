@@ -17,7 +17,11 @@ _.extend(ScheduleEvent.prototype, {
   }
 });
 
-ScheduleEvents = new Mongo.Collection("scheduleEvents", { transform: function(doc) { return new ScheduleEvent(doc); } });
+ScheduleEvents = new Mongo.Collection("scheduleEvents", {
+  transform: function(doc) {
+    return new ScheduleEvent(doc);
+  }
+});
 
 Schema.scheduleEvent = new SimpleSchema({
   competitionId: {
@@ -84,8 +88,8 @@ Schema.scheduleEvent = new SimpleSchema({
 
 Schema.scheduleEvent.messages({
   tooLateDay: "Event scheduled on day after competition ended.",
-  tooEarly:   "Event scheduled before competition day starts.",
-  tooLate:    "Event scheduled after competition day ends.",
+  tooEarly: "Event scheduled before competition day starts.",
+  tooLate: "Event scheduled after competition day ends.",
 });
 
 ScheduleEvents.attachSchema(Schema.scheduleEvent);

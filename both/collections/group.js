@@ -9,7 +9,11 @@ _.extend(Group.prototype, {
   },
 });
 
-Groups = new Mongo.Collection("groups", { transform: function(doc) { return new Group(doc); } });
+Groups = new Mongo.Collection("groups", {
+  transform: function(doc) {
+    return new Group(doc);
+  }
+});
 
 Schema.group = new SimpleSchema({
   competitionId: {

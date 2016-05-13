@@ -6,7 +6,9 @@ Template.editSchedule.helpers({
   },
   sortedRounds: function() {
     let allRounds = Rounds.find({ competitionId: this.competitionId }).fetch();
-    return _.sortBy(allRounds, function(round) { return round.displayTitle(); });
+    return _.sortBy(allRounds, function(round) {
+      return round.displayTitle();
+    });
   },
   eventToEdit: function() {
     return eventToEditReact.get();

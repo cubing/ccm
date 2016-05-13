@@ -41,12 +41,12 @@ _.extend(Round.prototype, {
 
   resultSortOrder() {
     switch(this.format().sortBy) {
-    case "best":
-      return {sortableBestValue: 1};
-    case "average":
-      return {sortableAverageValue: 1, sortableBestValue: 1};
-    default:
-      throw new Error(`Unknown format sortBy '${sortBy}'`);
+      case "best":
+        return {sortableBestValue: 1};
+      case "average":
+        return {sortableAverageValue: 1, sortableBestValue: 1};
+      default:
+        throw new Error(`Unknown format sortBy '${sortBy}'`);
     }
   },
 
@@ -109,16 +109,16 @@ _.extend(Round.prototype, {
       if(previousResult) {
         let tiedBest = wca.compareSolveTimes(result.solves[result.bestIndex], previousResult.solves[previousResult.bestIndex]) === 0;
         switch(this.format().sortBy) {
-        case "best":
-          tied = tiedBest;
-          break;
-        case "average":
-          let tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
-          tied = tiedAverage && tiedBest;
-          break;
-        default:
-          // uh-oh, unrecognized roundFormat, give up
-          assert(false);
+          case "best":
+            tied = tiedBest;
+            break;
+          case "average":
+            let tiedAverage = wca.compareSolveTimes(result.average, previousResult.average) === 0;
+            tied = tiedAverage && tiedBest;
+            break;
+          default:
+            // uh-oh, unrecognized roundFormat, give up
+            assert(false);
         }
       }
       if(!tied) {
@@ -284,7 +284,11 @@ _.extend(Round.prototype, {
   },
 });
 
-Rounds = new Mongo.Collection("rounds", { transform: function(doc) { return new Round(doc); } });
+Rounds = new Mongo.Collection("rounds", {
+  transform: function(doc) {
+    return new Round(doc);
+  }
+});
 
 Schema.round = new SimpleSchema({
   competitionId: {

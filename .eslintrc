@@ -1,0 +1,66 @@
+{
+  parserOptions: {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "globals": {},
+  "rules": {
+    "semi": 2,
+    "no-unused-expressions": 2,
+    "no-loop-func": 2,
+    "curly": [2, "all"],
+    "no-eval": 0,
+    "no-undef": 0,
+    "indent": [2, 2, {
+        "SwitchCase": 1
+      }
+    ],
+    "no-trailing-spaces": 2,
+    "operator-linebreak": [2, "after"],
+    "wrap-iife": 2,
+    "comma-style": [2, "last"],
+    "keyword-spacing": [2, {
+        "overrides": {
+          "if": {
+            "after": false
+          },
+          "for": {
+            "after": false
+          },
+          "while": {
+            "after": false
+          },
+          "switch": {
+            "after": false
+          },
+          "catch": {
+            "after": false
+          }
+        }
+      }
+    ],
+    "eol-last": 2,
+    "linebreak-style": [2, "unix"],
+    "no-with": 2,
+    "brace-style": 2,
+    "space-before-function-paren": [2, "never"],
+    "key-spacing": [2, {
+        "beforeColon": false,
+        "afterColon": true
+      }
+    ],
+    "space-unary-ops": [2, {
+        "words": false,
+        "nonwords": false
+      }
+    ]
+  },
+  "plugins": ["meteor"]
+}

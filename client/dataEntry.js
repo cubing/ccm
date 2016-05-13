@@ -114,7 +114,9 @@ Template.roundDataEntry.rendered = function() {
     displayKey: function(result) {
       return result.registration.uniqueName;
     },
-    source: substringMatcher(function() { return results; }, 'registration.uniqueName'),
+    source: substringMatcher(function() {
+      return results;
+    }, 'registration.uniqueName'),
   });
 };
 
