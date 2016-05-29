@@ -51,54 +51,18 @@
         </div>
 
         <div class="panel-body">
-
-          <div class="row">
-            <div class="col-sm-6">
-              {{> afQuickField name="startDate" }}
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group">
-                <label class="control-label">&nbsp;</label>
-                <p class="form-control-static">
-                  <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>
-                </p>
-              </div>
-            </div>
-          </div>
-
           {{> afQuickField name="competitionName" }}
 
-          <div class="form-group">
-            <label class="control-label">Location</label>
-            {{> competitionLocationMap location=defaultCompetitionDataDocument.location}}
-            {{> afFieldInput name="location.lng" type="hidden" }}
-            {{> afFieldInput name="location.lat" type="hidden" }}
-            {{> afFieldInput name="location.addressText" type="hidden" }}
+          <div class="row">
+            <div class="col-sm-12">
+              <label class="control-label">&nbsp;</label>
+              <p class="form-control-static">
+                <a href="{{pathFor 'editSchedule' competitionUrlId=competitionUrlId}}">Adjust schedule</a>
+              </p>
+            </div>
           </div>
 
         </div>
-      </div>
-
-      <div class="row">
-        <div id="competitionRegistrationSettings" class="col-sm-6">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">
-                Registration settings
-              </h3>
-            </div>
-            <div class="panel-body">
-
-              {{> afQuickField name="registrationOpenDate" }}
-              {{> afQuickField name="registrationCloseDate" }}
-              {{> afQuickField name="registrationAskAboutGuests" }}
-
-              {{> afQuickField name="registrationParticipantLimitCount" }}
-              {{> afQuickField name="registrationAttendeeLimitCount" }}
-
-            </div>
-          </div><!-- /.panel -->
-        </div><!-- /#competitionRegistrationSettings -->
       </div>
     {{/autoForm}}
 
@@ -108,7 +72,7 @@
       </button>
     </p>
     {{#ccmModal id="modalConfirmDeleteCompetition"}}
-      {{#ccmHeader}} Are you sure you want to delete this competition? {{/ccmHeader}}
+      {{#ccmHeader}}  Are you sure you want to delete this competition? {{/ccmHeader}}
       <div class="modal-body">
         <p>Deleting this competition is permanent and irreversible.</p>
       </div>

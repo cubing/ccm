@@ -136,10 +136,6 @@ Template.layout.helpers({
         icon: 'glyphicon glyphicon-calendar',
         text: 'Schedule',
       }, {
-        route: 'competitionRegistration',
-        icon: 'fa fa-list',
-        text: 'Registration',
-      }, {
         route: 'roundResults',
         icon: 'fa fa-trophy',
         text: 'Results',
