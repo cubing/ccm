@@ -1,30 +1,3 @@
 <template name="exportResults">
-  <div class="container">
-
-    <h4>Export Results</h4>
-    <hr>
-
-    <button id="buttonGenerateWcaResults" class="btn btn-default">Generate WCA JSON</button>
-
-    <div>
-      <ul class="list-group problemsList">
-        {{#each problems}}
-          <li class="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
-            {{message}}
-            {{#if fixUrl}}
-              <a href="{{fixUrl}}" class="pull-right">
-                <span class="glyphicon glyphicon-wrench"></span>
-              </a>
-            {{/if}}
-          </li>
-        {{else}}
-          <li class="list-group-item list-group-item-success">
-            No problems detected with the results.
-          </li>
-        {{/each}}
-      </ul>
-      <pre class="resultsJson">{{wcaResultsJson}}</pre>
-    </div>
-
-  </div>
+  <div class="reactRenderArea"></div>
 </template>

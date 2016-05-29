@@ -33,11 +33,6 @@ const CompetitionView = React.createClass({
             <a href={`${competitionUrlId}/schedule`}>{this.dateInterval()}</a> : 'Unscheduled'
           }
         </p>
-        <p>
-          <a href={`${competitionUrlId}/registration`}>
-            {this.registeredForCompetition() ? 'Edit registration': 'Register here'}
-          </a>
-        </p>
       </div>
     );
   }
@@ -45,7 +40,6 @@ const CompetitionView = React.createClass({
 
 Template.competition.rendered = function () {
   let template = this;
-  console.log(template);
   template.autorun(() => {
     ReactDOM.render(
       <CompetitionView 
