@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 const ExportResultsView = React.createClass({
-  getInitialState () {
+  getInitialState() {
     return {
       wcaResults: null,
       exportProblems: []
@@ -36,7 +36,7 @@ const ExportResultsView = React.createClass({
     });
   },
 
-  render () {
+  render() {
     let {wcaResults, exportProblems } = this.state;
 
     return (
@@ -48,14 +48,14 @@ const ExportResultsView = React.createClass({
 
         <div>
           <ul className="list-group problemsList">
-            {exportProblems.map((problem, index) => 
+            {exportProblems.map((problem, index) =>
               <li key={index} className="list-group-item {{#if warning}}list-group-item-warning{{/if}} {{#if error}}list-group-item-danger{{/if}}">
                 {problem.message}
-                {problem.fixUrl ? 
+                {problem.fixUrl ?
                   <a href="{problem.fixUrl}" className="pull-right">
                     <span className="glyphicon glyphicon-wrench"></span>
-                  </a>
-                : null}
+                  </a> :
+                null}
               </li>
             )}
           </ul>
@@ -67,15 +67,15 @@ const ExportResultsView = React.createClass({
   }
 });
 
-Template.exportResults.rendered = function () {
+Template.exportResults.rendered = function() {
   let template = this;
   template.autorun(() => {
     ReactDOM.render(
-      <ExportResultsView 
+      <ExportResultsView
         competitionId={template.data.competitionId}
         competitionUrlId={template.data.competitionUrlId}
         userId={Meteor.userId()}/>,
         template.$(".reactRenderArea")[0]
     );
   });
-}
+};
