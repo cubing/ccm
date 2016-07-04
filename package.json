@@ -39,7 +39,7 @@
   },
   "homepage": "https://live.cubing.net",
   "scripts": {
-    "lint": "eslint .",
+    "lint": "./node_modules/eslint/bin/eslint.js .",
     "start": "VELOCITY=0 meteor",
     "test": "meteor test --once --driver-package dispatch:mocha-phantomjs",
     "validate": "npm ls"

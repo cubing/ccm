@@ -10,7 +10,9 @@
     "node": true,
     "es6": true
   },
-  "globals": {},
+  "globals": {
+    "meteor": true,
+  },
   "rules": {
     "semi": 2,
     "no-unused-expressions": 2,

@@ -20,6 +20,7 @@ const EditProfileView = React.createClass({
     let logoutButton = (
       <button className='btn btn-sm' id='logout-button' onClick={this.logOut}>Log Out</button>
     );
+    console.log(user.services.worldcubeassociation);
 
     return (
       <div class="container">
@@ -48,7 +49,7 @@ const EditProfileView = React.createClass({
           <p><b>Date Of Birth</b>: {this.birthdate()}</p>
           <p><b>WcaId</b>: {user.profile.wcaId}</p>
           <b>Avatar</b>:<br/>
-          {user.services.worldcubeassociation.avatar ? 
+          {user.services.worldcubeassociation && user.services.worldcubeassociation.avatar ? 
             <img src={user.services.worldcubeassociation.avatar.thumb_url}/>
           : null}
         </div>

@@ -6,7 +6,7 @@ const ExportResultsView = React.createClass({
     return {
       wcaResults: null,
       exportProblems: []
-    }
+    };
   },
 
   wcaResultsJson: function() {
@@ -19,7 +19,7 @@ const ExportResultsView = React.createClass({
     return wcaResultsJson;
   },
 
-  generateWcaResults () {
+  generateWcaResults() {
     Meteor.call('exportWcaResults', this.props.competitionId, this.props.competitionUrlId, (err, result) => {
       if(err) {
         console.error("Meteor.call() error: " + err);

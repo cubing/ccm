@@ -1,0 +1,2478 @@
+{
+  "formatVersion": "WCA Competition 0.3",
+  "resultsProgram": "CCM",
+  "competitionId": "AtomicCubing2016",
+  "persons": [
+    {
+      "id": "qTBYPDc6kt79KT33W",
+      "name": "Luke Tycksen",
+      "wcaId": "2012TYCK01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "Q5TT3akyi3AMGNhGy",
+      "name": "Jeremy Fleischman",
+      "wcaId": "2005FLEI01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "SzF4tasxyRMKg7WQb",
+      "name": "Kit Clement",
+      "wcaId": "2008CLEM01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "k2CDxCi8BmMYGgzcM",
+      "name": "Max Hilliard",
+      "wcaId": "2015HILL09",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "CrD4Ddw9rvMYouCkr",
+      "name": "Tyler Halgren",
+      "wcaId": "2015HALG01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "r7kcG8D3w5sxGBhMT",
+      "name": "Michael Zavalza",
+      "wcaId": "2012ZAVA01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "KHvvhnMKbdCJum3at",
+      "name": "Matthew Dickman",
+      "wcaId": "2013DICK01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "JcMSfWmtor57Mqtwa",
+      "name": "Jason Hunt",
+      "wcaId": "2014HUNT01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "gKFSAnZsCaBaxzMo8",
+      "name": "Caleb Hoover",
+      "wcaId": "2016HOOV01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "e3Dz78RrodYA5ocwb",
+      "name": "Darius Burt",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "XiR3nShnn8m9v4k3D",
+      "name": "Lyrik Davis",
+      "wcaId": "2015DAVI03",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "a24CqkLFc7C5se3Hw",
+      "name": "Logan Wagner",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "8T4QcQke2BqPD8CrE",
+      "name": "Kenny Quintana",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "2iWNcmreyEQjLX4j7",
+      "name": "Eli Armstrong",
+      "wcaId": "2014ARMS02",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "PhvwdMqTvvzHr7EYJ",
+      "name": "John Luczkow",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "BhkoibSFRxZjHJ6Wu",
+      "name": "Max Hamm",
+      "countryId": "CA",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "2go7g4RzfdGLRtLtN",
+      "name": "Coleman Vaughn",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "Ce5m7Kg9JmFqv5DwC",
+      "name": "Jack Hilliard",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "tFNJRQs8Kie4d4rqz",
+      "name": "Ashton Riggins",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "2cXW2Fu7oto9mS6qD",
+      "name": "Henry Moe",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "BYFahHnPpGX5pjEGF",
+      "name": "Mason McPherson",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "7mgoe7aiZNXx9v6ht",
+      "name": "Lee Odegard",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "D27rDEBPuZ54MChFi",
+      "name": "Lauren Klemz",
+      "wcaId": "2013KLEM01",
+      "countryId": "US",
+      "gender": "f",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "bYryxYnEiakveD82q",
+      "name": "Toby McPherson",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "riLcvbfBZyHedywqA",
+      "name": "Ricky Serrano",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "LPB2PqnEEup4Rkg2Z",
+      "name": "Aiden Marly",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "P7B7XcQY6668sepjo",
+      "name": "Andrew Lewis",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "GufRGraMH92dfN8bK",
+      "name": "Ken Hunt",
+      "wcaId": "2015HUNT01",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "gXEFyrnkygWR2K3QA",
+      "name": "Colleen Hanson",
+      "wcaId": "2015HANS05",
+      "countryId": "US",
+      "gender": "f",
+      "dob": "1800-01-01"
+    },
+    {
+      "id": "HePvrQ4tLwcihy76e",
+      "name": "Schyler Beatty",
+      "countryId": "US",
+      "gender": "m",
+      "dob": "1800-01-01"
+    }
+  ],
+  "events": [
+    {
+      "eventId": "222",
+      "rounds": [
+        {
+          "roundId": "f",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                185,
+                343,
+                347,
+                542,
+                297
+              ],
+              "best": 185,
+              "average": 329
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                462,
+                454,
+                779,
+                409,
+                420
+              ],
+              "best": 409,
+              "average": 445
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 3,
+              "results": [
+                241,
+                540,
+                395,
+                561,
+                531
+              ],
+              "best": 241,
+              "average": 489
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 4,
+              "results": [
+                361,
+                414,
+                467,
+                669,
+                586
+              ],
+              "best": 361,
+              "average": 489
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 5,
+              "results": [
+                325,
+                533,
+                591,
+                637,
+                490
+              ],
+              "best": 325,
+              "average": 538
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 6,
+              "results": [
+                535,
+                625,
+                557,
+                454,
+                616
+              ],
+              "best": 454,
+              "average": 569
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 7,
+              "results": [
+                370,
+                752,
+                456,
+                900,
+                556
+              ],
+              "best": 370,
+              "average": 588
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 8,
+              "results": [
+                290,
+                854,
+                546,
+                807,
+                552
+              ],
+              "best": 290,
+              "average": 635
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 9,
+              "results": [
+                501,
+                702,
+                613,
+                882,
+                601
+              ],
+              "best": 501,
+              "average": 639
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 10,
+              "results": [
+                638,
+                842,
+                910,
+                654,
+                680
+              ],
+              "best": 638,
+              "average": 725
+            }
+          ],
+          "groups": []
+        },
+        {
+          "roundId": "2",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                232,
+                -1,
+                304,
+                350,
+                354
+              ],
+              "best": 232,
+              "average": 336
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 2,
+              "results": [
+                244,
+                400,
+                390,
+                427,
+                278
+              ],
+              "best": 244,
+              "average": 356
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 3,
+              "results": [
+                392,
+                414,
+                421,
+                438,
+                598
+              ],
+              "best": 392,
+              "average": 424
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 4,
+              "results": [
+                472,
+                705,
+                462,
+                414,
+                373
+              ],
+              "best": 373,
+              "average": 449
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 5,
+              "results": [
+                450,
+                496,
+                515,
+                396,
+                634
+              ],
+              "best": 396,
+              "average": 487
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 6,
+              "results": [
+                486,
+                467,
+                481,
+                604,
+                655
+              ],
+              "best": 467,
+              "average": 524
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 7,
+              "results": [
+                501,
+                567,
+                570,
+                486,
+                570
+              ],
+              "best": 486,
+              "average": 546
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 8,
+              "results": [
+                611,
+                738,
+                514,
+                350,
+                581
+              ],
+              "best": 350,
+              "average": 569
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 9,
+              "results": [
+                -1,
+                600,
+                668,
+                584,
+                632
+              ],
+              "best": 584,
+              "average": 633
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 10,
+              "results": [
+                396,
+                564,
+                678,
+                1213,
+                782
+              ],
+              "best": 396,
+              "average": 675
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 11,
+              "results": [
+                425,
+                884,
+                730,
+                841,
+                722
+              ],
+              "best": 425,
+              "average": 764
+            },
+            {
+              "personId": "a24CqkLFc7C5se3Hw",
+              "position": 12,
+              "results": [
+                1048,
+                840,
+                949,
+                813,
+                863
+              ],
+              "best": 813,
+              "average": 884
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 13,
+              "results": [
+                950,
+                870,
+                1442,
+                875,
+                1232
+              ],
+              "best": 870,
+              "average": 1019
+            },
+            {
+              "personId": "2iWNcmreyEQjLX4j7",
+              "position": 14,
+              "results": [
+                989,
+                1064,
+                622,
+                1264,
+                1093
+              ],
+              "best": 622,
+              "average": 1049
+            },
+            {
+              "personId": "PhvwdMqTvvzHr7EYJ",
+              "position": 15,
+              "results": [
+                1141,
+                906,
+                970,
+                1160,
+                1150
+              ],
+              "best": 906,
+              "average": 1087
+            },
+            {
+              "personId": "BhkoibSFRxZjHJ6Wu",
+              "position": 16,
+              "results": [
+                1031,
+                1205,
+                805,
+                1088,
+                1480
+              ],
+              "best": 805,
+              "average": 1108
+            },
+            {
+              "personId": "2go7g4RzfdGLRtLtN",
+              "position": 17,
+              "results": [
+                1336,
+                1354,
+                1660,
+                1421,
+                1117
+              ],
+              "best": 1117,
+              "average": 1370
+            },
+            {
+              "personId": "Ce5m7Kg9JmFqv5DwC",
+              "position": 18,
+              "results": [
+                2665,
+                2397,
+                2692,
+                2446,
+                1633
+              ],
+              "best": 1633,
+              "average": 2503
+            }
+          ],
+          "groups": []
+        },
+        {
+          "roundId": "1",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                603,
+                457,
+                388,
+                351,
+                325
+              ],
+              "best": 325,
+              "average": 399
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 2,
+              "results": [
+                563,
+                491,
+                366,
+                866,
+                429
+              ],
+              "best": 366,
+              "average": 494
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 3,
+              "results": [
+                400,
+                583,
+                657,
+                383,
+                553
+              ],
+              "best": 383,
+              "average": 512
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 4,
+              "results": [
+                484,
+                505,
+                1125,
+                336,
+                573
+              ],
+              "best": 336,
+              "average": 521
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 5,
+              "results": [
+                506,
+                808,
+                559,
+                503,
+                548
+              ],
+              "best": 503,
+              "average": 538
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 6,
+              "results": [
+                492,
+                463,
+                628,
+                -1,
+                554
+              ],
+              "best": 463,
+              "average": 558
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 7,
+              "results": [
+                1080,
+                633,
+                665,
+                469,
+                580
+              ],
+              "best": 469,
+              "average": 626
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 8,
+              "results": [
+                467,
+                595,
+                720,
+                986,
+                763
+              ],
+              "best": 467,
+              "average": 693
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 9,
+              "results": [
+                499,
+                781,
+                841,
+                535,
+                779
+              ],
+              "best": 499,
+              "average": 698
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 10,
+              "results": [
+                894,
+                489,
+                1122,
+                633,
+                975
+              ],
+              "best": 489,
+              "average": 834
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 11,
+              "results": [
+                1039,
+                690,
+                944,
+                509,
+                968
+              ],
+              "best": 509,
+              "average": 867
+            },
+            {
+              "personId": "a24CqkLFc7C5se3Hw",
+              "position": 12,
+              "results": [
+                930,
+                1351,
+                1015,
+                1071,
+                934
+              ],
+              "best": 930,
+              "average": 1007
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 13,
+              "results": [
+                1482,
+                717,
+                1286,
+                946,
+                1291
+              ],
+              "best": 717,
+              "average": 1174
+            },
+            {
+              "personId": "2iWNcmreyEQjLX4j7",
+              "position": 14,
+              "results": [
+                1061,
+                682,
+                2638,
+                1325,
+                1158
+              ],
+              "best": 682,
+              "average": 1181
+            },
+            {
+              "personId": "tFNJRQs8Kie4d4rqz",
+              "position": 15,
+              "results": [
+                2746,
+                854,
+                1116,
+                1046,
+                1388
+              ],
+              "best": 854,
+              "average": 1183
+            },
+            {
+              "personId": "PhvwdMqTvvzHr7EYJ",
+              "position": 16,
+              "results": [
+                1618,
+                1352,
+                1115,
+                919,
+                1638
+              ],
+              "best": 919,
+              "average": 1362
+            },
+            {
+              "personId": "BhkoibSFRxZjHJ6Wu",
+              "position": 17,
+              "results": [
+                1353,
+                2011,
+                1367,
+                1586,
+                1224
+              ],
+              "best": 1224,
+              "average": 1435
+            },
+            {
+              "personId": "Ce5m7Kg9JmFqv5DwC",
+              "position": 18,
+              "results": [
+                1429,
+                1046,
+                1707,
+                1426,
+                1659
+              ],
+              "best": 1046,
+              "average": 1505
+            },
+            {
+              "personId": "2go7g4RzfdGLRtLtN",
+              "position": 19,
+              "results": [
+                1398,
+                1432,
+                1237,
+                1833,
+                1891
+              ],
+              "best": 1237,
+              "average": 1554
+            },
+            {
+              "personId": "2cXW2Fu7oto9mS6qD",
+              "position": 20,
+              "results": [
+                2835,
+                1098,
+                1367,
+                1560,
+                1959
+              ],
+              "best": 1098,
+              "average": 1629
+            },
+            {
+              "personId": "BYFahHnPpGX5pjEGF",
+              "position": 21,
+              "results": [
+                3818,
+                2680,
+                2510,
+                3699,
+                1992
+              ],
+              "best": 1992,
+              "average": 2963
+            },
+            {
+              "personId": "7mgoe7aiZNXx9v6ht",
+              "position": 22,
+              "results": [
+                6680,
+                3348,
+                1351,
+                2948,
+                3457
+              ],
+              "best": 1351,
+              "average": 3251
+            },
+            {
+              "personId": "D27rDEBPuZ54MChFi",
+              "position": 23,
+              "results": [
+                2642,
+                5044,
+                2216,
+                5971,
+                1514
+              ],
+              "best": 1514,
+              "average": 3301
+            },
+            {
+              "personId": "bYryxYnEiakveD82q",
+              "position": 24,
+              "results": [
+                5388,
+                3796,
+                3454,
+                2971,
+                4034
+              ],
+              "best": 2971,
+              "average": 3761
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "333",
+      "rounds": [
+        {
+          "roundId": "2",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                893,
+                892,
+                1165,
+                852,
+                1025
+              ],
+              "best": 852,
+              "average": 937
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                971,
+                1166,
+                1659,
+                1055,
+                1281
+              ],
+              "best": 971,
+              "average": 1167
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 3,
+              "results": [
+                1291,
+                1258,
+                2280,
+                1292,
+                1373
+              ],
+              "best": 1258,
+              "average": 1319
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 4,
+              "results": [
+                1252,
+                1278,
+                1534,
+                1093,
+                1771
+              ],
+              "best": 1093,
+              "average": 1355
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 5,
+              "results": [
+                1610,
+                1477,
+                1367,
+                1239,
+                1589
+              ],
+              "best": 1239,
+              "average": 1478
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 6,
+              "results": [
+                1421,
+                1605,
+                1452,
+                1311,
+                1739
+              ],
+              "best": 1311,
+              "average": 1493
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 7,
+              "results": [
+                1265,
+                1658,
+                1423,
+                2439,
+                1626
+              ],
+              "best": 1265,
+              "average": 1569
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 8,
+              "results": [
+                1525,
+                2161,
+                1597,
+                1650,
+                1422
+              ],
+              "best": 1422,
+              "average": 1591
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 9,
+              "results": [
+                1810,
+                1672,
+                1572,
+                1671,
+                1597
+              ],
+              "best": 1572,
+              "average": 1647
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 10,
+              "results": [
+                1727,
+                2084,
+                1635,
+                1378,
+                2094
+              ],
+              "best": 1378,
+              "average": 1815
+            },
+            {
+              "personId": "PhvwdMqTvvzHr7EYJ",
+              "position": 11,
+              "results": [
+                2261,
+                2054,
+                2427,
+                1648,
+                1834
+              ],
+              "best": 1648,
+              "average": 2050
+            },
+            {
+              "personId": "2iWNcmreyEQjLX4j7",
+              "position": 12,
+              "results": [
+                2585,
+                2313,
+                3352,
+                2308,
+                2305
+              ],
+              "best": 2305,
+              "average": 2402
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 13,
+              "results": [
+                2542,
+                2599,
+                2933,
+                2502,
+                2791
+              ],
+              "best": 2502,
+              "average": 2644
+            },
+            {
+              "personId": "2cXW2Fu7oto9mS6qD",
+              "position": 14,
+              "results": [
+                -1,
+                3103,
+                3777,
+                2741,
+                2285
+              ],
+              "best": 2285,
+              "average": 3207
+            },
+            {
+              "personId": "riLcvbfBZyHedywqA",
+              "position": 15,
+              "results": [
+                3053,
+                3216,
+                4122,
+                3679,
+                3480
+              ],
+              "best": 3053,
+              "average": 3458
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 16,
+              "results": [
+                3269,
+                3680,
+                3305,
+                4058,
+                3560
+              ],
+              "best": 3269,
+              "average": 3515
+            },
+            {
+              "personId": "LPB2PqnEEup4Rkg2Z",
+              "position": 17,
+              "results": [
+                3065,
+                4157,
+                3744,
+                3488,
+                3550
+              ],
+              "best": 3065,
+              "average": 3594
+            },
+            {
+              "personId": "2go7g4RzfdGLRtLtN",
+              "position": 18,
+              "results": [
+                3680,
+                5171,
+                4211,
+                4358,
+                4834
+              ],
+              "best": 3680,
+              "average": 4468
+            },
+            {
+              "personId": "P7B7XcQY6668sepjo",
+              "position": 19,
+              "results": [
+                4768,
+                4085,
+                4439,
+                5523,
+                4884
+              ],
+              "best": 4085,
+              "average": 4697
+            },
+            {
+              "personId": "a24CqkLFc7C5se3Hw",
+              "position": 20,
+              "results": [
+                5422,
+                4732,
+                3215,
+                4041,
+                8185
+              ],
+              "best": 3215,
+              "average": 4732
+            },
+            {
+              "personId": "GufRGraMH92dfN8bK",
+              "position": 21,
+              "results": [
+                5714,
+                4806,
+                4363,
+                5216,
+                4210
+              ],
+              "best": 4210,
+              "average": 4795
+            }
+          ],
+          "groups": []
+        },
+        {
+          "roundId": "f",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                970,
+                1285,
+                848,
+                975,
+                816
+              ],
+              "best": 816,
+              "average": 931
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                1014,
+                1252,
+                1019,
+                1176,
+                984
+              ],
+              "best": 984,
+              "average": 1070
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 3,
+              "results": [
+                1292,
+                1148,
+                2710,
+                1126,
+                1455
+              ],
+              "best": 1126,
+              "average": 1298
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 4,
+              "results": [
+                1530,
+                1098,
+                1410,
+                1340,
+                1354
+              ],
+              "best": 1098,
+              "average": 1368
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 5,
+              "results": [
+                1186,
+                1463,
+                1643,
+                1526,
+                1302
+              ],
+              "best": 1186,
+              "average": 1430
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 6,
+              "results": [
+                1733,
+                1630,
+                1367,
+                1213,
+                1537
+              ],
+              "best": 1213,
+              "average": 1511
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 7,
+              "results": [
+                1594,
+                1498,
+                1669,
+                1410,
+                1467
+              ],
+              "best": 1410,
+              "average": 1520
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 8,
+              "results": [
+                1605,
+                1823,
+                1619,
+                1402,
+                1517
+              ],
+              "best": 1402,
+              "average": 1580
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 9,
+              "results": [
+                1594,
+                1574,
+                1454,
+                -1,
+                1668
+              ],
+              "best": 1454,
+              "average": 1612
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 10,
+              "results": [
+                1589,
+                1773,
+                1809,
+                1474,
+                1592
+              ],
+              "best": 1474,
+              "average": 1651
+            }
+          ],
+          "groups": []
+        },
+        {
+          "roundId": "1",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                1079,
+                801,
+                926,
+                836,
+                1075
+              ],
+              "best": 801,
+              "average": 946
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                1145,
+                1074,
+                1119,
+                1304,
+                1089
+              ],
+              "best": 1074,
+              "average": 1118
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 3,
+              "results": [
+                1347,
+                1379,
+                1376,
+                1254,
+                1330
+              ],
+              "best": 1254,
+              "average": 1351
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 4,
+              "results": [
+                1427,
+                1335,
+                1196,
+                1565,
+                1843
+              ],
+              "best": 1196,
+              "average": 1442
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 5,
+              "results": [
+                1286,
+                1344,
+                1624,
+                1533,
+                1684
+              ],
+              "best": 1286,
+              "average": 1500
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 6,
+              "results": [
+                1854,
+                1462,
+                1477,
+                1615,
+                1526
+              ],
+              "best": 1462,
+              "average": 1539
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 7,
+              "results": [
+                1514,
+                1653,
+                1967,
+                1716,
+                1414
+              ],
+              "best": 1414,
+              "average": 1628
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 8,
+              "results": [
+                2044,
+                1577,
+                1639,
+                1493,
+                1747
+              ],
+              "best": 1493,
+              "average": 1654
+            },
+            {
+              "personId": "e3Dz78RrodYA5ocwb",
+              "position": 9,
+              "results": [
+                1331,
+                1775,
+                1708,
+                1659,
+                1882
+              ],
+              "best": 1331,
+              "average": 1714
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 10,
+              "results": [
+                2811,
+                1634,
+                2249,
+                1413,
+                1589
+              ],
+              "best": 1413,
+              "average": 1824
+            },
+            {
+              "personId": "2iWNcmreyEQjLX4j7",
+              "position": 11,
+              "results": [
+                2735,
+                1891,
+                3056,
+                2287,
+                1988
+              ],
+              "best": 1891,
+              "average": 2337
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 12,
+              "results": [
+                2397,
+                2234,
+                2595,
+                1974,
+                2498
+              ],
+              "best": 1974,
+              "average": 2376
+            },
+            {
+              "personId": "2cXW2Fu7oto9mS6qD",
+              "position": 13,
+              "results": [
+                4158,
+                2757,
+                3619,
+                3608,
+                2784
+              ],
+              "best": 2757,
+              "average": 3337
+            },
+            {
+              "personId": "riLcvbfBZyHedywqA",
+              "position": 14,
+              "results": [
+                2956,
+                4282,
+                3032,
+                3437,
+                3702
+              ],
+              "best": 2956,
+              "average": 3390
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 15,
+              "results": [
+                3230,
+                3445,
+                6439,
+                3955,
+                3087
+              ],
+              "best": 3087,
+              "average": 3543
+            },
+            {
+              "personId": "a24CqkLFc7C5se3Hw",
+              "position": 16,
+              "results": [
+                3513,
+                3934,
+                3644,
+                3500,
+                5086
+              ],
+              "best": 3500,
+              "average": 3697
+            },
+            {
+              "personId": "PhvwdMqTvvzHr7EYJ",
+              "position": 17,
+              "results": [
+                3551,
+                -1,
+                5945,
+                2715,
+                2378
+              ],
+              "best": 2378,
+              "average": 4070
+            },
+            {
+              "personId": "LPB2PqnEEup4Rkg2Z",
+              "position": 18,
+              "results": [
+                3701,
+                4794,
+                4249,
+                3727,
+                4381
+              ],
+              "best": 3701,
+              "average": 4119
+            },
+            {
+              "personId": "GufRGraMH92dfN8bK",
+              "position": 19,
+              "results": [
+                4631,
+                4539,
+                4000,
+                4737,
+                4075
+              ],
+              "best": 4000,
+              "average": 4415
+            },
+            {
+              "personId": "P7B7XcQY6668sepjo",
+              "position": 20,
+              "results": [
+                4085,
+                4646,
+                5472,
+                5635,
+                4309
+              ],
+              "best": 4085,
+              "average": 4809
+            },
+            {
+              "personId": "2go7g4RzfdGLRtLtN",
+              "position": 21,
+              "results": [
+                4552,
+                3474,
+                10336,
+                4884,
+                5054
+              ],
+              "best": 3474,
+              "average": 4830
+            },
+            {
+              "personId": "gXEFyrnkygWR2K3QA",
+              "position": 22,
+              "results": [
+                4021,
+                4074,
+                6324,
+                8251,
+                5055
+              ],
+              "best": 4021,
+              "average": 5151
+            },
+            {
+              "personId": "tFNJRQs8Kie4d4rqz",
+              "position": 23,
+              "results": [
+                5004,
+                4529,
+                7480,
+                6004,
+                5634
+              ],
+              "best": 4529,
+              "average": 5547
+            },
+            {
+              "personId": "HePvrQ4tLwcihy76e",
+              "position": 24,
+              "results": [
+                4591,
+                6003,
+                5664,
+                5506,
+                10902
+              ],
+              "best": 4591,
+              "average": 5724
+            },
+            {
+              "personId": "BYFahHnPpGX5pjEGF",
+              "position": 25,
+              "results": [
+                6371,
+                6887,
+                5301,
+                5303,
+                12356
+              ],
+              "best": 5301,
+              "average": 6187
+            },
+            {
+              "personId": "D27rDEBPuZ54MChFi",
+              "position": 26,
+              "results": [
+                5146,
+                8574,
+                5693,
+                10403,
+                3651
+              ],
+              "best": 3651,
+              "average": 6471
+            },
+            {
+              "personId": "7mgoe7aiZNXx9v6ht",
+              "position": 27,
+              "results": [
+                7966,
+                8852,
+                7256,
+                5286,
+                6445
+              ],
+              "best": 5286,
+              "average": 7222
+            },
+            {
+              "personId": "Ce5m7Kg9JmFqv5DwC",
+              "position": 28,
+              "results": [
+                10257,
+                5804,
+                7189,
+                9118,
+                7396
+              ],
+              "best": 5804,
+              "average": 7901
+            },
+            {
+              "personId": "bYryxYnEiakveD82q",
+              "position": 29,
+              "results": [
+                8667,
+                14593,
+                -1,
+                13230,
+                13285
+              ],
+              "best": 8667,
+              "average": 13703
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "444",
+      "rounds": [
+        {
+          "roundId": "c",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                3904,
+                2823,
+                3753,
+                4136,
+                3433
+              ],
+              "best": 2823,
+              "average": 3697
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                6098,
+                5232,
+                6296,
+                5251,
+                4765
+              ],
+              "best": 4765,
+              "average": 5527
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 3,
+              "results": [
+                5924,
+                6239,
+                5203,
+                5876,
+                5902
+              ],
+              "best": 5203,
+              "average": 5901
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 4,
+              "results": [
+                6550,
+                6668,
+                5286,
+                6202,
+                5756
+              ],
+              "best": 5286,
+              "average": 6169
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 5,
+              "results": [
+                6814,
+                7862,
+                6651,
+                6445,
+                7309
+              ],
+              "best": 6445,
+              "average": 6925
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 6,
+              "results": [
+                8005,
+                13582,
+                7628,
+                6213,
+                6008
+              ],
+              "best": 6008,
+              "average": 7282
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 7,
+              "results": [
+                8130,
+                9522,
+                7793,
+                5988,
+                8483
+              ],
+              "best": 5988,
+              "average": 8135
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 8,
+              "results": [
+                7609,
+                8990,
+                7956,
+                9522,
+                9958
+              ],
+              "best": 7609,
+              "average": 8823
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 9,
+              "results": [
+                8974,
+                10180,
+                11024,
+                9083,
+                9860
+              ],
+              "best": 8974,
+              "average": 9708
+            },
+            {
+              "personId": "PhvwdMqTvvzHr7EYJ",
+              "position": 10,
+              "results": [
+                12979,
+                10490,
+                11778,
+                15106,
+                13955
+              ],
+              "best": 10490,
+              "average": 12904
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 11,
+              "results": [
+                12243,
+                12404,
+                0,
+                0,
+                0
+              ],
+              "best": 12243,
+              "average": 0
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 12,
+              "results": [
+                15018,
+                13439,
+                0,
+                0,
+                0
+              ],
+              "best": 13439,
+              "average": 0
+            },
+            {
+              "personId": "2go7g4RzfdGLRtLtN",
+              "position": 13,
+              "results": [
+                18349,
+                15715,
+                0,
+                0,
+                0
+              ],
+              "best": 15715,
+              "average": 0
+            },
+            {
+              "personId": "D27rDEBPuZ54MChFi",
+              "position": 14,
+              "results": [
+                23267,
+                20564,
+                0,
+                0,
+                0
+              ],
+              "best": 20564,
+              "average": 0
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "777",
+      "rounds": [
+        {
+          "roundId": "f",
+          "formatId": "m",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                24620,
+                21050,
+                22877
+              ],
+              "best": 21050,
+              "average": 22849
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 2,
+              "results": [
+                30039,
+                33326,
+                30527
+              ],
+              "best": 30039,
+              "average": 31297
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 3,
+              "results": [
+                46148,
+                50355,
+                41278
+              ],
+              "best": 41278,
+              "average": 45927
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "333oh",
+      "rounds": [
+        {
+          "roundId": "f",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 1,
+              "results": [
+                1797,
+                1731,
+                1832,
+                1828,
+                1768
+              ],
+              "best": 1731,
+              "average": 1798
+            },
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 2,
+              "results": [
+                1757,
+                1794,
+                2251,
+                2114,
+                1959
+              ],
+              "best": 1757,
+              "average": 1956
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 3,
+              "results": [
+                2192,
+                1999,
+                3244,
+                2859,
+                2873
+              ],
+              "best": 1999,
+              "average": 2641
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 4,
+              "results": [
+                2541,
+                2784,
+                2509,
+                3085,
+                3147
+              ],
+              "best": 2509,
+              "average": 2803
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 5,
+              "results": [
+                3591,
+                2607,
+                3253,
+                3219,
+                3114
+              ],
+              "best": 2607,
+              "average": 3195
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 6,
+              "results": [
+                3995,
+                3618,
+                3207,
+                3167,
+                2897
+              ],
+              "best": 2897,
+              "average": 3331
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 7,
+              "results": [
+                3437,
+                4029,
+                3398,
+                3534,
+                2993
+              ],
+              "best": 2993,
+              "average": 3456
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 8,
+              "results": [
+                3295,
+                3649,
+                4173,
+                4308,
+                2871
+              ],
+              "best": 2871,
+              "average": 3706
+            }
+          ],
+          "groups": []
+        },
+        {
+          "roundId": "1",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                1497,
+                1756,
+                1548,
+                1598,
+                1614
+              ],
+              "best": 1497,
+              "average": 1587
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 2,
+              "results": [
+                1727,
+                1294,
+                1740,
+                1639,
+                2450
+              ],
+              "best": 1294,
+              "average": 1702
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 3,
+              "results": [
+                2255,
+                3338,
+                1790,
+                2578,
+                2242
+              ],
+              "best": 1790,
+              "average": 2358
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 4,
+              "results": [
+                3378,
+                2318,
+                2298,
+                3457,
+                3066
+              ],
+              "best": 2298,
+              "average": 2921
+            },
+            {
+              "personId": "r7kcG8D3w5sxGBhMT",
+              "position": 5,
+              "results": [
+                2958,
+                2370,
+                2389,
+                3824,
+                3491
+              ],
+              "best": 2370,
+              "average": 2946
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 6,
+              "results": [
+                4597,
+                3688,
+                3457,
+                3674,
+                3312
+              ],
+              "best": 3312,
+              "average": 3606
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 7,
+              "results": [
+                4390,
+                3266,
+                4146,
+                4921,
+                2808
+              ],
+              "best": 2808,
+              "average": 3934
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 8,
+              "results": [
+                3833,
+                4011,
+                4099,
+                4618,
+                3440
+              ],
+              "best": 3440,
+              "average": 3981
+            },
+            {
+              "personId": "JcMSfWmtor57Mqtwa",
+              "position": 9,
+              "results": [
+                4281,
+                5229,
+                3600,
+                4085,
+                4889
+              ],
+              "best": 3600,
+              "average": 4418
+            },
+            {
+              "personId": "XiR3nShnn8m9v4k3D",
+              "position": 10,
+              "results": [
+                6744,
+                4610,
+                4646,
+                4968,
+                -1
+              ],
+              "best": 4610,
+              "average": 5453
+            },
+            {
+              "personId": "2iWNcmreyEQjLX4j7",
+              "position": 11,
+              "results": [
+                9966,
+                10930,
+                6477,
+                10453,
+                9108
+              ],
+              "best": 6477,
+              "average": 9842
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "sq1",
+      "rounds": [
+        {
+          "roundId": "c",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 1,
+              "results": [
+                2044,
+                2153,
+                2835,
+                1635,
+                2310
+              ],
+              "best": 1635,
+              "average": 2169
+            },
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 2,
+              "results": [
+                2405,
+                1801,
+                2597,
+                2685,
+                2961
+              ],
+              "best": 1801,
+              "average": 2562
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 3,
+              "results": [
+                -1,
+                3643,
+                5362,
+                6758,
+                6260
+              ],
+              "best": 3643,
+              "average": 6127
+            },
+            {
+              "personId": "k2CDxCi8BmMYGgzcM",
+              "position": 4,
+              "results": [
+                5998,
+                7692,
+                6187,
+                7299,
+                7540
+              ],
+              "best": 5998,
+              "average": 7009
+            },
+            {
+              "personId": "CrD4Ddw9rvMYouCkr",
+              "position": 5,
+              "results": [
+                -1,
+                7937,
+                0,
+                0,
+                0
+              ],
+              "best": 7937,
+              "average": 0
+            },
+            {
+              "personId": "Q5TT3akyi3AMGNhGy",
+              "position": 6,
+              "results": [
+                17621,
+                9118,
+                0,
+                0,
+                0
+              ],
+              "best": 9118,
+              "average": 0
+            },
+            {
+              "personId": "gKFSAnZsCaBaxzMo8",
+              "position": 7,
+              "results": [
+                13241,
+                9186,
+                0,
+                0,
+                0
+              ],
+              "best": 9186,
+              "average": 0
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "clock",
+      "rounds": [
+        {
+          "roundId": "c",
+          "formatId": "a",
+          "results": [
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 1,
+              "results": [
+                831,
+                671,
+                666,
+                -1,
+                998
+              ],
+              "best": 666,
+              "average": 833
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 2,
+              "results": [
+                1343,
+                1327,
+                1145,
+                1262,
+                1125
+              ],
+              "best": 1125,
+              "average": 1245
+            },
+            {
+              "personId": "D27rDEBPuZ54MChFi",
+              "position": 3,
+              "results": [
+                1766,
+                1675,
+                2898,
+                1690,
+                1822
+              ],
+              "best": 1675,
+              "average": 1759
+            },
+            {
+              "personId": "8T4QcQke2BqPD8CrE",
+              "position": 4,
+              "results": [
+                -1,
+                4716,
+                -1,
+                -1,
+                -1
+              ],
+              "best": 4716,
+              "average": -1
+            },
+            {
+              "personId": "7mgoe7aiZNXx9v6ht",
+              "position": 5,
+              "results": [
+                -1,
+                7115,
+                0,
+                0,
+                0
+              ],
+              "best": 7115,
+              "average": 0
+            },
+            {
+              "personId": "qTBYPDc6kt79KT33W",
+              "position": 6,
+              "results": [
+                -1,
+                -1,
+                0,
+                0,
+                0
+              ],
+              "best": -1,
+              "average": 0
+            }
+          ],
+          "groups": []
+        }
+      ]
+    },
+    {
+      "eventId": "333mbf",
+      "rounds": [
+        {
+          "roundId": "f",
+          "formatId": "1",
+          "results": [
+            {
+              "personId": "SzF4tasxyRMKg7WQb",
+              "position": 1,
+              "results": [
+                970344902
+              ],
+              "best": 970344902,
+              "average": 0
+            },
+            {
+              "personId": "KHvvhnMKbdCJum3at",
+              "position": 2,
+              "results": [
+                980163702
+              ],
+              "best": 980163702,
+              "average": 0
+            },
+            {
+              "personId": "7mgoe7aiZNXx9v6ht",
+              "position": 3,
+              "results": [
+                -1
+              ],
+              "best": -1,
+              "average": 0
+            }
+          ],
+          "groups": []
+        }
+      ]
+    }
+  ]
+}
