@@ -1,30 +1,3 @@
 <template name="editProfile">
-  <div class="container">
-    <h4>
-      Your profile
-      <small>
-        {{#if currentUser}}
-          (We got this information from your account on
-          <a href="https://www.worldcubeassociation.org" target="_blank">worldcubeassociation.org</a>.
-          If any of it looks wrong,
-          <a href="https://www.worldcubeassociation.org/profile/edit" target="_blank">edit your WCA account</a>,
-          and <button class="btn btn-sm" id="logout-button">log out</button> and log right back in.)
-        {{else}}
-          Ok, now log back in!
-        {{/if}}
-      </small>
-    </h4>
-    <hr />
-
-    <p class="text-center">
-      <h1>
-        {{currentUser.profile.name}} <span class="flag-icon flag-icon-{{countryId}}"></span>
-      </h1>
-      <h2>{{birthdate}}</h2>
-      <h2>{{currentUser.profile.wcaId}}</h2>
-      {{#if currentUser.services.worldcubeassociation.avatar}}
-        <img src="{{currentUser.services.worldcubeassociation.avatar.thumb_url}}">
-      {{/if}}
-    </p>
-  </div>
+  <div class="reactRenderArea"></div>
 </template>

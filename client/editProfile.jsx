@@ -14,7 +14,7 @@ const EditProfileView = React.createClass({
     return this.props.user ? this.props.user.profile.countryId.toLowerCase() : null;
   },
 
-  render() {
+  render () {
     let {user} = this.props;
 
     let logoutButton = (
@@ -33,8 +33,8 @@ const EditProfileView = React.createClass({
                 If any of it looks wrong,
                 <a href="https://www.worldcubeassociation.org/profile/edit" target="_blank">edit your WCA account</a>,
                 and <logoutButton/> and log right back in.)
-              </div> :
-            'Ok, now log back in!'}
+              </div>
+            : 'Ok, now log back in!'}
           </small>
         </h4>
         <hr/>
@@ -42,28 +42,28 @@ const EditProfileView = React.createClass({
         <div class="text-center">
           <p>
             {!user && user.profile.name ?
-              <span class="flag-icon flag-icon-countryId"></span> :
-            null}
+              <span class="flag-icon flag-icon-countryId"></span>
+            : null}
           </p>
           <p><b>Date Of Birth</b>: {this.birthdate()}</p>
           <p><b>WcaId</b>: {user.profile.wcaId}</p>
           <b>Avatar</b>:<br/>
-          {user.services.worldcubeassociation.avatar ?
-            <img src={user.services.worldcubeassociation.avatar.thumb_url}/> :
-          null}
+          {user.services.worldcubeassociation.avatar ? 
+            <img src={user.services.worldcubeassociation.avatar.thumb_url}/>
+          : null}
         </div>
       </div>
-    );
+    )
   }
 });
 
-Template.editProfile.rendered = function() {
+Template.editProfile.rendered = function () {
   let template = this;
   template.autorun(() => {
     ReactDOM.render(
-      <EditProfileView
+      <EditProfileView 
         user={Meteor.user()}/>,
         template.$(".reactRenderArea")[0]
     );
   });
-};
+}
