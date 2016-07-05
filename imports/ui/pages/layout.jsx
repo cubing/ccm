@@ -53,7 +53,7 @@ const NavBar = function (content) {
 
 const LoginButtonsLoggedOutAllServices = React.createClass({
   render() {
-    let {currentUser} = this.props;
+    let {user} = this.props;
 
     return (
       <div>
@@ -61,13 +61,13 @@ const LoginButtonsLoggedOutAllServices = React.createClass({
           <a href={FlowRouter.path('editProfile')}>Your profile</a>
         </p>
 
-        {currentUser && currentUser.siteAdmin ?
+        {user && user.siteAdmin ?
           <p className="text-center">
             <a href={FlowRouter.path('administerSite')}>Administer site</a>
           </p>
         : null}
 
-        {currentUser && !currentUser.emails[0].verified ? 
+        {user && !user.emails[0].verified ? 
           <button className="btn btn-danger btn-block" id="login-buttons-resend-emailverification"
                   data-toggle="tooltip" data-placement="bottom" data-container="body"
                   title="Your email address has not yet been verified">
@@ -83,7 +83,7 @@ const Layout = React.createClass({
   getDefaultProps() {
     return {
       competitionId: null,
-      currentUser: Meteor.user(),
+      user: Meteor.user(),
     };
   },
 
@@ -226,7 +226,7 @@ const Layout = React.createClass({
   },
 
   render() {
-    let {competitionId, currentUser} = this.props;
+    let {competitionId, user} = this.props;
     let showManageCompetitionLink = true;
 
     return (
@@ -255,7 +255,7 @@ const Layout = React.createClass({
                   [<li key={0} className={`${isActiveRoute('competition') ? 'active' : ''}`} id="competition-name">
                     <a href={FlowRouter.pathFor('competition')}>{competitionAttr('competitionName')}</a>
                   </li>,
-                  currentUser && showManageCompetitionLink ?
+                  user && showManageCompetitionLink ?
                     <li key={1} className={`${isActiveRoute('manageCompetition') ? 'active' : ''}`}>
                       <a href={pathFor('manageCompetition')}><i className="fa fa-cogs"/></a>
                     </li>
@@ -267,15 +267,15 @@ const Layout = React.createClass({
           {/* Collect the nav links, forms, and other content for toggling */}
             <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul className="nav navbar-nav navbar-right">
-                {currentUser ? 
+                {user ? 
                   <OneTab {...this.newCompetitionTab()}/>
                 : null}
-                {currentUser ? <BlazeToReact wrapperTag='li' blazeTemplate="_loginButtons"/> : [
+                {user ? <BlazeToReact wrapperTag='li' blazeTemplate="_loginButtons"/> : [
                   <BlazeToReact key={0} wrapperTag='li' blazeTemplate="_loginButtons"/>,
                   <li key={1} id="login-dropdown-list" className="dropdown">
                     <a className="dropdown-toggle" data-toggle="dropdown"><b className="caret"></b></a>
                     <div className="dropdown-menu">
-                      <LoginButtonsLoggedOutAllServices currentUser={currentUser}/>
+                      <LoginButtonsLoggedOutAllServices user={user}/>
                     </div>
                   </li>
                   ]
@@ -299,7 +299,7 @@ const Layout = React.createClass({
 
 export default createContainer(props => {
   return {
-    currentUser: Meteor.user(),
+    user: Meteor.user(),
   };
 }, Layout);
 

@@ -3,6 +3,7 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {BlazeLayout} from 'meteor/kadira:blaze-layout';
 import Layout from '/imports/ui/pages/layout';
 import Competitions from '/imports/ui/pages/competitions';
+import EditProfile from '/imports/ui/pages/editProfile';
 
 const log = logging.handle("routes");
 
@@ -36,12 +37,21 @@ global.Router = FlowRouter;
 FlowRouter.route('/', {
   name: 'home',
   subscriptions(params) {
-    this.register('competitions', subs.subscribe('competitions', subscriptionError(this)));
+    // this.register('competitions', subs.subscribe('competitions', subscriptionError(this)));
   },
 
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       content: (<Competitions/>)
+    });
+  }
+});
+
+FlowRouter.route('/settings/profile', {
+  name: 'editProfile',
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      content: (<EditProfile/>)
     });
   }
 });
