@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
 
 const CompetitionView = React.createClass({
   registeredForCompetition: function() {
@@ -37,6 +38,12 @@ const CompetitionView = React.createClass({
     );
   }
 });
+
+export default createContainer((props) => {
+  return {
+    userId: Meteor.userId(),
+  };
+}, CompetitionView);
 
 Template.competition.rendered = function () {
   let template = this;

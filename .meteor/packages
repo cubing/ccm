@@ -3,7 +3,6 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-iron:router
 accounts-password
 
 
@@ -16,7 +15,6 @@ natestrauser:connection-banner
 aldeed:collection2
 linto:fontawesome
 aldeed:autoform
-multiply:iron-router-progress
 meteorhacks:fast-render
 meteorhacks:subs-manager
 
@@ -46,7 +44,6 @@ logging
 reload
 random
 ejson
-spacebars
 check
 maxharris9:classnames
 ecmascript
@@ -60,3 +57,8 @@ standard-minifier-js
 react-meteor-data
 practicalmeteor:mocha
 dispatch:mocha-phantomjs
+kadira:flow-router
+kadira:react-layout
+kadira:blaze-layout
+spacebars
+arillo:flow-router-helpers

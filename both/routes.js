@@ -1,3 +1,4 @@
+if (false) { // to look at it without commenting out the file
 const log = logging.handle("routes");
 
 subs = new SubsManager({
@@ -318,6 +319,10 @@ ManageCompetitionScramblesController = BaseRoundController.extend({
   },
 });
 
+ManageCompetitionScorecardsController = ManageCompetitionController.extend({
+
+});
+
 RegistrationController = ViewCompetitionController.extend({
   extraSubscriptions: function() {
     return [subs.subscribe('competitionRegistrations', this.params.competitionUrlId, subscriptionError(this))];
@@ -413,6 +418,11 @@ Router.route('/manage/:competitionUrlId/scrambles/view', {
   controller: 'ManageCompetitionScramblesController',
   titlePrefix: "View Scrambles",
 });
+Router.route('/manage/:competitionUrlId/scorecards', {
+  name: 'scorecards',
+  controller: 'ManageCompetitionScorecardsController',
+  titlePrefix: "Scorecards",
+});
 
 Router.route('/manage/:competitionUrlId/exportResults', {
   name: 'exportResults',
@@ -490,3 +500,4 @@ Router.route('/api/v0/login', {
   name: 'standaloneLogin',
   layoutTemplate: "",
 });
+}

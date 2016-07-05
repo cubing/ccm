@@ -42,23 +42,23 @@ Template.layout.events({
   }
 });
 
-Router.onBeforeAction(function() {
-  // Workaround for https://github.com/EventedMind/iron-router/issues/96.
-  $(window).scrollTop(0);
+// Router.onBeforeAction(function() {
+//   // Workaround for https://github.com/EventedMind/iron-router/issues/96.
+//   $(window).scrollTop(0);
 
-  // As the page changes, remove any leftover tooltips that might get
-  // abandoned because they were set to data-container="body"
-  $('.tooltip').remove();
+//   // As the page changes, remove any leftover tooltips that might get
+//   // abandoned because they were set to data-container="body"
+//   $('.tooltip').remove();
 
-  // Also remove any modal backdrops that didn't get cleared.
-  // This is kind of gross, because as far as I can tell, Bootstrap doesn't
-  // provide a way to clear modals that are now gone.
-  $('body').css({ paddingRight: 0 });
-  $('body').removeClass('modal-open');
-  $('.modal-backdrop').remove();
+//   // Also remove any modal backdrops that didn't get cleared.
+//   // This is kind of gross, because as far as I can tell, Bootstrap doesn't
+//   // provide a way to clear modals that are now gone.
+//   $('body').css({ paddingRight: 0 });
+//   $('body').removeClass('modal-open');
+//   $('.modal-backdrop').remove();
 
-  this.next();
-});
+//   this.next();
+// });
 
 let verificationSendSuccessReact = new ReactiveVar(null);
 
@@ -96,6 +96,12 @@ Template.layout.helpers({
         title: 'Generate scrambles, manage groups, and view scrambles for open groups',
         icon: '/img/tnoodle_logo.svg',
         text: 'Scrambles',
+        notLeaf: true,
+      }, {
+        route: 'scorecards',
+        title: 'Manage and Generate individual scorecards',
+        icon: '',
+        text: 'Scorecards',
         notLeaf: true,
       }, {
         route: 'manageCheckin',

@@ -1,12 +1,12 @@
 const log = logging.handle("dataEntry");
 
 let selectedResultIdReact = new ReactiveVar(null);
-Router.onBeforeAction(function() {
-  // Clear selected result
-  selectedResultIdReact.set(null);
-  $('#inputParticipantName').typeahead('val', '');
-  this.next();
-});
+// Router.onBeforeAction(function() {
+//   // Clear selected result
+//   selectedResultIdReact.set(null);
+//   $('#inputParticipantName').typeahead('val', '');
+//   this.next();
+// });
 
 Template.dataEntry.helpers({
   round: function() {
