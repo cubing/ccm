@@ -1,19 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
 
 const CompetitionList = React.createClass({
-  getCompetitions () {
-    return Competitions.find({}, {
-      fields: {
-        wcaCompetitionId: 1,
-        competitionName: 1,
-        listed: 1,
-      }
-    });
-  },
-
   render () {
-    let competitions = this.getCompetitions();
+    let {competitions} = this.props;
 
     return (
       <div>
@@ -27,11 +18,16 @@ const CompetitionList = React.createClass({
   }
 });
 
-Template.competitions.rendered = function () {
-  let template = this;
-  template.autorun(() => {
-    ReactDOM.render(
-      <CompetitionList/>, template.$(".reactRenderArea")[0]
-    );
-  });
-}
+export default createContainer((props) => {
+  return {
+    user: Meteor.user(),
+    loading: !Meteor.subscribe('competitions').ready(),
+    competitions: Competitions.find({}, {
+      fields: {
+        wcaCompetitionId: 1,
+        competitionName: 1,
+        listed: 1,
+      }
+    }).fetch()
+  };
+}, CompetitionList);
