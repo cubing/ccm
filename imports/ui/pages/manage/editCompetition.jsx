@@ -47,7 +47,6 @@ const EditCompetition = React.createClass({
   render() {
     const {ready, user, competition} = this.props;
     let listed = false;
-    console.log(50, competition);
 
     return (
       <div className='container'>

@@ -49,33 +49,31 @@ const NavBar = function (props) {
   </nav>
 };
 
-const LoginButtonsLoggedOutAllServices = React.createClass({
-  render() {
-    let {user} = this.props;
+const LoginButtonsLoggedOutAllServices = function (props) {
+  let {user} = props;
 
-    return (
-      <div>
+  return (
+    <div>
+      <p className="text-center">
+        <a href={FlowRouter.path('editProfile')}>Your profile</a>
+      </p>
+
+      {user && user.siteAdmin ?
         <p className="text-center">
-          <a href={FlowRouter.path('editProfile')}>Your profile</a>
+          <a href={FlowRouter.path('administerSite')}>Administer site</a>
         </p>
-
-        {user && user.siteAdmin ?
-          <p className="text-center">
-            <a href={FlowRouter.path('administerSite')}>Administer site</a>
-          </p>
-        : null}
-
-        {user && !user.emails[0].verified ? 
-          <button className="btn btn-danger btn-block" id="login-buttons-resend-emailverification"
-                  data-toggle="tooltip" data-placement="bottom" data-container="body"
-                  title="Your email address has not yet been verified">
-            Resend verification email
-          </button>
       : null}
-      </div>
-    );
-  }
-})
+
+      {user && !user.emails[0].verified ? 
+        <button className="btn btn-danger btn-block" id="login-buttons-resend-emailverification"
+                data-toggle="tooltip" data-placement="bottom" data-container="body"
+                title="Your email address has not yet been verified">
+          Resend verification email
+        </button>
+    : null}
+    </div>
+  );
+}
 
 const Layout = React.createClass({
   getDefaultProps() {
@@ -154,15 +152,16 @@ const Layout = React.createClass({
                 {user ? 
                   <OneTab {...this.newCompetitionTab()}/>
                 : null}
-                {user ? <BlazeToReact wrapperTag='li' blazeTemplate="_loginButtons"/> : [
-                  <BlazeToReact key={0} wrapperTag='li' blazeTemplate="_loginButtons"/>,
+                <BlazeToReact key={0} wrapperTag='li' blazeTemplate="_loginButtons"/>
+                {user ? null :
                   <li key={1} id="login-dropdown-list" className="dropdown">
-                    <a className="dropdown-toggle" data-toggle="dropdown"><b className="caret"></b></a>
+                    <a className="dropdown-toggle" data-toggle="dropdown">
+                      <b className="caret"/>
+                    </a>
                     <div className="dropdown-menu">
-                      <LoginButtonsLoggedOutAllServices user={user}/>
+                      <BlazeToReact key={0} wrapperTag='div' blazeTemplate="_loginButtonsLoggedOutAllServices"/>
                     </div>
                   </li>
-                  ]
                 }
               </ul>
             </div> {/* /.navbar-collapse */}
