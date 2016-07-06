@@ -23,11 +23,11 @@ const OneTab = React.createClass({
   },
 
   render () {
-    let {active, otherClass, leaf, title, route, parentData, img, icon, text} = this.props;
+    let {active, otherClass, leaf, title, route, competitionUrlId, img, icon, text} = this.props;
 
     return (
       <li className={`${active ? 'active ' : ''}${otherClass ? 'otherClass ' : ''}${leaf ? 'leaf' : ''}`}>
-        <a href={FlowRouter.path(route, parentData)}
+        <a href={FlowRouter.path(route, {competitionUrlId: competitionUrlId})}
           data-toggle="tooltip" data-placement="bottom" data-container="body" title={title}>
           {img ? <img src={icon}/> : <span className={icon}/>}
           <span className="hidden-xs"> {text}</span>
@@ -108,7 +108,7 @@ const Layout = React.createClass({
   },
 
   render() {
-    let {user, competitionId, competitionName, tabs, content} = this.props;
+    let {user, competitionUrlId={competitionUrlId}, competitionId, competitionName, tabs, content} = this.props;
     let showManageCompetitionLink = true;
 
     return (
@@ -170,7 +170,7 @@ const Layout = React.createClass({
 
         {tabs ? 
           <NavBar>
-            {tabs.map((tab, index) => <OneTab key={index} {...tab}/>)}
+            {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab}/>)}
           </NavBar>
         : ''}
 
@@ -194,6 +194,7 @@ export default createContainer((props) => {
   return {
     user: Meteor.user(),
     competitionId: competitionId,
+    competitionUrlId: props.competitionUrlId,
     competitionName: competition ? competition.competitionName : null,
   };
 }, Layout);
