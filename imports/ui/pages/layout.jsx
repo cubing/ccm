@@ -5,8 +5,6 @@ import ccmModal from '../components/ccmModal';
 
 isActiveRoute = () => false;
 isActiveOrAncestorRoute = () => false;
-pathFor = (bob, route, data) => bob;
-competitionAttr = (bob) => bob;
 
 // (route, title, text, img, icon, active, otherClass, leaf)
 const OneTab = React.createClass({
@@ -83,6 +81,7 @@ const Layout = React.createClass({
   getDefaultProps() {
     return {
       competitionId: null,
+      competitionUrlId: null,
       user: Meteor.user(),
     };
   },
@@ -226,7 +225,7 @@ const Layout = React.createClass({
   },
 
   render() {
-    let {competitionId, user} = this.props;
+    let {user, competitionId, competitionName} = this.props;
     let showManageCompetitionLink = true;
 
     return (
@@ -253,11 +252,11 @@ const Layout = React.createClass({
 
                 {competitionId ?
                   [<li key={0} className={`${isActiveRoute('competition') ? 'active' : ''}`} id="competition-name">
-                    <a href={FlowRouter.pathFor('competition')}>{competitionAttr('competitionName')}</a>
+                    <a href={FlowRouter.path('competition', {competitionUrlId: competitionId})}>{competitionName}</a>
                   </li>,
                   user && showManageCompetitionLink ?
                     <li key={1} className={`${isActiveRoute('manageCompetition') ? 'active' : ''}`}>
-                      <a href={pathFor('manageCompetition')}><i className="fa fa-cogs"/></a>
+                      <a href={FlowRouter.path('manageCompetition', {competitionUrlId: competitionId})}><i className="fa fa-cogs"/></a>
                     </li>
                   : null]
                 : null}
@@ -297,9 +296,15 @@ const Layout = React.createClass({
   }
 });
 
-export default createContainer(props => {
+export default createContainer((props) => {
+  let subscription = Meteor.subscribe('competition', props.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
+  let competition = Competitions.findOne(competitionId);
+
   return {
     user: Meteor.user(),
+    competitionId: competitionId,
+    competitionName: competition ? competition.competitionName : null,
   };
 }, Layout);
 
