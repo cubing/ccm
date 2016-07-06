@@ -43,7 +43,7 @@ const EditProfile = React.createClass({
 
         {user ?
           <div className='text-center'>
-            <h1>{user.profile.name} 
+            <h1>{user.profile.name}
               <span className={`flag-icon flag-icon-${this.countryId()}`}></span>
             </h1>
             <p><b>Date Of Birth</b>: {this.birthdate()}</p>

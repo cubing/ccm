@@ -4,6 +4,9 @@ import {BlazeLayout} from 'meteor/kadira:blaze-layout';
 import Layout from '/imports/ui/pages/layout';
 import Competitions from '/imports/ui/pages/competitions';
 import EditProfile from '/imports/ui/pages/editProfile';
+import NewCompetition from '/imports/ui/pages/admin/newCompetition';
+import Competition from '/imports/ui/pages/competition';
+import EditCompetition from '/imports/ui/pages/manage/editCompetition.jsx';
 
 const log = logging.handle("routes");
 
@@ -22,15 +25,6 @@ const subscriptionError = function(that) {
     }
   };
 };
-
-// let subscriptions = [subs.subscribe('competition', params.competitionUrlId, subscriptionError(this))];
-// if(this.ccmManage) {
-//   subscriptions.push(subs.subscribe('competitionRegistrations', params.competitionUrlId, subscriptionError(this)));
-// }
-// if(this.extraSubscriptions) {
-//   subscriptions = subscriptions.concat(this.extraSubscriptions());
-// }
-// return subscriptions;
 
 global.Router = FlowRouter;
 
@@ -52,6 +46,59 @@ FlowRouter.route('/settings/profile', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       content: (<EditProfile/>)
+    });
+  }
+});
+
+Router.route('/new', {
+  name: 'newCompetition',
+  titlePrefix: 'Create competition',
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      content: (<NewCompetition/>)
+    });
+  }
+});
+
+Router.route('/new/import', {
+  name: 'importCompetition',
+  titlePrefix: 'Import competition',
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      content: (<NewCompetition tab='import'/>)
+    });
+  }
+});
+
+Router.route('/manage/:competitionUrlId', {
+  name: 'manageCompetition',
+  titlePrefix: "Manage",
+  subscriptions(params) {
+    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+    console.log(this)
+  },
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      content: (<EditCompetition {...params}/>)
+    });
+  }
+});
+
+Router.route('/:competitionUrlId', {
+  name: 'competition',
+  subscriptions(params) {
+    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+    console.log(this)
+  },
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      content: (<Competition {...params}/>)
     });
   }
 });

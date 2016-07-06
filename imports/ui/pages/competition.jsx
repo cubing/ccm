@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
 
-const CompetitionView = React.createClass({
+const Competition = React.createClass({
   registeredForCompetition: function() {
     let registration = Registrations.findOne({
       competitionId: this.props.competitionId,
@@ -14,17 +14,21 @@ const CompetitionView = React.createClass({
   },
 
   competitionIsScheduled: function() {
-    return Competitions.findOne(this.props.competitionId).startDate;
+    return this.props.competition.startDate;
   },
 
   dateInterval: function() {
-    let comp = Competitions.findOne(this.props.competitionId);
-    return $.fullCalendar.formatRange(moment(comp.startDate).utc(), moment(comp.endDate()).utc(), "LL");
+    let {competition} = this.props;
+    return $.fullCalendar.formatRange(moment(competition.startDate).utc(), moment(competition.endDate()).utc(), "LL");
   },
 
   render () {
-    let {competitionId, competitionUrlId} = this.props;
-    let name = Competitions.findOne(this.props.competitionId).competitionName;
+    let {ready, competition, competitionId, competitionUrlId} = this.props;
+    if (!ready || !competition) {
+      return <div/>;
+    }
+
+    let name = competition.competitionName;
     
     return (
       <div className='container'>
@@ -40,20 +44,14 @@ const CompetitionView = React.createClass({
 });
 
 export default createContainer((props) => {
-  return {
-    userId: Meteor.userId(),
-  };
-}, CompetitionView);
+  let subscription = Meteor.subscribe('competition', props.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
+  let competition = Competitions.findOne(competitionId);
 
-Template.competition.rendered = function () {
-  let template = this;
-  template.autorun(() => {
-    ReactDOM.render(
-      <CompetitionView 
-        competitionId={template.data.competitionId}
-        competitionUrlId={template.data.competitionUrlId}
-        userId={Meteor.userId()}/>,
-        template.$(".reactRenderArea")[0]
-    );
-  });
-}
+  return {
+    ready: subscription.ready(),
+    userId: Meteor.userId(),
+    competition: competition,
+    competitionId: competitionId,
+  };
+}, Competition);
