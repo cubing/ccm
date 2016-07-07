@@ -75,7 +75,12 @@ FlowRouter.route('/new/import', {
 
 /* Mange View */
 
-FlowRouter.route('/manage/:competitionUrlId', {
+const manageRoutes = FlowRouter.group({
+  name: 'manage',
+  prefix: '/manage/:competitionUrlId',
+});
+
+manageRoutes.route('/', {
   name: 'manageCompetition',
   titlePrefix: "Manage",
   subscriptions(params) {
@@ -94,7 +99,12 @@ FlowRouter.route('/manage/:competitionUrlId', {
 
 /* User View */
 
-FlowRouter.route('/:competitionUrlId', {
+const competitionRoutes = FlowRouter.group({
+  name: 'competition',
+  prefix: '/:competitionUrlId',
+});
+
+competitionRoutes.route('/', {
   name: 'competition',
   subscriptions(params) {
     this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
@@ -104,12 +114,13 @@ FlowRouter.route('/:competitionUrlId', {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
       tabs: Tabs.userTabs,
+      activeTab: this.name,
       content: (<Competition {...params}/>)
     });
   }
 });
 
-FlowRouter.route('/:competitionUrlId/events', {
+competitionRoutes.route('/events', {
   name: 'competitionEvents',
   titlePrefix: 'Events',
 
@@ -121,12 +132,13 @@ FlowRouter.route('/:competitionUrlId/events', {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
       tabs: Tabs.userTabs,
+      activeTab: this.name,
       content: (<CompetitionEvents {...params}/>)
     });
   }
 });
 
-FlowRouter.route('/:competitionUrlId/schedule', {
+competitionRoutes.route('/schedule', {
   name: 'competitionSchedule',
   titlePrefix: 'Schedule',
 
@@ -139,12 +151,13 @@ FlowRouter.route('/:competitionUrlId/schedule', {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
       tabs: Tabs.userTabs,
-      content: (<BlazeToReact/>)
+      activeTab: this.name,
+      content: (<div/>)
     });
   }
 });
 
-FlowRouter.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
+competitionRoutes.route('/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
 
@@ -157,6 +170,7 @@ FlowRouter.route('/:competitionUrlId/results/:eventCode?/:nthRound?', {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
       tabs: Tabs.userTabs,
+      activeTab: this.name,
       content: [
         <EventPicker key={0} {...params}/>,
         <RoundPicker key={1} {...params}/>,

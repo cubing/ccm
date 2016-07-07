@@ -23,13 +23,13 @@ export default {
       title: 'Generate scrambles, manage groups, and view scrambles for open groups',
       icon: '/img/tnoodle_logo.svg',
       text: 'Scrambles',
-      notLeaf: true,
+      leaf: false,
     }, {
       route: 'scorecards',
       title: 'Manage and Generate individual scorecards',
       icon: '',
       text: 'Scorecards',
-      notLeaf: true,
+      leaf: false,
     }, {
       route: 'manageCheckin',
       title: 'Edit the list of registered competitors and copy competitors to the first rounds they will compete in (check-in)',
@@ -39,12 +39,12 @@ export default {
       route: 'dataEntry',
       icon: 'glyphicon glyphicon-edit',
       text: 'Data entry',
-      notLeaf: true,
+      leaf: false,
     }, {
       route: 'podiums',
       icon: 'fa fa-trophy',
       text: 'Podiums',
-      notLeaf: true,
+      leaf: false,
     }, {
       route: 'exportResults',
       title: 'Export results to WCA JSON',
@@ -69,7 +69,7 @@ export default {
       route: 'roundResults',
       icon: 'fa fa-trophy',
       text: 'Results',
-      notLeaf: true,
+      leaf: false,
     },
   ],
   scrambleTabs: [{
@@ -82,7 +82,7 @@ export default {
       title: 'Open and close scramble groups for ongoing rounds',
       icon: 'fa fa-group',
       text: 'Manage Scramble Groups',
-      notLeaf: true,
+      leaf: false,
     }, {
       route: 'viewScrambles',
       title: 'View scrambles for open groups',
