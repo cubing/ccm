@@ -1,4 +1,4 @@
-import './router.js';
+import './router';
 
 // https://github.com/okgrow/analytics complains when
 // Meteor.settings.public.analyticsSettings is unset. Velocity ensures that

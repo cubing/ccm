@@ -24,7 +24,7 @@ Template.roundResultsList.rendered = function() {
   template.autorun(function() {
     let data = Template.currentData();
 
-    let limit = resultsListLimitReact.get();
+    let limit = 0;
     let round = Rounds.findOne(data.roundId);
     let results = round.getResultsWithRegistrations({ limit: limit, sorted: true });
 
@@ -33,7 +33,6 @@ Template.roundResultsList.rendered = function() {
                    advanceCount={data.advanceCount}
                    configurableAdvanceCount={data.configurableAdvanceCount}
                    round={round}
-                   selectedResultId={data.selectedResultId}
                    results={results}
                    showFooter={true}
       />,

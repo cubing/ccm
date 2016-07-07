@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 const log = logging.handle("resultsComponents");
 
-ResultRow = function(ResultIdentifierTd) {
+const ResultRow = function(ResultIdentifierTd) {
   return React.createClass({
     render: function() {
       let result = this.props.result;
@@ -74,7 +74,7 @@ ResultRow = function(ResultIdentifierTd) {
   });
 };
 
-ResultRowWithName = ResultRow(React.createClass({
+const ResultRowWithName = ResultRow(React.createClass({
   render: function() {
     let competitionUrlId = this.props.competitionUrlId;
     let result = this.props.result;
@@ -95,7 +95,7 @@ ResultRowWithName = ResultRow(React.createClass({
   },
 }));
 
-ResultRowWithRound = ResultRow(React.createClass({
+const ResultRowWithRound = ResultRow(React.createClass({
   render: function() {
     let result = this.props.result;
     let roundPath = Router.routes.roundResults.path({
@@ -109,7 +109,7 @@ ResultRowWithRound = ResultRow(React.createClass({
   },
 }));
 
-ResultsList = React.createClass({
+export default React.createClass({
   getInitialState: function() {
     return { selectedResult: null };
   },

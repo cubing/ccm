@@ -1,4 +1,4 @@
-wca = {};
+global.wca = {};
 wca.ROOT_URL = "https://www.worldcubeassociation.org";
 wca.MAX_INT = Math.pow(2, 32) - 1;
 
