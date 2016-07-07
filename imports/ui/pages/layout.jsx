@@ -3,7 +3,7 @@ import {createContainer} from 'meteor/react-meteor-data';
 import BlazeToReact from '../components/blazeToReact';
 import ccmModal from '../components/ccmModal';
 
-isActiveRoute = () => false;
+isActiveRoute = (route) => FlowRouter.current().route.name === route;
 isActiveOrAncestorRoute = () => false;
 
 // (route, title, text, img, icon, active, otherClass, leaf)
@@ -11,11 +11,10 @@ const OneTab = React.createClass({
   getDefaultProps () {
     return {
       active: false,
-      otherClass: false,
+      otherClass: '',
       leaf: true,
       title: '',
       route: null,
-      parentData: null,
       img: false,
       icon: '',
       text: '',
@@ -26,7 +25,7 @@ const OneTab = React.createClass({
     let {active, otherClass, leaf, title, route, competitionUrlId, img, icon, text} = this.props;
 
     return (
-      <li className={`${active ? 'active ' : ''}${otherClass ? 'otherClass ' : ''}${leaf ? 'leaf' : ''}`}>
+      <li className={`${active ? 'active ' : ''}${otherClass ? otherClass : ''} ${leaf ? 'leaf' : ''}`}>
         <a href={FlowRouter.path(route, {competitionUrlId: competitionUrlId})}
           data-toggle="tooltip" data-placement="bottom" data-container="body" title={title}>
           {img ? <img src={icon}/> : <span className={icon}/>}
@@ -134,11 +133,11 @@ const Layout = React.createClass({
                 </li>
 
                 {competitionId ?
-                  [<li key={0} className={`${isActiveRoute('competition') ? 'active' : ''}`} id="competition-name">
+                  [<li key={0} className={FlowRouter.current().route.group.name === 'competition' ? 'active' : ''} id="competition-name">
                     <a href={FlowRouter.path('competition', {competitionUrlId: competitionId})}>{competitionName}</a>
                   </li>,
                   user && showManageCompetitionLink ?
-                    <li key={1} className={`${isActiveRoute('manageCompetition') ? 'active' : ''}`}>
+                    <li key={1} className={FlowRouter.current().route.group.name === 'manage' ? 'active' : ''}>
                       <a href={FlowRouter.path('manageCompetition', {competitionUrlId: competitionId})}><i className="fa fa-cogs"/></a>
                     </li>
                   : null]
@@ -170,7 +169,7 @@ const Layout = React.createClass({
 
         {tabs ? 
           <NavBar>
-            {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab}/>)}
+            {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
           </NavBar>
         : ''}
 
