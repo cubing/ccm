@@ -1,5 +1,6 @@
 tests
 packages
 client/vendor
+imports/vendor/
 both/lib
 .meteor
