@@ -9,7 +9,7 @@ const EditCompetition = React.createClass({
     return {
       user: null,
       competitionUrlId: '',
-    }
+    };
   },
 
   getInitialState() {
@@ -20,7 +20,7 @@ const EditCompetition = React.createClass({
   },
 
   componentWillReceiveProps(props) {
-    if (props.competition) {
+    if(props.competition) {
       this.state.competitionName = props.competition.competitionName;
       this.state.listed = props.competition.listed;
     }
@@ -45,7 +45,7 @@ const EditCompetition = React.createClass({
   },
 
   set(key, value) {
-   this.setCompetitionAttribute(key, value);
+    this.setCompetitionAttribute(key, value);
     this.setState({
       [key]: value
     });
@@ -109,8 +109,8 @@ const EditCompetition = React.createClass({
                   </div>
                 </div>
               </form>
-            </div>
-            : null }
+            </div> :
+            null }
         </div>
 
         <div className="panel panel-default">

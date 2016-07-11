@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
 
 const CompetitionList = React.createClass({
-  render () {
+  render() {
     let {competitions} = this.props;
 
     return (
@@ -19,9 +19,11 @@ const CompetitionList = React.createClass({
 });
 
 export default createContainer((props) => {
+  let subscription = Meteor.subscribe('competitions');
+
   return {
+    ready: subscription.ready(),
     user: Meteor.user(),
-    loading: !Meteor.subscribe('competitions').ready(),
-    competitions: api.getCompetitions().fetch()
+    competitions: api.getCompetitions().fetch(),
   };
 }, CompetitionList);

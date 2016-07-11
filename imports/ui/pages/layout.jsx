@@ -4,11 +4,12 @@ import BlazeToReact from '../components/blazeToReact';
 import ccmModal from '../components/ccmModal';
 
 isActiveRoute = (route) => FlowRouter.current().route.name === route;
+isActiveGroup = (route) => FlowRouter.current().route.group && FlowRouter.current().route.group.name === route;
 isActiveOrAncestorRoute = () => false;
 
 // (route, title, text, img, icon, active, otherClass, leaf)
 const OneTab = React.createClass({
-  getDefaultProps () {
+  getDefaultProps() {
     return {
       active: false,
       otherClass: '',
@@ -18,10 +19,10 @@ const OneTab = React.createClass({
       img: false,
       icon: '',
       text: '',
-    }
+    };
   },
 
-  render () {
+  render() {
     let {active, otherClass, leaf, title, route, competitionUrlId, img, icon, text} = this.props;
 
     return (
@@ -32,23 +33,25 @@ const OneTab = React.createClass({
           <span className="hidden-xs"> {text}</span>
         </a>
       </li>
-    );  
+    );
   }
 });
 
-const NavBar = function (props) {
-  return <nav className="navbar navbar-default navbar-plain-rectangle" role="navigation">
-    <div className="container-fluid">
-      <div className="navbar-collapse collapse-buttons">
-        <ul className="nav navbar-nav navbar-left">
-          {props.children}
-        </ul>
+const NavBar = function(props) {
+  return (
+    <nav className="navbar navbar-default navbar-plain-rectangle" role="navigation">
+      <div className="container-fluid">
+        <div className="navbar-collapse collapse-buttons">
+          <ul className="nav navbar-nav navbar-left">
+            {props.children}
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+  );
 };
 
-const LoginButtonsLoggedOutAllServices = function (props) {
+const LoginButtonsLoggedOutAllServices = function(props) {
   let {user} = props;
 
   return (
@@ -60,19 +63,19 @@ const LoginButtonsLoggedOutAllServices = function (props) {
       {user && user.siteAdmin ?
         <p className="text-center">
           <a href={FlowRouter.path('administerSite')}>Administer site</a>
-        </p>
-      : null}
+        </p> :
+      null}
 
-      {user && !user.emails[0].verified ? 
+      {user && !user.emails[0].verified ?
         <button className="btn btn-danger btn-block" id="login-buttons-resend-emailverification"
                 data-toggle="tooltip" data-placement="bottom" data-container="body"
                 title="Your email address has not yet been verified">
           Resend verification email
-        </button>
-    : null}
+        </button> :
+    null}
     </div>
   );
-}
+};
 
 const Layout = React.createClass({
   getDefaultProps() {
@@ -86,7 +89,7 @@ const Layout = React.createClass({
   getInitialState() {
     return {
       verificationSendSuccessReact: false,
-    }
+    };
   },
 
   showManageCompetitionLink() {
@@ -133,24 +136,24 @@ const Layout = React.createClass({
                 </li>
 
                 {competitionId ?
-                  [<li key={0} className={FlowRouter.current().route.group.name === 'competition' ? 'active' : ''} id="competition-name">
+                  [<li key={0} className={isActiveGroup('competition') ? 'active' : ''} id="competition-name">
                     <a href={FlowRouter.path('competition', {competitionUrlId: competitionId})}>{competitionName}</a>
                   </li>,
                   user && showManageCompetitionLink ?
-                    <li key={1} className={FlowRouter.current().route.group.name === 'manage' ? 'active' : ''}>
+                    <li key={1} className={isActiveGroup('manage') ? 'active' : ''}>
                       <a href={FlowRouter.path('manageCompetition', {competitionUrlId: competitionId})}><i className="fa fa-cogs"/></a>
-                    </li>
-                  : null]
-                : null}
+                    </li> :
+                  null] :
+                null}
               </ul>
             </div>
 
           {/* Collect the nav links, forms, and other content for toggling */}
             <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul className="nav navbar-nav navbar-right">
-                {user ? 
-                  <OneTab {...this.newCompetitionTab()}/>
-                : null}
+                {user ?
+                  <OneTab {...this.newCompetitionTab()}/> :
+                null}
                 <BlazeToReact key={0} wrapperTag='li' blazeTemplate="_loginButtons"/>
                 {user ? null :
                   <li key={1} id="login-dropdown-list" className="dropdown">
@@ -167,11 +170,11 @@ const Layout = React.createClass({
            </div>
         </nav>
 
-        {tabs ? 
+        {tabs ?
           <NavBar>
             {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
-          </NavBar>
-        : ''}
+          </NavBar> :
+        ''}
 
         {content}
 

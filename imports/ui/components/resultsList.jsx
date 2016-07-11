@@ -1,11 +1,84 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {createContainer} from 'meteor/react-meteor-data';
+import {clockFormat, softCutoffFormatName} from '/imports/util';
 
 const log = logging.handle("resultsComponents");
 
+const ResultDetailsModalContent = React.createClass({
+  show() {
+    $(this.refs.resultDetailsModal).modal('show');
+  },
+
+  render() {
+    let result = this.props.selectedResult;
+    if(!result) {
+      return <div/>;
+    }
+
+    let registration = result.registration;
+    let allResultsPath = Router.routes.participantResults.path({
+      competitionUrlId: this.props.competitionUrlId,
+      participantUniqueName: registration.uniqueName,
+    });
+
+    let bestNode = null;
+    if(!_.isUndefined(result.bestIndex)) {
+      bestNode = (
+        <p><strong>Best</strong> {clockFormat(result.solves[result.bestIndex])}</p>
+      );
+    }
+    let averageNode = null;
+    if(result.average) {
+      averageNode = (
+        <p><strong>Average</strong> {clockFormat(result.average)}</p>
+      );
+    }
+    let positionNode = null;
+    if(result.position) {
+      positionNode = (
+        <p><strong>Position</strong> {result.position}</p>
+      );
+    }
+
+    return (
+      <div className="modal fade" ref="resultDetailsModal">
+          <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 className="modal-title">
+                {registration.uniqueName} <span className={"flag-icon flag-icon-" + registration.countryId.toLowerCase()}></span>
+              </h4>
+            </div>
+            <div className="modal-body">
+              <p>
+                {result.solves.map((solve, i) => {
+                  let str = clockFormat(solve);
+                  if(i === result.bestIndex || i === result.worstIndex) {
+                    str = "(" + str + ")";
+                  }
+                  return str;
+                }).join(", ")}
+              </p>
+              {positionNode}
+              {averageNode}
+              {bestNode}
+              <a href={allResultsPath}>All results</a>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
+
 const ResultRow = function(ResultIdentifierTd) {
   return React.createClass({
-    render: function() {
+    render() {
       let result = this.props.result;
       let competitionUrlId = this.props.competitionUrlId;
 
@@ -75,7 +148,7 @@ const ResultRow = function(ResultIdentifierTd) {
 };
 
 const ResultRowWithName = ResultRow(React.createClass({
-  render: function() {
+  render() {
     let competitionUrlId = this.props.competitionUrlId;
     let result = this.props.result;
 
@@ -96,7 +169,7 @@ const ResultRowWithName = ResultRow(React.createClass({
 }));
 
 const ResultRowWithRound = ResultRow(React.createClass({
-  render: function() {
+  render() {
     let result = this.props.result;
     let roundPath = Router.routes.roundResults.path({
       competitionUrlId: this.props.competitionUrlId,
@@ -109,32 +182,17 @@ const ResultRowWithRound = ResultRow(React.createClass({
   },
 }));
 
-export default React.createClass({
-  getInitialState: function() {
+const ResultsList = React.createClass({
+  getInitialState() {
     return { selectedResult: null };
   },
-  componentWillMount: function() {
-    log.l1("component will mount");
-  },
-  componentDidMount: function() {
-    log.l1("component did mount");
 
-    let $resultsTable = $(this.refs.resultsTable);
-    makeTableSticky($resultsTable);
-  },
-  componentWillUpdate(nextProps, nextState) {
-    log.l1("component will update");
-  },
-  componentDidUpdate(prevProps, prevState) {
-    log.l1("component did update");
-  },
-  componentWillUnmount: function() {
-    log.l1("component will unmount");
-
+  componentWillUnmount() {
     let $resultsTable = $(this.refs.resultsTable);
     makeTableNotSticky($resultsTable);
   },
-  resultsTableScroll: function(e) {
+
+  resultsTableScroll(e) {
     // TODO - move this logic into stickytables.js
     // Workaround for https://github.com/jmosbech/StickyTableHeaders/issues/68.
     // StickyTableHeaders doesn't handle horizontal scrolling, so we detect it
@@ -142,59 +200,55 @@ export default React.createClass({
     let $resultsTable = $(this.refs.resultsTable);
     $resultsTable.data('plugin_stickyTableHeaders').toggleHeaders();
   },
-	onNameClick: function(result) {
-    let $resultDetailsModal = $(this.refs.resultDetailsModal);
-    this.setState({ selectedResult: result });
-    $resultDetailsModal.modal('show');
-	},
-  render: function() {
-    let maxSolveCountInResults = _.max(this.props.results.map(result => result.allSolves().length));
-    let averageNames = ( _.chain(this.props.results)
-      .map(result => result.round.format().averageName)
-      .unique()
-      .compact()
-      .sortBy()
-      .value()
-      .join("/")
-    );
 
-    let footerRows = [];
-    if(this.props.showFooter) {
-      let shownResults = _.select(this.props.results, result => result.registration.checkedIn);
-      let hiddenResults = _.select(this.props.results, result => !result.registration.checkedIn);
-      let withResultsCount = _.select(shownResults, result => !result.noShow && result.position).length;
-      let incompleteCount = _.select(shownResults, result => !result.noShow && !result.position).length;
-      let competitorsCount = _.select(shownResults, result => !result.noShow).length;
-      let columnCount = 4 + maxSolveCountInResults + 1;
-      footerRows.push(
-        <tr key={footerRows.length}>
+  onNameClick(result) {
+    this.refs.resultDetailsModal.show();
+    this.setState({ selectedResult: result });
+    this.refs.resultDetailsModal.show();
+  },
+
+  renderFooter() {
+    let {results} = this.props;
+    let maxSolveCountInResults = _.max(results.map(result => result.allSolves().length));
+    let shownResults = _.select(results, result => result.registration.checkedIn);
+    let hiddenResults = _.select(results, result => !result.registration.checkedIn);
+    let withResultsCount = _.select(shownResults, result => !result.noShow && result.position).length;
+    let incompleteCount = _.select(shownResults, result => !result.noShow && !result.position).length;
+    let competitorsCount = _.select(shownResults, result => !result.noShow).length;
+    let columnCount = 4 + maxSolveCountInResults + 1;
+    let noShowCount = _.select(results, result => result.noShow).length;
+
+    return (
+      <tfoot>
+        <tr>
           <td colSpan={columnCount}>
             {withResultsCount} with results + {incompleteCount} incomplete = {competitorsCount} competitors
           </td>
         </tr>
-      );
 
-      let noShowCount = _.select(this.props.results, result => result.noShow).length;
-      if(noShowCount > 0) {
-        footerRows.push(
-          <tr key={footerRows.length}>
+        {noShowCount > 0 ?
+          <tr>
             <td colSpan={columnCount}>
               {noShowCount} did not show up
             </td>
-          </tr>
-        );
-      }
+          </tr> : null}
 
-      if(hiddenResults.length > 0) {
-        footerRows.push(
-          <tr key={footerRows.length}>
+        {hiddenResults.length > 0 ?
+          <tr>
             <td colSpan={columnCount}>
               {hiddenResults.length} not shown because they did not check in
             </td>
-          </tr>
-        );
-      }
-    }
+          </tr> : null}
+      </tfoot>
+    );
+  },
+
+  render() {
+    let {round, results} = this.props;
+    let maxSolveCountInResults = _.max(results.map(result => result.allSolves().length));
+    let averageNames = ( _.chain(results)
+      .map(result => result.round.format().averageName)
+      .unique().compact().sortBy().value().join("/") );
 
     let secondHeader;
     if(this.props.showNameInHeader) {
@@ -218,63 +272,8 @@ export default React.createClass({
       secondHeader = (<th>Name</th>);
     }
 
-    let resultDetailsModalContent = null;
-    if(this.state.selectedResult) {
-      let result = this.state.selectedResult;
-      let registration = result.registration;
-      let allResultsPath = Router.routes.participantResults.path({
-        competitionUrlId: this.props.competitionUrlId,
-        participantUniqueName: registration.uniqueName,
-      });
-      let bestNode = null;
-      if(!_.isUndefined(result.bestIndex)) {
-        bestNode = (
-          <p><strong>Best</strong> {clockFormat(result.solves[result.bestIndex])}</p>
-        );
-      }
-      let averageNode = null;
-      if(result.average) {
-        averageNode = (
-          <p><strong>Average</strong> {clockFormat(result.average)}</p>
-        );
-      }
-      let positionNode = null;
-      if(result.position) {
-        positionNode = (
-          <p><strong>Position</strong> {result.position}</p>
-        );
-      }
-      resultDetailsModalContent = (
-        <div className="modal-content">
-          <div className="modal-header">
-            <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 className="modal-title">
-              {registration.uniqueName} <span className={"flag-icon flag-icon-" + registration.countryId.toLowerCase()}></span>
-            </h4>
-          </div>
-          <div className="modal-body">
-            <p>
-              {result.solves.map((solve, i) => {
-                let str = clockFormat(solve);
-                if(i === result.bestIndex || i === result.worstIndex) {
-                  str = "(" + str + ")";
-                }
-                return str;
-              }).join(", ")}
-            </p>
-            {positionNode}
-            {averageNode}
-            {bestNode}
-            <a href={allResultsPath}>All results</a>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      );
-    }
+    let maxAllowedToAdvanceCount = this.props.round ? this.props.round.getMaxAllowedToAdvanceCount() : null;
 
-    let maxAllowedToAdvanceCount= this.props.round ? this.props.round.getMaxAllowedToAdvanceCount() : null;
     return (
       <div className="table-responsive" onScroll={this.resultsTableScroll}>
         <table className="table table-striped table-hover table-results table-condensed" ref="resultsTable">
@@ -289,8 +288,8 @@ export default React.createClass({
             </tr>
           </thead>
           <tbody>
-            {this.props.results.filter(r => r.registration.checkedIn).map((result, i) => {
-              let prevResult = i > 0 ? this.props.results[i - 1] : null;
+            {results.filter(r => r.registration.checkedIn).map((result, i) => {
+              let prevResult = i > 0 ? results[i - 1] : null;
               let lastToAdvance = this.props.configurableAdvanceCount && this.props.advanceCount == i + 1;
               let lastAllowedToAdvance = this.props.configurableAdvanceCount && this.props.maxAllowedToAdvanceCount == i + 1;
               if(this.props.prettyStringOpts) {
@@ -318,16 +317,32 @@ export default React.createClass({
               }
             })}
           </tbody>
-          <tfoot>
-            {footerRows}
-          </tfoot>
+          {this.props.showFooter ? this.renderFooter() : <tfoot/>}
         </table>
-				<div className="modal fade" ref="resultDetailsModal">
-					<div className="modal-dialog">
-            {resultDetailsModalContent}
-					</div>
-				</div>
+        <ResultDetailsModalContent ref='resultDetailsModal' result={this.state.selectedResult} competitionUrlId={this.props.competitionUrlId}/>
       </div>
     );
   }
 });
+
+export default createContainer(function(props) {
+  Meteor.subscribe('competition', props.competitionUrlId);
+  Meteor.subscribe('roundResults', props.competitionUrlId, props.eventCode, parseInt(props.nthRound));
+  if(!props.round) {
+    let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
+    let nthRound = parseInt(props.nthRound);
+    props.round = Rounds.findOne({
+      competitionId: competitionId,
+      eventCode: props.eventCode,
+      nthRound: nthRound,
+    });
+  }
+
+  let results = props.round ? props.round.getResultsWithRegistrations({ limit: props.limit || 0, sorted: true }) : [];
+
+  return {
+    ready: FlowRouter.subsReady('competition'),
+    round: props.round,
+    results: results,
+  };
+}, ResultsList);
