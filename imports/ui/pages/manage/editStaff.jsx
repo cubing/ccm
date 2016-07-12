@@ -1,86 +1,85 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
+import {Modal, ModalBody, ModalHeader, ModalTitle, ModalFooter, InputGroup, FormControl, Button} from 'react-bootstrap';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
+import getUsers from '/imports/lib/getWcaUsers';
 
-Template.editStaff.rendered = function() {
-  let template = this;
-  template.autorun(() => {
-    let data = Template.currentData();
-    ReactDOM.render(
-      <StaffList competitionId={data.competitionId} />,
-      template.$(".reactRenderArea")[0]
-    );
-  });
-};
-Template.editStaff.destroyed = function() {
-  let template = this;
-  let unmounted = ReactDOM.unmountComponentAtNode(
-    template.$(".reactRenderArea")[0]
-  );
-  assert(unmounted);
-};
+const AddStaffModal = React.createClass({
+  getInitialState() {
+    return {
+      show: this.props.show,
+      val: '',
+    };
+  },
 
-Template.modalAddStaff.created = function() {
-  let template = this;
-  template.isSaveableReact = new ReactiveVar(false);
-};
-Template.modalAddStaff.rendered = function() {
-  let template = this;
-  enableWcaUserSelect(template.$('.select-user'));
-};
-Template.modalAddStaff.helpers({
-  saveable() {
-    let template = Template.instance();
-    return template.isSaveableReact.get();
+  show() {
+    this.setState({ show: true, val: '' });
   },
-});
-function selectUserChanged($input, template) {
-  let selectize = $input[0].selectize;
-  let value = selectize.getValue();
-  // If selectize.$control_input has text in it, then we are in the middle of
-  // selecting a user.
-  template.isSaveableReact.set(value.length > 0 && selectize.$control_input.val().length === 0);
-}
-Template.modalAddStaff.events({
-  'input .select-user': function(e, template) {
-    selectUserChanged(template.$('input.select-user'), template);
-  },
-  'change .select-user': function(e, template) {
-    selectUserChanged(template.$('input.select-user'), template);
-  },
-  'click button[type="submit"]': function(e, template) {
-    let $input = template.$('input.select-user');
-    let selectize = $input[0].selectize;
 
-    let wcaUserIds = selectize.getValue().split(",");
-    let data = Template.parentData(1);
-    Meteor.call('addStaffMembers', data.competitionId, wcaUserIds, function(error) {
-      if(error) {
-        bootbox.alert(`Error adding staff members: ${error.reason}`);
-      } else {
-        selectize.clear();
-        $("#modalAddStaff").modal('hide');
+  hide() {
+    this.setState({ show: false, val: '' });
+  },
+
+  addStaff() {
+    let wcaUserIds = this.state.val.map(i => i.profile);
+    console.log(72, 'adding', wcaUserIds);
+
+    // Meteor.call('addStaffMembers', this.props.competitionId, wcaUserIds, function(error) {
+    //   if(error) {
+    //     console.error(`Error adding staff members: ${error.reason}`);
+    //   } else {
+    //     this.hide();
+    //   }
+    // }, this);
+  },
+
+  loadOptions(input, callback) {
+    if(!input || input.length < 2) {
+      callback();
+      return null;
+    }
+
+    getUsers(input, function(err, res) {
+      let options = _.chain(res)
+        .map(i => ({value: i.id, label: `${i.name}`, profile: i}))
+        .value();
+
+      if(!err && res) {
+        callback(null, {
+          options: options,
+          complete: true,
+        });
       }
     });
   },
+
+  render() {
+    return (
+      <Modal show={this.state.show} onHide={this.hide}>
+        <ModalHeader>
+          <ModalTitle>Add Staff Members</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          <InputGroup>
+            <Select.Async name="selectStaff" ref='select' multi value={this.state.val} loadOptions={this.loadOptions} onChange={val => this.setState({ val })}/>
+            <InputGroup.Button>
+              <Button onClick={this.addStaff}>Add</Button>
+            </InputGroup.Button>
+          </InputGroup>
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={this.hide}>Close</Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
 });
 
-let StaffList = createContainer((props) => {
-  let staff = Registrations.find({
-    competitionId: props.competitionId,
-    roles: {
-      $exists: 1
-    },
-  }, {
-    sort: {
-      uniqueName: 1
-    }
-  }).fetch();
-  return {
-    staff: staff,
-    currentUserId: Meteor.userId(),
-  };
-}, React.createClass({
+const StaffList = React.createClass({
+  modals: {},
+
   getInitialState() {
     return {
       hoveredRoleName: null,
@@ -115,18 +114,19 @@ let StaffList = createContainer((props) => {
   },
 
   render() {
-    let classesForRole = (role, staff=null) => {
+    let classesForRole = (role, staff) => {
       let classes = {
         'staff-role': true,
       };
-      if(this.state.hoveredRoleName && (staff === null || staff._id === this.state.staffId)) {
+      if(this.state.hoveredRoleName && (staff && staff._id === this.state.staffId)) {
         classes['staff-role-hovered'] = this.state.hoveredRoleName === role.name;
         classes['staff-role-granted-by-hovered'] = role.isDescendentOfAny({ [this.state.hoveredRoleName]: true });
       }
       return classNames(classes);
     };
+
     return (
-      <div>
+      <div className='container'>
         <table className="table staff-table">
           <thead>
             <tr>
@@ -185,7 +185,37 @@ let StaffList = createContainer((props) => {
             })}
           </tbody>
         </table>
+
+        <AddStaffModal ref={(ref) => this.addStaffModal = ref}/>
+
+        <span className="extraButtons">
+          <span data-toggle="modal" data-target="#modalAddStaff">
+            <span className="extraButton add" data-toggle="tooltip" data-placement="top" title="Add staff members" onClick={() => this.addStaffModal.show()}/>
+          </span>
+        </span>
+
       </div>
     );
   },
-}));
+});
+
+export default createContainer((props) => {
+  let sub = Meteor.subscribe('competitionRegistrations', props.competitionUrlId);
+  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
+  let staff = Registrations.find({
+    competitionId: props.competitionUrlId,
+    roles: {
+      $exists: 1
+    },
+  }, {
+    sort: {
+      uniqueName: 1
+    }
+  }).fetch();
+
+  return {
+    competitionId: competitionId,
+    staff: staff,
+    currentUserId: Meteor.userId(),
+  };
+}, StaffList);

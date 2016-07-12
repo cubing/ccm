@@ -7,7 +7,7 @@ import {Layout, Competitions, EditProfile} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
 import {Competition, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
-import {EditCompetition, DataEntry} from '/imports/ui/pages/manage/index';
+import {EditCompetition, EditStaff, DataEntry} from '/imports/ui/pages/manage/index';
 
 const log = logging.handle("routes");
 
@@ -96,6 +96,20 @@ manageRoutes.route('/', {
     });
   }
 });
+
+manageRoutes.route('/staff', {
+  name: 'editStaff',
+  titlePrefix: "Staff",
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      tabs: Tabs.managerTabs,
+      content: (<EditStaff {...params}/>)
+    });
+  }
+});
+
 
 manageRoutes.route('/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',

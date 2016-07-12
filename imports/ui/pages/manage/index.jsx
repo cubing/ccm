@@ -1,5 +1,6 @@
 import EditCompetition from './editCompetition.jsx';
+import EditStaff from './editStaff.jsx';
 import EditEvents from './editEvents.jsx';
 import DataEntry from './dataEntry.jsx';
 
-export {EditCompetition, EditEvents, DataEntry};
+export {EditCompetition, EditStaff, EditEvents, DataEntry};

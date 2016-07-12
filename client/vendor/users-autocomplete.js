@@ -33,7 +33,7 @@ $(function() {
           }
           var path = '/api/v0/search/users';
           var url = "https://www.worldcubeassociation.org" + path;//JFLY
-          var url = "http://localhost:3000" + path;//JFLY
+          //var url = "http://localhost:3000" + path;//JFLY
           $.ajax({
             url: url,
             data: {
