@@ -23,6 +23,7 @@
     "react-addons-update": "^15.2.0",
     "react-bootstrap": "^0.29.5",
     "react-dom": "^15.2.0",
+    "react-select": "^1.0.0-beta13",
     "typeahead.js": "^0.11.1"
   },
   "devDependencies": {

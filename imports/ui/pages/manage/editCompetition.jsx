@@ -87,7 +87,7 @@ const EditCompetition = React.createClass({
                 <div className="form-group">
                   <label htmlFor="inputWcaCompetitionId" className="col-sm-3 col-lg-2 control-label">WCA Competition ID</label>
                   <div className="col-sm-9 col-lg-10">
-                    <input type="text" className="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value={competition.wcaCompetitionId} disabled={user && user.siteAdmin}/>
+                    <input type="text" className="form-control" id="inputWcaCompetitionId" name="wcaCompetitionId" value={competition && competition.wcaCompetitionId} disabled={user && user.siteAdmin}/>
                   </div>
                 </div>
                 <div className="form-group">
@@ -148,7 +148,7 @@ export default createContainer((props) => {
   let competition = Competitions.findOne(competitionId);
 
   return {
-    ready: subscription.ready(),
+    ready: FlowRouter.subsReady('competition'),
     user: Meteor.user(),
     competition: competition,
     competitionId: competitionId,
