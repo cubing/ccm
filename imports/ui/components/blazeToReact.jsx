@@ -6,17 +6,19 @@ BlazeToReact = React.createClass({
   mixins: [ReactMeteorData],
   renderBlaze() {
     this.removeBlaze();
-    if (this.props.blazeTemplate) {
+    if(this.props.blazeTemplate) {
       this.view = Blaze.renderWithData(Template[this.props.blazeTemplate], _.omit(this.props, 'blazeTemplate'), ReactDOM.findDOMNode(this.refs[this.props.blazeTemplate]));
     }
   },
   removeBlaze() {
-    if (this.view) Blaze.remove(this.view);
+    if(this.view) {
+      Blaze.remove(this.view);
+    }
   },
   getMeteorData() {
     // Ensure a re-rendering of the template if a prop changes
-    
-    if (this._isMounted) {
+
+    if(this._isMounted) {
       this.renderBlaze();
     }
     return this.props;
