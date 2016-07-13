@@ -51,7 +51,7 @@
   {{/ccmModal}}
 </template>
 
-<template name="modalEditRegistration">
+<!-- <template name="modalEditRegistration">
   <div id="modalEditRegistration" class="modal fade" data-keyboard="false">
     <div class="modal-dialog full-screen">
       {{#if this}}
@@ -96,8 +96,43 @@
               </button>
             </div>
           {{/autoForm}}
-        </div><!-- /.modal-content -->
+        </div><!/-/- /.modal-content
       {{/if}}
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
+    </div><!-/- /.modal-dialog
+  </div><!-/- /.modal
+</template> -->
+
+<template name='editRegistrationForm'>
+{{#autoForm id="editRegistrationForm" type="method" meteormethod="addEditRegistration" doc=selectedRegistration collection="Registrations"}}
+  <div class="modal-body">
+    <div class="form-group">
+      {{> afFieldInput name="_id" type="hidden"}}
+      {{> afFieldInput name="competitionId" valueIn=selectedRegistration.competitionId}}
+      {{> afFieldInput name="userId"}}
+      {{> afQuickField name="uniqueName" autofocus=''}}
+      {{> afQuickField name="wcaId"}}
+      {{> afQuickField name="countryId"}}
+      {{> afQuickField name="gender"}}
+      {{> afQuickField name="dob"}}
+    </div>
+  </div>
+  <div class="modal-footer">
+    {{#if selectedRegistration._id}}
+      <button type="button" class="btn btn-danger pull-left js-delete-registration">
+        <span class="glyphicon glyphicon-trash"></span> Delete registration
+      </button>
+    {{/if}}
+
+    {{> ccmCancelButton}}
+    <button type="reset" class="btn btn-default">Reset Form</button>
+    <button type="submit" class="btn btn-success">
+      <span class="glyphicon {{#if selectedRegistration._id}}glyphicon-floppy-save{{else}}glyphicon-plus{{/if}}"></span>
+      {{#if selectedRegistration._id}}
+        Save
+      {{else}}
+        Add
+      {{/if}}
+    </button>
+  </div>
+{{/autoForm}}
 </template>

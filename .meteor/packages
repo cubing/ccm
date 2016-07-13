@@ -14,12 +14,10 @@ mrt:assert
 natestrauser:connection-banner
 aldeed:collection2
 linto:fontawesome
-aldeed:autoform
 meteorhacks:fast-render
 meteorhacks:subs-manager
 
 mrt:flash-messages
-comerc:autoform-selectize
 chhib:selectize-bootstrap-3
 mrt:googlemaps
 cwohlman:bootboxjs
@@ -62,3 +60,5 @@ kadira:react-layout
 kadira:blaze-layout
 spacebars
 arillo:flow-router-helpers
+aldeed:autoform
+comerc:autoform-selectize
