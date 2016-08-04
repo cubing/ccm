@@ -51,8 +51,8 @@ Template.modalAddStaff.events({
   'click button[type="submit"]': function(e, template) {
     let $input = template.$('input.select-user');
     let selectize = $input[0].selectize;
-
-    let wcaUserIds = selectize.getValue().split(",");
+    // let wcaUserIds = selectize.getValue().split(",");
+    let wcaUserIds = [selectize.lastQuery];
     let data = Template.parentData(1);
     Meteor.call('addStaffMembers', data.competitionId, wcaUserIds, function(error) {
       if(error) {
