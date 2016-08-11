@@ -223,6 +223,32 @@ Meteor.methods({
     result.setSolveTime(solveIndex, solveTime);
   },
 
+  setRoundSize(roundId, size) {
+    let round = Rounds.findOne(roundId, {
+      fields: {
+        competitionId: 1,
+        eventCode: 1,
+      }
+    });
+    if(!round) {
+      throw new Meteor.Error(404, "Round not found");
+    }
+    throwIfCannotManageCompetition(this.userId, round.competitionId, 'manageEvents');
+
+    let update = {};
+    if(size) {
+      update.$set = {
+        size: size
+      };
+    } else {
+      update.$unset = {
+        size: 1,
+      };
+    }
+
+    Rounds.update(roundId, update);
+  },
+
   setRoundSoftCutoff(roundId, softCutoff) {
     let round = Rounds.findOne(roundId, {
       fields: {
@@ -235,9 +261,9 @@ Meteor.methods({
     }
     throwIfCannotManageCompetition(this.userId, round.competitionId, 'manageEvents');
 
-    let toSet = {};
+    let update = {};
     if(softCutoff) {
-      toSet.$set = {
+      update.$set = {
         // Explicitly listing all the relevant fields in SolveTime as a workaround for
         //  https://github.com/aldeed/meteor-simple-schema/issues/202
         //softCutoff: {
@@ -250,12 +276,12 @@ Meteor.methods({
         'softCutoff.formatCode': softCutoff.formatCode,
       };
     } else {
-      toSet.$unset = {
+      update.$unset = {
         softCutoff: 1,
       };
     }
 
-    Rounds.update(roundId, toSet);
+    Rounds.update(roundId, update);
 
     // Changing the softCutoff for a round could affect the rounds progress,
     // so queue up a recomputation of that.

@@ -7,7 +7,7 @@ import {Layout, Competitions, EditProfile} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
 import {Competition, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
-import {EditCompetition, EditStaff, ManageCheckin, DataEntry} from '/imports/ui/pages/manage/index';
+import {EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors} from '/imports/ui/pages/manage/index';
 
 const log = logging.handle("routes");
 
@@ -110,6 +110,25 @@ manageRoutes.route('/staff', {
   }
 });
 
+manageRoutes.route('/events', {
+  name: 'editEvents',
+  titlePrefix: "Edit Events",
+
+  subscriptions(params) {
+    this.register('roundProgresses', Meteor.subscribe('roundProgresses', params.competitionUrlId));
+    this.register('rounds', Meteor.subscribe('rounds', params.competitionUrlId));
+    this.register('competitionRegistrations', Meteor.subscribe('competitionRegistrations', params.competitionUrlId));
+  },
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      tabs: Tabs.managerTabs,
+      content: (<EditEvents {...params}/>)
+    });
+  }
+});
+
 manageRoutes.route('/check-in', {
   name: 'manageCheckin',
   titlePrefix: "Check-in",
@@ -123,13 +142,29 @@ manageRoutes.route('/check-in', {
   }
 });
 
+manageRoutes.route('/advance-participants/:eventCode?/:nthRound?', {
+  name: 'advanceParticipants',
+  titlePrefix: "Advance competitors",
+
+  subscriptions(params, queryParams) {
+    this.register(Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
+  },
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      tabs: Tabs.managerTabs,
+      content: <AdvanceCompetitors {...params}/>
+    });
+  }
+});
 
 manageRoutes.route('/data-entry/:eventCode?/:nthRound?', {
   name: 'dataEntry',
   titlePrefix: "Data entry",
 
   subscriptions(params, queryParams) {
-    this.register(Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
+    this.register('roundResults', Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
   },
 
   action(params, queryParams) {

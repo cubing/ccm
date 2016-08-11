@@ -190,6 +190,14 @@ global.jChester = {
   },
 };
 
+const BaseTime = {
+  millis: 0,
+  decimals: 2,
+  moveCount: 0,
+  puzzlesSolvedCount: 0,
+  puzzlesAttemptedCount: 0,
+};
+
 export default React.createClass({
   editableSolveTimeFieldOptions: [ 'millis', 'moveCount', 'puzzlesSolvedCount', 'puzzlesAttemptedCount' ],
 
@@ -244,6 +252,10 @@ export default React.createClass({
 
   componentWillMount() {
     this.setSolveTime(Object.assign({}, this.getInitialState().solveTime, this.props.solveTime));
+  },
+
+  getSolveTime() {
+    return Object.assign({}, BaseTime, this.solveTime);
   },
 
   setSolveTime(solveTime) {

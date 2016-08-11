@@ -64,7 +64,18 @@ Meteor.publish('competition', function(competitionUrlId) {
       Registrations.find({ competitionId: competitionId, userId: this.userId }, { fields: registrationFieldsToPublish })
     );
   }
+
   return cursors;
+});
+
+Meteor.publish('rounds', function(competitionUrlId) {
+  check(competitionUrlId, String);
+  let competitionId = api.competitionUrlIdToId(competitionUrlId);
+  if(!competitionId) {
+    return [];
+  }
+
+  return Rounds.find({ competitionId: competitionId });
 });
 
 Meteor.publish('competitionRegistrations', function(competitionUrlId) {
