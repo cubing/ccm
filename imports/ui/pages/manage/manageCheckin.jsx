@@ -297,7 +297,6 @@ const CheckinList = React.createClass({
         </table>
 
         <ImportRegistrationModal competitionId={competitionId} ref={(ref) => this.modals.importRegistration = ref}/>
-        {/*<BlazeToReact wrapperTag='div' blazeTemplate='modalEditRegistration' selectedRegistration={this.state.selectedRegistration} hidden={() => console.log(2)}/>*/}
         <EditRegistrationModal competitionId={competitionId} ref={ref => this.modals.editRegistration = ref}/>
 
         <span className="extraButtons">

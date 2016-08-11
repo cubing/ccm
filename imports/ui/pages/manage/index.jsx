@@ -3,5 +3,6 @@ import EditStaff from './editStaff.jsx';
 import EditEvents from './editEvents.jsx';
 import ManageCheckin from './manageCheckin.jsx';
 import DataEntry from './dataEntry.jsx';
+import AdvanceCompetitors from './advanceCompetitors.jsx';
 
-export {EditCompetition, EditStaff, EditEvents, DataEntry, ManageCheckin};
+export {EditCompetition, EditStaff, EditEvents, DataEntry, ManageCheckin, AdvanceCompetitors};
