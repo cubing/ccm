@@ -12,7 +12,7 @@ const NewCompetition = React.createClass({
     return {
       user: null,
       tab: 'new',
-    }
+    };
   },
 
   getInitialState() {
@@ -44,14 +44,14 @@ const NewCompetition = React.createClass({
   },
 
   tabs: {
-    'new': function () {
+    'new': function() {
       let {competitionName} = this.state;
 
       return (
         <div className="tab-content">
           <form id="formNewCompetition" className="form-horizontal" role="form">
             <div className="form-group">
-              <label for="inputCompetitionName" className="col-sm-3 col-lg-2 control-label">Competition Name</label>
+              <label htmlFor="inputCompetitionName" className="col-sm-3 col-lg-2 control-label">Competition Name</label>
               <div className="col-sm-9 col-lg-10">
                 <input type="text" className="form-control" id="inputCompetitionName" name="competitionName" value={competitionName} onChange={this.competitionNameChange}/>
               </div>
@@ -62,7 +62,7 @@ const NewCompetition = React.createClass({
         </div>
       );
     },
-    'import': function () {
+    'import': function() {
       let {uploadedCompetition} = this.state;
 
       return (
@@ -70,7 +70,7 @@ const NewCompetition = React.createClass({
           <form id="formImportCompetition" className="form-horizontal" role="form">
             <p>
               <label className="btn btn-default btn-block">
-                <input type="file" style="display:none;"/>
+                <input type="file" style={{display: "none"}}/>
                 Upload competition JSON...
               </label>
             </p>
@@ -96,10 +96,15 @@ const NewCompetition = React.createClass({
         {/*{#ifLoggedInAndVerified}*/}
 
           <ul className="nav nav-tabs">
-            <li role="presentation" className={tab === 'new' ? 'active' : ''}><a href={FlowRouter.path('newCompetition')}>New competition</a></li>
+            <li role="presentation" className={tab === 'new' ? 'active' : ''}>
+              <a href={FlowRouter.path('newCompetition')}>New competition</a>
+            </li>
+
             {user ?
-              <li role="presentation" className={tab === 'import' ? 'active' : ''}><a href={FlowRouter.path('importCompetition')}>Import competition</a></li>
-            : null} 
+              <li role="presentation" className={tab === 'import' ? 'active' : ''}>
+                <a href={FlowRouter.path('importCompetition')}>Import competition</a>
+              </li> :  null
+            }
           </ul>
 
           {this.tabs[tab].call(this)}
