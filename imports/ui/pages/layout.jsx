@@ -189,16 +189,22 @@ const Layout = React.createClass({
 });
 
 export default createContainer((props) => {
-  let subscription = Meteor.subscribe('competition', props.competitionUrlId);
-  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
-  let competition = Competitions.findOne(competitionId);
+  if(props.competitionUrlId) {
+    let subscription = Meteor.subscribe('competition', props.competitionUrlId);
+    let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
+    let competition = Competitions.findOne(competitionId);
 
-  return {
-    user: Meteor.user(),
-    competitionId: competitionId,
-    competitionUrlId: props.competitionUrlId,
-    competitionName: competition ? competition.competitionName : null,
-  };
+    return {
+      user: Meteor.user(),
+      competitionId: competitionId,
+      competitionUrlId: props.competitionUrlId,
+      competitionName: competition ? competition.competitionName : null,
+    };
+  } else {
+    return {
+      user: Meteor.user()
+    };
+  }
 }, Layout);
 
 $(`[data-toggle='tooltip']`).mouseover(function(e) {
