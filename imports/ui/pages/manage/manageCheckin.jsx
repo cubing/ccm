@@ -227,7 +227,7 @@ const CheckinList = React.createClass({
           <thead>
             <tr>
               <th>Name</th>
-              <th className="text-nowrap">WCA id</th>
+              <th className="text-nowrap">WCA ID</th>
               <th>Gender</th>
               <th>Birthday</th>
               {competitionEvents.map(eventCode => {

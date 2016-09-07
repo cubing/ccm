@@ -136,7 +136,7 @@ Meteor.methods({
       if(!registration.userId && wcaPerson.wcaId) {
         let user = Meteor.users.findOne({ 'profile.wcaId': wcaPerson.wcaId });
         if(user) {
-          // We found a user with this WCA id!
+          // We found a user with this WCA ID!
           toSet.userId = user._id;
         }
       }
@@ -198,7 +198,7 @@ Meteor.methods({
     throwIfNotSiteAdmin(this.userId);
 
     // The WCA competition JSON doesn't include a competition name field, so
-    // we just use the competition's WCA id.
+    // we just use the competition's WCA ID.
     let wcaCompetitionId = wcaCompetition.competitionId;
     let competitionName = wcaCompetitionId;
     let competition = Competition.create(this.userId, competitionName, startDate);
@@ -459,7 +459,7 @@ Meteor.methods({
         competitionId: competitionId,
         userId: user._id,
       });
-      // Then search by WCA id.
+      // Then search by WCA ID.
       if(!registration) {
         registration = Registrations.findOne({
           competitionId: competitionId,

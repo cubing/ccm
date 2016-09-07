@@ -40,7 +40,7 @@ CountryIdType = {
 };
 
 WcaIdType = {
-  label: "WCA id",
+  label: "WCA ID",
   type: String,
   regEx: /^(19|20)\d{2}[A-Z]{4}\d{2}$/,
 };
