@@ -48,12 +48,18 @@ const EditRegistrationModal = React.createClass({
   },
 
   show(selectedRegistration) {
-    this.setState({ show: true, selectedRegistration: selectedRegistration });
+    this.setState({
+      show: true,
+      selectedRegistration: selectedRegistration
+    });
   },
 
   hide() {
     AutoForm.resetForm('editRegistrationForm');
-    this.setState({ show: false, selectedRegistration: null });
+    this.setState({
+      show: false,
+      selectedRegistration: null
+    });
   },
 
   render() {
@@ -140,7 +146,7 @@ const ImportRegistrationModal = React.createClass({
         </ModalBody>
         <ModalFooter>
           <Button onClick={this.hide}>Cancel</Button>
-          <Button bsStyle='success' onClick={this.import}>import</Button>
+          <Button bsStyle='success' onClick={this.import}>Import</Button>
         </ModalFooter>
       </Modal>
     );
