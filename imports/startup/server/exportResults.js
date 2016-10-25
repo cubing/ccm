@@ -5,8 +5,7 @@ Meteor.methods({
     log.l0("exportWcaResults start");
     let problems = [];
 
-    let uploadScramblesRoute = Router.routes.uploadScrambles;
-    let uploadScramblesPath = uploadScramblesRoute.path({ competitionUrlId: competitionUrlId });
+    let uploadScramblesPath = `/manage/${competitionUrlId}/scrambles/upload`;
 
     let groups = Groups.find({ competitionId: competitionId }).fetch();
     let scramblePrograms = _.uniq(_.pluck(groups, "scrambleProgram"));
@@ -67,11 +66,7 @@ Meteor.methods({
             wcaValues.push(0);
           }
 
-          let roundDataEntryPath = Router.routes.dataEntry.path({
-            competitionUrlId: competitionUrlId,
-            eventCode: round.eventCode,
-            nthRound: round.nthRound,
-          });
+          let roundDataEntryPath = `/manage/${competitionUrlId}/data-entry/${round.eventCode}/${round.nthRound}`;
           if(!result.hasOwnProperty('bestIndex') || !wcaValues[result.bestIndex]) {
             problems.push({
               warning: true,

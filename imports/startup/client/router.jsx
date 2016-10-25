@@ -7,7 +7,7 @@ import {Layout, Competitions, EditProfile} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
 import {Competition, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
-import {EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors} from '/imports/ui/pages/manage/index';
+import {EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors, Export} from '/imports/ui/pages/manage/index';
 
 const log = logging.handle("routes");
 
@@ -15,17 +15,6 @@ subs = new SubsManager({
   cacheLimit: 10,
   expireIn: 5, // minutes
 });
-
-// It appears that iron-router does nothing useful when a subscription throws
-// an error. We explicitly catch that error, log it, and then render 'notFound'
-const subscriptionError = function(that) {
-  return {
-    onError: function(err) {
-      console.error(err);
-      // that.render('notFound');
-    }
-  };
-};
 
 global.Router = FlowRouter;
 
@@ -255,6 +244,17 @@ competitionRoutes.route('/results/:eventCode?/:nthRound?', {
         <RoundPicker key={1} {...params}/>,
         <CompetitionResults key={2} {...params} {...queryParams}/>
       ]
+    });
+  }
+});
+
+competitionRoutes.route('/manage/:competitionUrlId/exportResults', {
+  name: 'exportResults',
+
+  action(params, queryParams) {
+    ReactLayout.render(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      content: (<Export {...params}/>)
     });
   }
 });
