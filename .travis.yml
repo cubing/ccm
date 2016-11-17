@@ -8,6 +8,17 @@ cache:
   directories:
     - node_modules
 
+# Workaround from https://www.serverpals.com/blog/installing-bcrypt-on-travis-ci-with-node-4.x
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+env:
+  - CXX=g++-4.8
+
 # Since sudo isn't possible anymore (for now), meteor can't add a link to
 # itself to /usr/local/bin, so you'll have to add the meteor installation folder
 # to the PATH yourself.
