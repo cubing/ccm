@@ -1,6 +1,6 @@
 import Layout from './layout.jsx';
 import Competitions from './competitions.jsx';
 import EditProfile from './editProfile.jsx';
-import NotFound from './notFound.jsx';
+import ErrorPage from './errorPage.jsx';
 
-export {Layout, Competitions, EditProfile, NotFound};
+export {Layout, Competitions, EditProfile, ErrorPage};

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
-import NotFound from '../notFound';
 
 const Competition = React.createClass({
   competitionIsScheduled: function() {

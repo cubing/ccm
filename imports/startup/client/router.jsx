@@ -3,11 +3,11 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {BlazeLayout} from 'meteor/kadira:blaze-layout';
 import Tabs from './tabs';
 import BlazeToReact from '/imports/ui/components/blazeToReact';
-import {Layout, Competitions, EditProfile, NotFound} from '/imports/ui/pages/index';
+import {Layout, Competitions, EditProfile, ErrorPage} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
 import {Competition, CompetitionLayout, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
-import {EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors, Export} from '/imports/ui/pages/manage/index';
+import {ManageCompetitionLayout, EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors, Export} from '/imports/ui/pages/manage/index';
 
 const log = logging.handle("routes");
 
@@ -25,7 +25,7 @@ FlowRouter.notFound = {
 
   action() {
     ReactLayout.render(Layout, {
-      content: (<NotFound message='Page Not Found'/>)
+      content: (<ErrorPage error='404' message='Page Not Found'/>)
     });
   }
 };
@@ -92,8 +92,11 @@ manageRoutes.route('/', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: (<EditCompetition {...params}/>)
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <EditCompetition {...params}/>
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -105,8 +108,11 @@ manageRoutes.route('/staff', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: (<EditStaff {...params}/>)
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <EditStaff {...params}/>
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -124,8 +130,11 @@ manageRoutes.route('/events', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: (<EditEvents {...params}/>)
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <EditEvents {...params}/>
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -137,8 +146,11 @@ manageRoutes.route('/check-in', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: (<ManageCheckin {...params}/>)
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <ManageCheckin {...params}/>
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -154,8 +166,11 @@ manageRoutes.route('/advance-participants/:eventCode?/:nthRound?', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: <AdvanceCompetitors {...params}/>
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <AdvanceCompetitors {...params}/>)
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -171,13 +186,14 @@ manageRoutes.route('/data-entry/:eventCode?/:nthRound?', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.managerTabs,
-      content: [
-        <OpenRoundPicker key={0} {...params} manage={true}/>,
-        <EventPicker key={1} {...params} manage={true}/>,
-        <RoundPicker key={2} {...params} manage={true}/>,
-        <DataEntry key={3} {...params}/>
-      ]
+      content: (
+        <ManageCompetitionLayout {...params}>
+          <OpenRoundPicker {...params} manage={true}/>
+          <EventPicker {...params} manage={true}/>
+          <RoundPicker {...params} manage={true}/>
+          <DataEntry {...params}/>
+        </ManageCompetitionLayout>
+      )
     });
   }
 });
@@ -202,7 +218,7 @@ competitionRoutes.notFound = {
     ReactLayout.render(Layout, {
       content: (
         <CompetitionLayout {...params}>
-          <NotFound message='Page Not Found'/>
+          <ErrorPage error='404' message='Page Not Found'/>
         </CompetitionLayout>
       )
     });

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
-import NotFound from '../notFound';
+import ErrorPage from '../errorPage';
 import Navbar from '../../components/navbar.jsx';
 import OneTab from '../../components/oneTab.jsx';
 
@@ -37,7 +37,7 @@ const CompetitionLayout = React.createClass({
           {Tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
         </Navbar>
 
-        {ready ? (competition ? this.props.children : <NotFound message='Competition Not Found'/>) : <div/>}
+        {ready ? (competition ? this.props.children : <ErrorPage error='404' message='Competition Not Found'/>) : <div/>}
       </div>
     );
   }
