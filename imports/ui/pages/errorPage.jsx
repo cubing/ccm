@@ -5,7 +5,7 @@ export default React.createClass({
   render() {
     return (
       <div className='container'>
-        <h1>{404}</h1>
+        <h1>{this.props.error}</h1>
         <p>{this.props.message}</p>
       </div>
     );
