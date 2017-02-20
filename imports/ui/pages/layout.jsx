@@ -2,54 +2,12 @@ import React from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 import BlazeToReact from '../components/blazeToReact';
 import ccmModal from '../components/ccmModal';
+import OneTab from '../components/oneTab';
+import Navbar from '../components/navbar';
 
 isActiveRoute = (route) => FlowRouter.current().route.name === route;
 isActiveGroup = (route) => FlowRouter.current().route.group && FlowRouter.current().route.group.name === route;
 isActiveOrAncestorRoute = () => false;
-
-// (route, title, text, img, icon, active, otherClass, leaf)
-const OneTab = React.createClass({
-  getDefaultProps() {
-    return {
-      active: false,
-      otherClass: '',
-      leaf: true,
-      title: '',
-      route: null,
-      img: false,
-      icon: '',
-      text: '',
-    };
-  },
-
-  render() {
-    let {active, otherClass, leaf, title, route, competitionUrlId, img, icon, text} = this.props;
-
-    return (
-      <li className={`${active ? 'active ' : ''}${otherClass ? otherClass : ''} ${leaf ? 'leaf' : ''}`}>
-        <a href={FlowRouter.path(route, {competitionUrlId: competitionUrlId})}
-          data-toggle="tooltip" data-placement="bottom" data-container="body" title={title}>
-          {img ? <img src={icon}/> : <span className={icon}/>}
-          <span className="hidden-xs"> {text}</span>
-        </a>
-      </li>
-    );
-  }
-});
-
-const NavBar = function(props) {
-  return (
-    <nav className="navbar navbar-default navbar-plain-rectangle" role="navigation">
-      <div className="container-fluid">
-        <div className="navbar-collapse collapse-buttons">
-          <ul className="nav navbar-nav navbar-left">
-            {props.children}
-          </ul>
-        </div>
-      </div>
-    </nav>
-  );
-};
 
 const LoginButtonsLoggedOutAllServices = function(props) {
   let {user} = props;
@@ -171,9 +129,9 @@ const Layout = React.createClass({
         </nav>
 
         {tabs ?
-          <NavBar>
+          <Navbar>
             {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
-          </NavBar> :
+          </Navbar> :
         ''}
 
         {content}

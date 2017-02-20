@@ -8,7 +8,6 @@ const CompetitionSchedule = React.createClass({
   render () {
     let {ready, competitionId} = this.props;
 
-      console.log(10, ready); 
     if (ready) {
       setupCompetitionCalendar($('#calender'), false, competitionId);
       $('#calender').fullCalendar('refetchEvents');

@@ -1,18 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
+import NotFound from '../notFound';
 
 const Competition = React.createClass({
-  registeredForCompetition: function() {
-    let registration = Registrations.findOne({
-      competitionId: this.props.competitionId,
-      userId: this.props.userId,
-    }, {
-      fields: { _id: 1 }
-    });
-    return !!registration;
-  },
-
   competitionIsScheduled: function() {
     return this.props.competition.startDate;
   },
@@ -24,12 +15,12 @@ const Competition = React.createClass({
 
   render () {
     let {ready, competition, competitionId, competitionUrlId} = this.props;
-    if (!ready || !competition) {
+    if (!ready) {
       return <div/>;
     }
 
     let name = competition.competitionName;
-    
+
     return (
       <div className='container'>
         <h1>{name}</h1>
