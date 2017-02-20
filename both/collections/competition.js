@@ -88,7 +88,7 @@ _.extend(Competition.prototype, {
       sort: { nthRound: -1 },
       fields: { nthRound: 1 },
     });
-    return _.range(1, mostAdvancedRound.nthRound + 1);
+    return mostAdvancedRound ? _.range(1, mostAdvancedRound.nthRound + 1) : [];
   },
 
   getCannotRegisterReasons() {

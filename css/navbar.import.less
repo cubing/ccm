@@ -81,6 +81,7 @@
 .navbar-plain-rectangle {
   border: none;
   border-radius: 0px;
+  margin-bottom: 0px;
 }
 
 .navbar-default {
@@ -198,7 +199,6 @@
 /* sub navbar colors */
 @{nav-lvl-2} {
   .navProperties(@navLvl2NavbarColor, @navLvl2NavbarBoxShadow);
-  margin-top: -20px; // Get rid of the whitespace between the navbars
 }
 
 /* sub sub navbar colors */
@@ -233,4 +233,8 @@ p.navbar-brand > img {
   @media (min-width: @screen-sm-min) {
     width: auto;
   }
+}
+
+#bs-example-navbar-collapse-1 {
+  margin-bottom: 0px
 }

@@ -72,13 +72,3 @@ export default createContainer((props) => {
     competitionId: competitionId,
   };
 }, CompetitionEvents);
-
-
-Template.competitionEvents.rendered = function () {
-  let template = this;
-  template.autorun(() => {
-    ReactDOM.render(
-      <CompetitionEvents competitionId={template.data.competitionId}/>, template.$(".reactRenderArea")[0]
-    );
-  });
-}

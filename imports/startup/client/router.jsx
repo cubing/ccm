@@ -3,10 +3,10 @@ import {FlowRouter} from 'meteor/kadira:flow-router';
 import {BlazeLayout} from 'meteor/kadira:blaze-layout';
 import Tabs from './tabs';
 import BlazeToReact from '/imports/ui/components/blazeToReact';
-import {Layout, Competitions, EditProfile} from '/imports/ui/pages/index';
+import {Layout, Competitions, EditProfile, NotFound} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
-import {Competition, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
+import {Competition, CompetitionLayout, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
 import {EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors, Export} from '/imports/ui/pages/manage/index';
 
 const log = logging.handle("routes");
@@ -17,6 +17,18 @@ subs = new SubsManager({
 });
 
 global.Router = FlowRouter;
+
+FlowRouter.notFound = {
+  subscriptions(params) {
+    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+  },
+
+  action() {
+    ReactLayout.render(Layout, {
+      content: (<NotFound message='Page Not Found'/>)
+    });
+  }
+};
 
 FlowRouter.route('/', {
   name: 'home',
@@ -177,9 +189,25 @@ const competitionRoutes = FlowRouter.group({
   prefix: '/:competitionUrlId',
 
   subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+    this.register('competitions', Meteor.subscribe('competitions'));
   },
 });
+
+competitionRoutes.notFound = {
+  subscriptions(params) {
+    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+  },
+
+  action() {
+    ReactLayout.render(Layout, {
+      content: (
+        <CompetitionLayout {...params}>
+          <NotFound message='Page Not Found'/>
+        </CompetitionLayout>
+      )
+    });
+  }
+};
 
 competitionRoutes.route('/', {
   name: 'competition',
@@ -187,9 +215,12 @@ competitionRoutes.route('/', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.userTabs,
       activeTab: this.name,
-      content: (<Competition {...params}/>)
+      content: (
+        <CompetitionLayout {...params}>
+          <Competition {...params}/>
+        </CompetitionLayout>
+      )
     });
   }
 });
@@ -201,9 +232,12 @@ competitionRoutes.route('/events', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.userTabs,
       activeTab: this.name,
-      content: (<CompetitionEvents {...params}/>)
+      content: (
+        <CompetitionLayout {...params}>
+          <CompetitionEvents {...params}/>
+        </CompetitionLayout>
+      )
     });
   }
 });
@@ -219,9 +253,8 @@ competitionRoutes.route('/schedule', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.userTabs,
       activeTab: this.name,
-      content: (<div/>)
+      content: <CompetitionLayout {...params}/>
     });
   }
 });
@@ -237,12 +270,13 @@ competitionRoutes.route('/results/:eventCode?/:nthRound?', {
   action(params, queryParams) {
     ReactLayout.render(Layout, {
       competitionUrlId: params.competitionUrlId,
-      tabs: Tabs.userTabs,
       activeTab: this.name,
       content: [
-        <EventPicker key={0} {...params}/>,
-        <RoundPicker key={1} {...params}/>,
-        <CompetitionResults key={2} {...params} {...queryParams}/>
+        <CompetitionLayout {...params}>
+          <EventPicker {...params}/>
+          <RoundPicker {...params}/>
+          <CompetitionResults {...params} {...queryParams}/>
+        </CompetitionLayout>
       ]
     });
   }
