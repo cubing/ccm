@@ -7,6 +7,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "bootstrap": "^3.3.6",
     "jquery": "^2.2.3",
     "jstz": "^1.0.7",
