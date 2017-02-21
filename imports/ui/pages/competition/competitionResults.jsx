@@ -5,12 +5,12 @@ import ResultsList from '../../components/resultsList';
 
 const CompetitionResults = React.createClass({
   render() {
-    let {ready, competitionUrlId, round} = this.props;
+    let {ready, round, competitionUrlId, eventCode, nthRound, limit} = this.props;
 
     return (
       <div className='container'>
-        <ResultsList competitionUrlId={competitionUrlId}
-                     limit={parseInt(this.props.limit)}
+        <ResultsList competitionUrlId={competitionUrlId} eventCode={eventCode} nthRound={nthRound}
+                     limit={parseInt(limit)}
                      round={round}
                      showFooter={true}
         />
@@ -19,24 +19,21 @@ const CompetitionResults = React.createClass({
   }
 });
 
-export default createContainer((props) => {
-  Meteor.subscribe('competition', props.competitionUrlId);
-  Meteor.subscribe('roundResults', props.competitionUrlId, props.eventCode, parseInt(props.nthRound));
+export default createContainer(function(props) {
+  Subs.subscribe('competition', props.competitionUrlId);
 
-  if(FlowRouter.subsReady('competition', 'roundResults')) {
-    let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
-    let round = Rounds.findOne({
-      competitionId: competitionId,
-      eventCode: props.eventCode,
-      nthRound: parseInt(props.nthRound),
-    });
+  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
 
-    return {
-      ready: FlowRouter.subsReady('competition', 'roundResults'),
-      round: round,
-      competitionId: competitionId,
-    };
-  }
+  let round = competitionId ? Rounds.findOne({
+    competitionId: competitionId,
+    eventCode: props.eventCode,
+    nthRound: parseInt(props.nthRound),
+  }) : null;
 
-  return {};
+  return {
+    ready: Subs.ready(),
+    competitionId,
+    round,
+    ...props
+  };
 }, CompetitionResults);

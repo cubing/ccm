@@ -24,8 +24,8 @@ const CompetitionSchedule = React.createClass({
 });
 
 export default createContainer((props) => {
-  let compSub = Meteor.subscribe('competition', props.competitionUrlId);
-  let schedSub = Meteor.subscribe('scheduleEvents', props.competitionUrlId);
+  let compSub = Subs.subscribe('competition', props.competitionUrlId);
+  let schedSub = Subs.subscribe('scheduleEvents', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
 
   return {

@@ -333,8 +333,8 @@ const CheckinList = React.createClass({
 });
 
 export default createContainer((props) => {
-  Meteor.subscribe('competition', props.competitionUrlId);
-  Meteor.subscribe('competitionRegistrations', props.competitionUrlId);
+  Subs.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('competitionRegistrations', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
 

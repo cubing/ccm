@@ -183,6 +183,12 @@ const ResultRowWithRound = ResultRow(React.createClass({
 }));
 
 const ResultsList = React.createClass({
+  getDefaultProps() {
+    return {
+      results: []
+    }
+  },
+
   getInitialState() {
     return { selectedResult: null };
   },
@@ -326,22 +332,13 @@ const ResultsList = React.createClass({
 });
 
 export default createContainer(function(props) {
-  Meteor.subscribe('competition', props.competitionUrlId);
-  Meteor.subscribe('roundResults', props.competitionUrlId, props.eventCode, parseInt(props.nthRound));
-  if(!props.round) {
-    let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
-    let nthRound = parseInt(props.nthRound);
-    props.round = Rounds.findOne({
-      competitionId: competitionId,
-      eventCode: props.eventCode,
-      nthRound: nthRound,
-    });
-  }
+  Subs.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('roundResults', props.competitionUrlId, props.eventCode, parseInt(props.nthRound));
 
-  let results = props.round ? props.round.getResultsWithRegistrations({ limit: props.limit || 0, sorted: true }) : [];
+  let results = props.round.getResultsWithRegistrations({ limit: props.limit || 0, sorted: true });
 
   return {
-    ready: FlowRouter.subsReady('competition'),
+    ready: Subs.ready(),
     round: props.round,
     results: results,
   };
