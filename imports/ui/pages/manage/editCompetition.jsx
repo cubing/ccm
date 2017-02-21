@@ -121,20 +121,8 @@ const EditCompetition = React.createClass({
           </div>
 
           <div className="panel-body">
-
             <p>Competition Name:</p>
-            <input type="text" className="form-control" value={this.state.competitionName}
-            onChange={e => this.set('competitionName', e.target.value)}/>
-
-            <div className="row">
-              <div className="col-sm-12">
-                <label className="control-label">&nbsp;</label>
-                <p className="form-control-static">
-                  <a href={FlowRouter.path('editSchedule', {competitionUrlId})}>Adjust schedule</a>
-                </p>
-              </div>
-            </div>
-
+            <input type="text" className="form-control" value={this.state.competitionName} onChange={e => this.set('competitionName', e.target.value)}/>
           </div>
         </div>
       </div>
