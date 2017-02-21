@@ -17,10 +17,13 @@ const CCMModal = React.createClass({
   },
 
   render() {
+    let close = this.props.close || this.close;
+    let save = this.props.save || this.save;
+
     return (
-      <Modal show={this.state.show} onHide={this.hide}>
+      <Modal show={this.state.show} onHide={this.props.onHide || close}>
         <ModalHeader>
-          <button type="button" className="close" data-dismiss="modal" onClick={this.close}>
+          <button type="button" className="close" data-dismiss="modal" onClick={close}>
             <span aria-hidden="true">&times;</span>
             <span className="sr-only">Cancel</span>
           </button>
@@ -35,8 +38,8 @@ const CCMModal = React.createClass({
         {this.props.footer ?
           <ModalFooter>{this.props.footer}</ModalFooter> :
           <ModalFooter>
-            <Button onClick={this.props.close || this.close}>Close</Button>
-            <Button bsStyle="success" onClick={this.props.save || this.props.close}>Save</Button>
+            <Button onClick={close}>Close</Button>
+            <Button bsStyle="success" onClick={save}>Save</Button>
           </ModalFooter>
         }
       </Modal>
