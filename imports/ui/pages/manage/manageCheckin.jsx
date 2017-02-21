@@ -1,120 +1,121 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createContainer} from 'meteor/react-meteor-data';
-import BlazeToReact from '/imports/ui/components/blazeToReact';
-import {Modal, ModalBody, ModalHeader, ModalTitle, ModalFooter, Button} from 'react-bootstrap';
+import {Button, ControlLabel, Form, FormGroup, FormControl, Glyphicon} from 'react-bootstrap';
+import DatePicker from 'react-bootstrap-date-picker'
+import Select from 'react-select';
+import CCModal from '../../components/ccmModal';
 
-const log = logging.handle("manageCheckin");
+const Countries = countries.map(c => ({value: c.alpha2, label: `${c.name} (${c.alpha2})`})); // for react-select
 
-let selectedRegistrationReact = new ReactiveVar(null);
+const EditRegistrationModal = React.createClass({
+  getInitialState() {
+    return {
+      _id: undefined,
+      competitionId: '',
+      userId: '',
+      uniqueName: '',
+      wcaId: '',
+      countryId: '',
+      gender: '',
+      dob: ''
+    };
+  },
 
-let stickyTableById = {};
-let stickyTableId = 0;
+  reset() {
+    this.setState(this.getInitialState());
+  },
 
-const makeTableSticky = function($table) {
-  stickyTableId++;
+  show(selectedRegistration) {
+    this.setState(selectedRegistration);
+    this.modal.show();
+  },
 
-  $table.stickyTableHeaders();
+  save() {
+    let modal = this.modal;
 
-  // React freaks out if it finds dom nodes that share a data-reactid.
-  // Since $.stickyTableHeaders copies the <thead> we generated with react,
-  // that copy has a data-reactid. Explicitly removing this attribute seems to
-  // be enough to make react happy.
-  let $floatingHead = $table.find("thead.tableFloatingHeader");
-  $floatingHead.removeAttr('data-reactid');
-};
+    Meteor.call('addEditRegistration', this.state, function (error) {
+      modal.close();
+    });
+  },
 
-const makeTableNotSticky = function($table) {
-  let id = $table.data("stickyTableId");
-  let $storedTable = stickyTableById[id];
-  delete stickyTableById[id];
-  $table.stickyTableHeaders('destroy');
-};
+  close() {
+    this.reset();
+    this.modal.close();
+  },
 
-Template.editRegistrationForm.events({
-  'click .js-delete-registration': function() {
-    let confirmStr = `Are you sure you want to delete the registration for ${this.uniqueName}?`;
+  delete() {
+    let { _id } = this.state;
+    let modal = this.modal;
+
+    let confirmStr = `Are you sure you want to delete the registration for ${this.state.uniqueName}?`;
     bootbox.confirm(confirmStr, confirm => {
       if(confirm) {
-        Meteor.call('deleteRegistration', this.selectedRegistration._id, function(error) {
+        Meteor.call('deleteRegistration', _id, function(error) {
           if(error) {
             bootbox.alert(`Error deleting registration: ${error.reason}`);
           } else {
+            modal.close();
           }
         });
       }
     });
   },
-});
-
-Template.afSelectize.destroyed = function() {                                                               // 182
-  if(this.$('select')[0].selectize) {
-    this.$('select')[0].selectize.destroy();                                                                   // 183
-  }
-};
-
-const EditRegistrationModal = React.createClass({
-  componentDidMount() {
-    let modal = this;
-    AutoForm.addHooks('editRegistrationForm', {
-      onSuccess: function(operation, result, template) {
-        modal.hide();
-      },
-    });
-  },
-
-  getInitialState() {
-    return {
-      show: this.props.show,
-      selectedRegistration: null
-    };
-  },
-
-  show(selectedRegistration) {
-    this.setState({
-      show: true,
-      selectedRegistration: selectedRegistration
-    });
-  },
-
-  hide() {
-    AutoForm.resetForm('editRegistrationForm');
-    this.setState({
-      show: false,
-      selectedRegistration: null
-    });
-  },
 
   render() {
-    let { selectedRegistration } = this.state;
+    let { _id, competitionId, userId, uniqueName, wcaId, countryId, gender, dob } = this.state;
+    let header = _id ? `Edit registration for ${uniqueName}` : 'Add new competitor';
+
+    let footer = [
+      _id ? <Button key={0} className='pull-left' bsStyle='danger' onClick={this.delete}><Glyphicon glyph='trash'/> Delete registration</Button> : null,
+      <Button key={1} onClick={this.close}>Cancel</Button>,
+      <Button key={2} bsStyle='success' onClick={this.save}>{_id ? 'Save' : 'Add'}</Button>
+    ];
 
     return (
-      <Modal show={this.state.show} onHide={this.hide}>
-        <ModalHeader>
-          <ModalTitle>Edit Registration</ModalTitle>
-        </ModalHeader>
-        <BlazeToReact wrapperTag='div' blazeTemplate='editRegistrationForm' selectedRegistration={selectedRegistration} modal={this}/>
-      </Modal>
+      <CCModal ref={modal => this.modal = modal} close={this.close} header={header} footer={footer}>
+        <Form>
+          <FormGroup>
+            <ControlLabel>Unique Name</ControlLabel>
+            <FormControl type='text' placeholder='Feliks Zemdegs' value={uniqueName} onChange={event => this.setState({ uniqueName: event.target.value })}/>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>WCA Id</ControlLabel>
+            <FormControl type='text' placeholder='2009ZEMD01' value={wcaId} onChange={event => this.setState({ wcaId: event.target.value })}/>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Country</ControlLabel>
+            <Select options={Countries} value={countryId} onChange={country => this.setState({ countryId: country.value })}/>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Gender</ControlLabel>
+            <Select options={wca.genders} value={gender} onChange={country => this.setState({ gender: country.value })}/>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Birthdate</ControlLabel>
+            <DatePicker id='dobPicker' value={dob ? dob.toISOString() : undefined} onChange={value => {this.setState({ dob: new Date(value) });}} style={{zIndex: 0}}/>
+          </FormGroup>
+        </Form>
+      </CCModal>
     );
   }
 });
 
-
 const ImportRegistrationModal = React.createClass({
   getInitialState() {
     return {
-      show: this.props.show,
       registrationJson: {},
       registrationJsonError: null,
     };
   },
 
   show() {
-    this.setState({ show: true, val: '' });
+    this.setState(this.getInitialState());
+    this.modal.show();
   },
 
-  hide() {
-    this.setState({ show: false, val: '' });
+  close() {
+    this.modal.close();
   },
 
   importRegistrationJsonInput(e) {
@@ -144,34 +145,32 @@ const ImportRegistrationModal = React.createClass({
   },
 
   render() {
+    let { show } = this.state;
+
+    let footer = [
+      <Button key={0} onClick={this.close}>Cancel</Button>,
+      <Button key={1} bsStyle='success' onClick={this.import}>Import</Button>
+    ];
+
     return (
-      <Modal show={this.state.show} onHide={this.hide}>
-        <ModalHeader>
-          <ModalTitle>Import Registration</ModalTitle>
-        </ModalHeader>
-        <ModalBody>
-          <p>
-            Import registration data conforming to the <a href="https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format" rel="external" target="_blank">WCA Competition JSON Format</a>.
-          </p>
-          <p>
-            Importing data when you already have people registered will be very careful to not
-            delete data: we update everyone's registration information (say if
-            their birthday changed), but we won't unregister people for events if
-            they're already checked in, and we certainly won't delete their results
-            if they already have results.
-          </p>
-          <textarea name="registrationJson" className="form-control" ref="registrationJson" rows="10" placeholder="Registration JSON here" onChange={this.importRegistrationJsonInput}/>
-          {this.state.registrationJsonError ?
-            <div className="alert alert-danger">
-              {this.state.registrationJsonError}
-            </div> : null
-          }
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={this.hide}>Cancel</Button>
-          <Button bsStyle='success' onClick={this.import}>Import</Button>
-        </ModalFooter>
-      </Modal>
+      <CCModal ref={modal => this.modal = modal} onHide={this.close} footer={footer} header='Import Registration'>
+        <p>
+          Import registration data conforming to the <a href="https://github.com/cubing/worldcubeassociation.org/wiki/WCA-Competition-JSON-Format" rel="external" target="_blank">WCA Competition JSON Format</a>.
+        </p>
+        <p>
+          Importing data when you already have people registered will be very careful to not
+          delete data: we update everyone's registration information (say if
+          their birthday changed), but we won't unregister people for events if
+          they're already checked in, and we certainly won't delete their results
+          if they already have results.
+        </p>
+        <textarea name="registrationJson" className="form-control" ref="registrationJson" rows="10" placeholder="Registration JSON here" onChange={this.importRegistrationJsonInput}/>
+        {this.state.registrationJsonError ?
+          <div className="alert alert-danger">
+            {this.state.registrationJsonError}
+          </div> : null
+        }
+      </CCModal>
     );
   },
 });
@@ -234,17 +233,11 @@ const CheckinList = React.createClass({
   },
 
   handleEditRegistration(registration) {
-    AutoForm.resetForm('editRegistrationForm');
     this.modals.editRegistration.show(registration);
-    // this.setState({ selectedRegistration: registration });
-    // $("#modalEditRegistration").modal('show');
   },
 
   addCompetitor() {
-    AutoForm.resetForm('editRegistrationForm');
-    // this.setState({ selectedRegistration: { competitionId: this.props.competitionId } });
     this.modals.editRegistration.show({ competitionId: this.props.competitionId });
-    // $("#modalEditRegistration").modal('show');
   },
 
   render() {
