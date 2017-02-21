@@ -1,5 +1,5 @@
 export const buildRoundData = function(props) {
-  Meteor.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('competition', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
   let nthRound = parseInt(props.nthRound);
@@ -12,7 +12,7 @@ export const buildRoundData = function(props) {
   let results = round ? round.getResultsWithRegistrations({ limit: 0, sorted: true }) : [];
 
   return {
-    ready: FlowRouter.subsReady('competition'),
+    ready: Subs.ready(),
     competition: competition,
     competitionId: competitionId,
     nthRound: nthRound,

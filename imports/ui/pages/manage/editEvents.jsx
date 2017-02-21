@@ -636,15 +636,15 @@ const EditEvents = React.createClass({
 const subs = new SubsManager();
 
 export default createContainer((props) => {
-  Meteor.subscribe('competition', props.competitionUrlId);
-  Meteor.subscribe('competitionRegistrations', props.competitionUrlId);
-  Meteor.subscribe('roundProgresses', props.competitionUrlId);
+  Subs.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('competitionRegistrations', props.competitionUrlId);
+  Subs.subscribe('roundProgresses', props.competitionUrlId);
 
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
 
   return {
-    ready: FlowRouter.subsReady('competition', 'roundProgresses'),
+    ready: Subs.ready(),
     user: Meteor.user(),
     competition: competition,
     competitionId: competitionId,

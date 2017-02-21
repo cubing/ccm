@@ -11,7 +11,7 @@ import {ManageCompetitionLayout, EditCompetition, EditStaff, EditEvents, ManageC
 
 const log = logging.handle("routes");
 
-subs = new SubsManager({
+Subs = new SubsManager({
   cacheLimit: 10,
   expireIn: 5, // minutes
 });
@@ -29,7 +29,7 @@ FlowRouter.notFound = {
 FlowRouter.route('/', {
   name: 'home',
   subscriptions(params) {
-    this.register('competitions', Meteor.subscribe('competitions'));
+    this.register('competitions', Subs.subscribe('competitions'));
   },
 
   action(params, queryParams) {
@@ -77,7 +77,7 @@ const manageRoutes = FlowRouter.group({
   prefix: '/manage/:competitionUrlId',
 
   subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+    this.register('competition', Subs.subscribe('competition', params.competitionUrlId));
   },
 });
 
@@ -118,9 +118,9 @@ manageRoutes.route('/events', {
   titlePrefix: "Edit Events",
 
   subscriptions(params) {
-    this.register('roundProgresses', Meteor.subscribe('roundProgresses', params.competitionUrlId));
-    this.register('rounds', Meteor.subscribe('rounds', params.competitionUrlId));
-    this.register('competitionRegistrations', Meteor.subscribe('competitionRegistrations', params.competitionUrlId));
+    this.register('roundProgresses', Subs.subscribe('roundProgresses', params.competitionUrlId));
+    this.register('rounds', Subs.subscribe('rounds', params.competitionUrlId));
+    this.register('competitionRegistrations', Subs.subscribe('competitionRegistrations', params.competitionUrlId));
   },
 
   action(params, queryParams) {
@@ -156,7 +156,7 @@ manageRoutes.route('/advance-participants/:eventCode?/:nthRound?', {
   titlePrefix: "Advance competitors",
 
   subscriptions(params, queryParams) {
-    this.register(Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
+    this.register(Subs.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
   },
 
   action(params, queryParams) {
@@ -176,7 +176,7 @@ manageRoutes.route('/data-entry/:eventCode?/:nthRound?', {
   titlePrefix: "Data entry",
 
   subscriptions(params, queryParams) {
-    this.register('roundResults', Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
+    this.register('roundResults', Subs.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
   },
 
   action(params, queryParams) {
@@ -201,7 +201,7 @@ const competitionRoutes = FlowRouter.group({
   prefix: '/:competitionUrlId',
 
   subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
+    this.register('competition', Subs.subscribe('competition', params.competitionUrlId));
   },
 });
 
@@ -243,7 +243,7 @@ competitionRoutes.route('/schedule', {
   titlePrefix: 'Schedule',
 
   subscriptions(params) {
-    this.register('scheduleEvents', Meteor.subscribe('scheduleEvents', params.competitionUrlId));
+    this.register('scheduleEvents', Subs.subscribe('scheduleEvents', params.competitionUrlId));
   },
 
   action(params, queryParams) {
@@ -255,15 +255,35 @@ competitionRoutes.route('/schedule', {
   }
 });
 
+competitionRoutes.route('/results/:eventCode?', {
+  name: 'roundResults',
+  template: 'roundResults',
+
+  action(params, queryParams) {
+    mount(Layout, {
+      competitionUrlId: params.competitionUrlId,
+      activeTab: this.name,
+      content: [
+        <CompetitionLayout {...params}>
+          <EventPicker {...params}/>
+          <RoundPicker {...params}/>
+        </CompetitionLayout>
+      ]
+    });
+  }
+});
+
 competitionRoutes.route('/results/:eventCode?/:nthRound?', {
   name: 'roundResults',
   template: 'roundResults',
 
   subscriptions(params) {
-    this.register('roundResults', Meteor.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
+    this.register('roundResults', Subs.subscribe('roundResults', params.competitionUrlId, params.eventCode, parseInt(params.nthRound)));
   },
 
   action(params, queryParams) {
+    console.log(285, 'rendering')
+
     mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       activeTab: this.name,

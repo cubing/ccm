@@ -200,7 +200,7 @@ const StaffList = React.createClass({
 });
 
 export default createContainer((props) => {
-  let sub = Meteor.subscribe('competitionRegistrations', props.competitionUrlId);
+  Subs.subscribe('competitionRegistrations', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let staff = Registrations.find({
     competitionId: props.competitionUrlId,

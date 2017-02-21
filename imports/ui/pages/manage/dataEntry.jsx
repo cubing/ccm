@@ -232,7 +232,6 @@ const RoundDataEntry = React.createClass({
 
   saveAll() {
     this.solveTimeEditors.forEach(function(editor, index) {
-      console.log(235, editor)
       let jChester = editor.jChester;
       if(jChester.state.validationErrors && jChester.state.validationErrors.length) {
         return;
@@ -307,7 +306,7 @@ const RoundDataEntry = React.createClass({
         </div>
 
         <div id="selectableResults" className="col-xs-12 col-sm-6 col-md-7 col-lg-8">
-          <RoundResults {...this.props} round={round} selectParticipant={true} selectParticipantListener={this.selectParticipantListener} selectedResultId={selectedResultId}/>
+          <RoundResults {...this.props} selectParticipant={true} selectParticipantListener={this.selectParticipantListener} selectedResultId={selectedResultId}/>
         </div>
 
       </div>
@@ -329,7 +328,8 @@ const DataEntry = React.createClass({
 });
 
 export default createContainer(function(props) {
-  Meteor.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('roundResults', props.competitionUrlId, props.eventCode, parseInt(props.nthRound));
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
   let nthRound = parseInt(props.nthRound);
@@ -342,7 +342,7 @@ export default createContainer(function(props) {
   let results = round ? round.getResultsWithRegistrations({ limit: 0, sorted: true }) : [];
 
   return {
-    ready: FlowRouter.subsReady('competition'),
+    ready: Subs.ready('competition'),
     competition: competition,
     competitionId: competitionId,
     nthRound: nthRound,

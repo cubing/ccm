@@ -34,7 +34,7 @@ const Competition = React.createClass({
 });
 
 export default createContainer((props) => {
-  let subscription = Meteor.subscribe('competition', props.competitionUrlId);
+  let subscription = Subs.subscribe('competition', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
 

@@ -68,13 +68,13 @@ const ExportResultsView = React.createClass({
 });
 
 export default createContainer((props) => {
-  Meteor.subscribe('competition', props.competitionUrlId);
+  Subs.subscribe('competition', props.competitionUrlId);
 
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
 
   return {
-    ready: FlowRouter.subsReady('competition'),
+    ready: Subs.ready('competition'),
     user: Meteor.user(),
     competition: competition,
     competitionId: competitionId,

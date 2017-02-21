@@ -23,6 +23,8 @@ const CompetitionEvents = React.createClass({
   render() {
     let {competition} = this.props;
 
+    console.log(70)
+
     return (
       <div className='container'>
         <table className='table table-striped'>
@@ -63,7 +65,8 @@ const CompetitionEvents = React.createClass({
 });
 
 export default createContainer((props) => {
-  let subscription = Meteor.subscribe('competition', props.competitionUrlId);
+  console.log(props.competitionUrlId)
+  let subscription = Subs.subscribe('competition', props.competitionUrlId);
   let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
   let competition = Competitions.findOne(competitionId);
 
