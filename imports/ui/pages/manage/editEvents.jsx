@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {createContainer} from 'meteor/react-meteor-data';
-import { Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter, Panel, Button, Popover, OverlayTrigger} from 'react-bootstrap';
+import {createContainer, ReactMeteorData} from 'meteor/react-meteor-data';
+import { FormControl, Modal, ModalHeader, ModalTitle, ModalBody, ModalFooter, Panel, Button, Popover, OverlayTrigger} from 'react-bootstrap';
 import {eventName, roundName, eventAllowsCutoffs, softCutoffFormatName, formatShortName, toAtMostFixed} from '/imports/util';
 import JChester from '../../components/jChester';
 import CCMModal from '../../components/ccmModal';
@@ -202,38 +202,31 @@ const SetRoundCutoffModal = React.createClass({
     this.setState({ softCutoffFormat: event.target.value});
   },
 
-  isCurrentSoftCutoffFormat: function(softCutoffFormat) {
-    if(!this.round.softCutoff) {
-      return false;
-    }
-    return this.round.softCutoff.formatCode == softCutoffFormat.code;
-  },
-
   isAllowedSoftCutoffFormat: function(softCutoffFormat) {
     let roundFormat = wca.formatByCode[this.round.formatCode];
     return _.contains(roundFormat.softCutoffFormatCodes, softCutoffFormat.code);
   },
 
   render() {
+    let { softCutoffFormat, softCutoffTime } = this.state;
     let header = this.round ? `Change Soft Cutoff for ${eventName(this.round.eventCode)}: ${roundName(this.round.roundCode())}` : '';
 
     return (
       <CCMModal ref={modal => this.modal = modal} save={this.save} header={header}>
         {this.round ?
           <div>
-            <select name='softCutoffFormatCode' className='form-control input-xs' onChange={this.change} style={{marginBottom: '5px'}}>
+            <FormControl componentClass='select' value={softCutoffFormat} name='softCutoffFormatCode' onChange={this.change} style={{marginBottom: '5px'}}>
               {/*!-- will end up selected if nothing else is */}
-              <option value="" selected>No soft cutoff</option>
+              <option value=''>No soft cutoff</option>
 
               {/*<!-- http://stackoverflow.com/a/23498190 --> */}
               <optgroup label='───────────────'/>
 
               {wca.softCutoffFormats.map((format, index) =>
-                <option key={index} value={format.code} selected={this.isCurrentSoftCutoffFormat(format)}
-                        disabled={!this.isAllowedSoftCutoffFormat(format)}>{format.name}</option>
+                <option key={index} value={format.code} disabled={!this.isAllowedSoftCutoffFormat(format)}>{format.name}</option>
               )}
-            </select>
-            {this.state.softCutoffFormat ? <JChester ref={(ref) => this.jChester = ref} solveTime={this.state.softCutoffTime}/> : null}
+            </FormControl>
+            {softCutoffFormat ? <JChester ref={(ref) => this.jChester = ref} solveTime={softCutoffTime}/> : null}
           </div> : null}
       </CCMModal>
     );
@@ -307,7 +300,19 @@ const ReallyRemoveRoundModal = React.createClass({
   }
 });
 
-const EventView = React.createClass({
+const Event = React.createClass({
+  mixins: [ReactMeteorData],
+  getMeteorData() {
+    return {
+      rounds: Rounds.find({
+        competitionId: this.props.competitionId,
+        eventCode: this.props.event.eventCode
+      }, {
+        sort: { nthRound: 1 }
+      }).fetch()
+    };
+  },
+
   modals: {},
 
   getInitialState() {
@@ -317,11 +322,24 @@ const EventView = React.createClass({
   },
 
   expand() {
-    window.localStorage[`${this.props.competitionId}${this.props.event.eventCode}visible`] = true;
+    this.setState({
+      expanded: true
+    });
+    window.localStorage[`${this.props.competitionId}${this.props.event.eventCode}visible`] = 'true';
   },
 
   collapse() {
-    delete window.localStorage[`${this.props.competitionId}${this.props.event.eventCode}visible`];
+    this.setState({
+      expanded: false
+    });
+    window.localStorage[`${this.props.competitionId}${this.props.event.eventCode}visible`] = 'false';
+  },
+
+  toggle() {
+    this.setState({
+      expanded: !this.state.expanded
+    });
+    window.localStorage[`${this.props.competitionId}${this.props.event.eventCode}visible`] = !this.state.expanded ? 'true' : 'false';
   },
 
   changeRoundFormat(round) {
@@ -406,7 +424,7 @@ const EventView = React.createClass({
 
         {eventAllowsCutoffs(event.eventCode) ? [
           /* ============= Soft Cutoff ============= */
-          <td className="tight-cell text-center">
+          <td key={0} className="tight-cell text-center">
             <button type="button" name="buttonSoftCutoff" className={`btn ${roundSoftCutoffAllowed(round) ? 'btn-default' : 'btn-warning'} btn-xs`}
                     onClick={() => this.modals.setRoundCutoff.show(round)}>
               {round.softCutoff ? `${clockFormat(round.softCutoff.time)} ${softCutoffFormatName(round.softCutoff.formatCode)}` : '-'}
@@ -414,7 +432,7 @@ const EventView = React.createClass({
           </td>,
 
           /* ============= Time limit ============= */
-          <td className="tight-cell text-center">
+          <td key={1} className="tight-cell text-center">
             <button type="button" name="buttonTimeLimit" className="btn btn-default btn-xs"
                     onClick={() => this.modals.setRoundTimeLimit.show(round)}>
               {round.timeLimit ? clockFormat(round.timeLimit.time) : '-'}
@@ -483,13 +501,13 @@ const EventView = React.createClass({
   render() {
     let { event, competitionId } = this.props;
     let { expanded } = this.state;
-    let rounds = this.props.rounds;
+    let { rounds } = this.data;
 
     const formatsOverlay = (
       <Popover id='formats' title='WCA Round Formats'>
         <table className='table-condensed'>
           <tbody>
-            {wca.formats.map((format, index) => <tr><td><strong>{format.shortName}</strong></td><td>{format.name}</td></tr>)}
+            {wca.formats.map((format, index) => <tr key={index}><td><strong>{format.shortName}</strong></td><td>{format.name}</td></tr>)}
           </tbody>
         </table>
       </Popover>
@@ -497,7 +515,7 @@ const EventView = React.createClass({
 
     return (
       <div className={eventColumnsClasses()}>
-        <Panel collapsible header={this.renderHeader()} defaultExpanded={expanded} onEnter={this.expand} onExit={this.collapse}>
+        <Panel collapsible header={this.renderHeader()} expanded={expanded} onSelect={this.toggle}>
           <div className="table-responsive">
             <table className="table table-condensed">
               {/* ============= Rounds property headers ============= */}
@@ -505,13 +523,13 @@ const EventView = React.createClass({
                 <tr>
                   <th className="tight-cell">#</th>
                   <th className="tight-cell text-center">
-                    <OverlayTrigger trigger='click' placement='right' overlay={formatsOverlay}>
-                      <a>Format</a>
+                    <OverlayTrigger trigger='click' rootClose placement='right' overlay={formatsOverlay}>
+                      <a style={{cursor: 'pointer'}}>Format</a>
                     </OverlayTrigger>
                   </th>
                   {eventAllowsCutoffs(event.eventCode) ? [
-                    <th className="tight-cell text-center">Soft</th>,
-                    <th className="tight-cell text-center">Hard</th>
+                    <th key={0} className="tight-cell text-center">Soft</th>,
+                    <th key={1} className="tight-cell text-center">Hard</th>
                   ] : null}
                   <th className="text-center">Progress</th>
                   <th className="tight-cell text-center">
@@ -555,31 +573,9 @@ const EventView = React.createClass({
   }
 });
 
-const Event = createContainer((props) => {
-  Meteor.subscribe('competition', props.competitionUrlId);
-  Meteor.subscribe('roundProgresses', props.competitionUrlId);
-
-  let competitionId = api.competitionUrlIdToId(props.competitionUrlId);
-  let competition = Competitions.findOne(competitionId);
-
-  let rounds = Rounds.find({
-    competitionId: competitionId,
-    eventCode: props.event.eventCode
-  }, {
-    sort: { nthRound: 1 }
-  }).fetch();
-
-  return {
-    ready: FlowRouter.subsReady('competition', 'roundProgresses'),
-    user: Meteor.user(),
-    competition: competition,
-    competitionId: competitionId,
-    rounds: rounds
-  };
-}, EventView);
-
-
 const EditEvents = React.createClass({
+  _events: [],
+
   events: function() {
     let events = wca.events.map((e, i) => {
       return {
@@ -595,11 +591,11 @@ const EditEvents = React.createClass({
   /* Events */
 
   collapseAllEvents() {
-    $('#editEventsList .collapse').collapse({toggle: false}).collapse('hide');
+    this._events.forEach(event => { event.collapse(); });
   },
 
   expandAllEvents() {
-    $('#editEventsList .collapse').collapse({toggle: false}).collapse('hide');
+    this._events.forEach(event => { event.expand(); });
   },
 
   render() {
@@ -615,10 +611,10 @@ const EditEvents = React.createClass({
             </div>
             <div className="col-xs-7 text-right">
               <div className="btn-group" id="expandCollapseAllEvents">
-                <button className="btn btn-default" onClick={this.expandAllEvents()}>
+                <button className="btn btn-default" onClick={this.expandAllEvents}>
                   <span className="glyphicon glyphicon-resize-full"/>
                 </button>
-                <button className="btn btn-default" onClick={this.collapseAllEvents()}>
+                <button className="btn btn-default" onClick={this.collapseAllEvents}>
                   <span className="glyphicon glyphicon-resize-small"/>
                 </button>
               </div>
@@ -627,7 +623,7 @@ const EditEvents = React.createClass({
 
           <div className="row">
             {this.props.ready ? this.events().map((event, index) => [
-              <Event key={index} competitionId={competitionId} competitionUrlId={competitionUrlId} event={event}/>,
+              <Event key={index} ref={ref => {this._events[index] = ref;}} {...this.props} event={event}/>,
               clearfixVisibleClass(index) ? <div className={`clearfix ${clearfixVisibleClass(index)}`}/> : null
             ]) : null}
           </div>
