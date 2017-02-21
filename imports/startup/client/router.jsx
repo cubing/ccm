@@ -19,10 +19,6 @@ subs = new SubsManager({
 global.Router = FlowRouter;
 
 FlowRouter.notFound = {
-  subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
-  },
-
   action() {
     ReactLayout.render(Layout, {
       content: (<ErrorPage error='404' message='Page Not Found'/>)
@@ -205,25 +201,9 @@ const competitionRoutes = FlowRouter.group({
   prefix: '/:competitionUrlId',
 
   subscriptions(params) {
-    this.register('competitions', Meteor.subscribe('competitions'));
+    this.register('competition', Meteor.subscribe('competition'));
   },
 });
-
-competitionRoutes.notFound = {
-  subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
-  },
-
-  action() {
-    ReactLayout.render(Layout, {
-      content: (
-        <CompetitionLayout {...params}>
-          <ErrorPage error='404' message='Page Not Found'/>
-        </CompetitionLayout>
-      )
-    });
-  }
-};
 
 competitionRoutes.route('/', {
   name: 'competition',
