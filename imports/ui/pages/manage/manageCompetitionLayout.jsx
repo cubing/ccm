@@ -23,10 +23,6 @@ const Tabs = [{
   icon: 'fa fa-cube',
   text: 'Events',
 }, {
-  route: 'editSchedule',
-  icon: 'glyphicon glyphicon-calendar',
-  text: 'Schedule',
-}, {
   route: 'scrambles',
   title: 'Generate scrambles, manage groups, and view scrambles for open groups',
   icon: '/img/tnoodle_logo.svg',
