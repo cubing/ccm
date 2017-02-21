@@ -1,6 +1,6 @@
 import React from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
-import {BlazeLayout} from 'meteor/kadira:blaze-layout';
+import {mount} from 'react-mounter';
 import Tabs from './tabs';
 import BlazeToReact from '/imports/ui/components/blazeToReact';
 import {Layout, Competitions, EditProfile, ErrorPage} from '/imports/ui/pages/index';
@@ -20,7 +20,7 @@ global.Router = FlowRouter;
 
 FlowRouter.notFound = {
   action() {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       content: (<ErrorPage error='404' message='Page Not Found'/>)
     });
   }
@@ -33,7 +33,7 @@ FlowRouter.route('/', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       content: (<Competitions/>)
     });
   }
@@ -42,7 +42,7 @@ FlowRouter.route('/', {
 FlowRouter.route('/settings/profile', {
   name: 'editProfile',
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       content: (<EditProfile/>)
     });
   }
@@ -53,7 +53,7 @@ FlowRouter.route('/new', {
   titlePrefix: 'Create competition',
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       content: (<NewCompetition/>)
     });
   }
@@ -64,7 +64,7 @@ FlowRouter.route('/new/import', {
   titlePrefix: 'Import competition',
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       content: (<NewCompetition tab='import'/>)
     });
   }
@@ -86,7 +86,7 @@ manageRoutes.route('/', {
   titlePrefix: "Manage",
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -102,7 +102,7 @@ manageRoutes.route('/staff', {
   titlePrefix: "Staff",
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -124,7 +124,7 @@ manageRoutes.route('/events', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -140,7 +140,7 @@ manageRoutes.route('/check-in', {
   titlePrefix: "Check-in",
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -160,7 +160,7 @@ manageRoutes.route('/advance-participants/:eventCode?/:nthRound?', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -180,7 +180,7 @@ manageRoutes.route('/data-entry/:eventCode?/:nthRound?', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (
         <ManageCompetitionLayout {...params}>
@@ -201,7 +201,7 @@ const competitionRoutes = FlowRouter.group({
   prefix: '/:competitionUrlId',
 
   subscriptions(params) {
-    this.register('competition', Meteor.subscribe('competition'));
+    this.register('competition', Meteor.subscribe('competition', params.competitionUrlId));
   },
 });
 
@@ -209,7 +209,7 @@ competitionRoutes.route('/', {
   name: 'competition',
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       activeTab: this.name,
       content: (
@@ -226,7 +226,7 @@ competitionRoutes.route('/events', {
   titlePrefix: 'Events',
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       activeTab: this.name,
       content: (
@@ -247,7 +247,7 @@ competitionRoutes.route('/schedule', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       activeTab: this.name,
       content: <CompetitionLayout {...params}/>
@@ -264,7 +264,7 @@ competitionRoutes.route('/results/:eventCode?/:nthRound?', {
   },
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       activeTab: this.name,
       content: [
@@ -282,7 +282,7 @@ competitionRoutes.route('/manage/:competitionUrlId/exportResults', {
   name: 'exportResults',
 
   action(params, queryParams) {
-    ReactLayout.render(Layout, {
+    mount(Layout, {
       competitionUrlId: params.competitionUrlId,
       content: (<Export {...params}/>)
     });

@@ -56,8 +56,6 @@ react-meteor-data
 practicalmeteor:mocha
 dispatch:mocha-phantomjs
 kadira:flow-router
-kadira:react-layout
-kadira:blaze-layout
 spacebars@1.0.12
 arillo:flow-router-helpers
 aldeed:autoform
