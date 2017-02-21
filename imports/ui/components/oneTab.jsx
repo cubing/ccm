@@ -1,7 +1,6 @@
 import React from 'react';
 import {createContainer} from 'meteor/react-meteor-data';
 
-// (route, title, text, img, icon, active, otherClass, leaf)
 export default React.createClass({
   getDefaultProps() {
     return {
