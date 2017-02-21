@@ -36,8 +36,8 @@ const CompetitionEvents = React.createClass({
             <tr>
               {competition && competition.getMaxRoundsInCompetition().map((round, index) => 
                 [<th>Format</th>,
-                <th>Soft</th>,
-                <th>Hard</th>,
+                <th>Cutoff</th>,
+                <th>Time limit</th>,
                 <th>Num</th>]
               )}
             </tr>
