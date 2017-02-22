@@ -6,6 +6,7 @@ import BlazeToReact from '/imports/ui/components/blazeToReact';
 import {Layout, Competitions, EditProfile, ErrorPage} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
+import AdministerPage from '/imports/ui/pages/admin/administerPage';
 import {Competition, CompetitionLayout, CompetitionEvents, CompetitionSchedule, CompetitionResults} from '/imports/ui/pages/competition/index';
 import {ManageCompetitionLayout, EditCompetition, EditStaff, EditEvents, ManageCheckin, DataEntry, AdvanceCompetitors, Export} from '/imports/ui/pages/manage/index';
 
@@ -35,6 +36,21 @@ FlowRouter.route('/', {
   action(params, queryParams) {
     mount(Layout, {
       content: (<Competitions/>)
+    });
+  }
+});
+
+FlowRouter.route('/settings/administration', {
+  name: 'administerSite',
+  titlePrefix: 'Administer site',
+
+  subscriptions: function() {
+    this.register(Subs.subscribe('allSiteAdmins'));
+  },
+
+  action(params, queryParams) {
+    mount(Layout, {
+      content: (<AdministerPage/>)
     });
   }
 });

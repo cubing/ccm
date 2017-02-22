@@ -24,6 +24,7 @@
     "react-addons-update": "^15.4.2",
     "react-bootstrap": "^0.30.7",
     "react-bootstrap-date-picker": "^4.0.0",
+    "react-bootstrap-typeahead": "^1.1.0",
     "react-dom": "^15.4.2",
     "react-mounter": "^1.2.0",
     "react-select": "^1.0.0-beta13",

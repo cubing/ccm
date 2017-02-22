@@ -172,7 +172,7 @@ Meteor.publish('allSiteAdmins', function() {
   if(!isSiteAdmin(this.userId)) {
     return [];
   }
-  return Meteor.users.find({ siteAdmin: true }, { fields: userFieldsToPublish });
+  return Meteor.users.find({}, { fields: userFieldsToPublish });
 });
 
 // Copied and modified from https://github.com/mizzao/meteor-autocomplete/blob/master/autocomplete-server.coffee
