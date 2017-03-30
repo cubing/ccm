@@ -8,7 +8,10 @@ const CompetitionList = React.createClass({
         wcaCompetitionId: 1,
         competitionName: 1,
         listed: 1,
-      }
+      },
+      sort: {
+        startDate: -1,
+      },
     });
   },
 
