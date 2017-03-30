@@ -13,7 +13,7 @@ api = {
   getCompetitions: function() {
     // TODO - someday when we're rich and successful, we'll have to paginate this
     return Competitions.find(
-      {},
+      { listed: true },
       { fields: { wcaCompetitionId: 1, competitionName: 1, listed: 1 } }
     );
   },
