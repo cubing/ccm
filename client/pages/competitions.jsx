@@ -8,7 +8,10 @@ const CompetitionList = React.createClass({
         wcaCompetitionId: 1,
         competitionName: 1,
         listed: 1,
-      }
+      },
+      sort: {
+        startDate: -1,
+      },
     });
   },
 
@@ -18,7 +21,7 @@ const CompetitionList = React.createClass({
     return (
       <div>
         {competitions.map((comp, index) => (
-          <li className={'competition' + (comp.listed ? 'listed' : 'unlisted')} key={index}>
+          <li className={classNames('competition', comp.listed ? 'listed' : 'unlisted')} key={index}>
             <a href={comp.wcaCompetitionId ? comp.wcaCompetitionId : comp._id}>{comp.competitionName}</a>
           </li>
         ))}
