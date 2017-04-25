@@ -170,7 +170,7 @@ function solveTimePerfectOrderedHash(solveTime) {
   return wcaValue;
 }
 
-wca.computeSolvesStatistics = function(solves, roundFormatCode) {
+wca.computeSolvesStatistics = function(solves, roundFormatCode, eventId) {
   var roundFormat = wca.formatByCode[roundFormatCode];
 
   var isTimed = null;
@@ -207,7 +207,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
   });
 
   var completedAverage = false;
-  if(roundFormat.computeAverage) {
+  if(roundFormat.computeAverage || (eventId === '333bf' && roundFormatCode === '3')) {
     var solveCount = 0;
     solves.forEach(function(solve) {
       if(solve) {
@@ -218,6 +218,7 @@ wca.computeSolvesStatistics = function(solves, roundFormatCode) {
   }
 
   var averageSolveTime;
+
   if(completedAverage) {
     var sum = 0;
     var sumSolveCount = 0;
@@ -553,7 +554,7 @@ wca.formats = [
 
     // 333bf is a best of 3, but people do get a mean, even though we don't
     // sort by it.
-    "computeAverage": true,
+    "computeAverage": false,
     "trimBestAndWorst": false,
     "averageName": "Mean",
     "sortBy": "best",

@@ -87,7 +87,7 @@ _.extend(Result.prototype, {
       solves: this.solves
     };
 
-    let statistics = wca.computeSolvesStatistics(this.solves, round.formatCode, round.roundCode());
+    let statistics = wca.computeSolvesStatistics(this.solves, round.formatCode, round.eventCode);
     _.extend($set, statistics);
 
     Results.update(this._id, { $set: $set });

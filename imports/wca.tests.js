@@ -171,8 +171,27 @@ describe('wca', function() {
         it('with DNF', function() {
           let solves = [moves(33), moves(42), dnf()];
           let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
-          expect(stats.average).to.deep.equal(dnf());
+          expect(stats.average).to.deep.equal(time(0));
           expectBestWorstIndex(stats, 0, 2);
+        });
+      });
+
+
+      describe('333bf', function() {
+        it('simple 333bf', function() {
+          let solves = [time(2400), time(2300), time(2500)];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+
+          let average = time(2300);
+          expect(stats.average).to.deep.equal(average);
+          expectBestWorstIndex(stats, 1, 2);
+        });
+
+        it('with DNF', function() {
+          let solves = [time(2400), time(2300), dnf()];
+          let stats = wca.computeSolvesStatistics(solves, roundFormatCode);
+          expect(stats.average).to.deep.equal(dnf());
+          expectBestWorstIndex(stats, 1, 2);
         });
       });
 
