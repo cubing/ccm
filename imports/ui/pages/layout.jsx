@@ -11,7 +11,6 @@ isActiveOrAncestorRoute = () => false;
 
 const LoginButtonsLoggedOutAllServices = function(props) {
   let {user} = props;
-  console.log(14, user);
 
   return (
     <div>
@@ -129,8 +128,7 @@ const Layout = React.createClass({
                       <li><a href="/logout">Sign out</a></li>
                     </ul>
                   </li>
-                }
-                
+                }                
               </ul>
             </div> {/* /.navbar-collapse */}
            </div>
@@ -141,7 +139,6 @@ const Layout = React.createClass({
             {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
           </Navbar> :
         ''}
-
 
         {content}
 
