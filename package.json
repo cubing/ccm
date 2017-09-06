@@ -28,6 +28,7 @@
     "react-dom": "^15.4.2",
     "react-mounter": "^1.2.0",
     "react-select": "^1.0.0-beta13",
+    "tracker-component": "^1.3.21",
     "typeahead.js": "^0.11.1"
   },
   "devDependencies": {

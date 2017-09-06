@@ -1,8 +1,8 @@
 import React from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {mount} from 'react-mounter';
+import { Accounts } from 'meteor/std:accounts-ui';
 import Tabs from './tabs';
-import BlazeToReact from '/imports/ui/components/blazeToReact';
 import {Layout, Competitions, EditProfile, ErrorPage} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
@@ -16,6 +16,10 @@ Subs = new SubsManager({
   cacheLimit: 10,
   expireIn: 5, // minutes
 });
+
+const Container = function (props) {
+  return <div className='container'>{props.children}</div>
+};
 
 global.Router = FlowRouter;
 
@@ -37,6 +41,23 @@ FlowRouter.route('/', {
     mount(Layout, {
       content: (<Competitions/>)
     });
+  }
+});
+
+FlowRouter.route('/login', {
+  name: 'login',
+  action(params) {
+    mount(Layout, {
+      content: <Container><Accounts.ui.LoginForm/></Container>
+    });
+  }
+});
+
+FlowRouter.route('/logout', {
+  name: 'login',
+  action(params) {
+    Meteor.logout();
+    FlowRouter.go('/')
   }
 });
 

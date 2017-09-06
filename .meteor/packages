@@ -27,7 +27,6 @@ mrt:moment-timezone
 sewdn:highlightjs
 percolate:migrations
 practicalmeteor:sinon
-ian:accounts-ui-bootstrap-3
 nemo64:bootstrap
 
 
@@ -60,3 +59,4 @@ arillo:flow-router-helpers
 aldeed:autoform
 comerc:autoform-selectize
 shell-server@0.2.1
+std:accounts-bootstrap

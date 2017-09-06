@@ -1,6 +1,6 @@
 import React from 'react';
+import { Accounts } from 'meteor/std:accounts-ui';
 import {createContainer} from 'meteor/react-meteor-data';
-import BlazeToReact from '../components/blazeToReact';
 import ccmModal from '../components/ccmModal';
 import OneTab from '../components/oneTab';
 import Navbar from '../components/navbar';
@@ -11,6 +11,7 @@ isActiveOrAncestorRoute = () => false;
 
 const LoginButtonsLoggedOutAllServices = function(props) {
   let {user} = props;
+  console.log(14, user);
 
   return (
     <div>
@@ -112,17 +113,24 @@ const Layout = React.createClass({
                 {user ?
                   <OneTab {...this.newCompetitionTab()}/> :
                 null}
-                <BlazeToReact key={0} wrapperTag='li' blazeTemplate="_loginButtons"/>
-                {user ? null :
-                  <li key={1} id="login-dropdown-list" className="dropdown">
-                    <a className="dropdown-toggle" data-toggle="dropdown">
-                      <b className="caret"/>
-                    </a>
-                    <div className="dropdown-menu">
-                      <BlazeToReact key={0} wrapperTag='div' blazeTemplate="_loginButtonsLoggedOutAllServices"/>
-                    </div>
+                {!user ? <li><a href='/login'>Login</a></li> :
+                  <li className="dropdown">
+                    <a className="dropdown-toggle" data-toggle="dropdown">{user.profile.name}
+                    <span className="caret"></span></a>
+                    <ul className="dropdown-menu">
+                      <li className="text-center">
+                        <a href={FlowRouter.path('editProfile')}>Your profile</a>
+                      </li>
+                      {user.siteAdmin ?
+                        <li className="text-center">
+                          <a href={FlowRouter.path('administerSite')}>Administer site</a>
+                        </li> :
+                      null}
+                      <li><a href="/logout">Sign out</a></li>
+                    </ul>
                   </li>
                 }
+                
               </ul>
             </div> {/* /.navbar-collapse */}
            </div>
@@ -133,6 +141,7 @@ const Layout = React.createClass({
             {tabs.map((tab, index) => <OneTab key={index} competitionUrlId={competitionUrlId} {...tab} active={isActiveRoute(tab.route)}/>)}
           </Navbar> :
         ''}
+
 
         {content}
 
