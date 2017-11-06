@@ -1,13 +1,8 @@
 import React from 'react';
 import {FlowRouter} from 'meteor/kadira:flow-router';
 import {mount} from 'react-mounter';
-<<<<<<< HEAD
 import { Accounts } from 'meteor/std:accounts-ui';
 import Tabs from './tabs';
-=======
-import Tabs from './tabs';
-import BlazeToReact from '/imports/ui/components/blazeToReact';
->>>>>>> ebaaa4c92784ce3ead6946c1b4da43cd5144d187
 import {Layout, Competitions, EditProfile, ErrorPage} from '/imports/ui/pages/index';
 import {EventPicker, RoundPicker, OpenRoundPicker} from '/imports/ui/roundPicker.jsx';
 import NewCompetition from '/imports/ui/pages/admin/newCompetition';
@@ -49,7 +44,6 @@ FlowRouter.route('/', {
   }
 });
 
-<<<<<<< HEAD
 FlowRouter.route('/login', {
   name: 'login',
   action(params) {
@@ -67,8 +61,6 @@ FlowRouter.route('/logout', {
   }
 });
 
-=======
->>>>>>> ebaaa4c92784ce3ead6946c1b4da43cd5144d187
 FlowRouter.route('/settings/administration', {
   name: 'administerSite',
   titlePrefix: 'Administer site',
