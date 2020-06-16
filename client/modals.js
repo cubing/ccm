@@ -5,7 +5,8 @@ Template.ccmSaveButton.helpers({
   },
   disabled: function() {
     // Treat saveable as true by default (not passed in).
-    return !(this.saveable || _.isUndefined(this.saveable));
+    return false; // Enable the save button
+    // return !(this.saveable || _.isUndefined(this.saveable));
   },
   text: function() {
     return this.text || "Save";
