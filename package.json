@@ -24,7 +24,7 @@
     "typeahead.js": "^0.11.1"
   },
   "devDependencies": {
-    "eslint": "^2.13.1",
+    "eslint": "^7.2.0",
     "eslint-plugin-meteor": "^3.6.0",
     "precommit-hook": "^3.0.0"
   },
